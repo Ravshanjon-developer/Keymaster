@@ -1,0 +1,49 @@
+# Local / staging stack: Postgres + API + frontend (nginx)
+# 1) Copy backend/.env.example → backend/.env and set ADMIN_* + SECRET_KEY
+# 2) docker compose up --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: keymaster
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-keymaster_change_me}
+      POSTGRES_DB: keymaster
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keymaster -d keymaster"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: postgresql+asyncpg://keymaster:${POSTGRES_PASSWORD:-keymaster_change_me}@db:5432/keymaster
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://localhost:80,http://127.0.0.1}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,127.0.0.1,backend}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:

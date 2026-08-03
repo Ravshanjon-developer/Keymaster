@@ -1,0 +1,36 @@
+# Production overrides — use with:
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Required env (export or .env next to compose):
+#   POSTGRES_PASSWORD, SECRET_KEY, ADMIN_EMAIL, ADMIN_USERNAME, ADMIN_PASSWORD
+#   CORS_ORIGINS, TRUSTED_HOSTS, PUBLIC_HOST
+
+services:
+  db:
+    ports: []
+    restart: always
+
+  backend:
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+asyncpg://keymaster:${POSTGRES_PASSWORD}@db:5432/keymaster
+      SECRET_KEY: ${SECRET_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_DISPLAY_NAME: ${ADMIN_DISPLAY_NAME:-KeyMaster Admin}
+      ADMIN_SYNC_PASSWORD: ${ADMIN_SYNC_PASSWORD:-false}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-${PUBLIC_HOST},localhost}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-720}
+      SEED_ON_STARTUP: ${SEED_ON_STARTUP:-true}
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  frontend:
+    restart: always
+    ports:
+      - "${PORT:-80}:80"
