@@ -7,3 +7,4 @@ watchPatterns = ["backend/**", "Dockerfile", "railway.toml"]
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+overlapSeconds = 0

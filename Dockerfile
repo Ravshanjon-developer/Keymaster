@@ -21,8 +21,8 @@ USER appuser
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=5 \
+  CMD curl -fsS http://127.0.0.1:${PORT:-8000}/health || exit 1
 
-CMD gunicorn app.main:app -k uvicorn.workers.UvicornWorker \
-    -b 0.0.0.0:${PORT:-8000} -w 2 --timeout 60 --access-logfile -
+CMD exec gunicorn app.main:app -k uvicorn.workers.UvicornWorker \
+    -b 0.0.0.0:${PORT:-8000} -w 2 --timeout 120 --access-logfile -

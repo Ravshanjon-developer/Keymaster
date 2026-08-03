@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,16 +14,48 @@ from app.db.session import AsyncSessionLocal, Base, engine
 from app.services.admin_bootstrap import ensure_admin_user
 from app.services.seed import seed_database
 
+logger = logging.getLogger("keymaster")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+
+async def _bootstrap() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     async with AsyncSessionLocal() as session:
-        if settings.seed_on_startup:
-            await seed_database(session)
         await ensure_admin_user(session)
+        if settings.seed_on_startup:
+            # Heavy course seed — may take minutes on first boot
+            await seed_database(session)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create tables + admin quickly so /health can pass Railway checks.
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    async with AsyncSessionLocal() as session:
+        await ensure_admin_user(session)
+
+    seed_task: asyncio.Task | None = None
+    if settings.seed_on_startup:
+
+        async def _seed_bg() -> None:
+            try:
+                async with AsyncSessionLocal() as session:
+                    await seed_database(session)
+                logger.info("Database seed completed")
+            except Exception:
+                logger.exception("Database seed failed")
+
+        seed_task = asyncio.create_task(_seed_bg())
+
     yield
+
+    if seed_task and not seed_task.done():
+        seed_task.cancel()
+        try:
+            await seed_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(
@@ -41,8 +75,14 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
 )
-if settings.is_production:
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.trusted_host_list)
+
+_hosts = settings.trusted_host_list
+# Railway public + internal health probes
+for extra in ("*.up.railway.app", "healthcheck.railway.app", "localhost", "127.0.0.1"):
+    if extra not in _hosts:
+        _hosts.append(extra)
+if settings.is_production and "*" not in _hosts:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=_hosts)
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(courses.router, prefix="/api")
