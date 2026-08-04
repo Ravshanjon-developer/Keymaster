@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
 
+import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
@@ -91,13 +92,14 @@ export function TrainingPage() {
   }
 
   return (
-    <div className="page-mesh mx-auto max-w-2xl px-4 py-10">
+    <div className="page-mesh mx-auto max-w-2xl px-4 py-10 pb-28 lg:pb-10">
       <h1 className="text-page-title">{t('training.title')}</h1>
       <p className="text-muted mt-2">{t('training.subtitle')}</p>
 
       <div className="mt-6">
-        {current && currentLoc && !waitingNext && (
-          <KeyboardTrainer
+        <PracticeKeyboardGate courseQuery={course}>
+          {current && currentLoc && !waitingNext && (
+            <KeyboardTrainer
             key={current.id}
             mode="practice"
             title={t('training.task', { n: index + 1, total: data.length })}
@@ -105,9 +107,9 @@ export function TrainingPage() {
             keys={current.keys}
             onResult={onResult}
           />
-        )}
+          )}
 
-        {waitingNext && current && currentLoc && (
+          {waitingNext && current && currentLoc && (
           <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center">
             <p className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">{t('training.correct')}</p>
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
@@ -123,7 +125,8 @@ export function TrainingPage() {
               {t('training.next')}
             </button>
           </div>
-        )}
+          )}
+        </PracticeKeyboardGate>
       </div>
 
       <p className="mt-4 text-center text-sm text-slate-500">

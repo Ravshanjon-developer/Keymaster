@@ -79,6 +79,7 @@ html.dark {
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -168,7 +169,7 @@ html.dark {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold tracking-tight text-white shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset,0_6px_16px_-6px_rgb(37_99_235_/_0.55)] transition duration-200 hover:bg-brand-500 active:translate-y-px active:scale-[0.985] disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold tracking-tight text-white shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset,0_6px_16px_-6px_rgb(37_99_235_/_0.55)] transition duration-200 hover:bg-brand-500 active:translate-y-px active:scale-[0.985] disabled:opacity-55;
     @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
   }
 
@@ -177,7 +178,7 @@ html.dark {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold tracking-tight shadow-sm transition duration-200 active:translate-y-px;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold tracking-tight shadow-sm transition duration-200 active:translate-y-px;
     @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
     border-color: var(--border-default);
     background-color: var(--bg-elevated);

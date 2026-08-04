@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
 
+import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
@@ -90,7 +91,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   })
 
   return (
-    <div className="page-mesh mx-auto max-w-3xl px-4 py-10">
+    <div className="page-mesh mx-auto max-w-3xl px-4 py-10 pb-28 lg:pb-10">
       <GlassCard className={learned ? 'border-brand-600/30' : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-brand-600">{t('lesson.steps')}</p>
@@ -147,7 +148,8 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
 
       {phase === 'practice' && (
         <div className="mt-8 space-y-4">
-          <KeyboardTrainer
+          <PracticeKeyboardGate courseQuery={data.course_slug ?? undefined}>
+            <KeyboardTrainer
             key={lessonId}
             title={t('lesson.learnMode')}
             mode="learn"
@@ -174,6 +176,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
               }
             }}
           />
+          </PracticeKeyboardGate>
 
           {succeeded && (
             <GlassCard className="border-brand-600/30 bg-brand-50/50 dark:bg-brand-950/30">

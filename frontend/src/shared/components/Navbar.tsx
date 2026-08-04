@@ -71,15 +71,23 @@ export function Navbar() {
   ]
 
   const practiceNav = [
+    { to: '/review', label: t('nav.review'), hint: t('nav.reviewHint') },
+    { to: '/quiz', label: t('nav.quiz'), hint: t('nav.quizHint') },
     { to: '/training', label: t('nav.training'), hint: t('nav.trainingHint') },
     { to: '/exam', label: t('nav.exam'), hint: t('nav.examHint') },
     { to: '/speed', label: t('nav.speed'), hint: t('nav.speedHint') },
+  ]
+
+  const mobileLearnNav = [
+    { to: '/review', label: t('nav.review') },
+    { to: '/quiz', label: t('nav.quiz') },
   ]
 
   const communityNav = [{ to: '/leaderboard', label: t('nav.leaderboard') }]
 
   const mobileSections = [
     { title: t('nav.learnGroup'), items: learnNav },
+    { title: t('nav.mobileLearnGroup'), items: mobileLearnNav },
     { title: t('nav.practiceGroup'), items: practiceNav },
     { title: t('nav.communityGroup'), items: communityNav },
   ]

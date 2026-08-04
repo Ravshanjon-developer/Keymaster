@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 
+import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
@@ -115,7 +116,7 @@ export function SpeedModePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto max-w-2xl px-4 py-10 pb-28 lg:pb-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{t('speed.pageTitle')}</h1>
         {!started ? (
@@ -131,14 +132,16 @@ export function SpeedModePage() {
         )}
       </div>
       {started && current && currentLoc && (
-        <KeyboardTrainer
-          key={`${current.id}-${index}`}
-          mode="practice"
-          title={t('speed.title')}
-          actionPrompt={currentLoc.action_prompt ?? current.action_prompt}
-          keys={current.keys}
-          onResult={onResult}
-        />
+        <PracticeKeyboardGate>
+          <KeyboardTrainer
+            key={`${current.id}-${index}`}
+            mode="practice"
+            title={t('speed.title')}
+            actionPrompt={currentLoc.action_prompt ?? current.action_prompt}
+            keys={current.keys}
+            onResult={onResult}
+          />
+        </PracticeKeyboardGate>
       )}
     </div>
   )

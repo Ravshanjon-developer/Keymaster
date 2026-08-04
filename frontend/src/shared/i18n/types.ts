@@ -28,6 +28,12 @@ export type Messages = {
     language: string
     langRu: string
     langTg: string
+    review: string
+    reviewHint: string
+    quiz: string
+    quizHint: string
+    mobileTabBar: string
+    mobileLearnGroup: string
   }
   footer: {
     tagline: string
@@ -267,6 +273,40 @@ export type Messages = {
     periodEmptyDesc: string
     yourRankOutsideTop: string
     periodFilter: string
+  }
+  mobile: {
+    keyboardRequiredTitle: string
+    keyboardRequiredDesc: string
+    keyboardHint: string
+    ctaReview: string
+    ctaQuiz: string
+    reviewEyebrow: string
+    reviewTitle: string
+    reviewSubtitle: string
+    reviewEmptyTitle: string
+    reviewEmptyDesc: string
+    reviewNoExample: string
+    swipeHint: string
+    prevCard: string
+    nextCard: string
+    cardN: string
+    quizEyebrow: string
+    quizTitle: string
+    quizEmptyTitle: string
+    quizEmptyDesc: string
+    quizQuestion: string
+    quizPrompt: string
+    quizProgress: string
+    quizCorrect: string
+    quizStreak: string
+    quizExplainOk: string
+    quizExplainBad: string
+    quizNext: string
+    quizFinish: string
+    quizDoneTitle: string
+    quizScore: string
+    quizBestStreak: string
+    quizAgain: string
   }
   stats: {
     title: string

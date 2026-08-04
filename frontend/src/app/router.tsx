@@ -37,6 +37,10 @@ const ExamPage = lazy(() => import('@/features/training/ExamPage').then((m) => (
 const SpeedModePage = lazy(() =>
   import('@/features/training/SpeedModePage').then((m) => ({ default: m.SpeedModePage })),
 )
+const ReviewPage = lazy(() =>
+  import('@/features/mobile/ReviewPage').then((m) => ({ default: m.ReviewPage })),
+)
+const QuizPage = lazy(() => import('@/features/mobile/QuizPage').then((m) => ({ default: m.QuizPage })))
 const TrainingPage = lazy(() =>
   import('@/features/training/TrainingPage').then((m) => ({ default: m.TrainingPage })),
 )
@@ -69,6 +73,8 @@ export function AppRouter() {
           <Route path="courses/:slug" element={<CourseRoute />} />
           <Route path="lessons/:id" element={<LessonRoute />} />
           <Route path="path" element={<LearningPathPage />} />
+          <Route path="review" element={<ReviewPage />} />
+          <Route path="quiz" element={<QuizPage />} />
           <Route path="training" element={<TrainingPage />} />
           <Route path="speed" element={<SpeedModePage />} />
           <Route path="exam" element={<ExamPage />} />

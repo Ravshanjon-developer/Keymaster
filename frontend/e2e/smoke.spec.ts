@@ -30,4 +30,9 @@ test.describe('KeyMaster smoke', () => {
     await expect(page.getByRole('textbox', { name: 'Email' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Войти' })).toBeVisible()
   })
+
+  test('review page loads', async ({ page }) => {
+    await page.goto('/review')
+    await expect(page.getByRole('heading', { name: /Повторение/i })).toBeVisible()
+  })
 })

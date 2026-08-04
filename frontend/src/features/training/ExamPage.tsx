@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link, useSearchParams } from 'react-router-dom'
 
+import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { useAuthStore } from '@/features/auth/authStore'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
@@ -341,7 +342,7 @@ export function ExamPage() {
   const urgent = timeLeft <= 60
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto max-w-2xl px-4 py-10 pb-28 lg:pb-10">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-500">
           {t('exam.runningLabel', { n: index + 1, total })}
@@ -391,14 +392,16 @@ export function ExamPage() {
         </div>
       ) : (
         current && currentLoc && (
-          <KeyboardTrainer
-            key={current.id}
-            mode="exam"
-            title={t('exam.question', { n: index + 1 })}
-            actionPrompt={currentLoc.action_prompt ?? current.action_prompt}
-            keys={current.keys}
-            onResult={(ok, ms) => void onResult(ok, ms)}
-          />
+          <PracticeKeyboardGate courseQuery={config.courseSlug}>
+            <KeyboardTrainer
+              key={current.id}
+              mode="exam"
+              title={t('exam.question', { n: index + 1 })}
+              actionPrompt={currentLoc.action_prompt ?? current.action_prompt}
+              keys={current.keys}
+              onResult={(ok, ms) => void onResult(ok, ms)}
+            />
+          </PracticeKeyboardGate>
         )
       )}
     </div>
