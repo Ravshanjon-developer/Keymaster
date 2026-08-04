@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
 import { difficultyKey, type NodeStatus } from '@/features/path/growthPath'
 import { useGrowthPath, type ResolvedNode } from '@/features/path/useGrowthPath'
-import { GlassCard, Skeleton } from '@/shared/components/ui'
+import { GlassCard, ProgressBar, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { cn } from '@/shared/lib/utils'
@@ -35,18 +35,27 @@ function shapeClass(shape: ResolvedNode['shape'], status: ResolvedNode['status']
 function StatusPill({ status }: { status: NodeStatus }) {
   const t = useT()
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider',
-        status === 'done' && 'bg-brand-600 text-white',
-        status === 'progress' && 'bg-brand-100 text-brand-800 dark:bg-brand-900/50 dark:text-brand-200',
-        status === 'start' && 'bg-ink text-white dark:bg-white dark:text-ink',
-        status === 'locked' && 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-      )}
+    <StatusBadge
+      tone={
+        status === 'done'
+          ? 'success'
+          : status === 'progress'
+            ? 'brand'
+            : status === 'locked'
+              ? 'locked'
+              : 'neutral'
+      }
+      className={
+        status === 'start'
+          ? 'border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink'
+          : status === 'done'
+            ? 'border-transparent bg-brand-600 text-white'
+            : undefined
+      }
     >
       {status === 'locked' && <Lock className="h-3 w-3" />}
       {t(`status.${status}`)}
-    </span>
+    </StatusBadge>
   )
 }
 
@@ -77,30 +86,22 @@ function PathNodeCard({ node, index }: { node: ResolvedNode; index: number }) {
     >
       {node.kind === 'start' && (
         <div className="text-center">
-          <p className="font-display text-xs font-bold uppercase tracking-[0.25em] text-brand-700">
+          <p className="font-display text-xs font-bold uppercase tracking-[0.25em] text-brand-800 dark:text-brand-300">
             {t('path.startLabel')}
           </p>
-          <p className="mt-2 font-display text-2xl font-bold text-ink dark:text-white">
+          <p className="mt-2 font-display text-2xl font-bold text-[var(--text-primary)]">
             {t('path.startTitle')}
           </p>
-          <p className="mt-1 text-xs text-slate-500">{t('path.startSub')}</p>
+          <p className="text-muted mt-1 text-sm">{t('path.startSub')}</p>
         </div>
       )}
 
       {node.kind === 'milestone' && (
         <div className="text-center">
           <Sparkles className="mx-auto h-6 w-6 text-brand-600" />
-          <p className="font-display mt-2 text-2xl font-bold">{node.careerTitle}</p>
-          <p className="mt-1 text-sm text-slate-500">{t('path.milestoneSub')}</p>
-          <div className="mx-auto mt-4 h-2 max-w-[12rem] overflow-hidden rounded-full bg-ink/8 dark:bg-white/10">
-            <motion.div
-              className="h-full bg-brand-600"
-              initial={{ width: 0 }}
-              whileInView={{ width: `${node.percent}%` }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            />
-          </div>
+          <p className="font-display mt-2 text-2xl font-bold text-[var(--text-primary)]">{node.careerTitle}</p>
+          <p className="text-muted mt-1 text-sm">{t('path.milestoneSub')}</p>
+          <ProgressBar value={node.percent} className="mx-auto mt-4 max-w-[12rem]" />
           <div className="mt-3">
             <StatusPill status={node.status} />
           </div>
@@ -114,51 +115,52 @@ function PathNodeCard({ node, index }: { node: ResolvedNode; index: number }) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusPill status={node.status} />
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                   {t(difficultyKey(node.difficulty))} · L{node.difficulty}
                 </span>
               </div>
-              <p className="font-display mt-1.5 text-lg font-semibold leading-tight text-ink dark:text-white">
+              <p className="font-display mt-1.5 text-lg font-semibold leading-tight text-[var(--text-primary)]">
                 {node.careerTitle}
               </p>
-              <p className="mt-0.5 truncate text-sm text-slate-500">{courseTitle}</p>
+              <p className="text-muted mt-0.5 truncate text-sm">{courseTitle}</p>
             </div>
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="rounded-lg bg-ink/[0.04] px-2 py-2 dark:bg-white/5">
-              <p className="text-slate-500">{t('path.lessons')}</p>
-              <p className="font-semibold">
+            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
+              <p className="text-[var(--text-muted)]">{t('path.lessons')}</p>
+              <p className="font-semibold text-[var(--text-primary)]">
                 {node.progress?.completed_lessons ?? 0}/{node.course.lesson_count}
               </p>
             </div>
-            <div className="rounded-lg bg-ink/[0.04] px-2 py-2 dark:bg-white/5">
-              <p className="text-slate-500">{t('path.xp')}</p>
+            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
+              <p className="text-[var(--text-muted)]">{t('path.courseXp')}</p>
               <p className="font-semibold text-brand-700 dark:text-brand-300">
                 {node.progress?.xp_earned ?? 0}
+                {node.progress?.xp_total != null ? `/${node.progress.xp_total}` : ''}
               </p>
             </div>
-            <div className="rounded-lg bg-ink/[0.04] px-2 py-2 dark:bg-white/5">
-              <p className="text-slate-500">{t('path.progress')}</p>
-              <p className="font-semibold">{Math.round(node.percent)}%</p>
+            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
+              <p className="text-[var(--text-muted)]">{t('path.progress')}</p>
+              <p className="font-semibold text-[var(--text-primary)]">{Math.round(node.percent)}%</p>
             </div>
           </div>
 
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/8 dark:bg-white/10">
-            <motion.div
-              className={cn('h-full rounded-full', node.status === 'done' ? 'bg-brand-600' : 'bg-brand-500')}
-              initial={{ width: 0 }}
-              whileInView={{ width: `${Math.min(100, node.percent)}%` }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
-            />
-          </div>
+          <ProgressBar
+            value={Math.min(100, node.percent)}
+            className="mt-3"
+            barClassName={node.status === 'done' ? 'bg-brand-600' : 'bg-brand-500'}
+          />
 
-          <div className="mt-3 flex items-center justify-between text-xs font-semibold">
-            <span className={node.unlocked ? 'text-brand-700 dark:text-brand-300' : 'text-slate-400'}>
-              {node.unlocked ? t('path.openCourse') : t('path.needProgress')}
+          <div className="mt-3 flex items-start justify-between gap-2 text-xs font-semibold">
+            <span
+              className={
+                node.unlocked ? 'text-brand-700 dark:text-brand-300' : 'text-[var(--text-secondary)]'
+              }
+            >
+              {node.unlocked ? t('path.openCourse') : (node.unlockHint ?? t('path.needProgress'))}
             </span>
-            {node.unlocked && <ArrowUpRight className="h-4 w-4 text-brand-700" />}
+            {node.unlocked && <ArrowUpRight className="h-4 w-4 shrink-0 text-brand-700" />}
           </div>
         </>
       )}
@@ -217,19 +219,19 @@ export function LearningPathPage() {
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t('path.level')}</p>
-              <p className="font-display mt-1 text-xl font-bold leading-snug">{rank}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.level')}</p>
+              <p className="font-display mt-1 text-xl font-bold leading-snug text-[var(--text-primary)]">{rank}</p>
             </GlassCard>
             <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t('path.xp')}</p>
-              <p className="font-display mt-1 flex items-center gap-2 text-2xl font-bold">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.xp')}</p>
+              <p className="font-display mt-1 flex items-center gap-2 text-2xl font-bold text-[var(--text-primary)]">
                 <Zap className="h-5 w-5 text-brand-600" />
                 {xp}
               </p>
             </GlassCard>
             <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t('path.completed')}</p>
-              <p className="font-display mt-1 text-2xl font-bold">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.completed')}</p>
+              <p className="font-display mt-1 text-2xl font-bold text-[var(--text-primary)]">
                 {completedCourses}/{totalCourses} {t('path.coursesWord')}
               </p>
             </GlassCard>

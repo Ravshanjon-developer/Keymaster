@@ -93,6 +93,7 @@ export type Messages = {
     subtitle: string
     level: string
     xp: string
+    courseXp: string
     completed: string
     coursesWord: string
     nextStage: string
@@ -102,6 +103,7 @@ export type Messages = {
     login: string
     openCourse: string
     needProgress: string
+    unlockAfter: string
     catalog: string
     nextCourse: string
     lessons: string
@@ -254,6 +256,8 @@ export type Messages = {
     player: string
     xp: string
     level: string
+    emptyTitle: string
+    emptyDesc: string
   }
   stats: {
     title: string
@@ -303,6 +307,8 @@ export type Messages = {
     inBrowser: string
     inSystem: string
     hintHidden: string
+    hintShown: string
+    mistakesProgress: string
     mistakes: string
     currentlyPressed: string
     accepted: string

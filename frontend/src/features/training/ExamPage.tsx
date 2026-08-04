@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -31,6 +31,7 @@ export function ExamPage() {
   const presetCourse = params.get('course') ?? undefined
   const token = useAuthStore((s) => s.token)
   const refreshUser = useAuthStore((s) => s.refreshUser)
+  const queryClient = useQueryClient()
 
   const courses = useQuery({ queryKey: ['courses'], queryFn: api.courses })
 
@@ -119,13 +120,14 @@ export function ExamPage() {
             response_time_ms: ms,
           })
           await refreshUser()
+          await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
           if (ok && result.xp_gained > 0) toast.success(t('exam.xpGain', { n: result.xp_gained }))
         } catch {
           /* keep exam flowing */
         }
       }
     },
-    [current, feedback, phase, token, refreshUser, t, localizeLesson, config.courseSlug],
+    [current, feedback, phase, token, refreshUser, t, localizeLesson, config.courseSlug, queryClient],
   )
 
   useEffect(() => {

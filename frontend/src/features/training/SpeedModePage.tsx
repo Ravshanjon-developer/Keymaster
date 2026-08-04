@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -21,6 +21,7 @@ export function SpeedModePage() {
   })
   const token = useAuthStore((s) => s.token)
   const refreshUser = useAuthStore((s) => s.refreshUser)
+  const queryClient = useQueryClient()
 
   const [started, setStarted] = useState(false)
   const [timeLeft, setTimeLeft] = useState(DURATION)
@@ -65,13 +66,14 @@ export function SpeedModePage() {
         if (current && token) {
           await api.submitTraining({ lesson_id: current.id, correct: true, response_time_ms: ms }).catch(() => {})
           await refreshUser()
+          await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
         }
         setIndex((i) => i + 1)
       } else {
         setCombo(0)
       }
     },
-    [combo, current, token, refreshUser],
+    [combo, current, token, refreshUser, queryClient],
   )
 
   if (isLoading) return <Skeleton className="mx-auto mt-10 h-64 max-w-2xl" />

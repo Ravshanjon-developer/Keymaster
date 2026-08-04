@@ -136,7 +136,7 @@ export function Navbar() {
             {practiceOpen && (
               <div
                 role="menu"
-                className="absolute left-0 top-[calc(100%+0.4rem)] z-50 min-w-[14.5rem] overflow-hidden rounded-xl border border-ink/10 bg-white py-1.5 shadow-[0_16px_40px_-16px_rgb(10_22_40_/_0.35)] dark:border-white/10 dark:bg-card-dark"
+                className="absolute left-0 top-[calc(100%+0.4rem)] z-[60] min-w-[14.5rem] overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] py-1.5 shadow-[0_16px_40px_-16px_rgb(10_22_40_/_0.35)]"
               >
                 {practiceNav.map((item) => (
                   <Link

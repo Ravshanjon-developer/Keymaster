@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
@@ -20,6 +20,7 @@ export function TrainingPage() {
   const course = params.get('course') ?? undefined
   const token = useAuthStore((s) => s.token)
   const refreshUser = useAuthStore((s) => s.refreshUser)
+  const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['random', course],
@@ -61,7 +62,7 @@ export function TrainingPage() {
 
   const onResult = useCallback(
     async (correct: boolean, ms: number) => {
-      if (current && token) {
+      if (current && token && correct) {
         try {
           const result = await api.submitTraining({
             lesson_id: current.id,
@@ -69,7 +70,9 @@ export function TrainingPage() {
             response_time_ms: ms,
           })
           await refreshUser()
-          if (correct && result.xp_gained > 0) toast.success(t('training.xpGain', { n: result.xp_gained }))
+          await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+          await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+          if (result.xp_gained > 0) toast.success(t('training.xpGain', { n: result.xp_gained }))
         } catch (err) {
           toast.error(err instanceof Error ? err.message : t('training.xpFail'))
         }
@@ -79,7 +82,7 @@ export function TrainingPage() {
         setWaitingNext(true)
       }
     },
-    [current, token, refreshUser, t],
+    [current, token, refreshUser, t, queryClient],
   )
 
   if (isLoading) return <Skeleton className="mx-auto mt-10 h-64 max-w-2xl" />
@@ -89,8 +92,8 @@ export function TrainingPage() {
 
   return (
     <div className="page-mesh mx-auto max-w-2xl px-4 py-10">
-      <h1 className="font-display text-3xl font-bold text-ink dark:text-white">{t('training.title')}</h1>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t('training.subtitle')}</p>
+      <h1 className="text-page-title">{t('training.title')}</h1>
+      <p className="text-muted mt-2">{t('training.subtitle')}</p>
 
       <div className="mt-6">
         {current && currentLoc && !waitingNext && (

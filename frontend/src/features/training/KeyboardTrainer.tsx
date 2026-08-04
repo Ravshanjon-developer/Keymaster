@@ -8,7 +8,9 @@ import {
   displayKey,
   explainMismatch,
   formatShortcut,
+  mainKeyFromEvent,
   matchesShortcut,
+  modifiersFromEvent,
   needsDemoEditor,
   splitShortcut,
   webPracticeKeys,
@@ -16,7 +18,7 @@ import {
   type TrainerMode,
 } from '@/shared/lib/hotkeys'
 import { useT, type TranslateFn } from '@/shared/i18n'
-import { KeyCombo } from '@/shared/components/ui'
+import { KeyCombo, ProgressBar } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
 
 interface Props {
@@ -109,8 +111,10 @@ export function KeyboardTrainer({
       e.preventDefault()
       e.stopPropagation()
 
+      const mods = modifiersFromEvent(e)
+      const mainKey = mainKeyFromEvent(e)
       const chord = chordFromEvent(e)
-      setLiveChord(chord)
+      setLiveChord(mainKey ? [...mods, mainKey] : mods)
       if (chord.length === 0) return
 
       // Only modifier held — coach, don't count as error
@@ -166,7 +170,7 @@ export function KeyboardTrainer({
         return
       }
 
-      onResult(false, Date.now() - started.current)
+      // Learn/practice: UI feedback only — do not spam API on every wrong chord
       toast.error(mode === 'learn' ? t('trainer.almost') : t('trainer.wrong'))
       setTimeout(() => setFlash(null), 700)
     },
@@ -177,15 +181,8 @@ export function KeyboardTrainer({
     if (disabled || done) return
     const onKeyDown = (e: KeyboardEvent) => evaluate(e)
     const onKeyUp = (e: KeyboardEvent) => {
-      const chord = chordFromEvent(e)
-      // Keep showing held modifiers after partial release
-      setLiveChord(chord.filter((k) => ['Control', 'Shift', 'Alt', 'Meta'].includes(k) && (
-        (k === 'Control' && e.ctrlKey) ||
-        (k === 'Shift' && e.shiftKey) ||
-        (k === 'Alt' && e.altKey) ||
-        (k === 'Meta' && e.metaKey)
-      )))
-      if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) setLiveChord([])
+      // After release, only remaining modifier flags (never include the released main key)
+      setLiveChord(modifiersFromEvent(e))
     }
 
     window.addEventListener('keydown', onKeyDown, true)
@@ -226,13 +223,16 @@ export function KeyboardTrainer({
       onBlur={() => setFocused(false)}
       className={cn(
         'relative overflow-hidden rounded-3xl border p-6 outline-none transition-colors duration-300 md:p-8',
+        'focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',
         focused && !done && 'ring-2 ring-brand-500/40',
         flash === 'ok' && 'border-emerald-500/50 bg-emerald-500/10',
         flash === 'err' && 'border-rose-500/50 bg-rose-500/10',
-        !flash && 'border-slate-200 dark:border-slate-700',
+        !flash && 'border-[var(--border-default)] bg-[var(--bg-elevated)]',
       )}
     >
-      {title && <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600">{title}</p>}
+      {title && (
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600">{title}</p>
+      )}
 
       {metaBlocked && !done && (
         <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 text-sm text-amber-900 dark:text-amber-100">
@@ -247,7 +247,7 @@ export function KeyboardTrainer({
       )}
 
       {!focused && !done && (
-        <p className="mb-4 rounded-xl bg-amber-500/10 px-3 py-2 text-center text-xs font-medium text-amber-700 dark:text-amber-300">
+        <p className="mb-4 rounded-xl bg-amber-500/10 px-3 py-2 text-center text-xs font-medium text-amber-800 dark:text-amber-200">
           {t('trainer.clickHint', {
             combo: metaBlocked ? formatShortcut(practiceKeys) : t('trainer.pressCombo'),
           })}
@@ -259,7 +259,7 @@ export function KeyboardTrainer({
           key={actionPrompt}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-2 text-center text-xl font-semibold md:text-2xl"
+          className="mb-2 text-center text-xl font-semibold text-[var(--text-primary)] md:text-2xl"
         >
           {actionPrompt}
         </motion.p>
@@ -269,13 +269,23 @@ export function KeyboardTrainer({
           {t('trainer.inTrainer', { shortcut: formatShortcut(practiceKeys) })}
         </p>
       )}
-      <p className="mb-6 text-center text-sm text-slate-500">
+      <p className="text-muted mb-4 text-center text-sm">
         {mode === 'exam'
           ? t('trainer.examHint')
           : mode === 'practice'
             ? t('trainer.practiceHint')
             : t('trainer.learnHint')}
       </p>
+
+      {mode === 'practice' && !done && (
+        <div className="mb-6">
+          <div className="mb-1.5 flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
+            <span>{t('trainer.mistakesProgress', { n: Math.min(mistakes, 2) })}</span>
+            <span>{revealKeys ? t('trainer.hintShown') : t('trainer.hintHidden')}</span>
+          </div>
+          <ProgressBar value={(Math.min(mistakes, 2) / 2) * 100} barClassName="bg-signal" />
+        </div>
+      )}
 
       {/* Progressive steps */}
       {mode !== 'exam' && !done && (
@@ -287,7 +297,7 @@ export function KeyboardTrainer({
                 'rounded-xl border px-3 py-2 text-center text-xs font-medium',
                 step === s.n && 'border-brand-500 bg-brand-500/10 text-brand-700 dark:text-brand-200',
                 step > s.n && 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
-                step < s.n && 'border-slate-200 text-slate-400 dark:border-slate-700',
+                step < s.n && 'border-[var(--border-default)] text-[var(--text-muted)]',
               )}
             >
               {t('trainer.step', { n: s.n, label: s.label })}
@@ -297,11 +307,11 @@ export function KeyboardTrainer({
       )}
 
       {showDemo && (
-        <div className="mb-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-900/50">
-          <p className="mb-2 text-xs text-slate-500">{t('trainer.demoField')}</p>
+        <div className="mb-6 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] p-4">
+          <p className="text-muted mb-2 text-xs">{t('trainer.demoField')}</p>
           <div
             className={cn(
-              'min-h-[3.25rem] rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-700 dark:bg-slate-950',
+              'min-h-[3.25rem] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-sm',
               !done && demoText && 'selection:bg-sky-300/80',
             )}
           >
@@ -312,10 +322,10 @@ export function KeyboardTrainer({
             ) : demoText ? (
               <span>{demoText}</span>
             ) : (
-              <span className="italic text-slate-400">{t('trainer.textCut')}</span>
+              <span className="italic text-[var(--text-muted)]">{t('trainer.textCut')}</span>
             )}
           </div>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="text-muted mt-2 text-xs">
             {done ? resultHint ?? t('trainer.done') : t('trainer.selectedHelp')}
           </p>
         </div>
@@ -323,24 +333,23 @@ export function KeyboardTrainer({
 
       {showAnswerKeys ? (
         <div className="mb-2">
-          <p className="mb-3 text-center text-xs font-medium text-slate-500">
+          <p className="text-muted mb-3 text-center text-xs font-medium">
             {t('trainer.needPress', { hint: metaBlocked ? t('trainer.inBrowser') : '' })}
           </p>
           <KeyCombo keys={practiceKeys} activeKeys={!done && liveChord.length ? liveChord : undefined} />
           {metaBlocked && (
-            <p className="mt-2 text-center text-xs text-slate-500">
+            <p className="text-muted mt-2 text-center text-xs">
               {t('trainer.inSystem', { shortcut: formatShortcut(keys) })}
             </p>
           )}
         </div>
       ) : (
-        <p className="mb-4 text-center text-sm text-slate-500">
-          {t('trainer.hintHidden')}
-          {mode === 'practice' && mistakes > 0 ? t('trainer.mistakes', { n: mistakes }) : ''}
-        </p>
+        mode !== 'practice' && (
+          <p className="text-muted mb-4 text-center text-sm">{t('trainer.hintHidden')}</p>
+        )
       )}
 
-      <p className="mt-4 text-center font-mono text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-4 text-center font-mono text-sm text-[var(--text-secondary)]">
         {t('trainer.currentlyPressed')}{' '}
         <span className="font-semibold text-brand-600 dark:text-brand-400">
           {done ? formatShortcut(practiceKeys) : chordDisplay(liveChord)}
@@ -348,7 +357,7 @@ export function KeyboardTrainer({
       </p>
 
       {coachTip && !done && (
-        <p className="mt-4 rounded-xl bg-slate-100 px-3 py-2 text-center text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+        <p className="mt-4 rounded-xl bg-[var(--bg-muted)] px-3 py-2 text-center text-sm text-[var(--text-secondary)]">
           {coachTip}
         </p>
       )}
@@ -356,7 +365,7 @@ export function KeyboardTrainer({
       {done && (
         <div className="mt-6 space-y-3 text-center">
           <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">{t('trainer.accepted')}</p>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-sm text-[var(--text-secondary)]">
             {t('trainer.rememberDone', {
               shortcut: formatShortcut(keys),
               trainerNote: metaBlocked
@@ -365,12 +374,12 @@ export function KeyboardTrainer({
               prompt: actionPrompt,
             })}
           </p>
-          {resultHint && <p className="text-xs text-slate-500">{resultHint}</p>}
+          {resultHint && <p className="text-muted text-xs">{resultHint}</p>}
           {mode !== 'exam' && (
             <button
               type="button"
               onClick={reset}
-              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800"
+              className="btn-secondary"
             >
               {t('trainer.tryAgain')}
             </button>

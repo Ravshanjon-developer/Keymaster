@@ -7,6 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#050a10" />
     <title>KeyMaster — горячие клавиши</title>
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('km-theme')
+          var theme = 'light'
+          if (raw) {
+            theme = JSON.parse(raw).state.theme || 'light'
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark'
+          }
+          if (theme === 'dark') document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

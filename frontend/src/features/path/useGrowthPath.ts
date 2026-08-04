@@ -18,6 +18,7 @@ export type ResolvedNode = GrowthNodeDef & {
   percent: number
   status: NodeStatus
   unlocked: boolean
+  unlockHint?: string
 }
 
 export function useGrowthPath() {
@@ -92,6 +93,19 @@ export function useGrowthPath() {
       else if (percent > 0) status = 'progress'
       else status = 'start'
 
+      let unlockHint: string | undefined
+      if (!unlocked && def.requires.length) {
+        const blocking = def.requires
+          .map((id) => byId.get(id)?.def)
+          .find((d) => d && !meets(d.id))
+        if (blocking) {
+          unlockHint = t('path.unlockAfter', {
+            percent: UNLOCK_PERCENT,
+            stage: blocking.careerTitle,
+          })
+        }
+      }
+
       return {
         ...def,
         course,
@@ -99,9 +113,10 @@ export function useGrowthPath() {
         percent,
         status,
         unlocked,
+        unlockHint,
       }
     })
-  }, [bySlug, progressBySlug, user])
+  }, [bySlug, progressBySlug, user, t])
 
   const courseNodes = nodes.filter((n) => n.kind === 'course')
   const completedCourses = courseNodes.filter((n) => n.percent >= 100).length

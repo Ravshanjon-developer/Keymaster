@@ -17,16 +17,6 @@ from app.services.seed import seed_database
 logger = logging.getLogger("keymaster")
 
 
-async def _bootstrap() -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    async with AsyncSessionLocal() as session:
-        await ensure_admin_user(session)
-        if settings.seed_on_startup:
-            # Heavy course seed — may take minutes on first boot
-            await seed_database(session)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create tables + admin quickly so /health can pass Railway checks.

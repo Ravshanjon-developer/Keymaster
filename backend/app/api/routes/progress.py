@@ -78,9 +78,6 @@ async def submit_training(
     xp_gained = 0
     if body.correct:
         lesson = await db.get(Lesson, body.lesson_id)
-        xp_gained = lesson.xp_reward if lesson else 10
-        user.xp = (user.xp or 0) + xp_gained
-        user.level, _ = level_from_xp(user.xp)
 
         prog = await db.scalar(
             select(UserLessonProgress).where(
@@ -88,6 +85,7 @@ async def submit_training(
                 UserLessonProgress.lesson_id == body.lesson_id,
             )
         )
+        already_completed = bool(prog and prog.completed)
         if not prog:
             prog = UserLessonProgress(
                 user_id=user.id,
@@ -97,6 +95,13 @@ async def submit_training(
                 completed=False,
             )
             db.add(prog)
+
+        # Lesson XP only on first completion — prevents XP farming on replay
+        if not already_completed:
+            xp_gained = lesson.xp_reward if lesson else 10
+            user.xp = (user.xp or 0) + xp_gained
+            user.level, _ = level_from_xp(user.xp)
+
         prog.attempts = (prog.attempts or 0) + 1
         prog.correct_count = (prog.correct_count or 0) + 1
         prog.completed = True
@@ -189,7 +194,14 @@ async def leaderboard(
     db: AsyncSession = Depends(get_db),
 ):
     _ = period
-    users = (await db.scalars(select(User).order_by(User.xp.desc()).limit(50))).all()
+    users = (
+        await db.scalars(
+            select(User)
+            .where(User.is_admin.is_(False))
+            .order_by(User.xp.desc())
+            .limit(50)
+        )
+    ).all()
     out: list[LeaderboardEntry] = []
     for i, u in enumerate(users, start=1):
         _, title = level_from_xp(u.xp)

@@ -7,11 +7,12 @@ import { Link } from 'react-router-dom'
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
+import { getCourseStatus } from '@/shared/lib/courseStatus'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnProgressBar, LearnStatusBadge } from '@/shared/components/LearnStatus'
-import { EmptyState, GlassCard, Skeleton } from '@/shared/components/ui'
+import { EmptyState, GlassCard, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
 
 export function CoursesPage() {
@@ -69,8 +70,10 @@ export function CoursesPage() {
         {data?.map((course, i) => {
           const isRequired = course.slug === 'programmer-basics'
           const prog = progressBySlug.get(course.slug)
-          const done = prog != null && prog.percent >= 100
-          const inProgress = prog != null && prog.percent > 0 && prog.percent < 100
+          const status = getCourseStatus({
+            percent: prog?.percent,
+            isStartCourse: isRequired,
+          })
           const loc = localizeCourse(course.slug, course.title, course.description)
 
           return (
@@ -87,8 +90,8 @@ export function CoursesPage() {
                   className={cn(
                     'group relative flex h-full min-h-[188px] flex-col overflow-hidden p-5',
                     isRequired && 'border-brand-700/35 bg-gradient-to-b from-brand-50/90 to-white dark:from-brand-950/35 dark:to-card-dark',
-                    done && !isRequired && 'border-brand-700/25',
-                    inProgress && !isRequired && 'ring-1 ring-brand-600/20',
+                    status === 'completed' && !isRequired && 'border-brand-700/25',
+                    status === 'in_progress' && !isRequired && 'ring-1 ring-brand-600/20',
                   )}
                 >
                   <div className="mb-3.5 flex items-start justify-between gap-3">
@@ -99,21 +102,17 @@ export function CoursesPage() {
                       className="transition-transform duration-300 group-hover:scale-[1.05]"
                     />
                     <div className="flex flex-col items-end gap-1.5">
-                      {isRequired && (
-                        <span className="status-chip border-brand-700/30 bg-brand-700 text-white dark:bg-brand-500 dark:text-ink">
-                          {t('courses.statusStart')}
-                        </span>
+                      {status === 'start' && (
+                        <StatusBadge tone="brand">{t('courses.statusStart')}</StatusBadge>
                       )}
-                      {done && (
-                        <span className="status-chip border-brand-700/25 bg-brand-50 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">
+                      {status === 'completed' && (
+                        <StatusBadge tone="success">
                           <CheckCircle2 className="h-3 w-3" />
                           {t('courses.statusDone')}
-                        </span>
+                        </StatusBadge>
                       )}
-                      {inProgress && !done && (
-                        <span className="status-chip border-ink/10 bg-ink/[0.04] text-ink-soft dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                          {t('courses.statusProgress')}
-                        </span>
+                      {status === 'in_progress' && (
+                        <StatusBadge tone="neutral">{t('courses.statusProgress')}</StatusBadge>
                       )}
                     </div>
                   </div>

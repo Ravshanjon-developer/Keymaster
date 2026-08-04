@@ -84,6 +84,14 @@ function sameSet(a: string[], b: string[]): boolean {
   return [...a].sort().join('|') === [...b].sort().join('|')
 }
 
+/** Map Meta→Control when the expected chord uses Control (Mac users on Windows courses). */
+export function normalizeChordForMatch(pressed: string[], expected: string[]): string[] {
+  const wantsControl = expected.includes('Control') && !expected.includes('Meta')
+  if (!wantsControl) return pressed
+  const mapped = pressed.map((k) => (k === 'Meta' ? 'Control' : k))
+  return [...new Set(mapped)]
+}
+
 export function usesMetaKey(keys: string[]): boolean {
   return keys.includes('Meta')
 }
@@ -117,10 +125,24 @@ export function matchesShortcut(expected: string[], event: KeyboardEvent): boole
   if (event.repeat) return false
   const pressed = chordFromEvent(event)
   const practice = webPracticeKeys(expected)
+  const normalized = normalizeChordForMatch(pressed, practice)
   // Prefer browser-reachable practice chord; also accept real chord if OS lets it through
-  if (sameSet(practice, pressed)) return true
-  if (!sameSet(practice, expected) && sameSet(expected, pressed)) return true
+  if (sameSet(practice, normalized) || sameSet(practice, pressed)) return true
+  if (!sameSet(practice, expected)) {
+    const realNorm = normalizeChordForMatch(pressed, expected)
+    if (sameSet(expected, realNorm) || sameSet(expected, pressed)) return true
+  }
   return false
+}
+
+/** Modifier keys currently held (from event flags — reliable on keyup). */
+export function modifiersFromEvent(event: KeyboardEvent): string[] {
+  const mods: string[] = []
+  if (event.ctrlKey) mods.push('Control')
+  if (event.shiftKey) mods.push('Shift')
+  if (event.altKey) mods.push('Alt')
+  if (event.metaKey) mods.push('Meta')
+  return mods
 }
 
 export function displayKey(label: string): string {

@@ -29,6 +29,29 @@
   --color-card-dark: #0c1420;
 }
 
+/* Semantic tokens — same names in light and dark */
+:root {
+  --bg-primary: #e8eef4;
+  --bg-elevated: #ffffff;
+  --bg-muted: rgb(10 22 40 / 0.06);
+  --text-primary: #0a1628;
+  --text-secondary: #1e3148;
+  --text-muted: #3d526a;
+  --border-default: rgb(10 22 40 / 0.12);
+  --focus-ring: rgb(13 148 136 / 0.35);
+}
+
+html.dark {
+  --bg-primary: #050a10;
+  --bg-elevated: #0c1420;
+  --bg-muted: rgb(255 255 255 / 0.06);
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-default: rgb(255 255 255 / 0.1);
+  --focus-ring: rgb(20 184 166 / 0.4);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -38,11 +61,12 @@
   }
 
   body {
-    @apply min-h-dvh text-ink antialiased transition-colors duration-300 dark:bg-surface-dark dark:text-slate-100;
+    @apply min-h-dvh antialiased transition-colors duration-300;
+    color: var(--text-primary);
     font-family: var(--font-sans);
     font-feature-settings: "ss01" on, "cv11" on;
     letter-spacing: -0.011em;
-    background-color: #e8eef4;
+    background-color: var(--bg-primary);
     background-image:
       radial-gradient(ellipse 90% 60% at 0% -20%, rgb(13 148 136 / 0.18), transparent 55%),
       radial-gradient(ellipse 60% 50% at 100% -10%, rgb(10 22 40 / 0.08), transparent 50%),
@@ -51,7 +75,7 @@
   }
 
   html.dark body {
-    background-color: var(--color-surface-dark);
+    background-color: var(--bg-primary);
     background-image:
       radial-gradient(ellipse 70% 50% at 10% -10%, rgb(20 184 166 / 0.1), transparent 55%),
       radial-gradient(ellipse 50% 40% at 95% 5%, rgb(56 189 248 / 0.04), transparent 50%),
@@ -61,6 +85,10 @@
   ::selection {
     background: rgb(13 148 136 / 0.28);
     color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid transparent;
   }
 }
 
@@ -73,15 +101,20 @@
 
   /* Page titles: Outfit — Fraunces reserved for brand wordmark */
   .text-page-title {
-    @apply text-3xl font-semibold tracking-tight text-ink md:text-[2.15rem] dark:text-white;
+    @apply text-3xl font-semibold tracking-tight md:text-[2.15rem];
+    color: var(--text-primary);
   }
 
   .text-muted {
-    @apply text-[15px] leading-relaxed text-ink-soft/85 dark:text-slate-400;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-muted);
   }
 
   .glass {
-    @apply border border-ink/[0.08] bg-white shadow-[0_1px_0_rgb(10_22_40_/_0.03),0_14px_36px_-18px_rgb(10_22_40_/_0.28)] dark:border-white/[0.08] dark:bg-card-dark dark:shadow-[0_1px_0_rgb(255_255_255_/_0.04),0_16px_40px_-20px_rgb(0_0_0_/_0.7)];
+    @apply shadow-[0_1px_0_rgb(10_22_40_/_0.03),0_14px_36px_-18px_rgb(10_22_40_/_0.28)] dark:shadow-[0_1px_0_rgb(255_255_255_/_0.04),0_16px_40px_-20px_rgb(0_0_0_/_0.7)];
+    border: 1px solid var(--border-default);
+    background-color: var(--bg-elevated);
   }
 
   .gradient-hero {
@@ -112,6 +145,7 @@
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-semibold tracking-tight text-white shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset,0_6px_16px_-6px_rgb(15_118_110_/_0.55)] transition duration-200 hover:bg-brand-600 active:translate-y-px active:scale-[0.985] disabled:opacity-55;
+    @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
   }
 
   html.dark .btn-primary {
@@ -119,11 +153,29 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink/12 bg-white px-5 py-2.5 text-sm font-semibold tracking-tight text-ink shadow-sm transition duration-200 hover:border-brand-700/30 hover:bg-brand-50 active:translate-y-px dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-slate-100 dark:hover:border-brand-400/40 dark:hover:bg-white/[0.06];
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold tracking-tight shadow-sm transition duration-200 active:translate-y-px;
+    @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
+    border-color: var(--border-default);
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgb(15 118 110 / 0.3);
+    background-color: rgb(240 253 250);
+  }
+
+  html.dark .btn-secondary:hover {
+    border-color: rgb(45 212 191 / 0.4);
+    background-color: rgb(255 255 255 / 0.06);
   }
 
   .input-field {
-    @apply mt-1 w-full rounded-xl border border-ink/12 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-brand-600 focus:ring-4 focus:ring-brand-600/15 dark:border-white/[0.1] dark:bg-[#0a121c] dark:text-slate-100 dark:focus:border-brand-400 dark:focus:ring-brand-400/15;
+    @apply mt-1 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition;
+    @apply focus:border-brand-600 focus:ring-4 focus:ring-[var(--focus-ring)];
+    border-color: var(--border-default);
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
   }
 
   .nav-pill-active {
