@@ -64,6 +64,8 @@ export const api = {
   },
   achievements: () => request<AchievementDto[]>('/achievements'),
   leaderboard: (period = 'all') => request<LeaderboardDto[]>(`/leaderboard?period=${period}`),
+  leaderboardMyRank: (period = 'all') =>
+    request<LeaderboardMyRankDto>(`/leaderboard/my-rank?period=${period}`),
   stats: () => request<StatsDto>('/stats/me'),
   daily: () => request<DailyDto[]>('/daily'),
   courseProgress: () => request<CourseProgressDto[]>('/progress/courses'),
@@ -186,6 +188,14 @@ export interface LeaderboardDto {
   display_name: string
   xp: number
   level_title: string
+}
+
+export interface LeaderboardMyRankDto {
+  rank: number
+  xp: number
+  level: number
+  level_title: string
+  in_top_list: boolean
 }
 
 export interface StatsDto {

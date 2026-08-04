@@ -19,6 +19,6 @@ def test_lesson_xp_granted_only_once():
 def test_leaderboard_excludes_admin_flag_in_route_source():
     from pathlib import Path
 
-    src = Path(__file__).resolve().parents[1] / "app" / "api" / "routes" / "progress.py"
+    src = Path(__file__).resolve().parents[1] / "app" / "services" / "leaderboard.py"
     text = src.read_text(encoding="utf-8")
     assert "is_admin.is_(False)" in text

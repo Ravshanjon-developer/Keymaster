@@ -263,6 +263,10 @@ export type Messages = {
     climbHint: string
     emptyTitle: string
     emptyDesc: string
+    periodEmptyTitle: string
+    periodEmptyDesc: string
+    yourRankOutsideTop: string
+    periodFilter: string
   }
   stats: {
     title: string

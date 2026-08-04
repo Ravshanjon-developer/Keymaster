@@ -1,6 +1,6 @@
 import random
 import uuid
-from datetime import date
+from datetime import UTC, date, datetime
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
@@ -29,6 +29,7 @@ from app.schemas import (
     TrainingResult,
     TrainingSubmit,
 )
+from app.services.leaderboard import leaderboard_rows, rank_for_user, user_period_xp
 from app.services.levels import level_from_xp
 
 router = APIRouter(tags=["progress"])
@@ -101,10 +102,13 @@ async def submit_training(
             xp_gained = lesson.xp_reward if lesson else 10
             user.xp = (user.xp or 0) + xp_gained
             user.level, _ = level_from_xp(user.xp)
+            prog.completed_at = datetime.now(UTC)
 
         prog.attempts = (prog.attempts or 0) + 1
         prog.correct_count = (prog.correct_count or 0) + 1
         prog.completed = True
+        if prog.completed_at is None:
+            prog.completed_at = datetime.now(UTC)
 
         stats = await db.scalar(select(UserStats).where(UserStats.user_id == user.id))
         if not stats:
@@ -193,29 +197,45 @@ async def leaderboard(
     period: str = Query("all", pattern="^(all|week|month)$"),
     db: AsyncSession = Depends(get_db),
 ):
-    _ = period
-    users = (
-        await db.scalars(
-            select(User)
-            .where(User.is_admin.is_(False))
-            .order_by(User.xp.desc())
-            .limit(50)
-        )
-    ).all()
+    rows = await leaderboard_rows(db, period=period, limit=50)
     out: list[LeaderboardEntry] = []
-    for i, u in enumerate(users, start=1):
-        _, title = level_from_xp(u.xp)
+    for i, (u, xp) in enumerate(rows, start=1):
+        if period == "all":
+            xp_val = int(u.xp or 0)
+        else:
+            xp_val = xp
+        level_val, title = level_from_xp(xp_val)
         out.append(
             LeaderboardEntry(
                 rank=i,
                 username=u.username,
                 display_name=u.display_name,
-                xp=u.xp,
-                level=u.level,
+                xp=xp_val,
+                level=level_val,
                 level_title=title,
             )
         )
     return out
+
+
+@router.get("/leaderboard/my-rank")
+async def leaderboard_my_rank(
+    period: str = Query("all", pattern="^(all|week|month)$"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    xp = await user_period_xp(db, user.id, period)
+    rank = await rank_for_user(db, user, period)
+    level_val, title = level_from_xp(xp if period != "all" else (user.xp or 0))
+    top_rows = await leaderboard_rows(db, period=period, limit=50)
+    in_top = any(u.id == user.id for u, _ in top_rows)
+    return {
+        "rank": rank,
+        "xp": xp,
+        "level": level_val,
+        "level_title": title,
+        "in_top_list": in_top,
+    }
 
 
 @router.get("/progress/lessons", response_model=list[LessonProgressPublic])

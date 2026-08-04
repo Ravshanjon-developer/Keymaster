@@ -268,6 +268,10 @@ export const tg: Messages = {
     climbHint: 'Дарсҳои бештарро гузаред — ҷадвал васеътар мешавад.',
     emptyTitle: 'Рейтинг холӣ аст',
     emptyDesc: 'Дарсҳоро гузаред ва XP гиред — шумо дар ҷадвал пайдо мешавед.',
+    periodEmptyTitle: 'Барои ин давра ҳанӯз касе нест',
+    periodEmptyDesc: 'Дар ин ҳафта ё моҳ дарсро анҷом диҳед — XP ба ҷадвал меравад.',
+    yourRankOutsideTop: 'Ҷои шумо: #{rank} · {xp} XP',
+    periodFilter: 'Давраи рейтинг',
   },
   stats: {
     title: 'Омор',

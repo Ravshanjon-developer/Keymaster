@@ -12,6 +12,7 @@ from app.core.security_headers import SecurityHeadersMiddleware
 import app.models  # noqa: F401
 from app.db.session import AsyncSessionLocal, Base, engine
 from app.services.admin_bootstrap import ensure_admin_user
+from app.services.schema_patches import apply_schema_patches
 from app.services.seed import seed_database
 
 logger = logging.getLogger("keymaster")
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
     # Create tables + admin quickly so /health can pass Railway checks.
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await apply_schema_patches(conn)
     async with AsyncSessionLocal() as session:
         await ensure_admin_user(session)
 

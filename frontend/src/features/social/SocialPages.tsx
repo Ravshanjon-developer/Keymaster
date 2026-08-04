@@ -80,10 +80,16 @@ function PodiumCard({
 export function LeaderboardPage() {
   const t = useT()
   const user = useAuthStore((s) => s.user)
+  const token = useAuthStore((s) => s.token)
   const [period, setPeriod] = useState<'all' | 'week' | 'month'>('all')
   const { data, isLoading, isError } = useQuery({
     queryKey: ['leaderboard', period],
     queryFn: () => api.leaderboard(period),
+  })
+  const myRank = useQuery({
+    queryKey: ['leaderboard-my-rank', period],
+    queryFn: () => api.leaderboardMyRank(period),
+    enabled: Boolean(token && user),
   })
 
   const periodLabel = {
@@ -120,7 +126,11 @@ export function LeaderboardPage() {
         <h1 className="text-page-title mt-2 md:text-[2.4rem]">{t('social.title')}</h1>
         <p className="text-muted mt-2 max-w-xl">{t('social.subtitle')}</p>
 
-        <div className="mt-6 inline-flex rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)]/90 p-1 shadow-sm backdrop-blur">
+        <div
+          className="mt-6 inline-flex rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)]/90 p-1 shadow-sm backdrop-blur"
+          role="group"
+          aria-label={t('social.periodFilter')}
+        >
           {(['all', 'week', 'month'] as const).map((p) => (
             <button
               key={p}
@@ -146,8 +156,21 @@ export function LeaderboardPage() {
       )}
       {!isError && !isLoading && (!data || data.length === 0) && (
         <div className="mt-8">
-          <EmptyState title={t('social.emptyTitle')} description={t('social.emptyDesc')} />
+          <EmptyState
+            title={period === 'all' ? t('social.emptyTitle') : t('social.periodEmptyTitle')}
+            description={period === 'all' ? t('social.emptyDesc') : t('social.periodEmptyDesc')}
+          />
         </div>
+      )}
+
+      {!isLoading && myRank.data && !myRank.data.in_top_list && myRank.data.rank > 0 && (
+        <GlassCard className="mt-6 border-brand-500/25 bg-brand-50/50 px-4 py-3 dark:bg-brand-950/30">
+          <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
+            {t('social.yourRankOutsideTop')
+              .replace('{rank}', String(myRank.data.rank))
+              .replace('{xp}', String(myRank.data.xp))}
+          </p>
+        </GlassCard>
       )}
 
       {isLoading && (

@@ -22,6 +22,7 @@ jobs:
       - run: npm run lint
       - run: npx tsc -b --pretty false
       - run: npm test
+      - run: npm run build
 
   backend:
     runs-on: ubuntu-latest
@@ -35,3 +36,38 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt pytest pytest-asyncio
       - run: PYTHONPATH=. pytest -q
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend
+        working-directory: backend
+        run: pip install -r requirements.txt
+      - name: Start API
+        working-directory: backend
+        run: |
+          PYTHONPATH=. uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/health && exit 0
+            sleep 1
+          done
+          exit 1
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_API_BASE: http://127.0.0.1:8000/api
+      - run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e
