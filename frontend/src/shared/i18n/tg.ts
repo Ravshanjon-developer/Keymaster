@@ -288,7 +288,7 @@ export const tg: Messages = {
     aria: 'Тренажёри тугмаҳои тез',
     osCapture: 'Система {shortcut}-ро мегирад',
     osCaptureHint:
-      'Браузер аксар вақт Win/Alt+Tab/Alt+F4-ро намегирад. Дар тренажёр {practice}-ро пахш кунед. Дар системаи воқеӣ {real}-ро истифода баред.',
+      'Windows/браузер Win, Alt+Tab, Alt+F4 ва Ctrl+Shift+Esc-ро мегирад. Дар тренажёр {practice}-ро пахш кунед. Дар системаи воқеӣ — {real}.',
     clickHint: '1) Ба ин блок клик кунед · 2) {combo}-ро пахш кунед',
     pressCombo: 'омезиш дар клавиатура',
     inTrainer: 'Дар тренажёр: {shortcut}',

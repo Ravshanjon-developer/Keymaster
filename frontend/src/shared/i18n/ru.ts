@@ -286,7 +286,7 @@ export const ru: Messages = {
     aria: 'Тренажёр горячих клавиш',
     osCapture: 'Система перехватывает {shortcut}',
     osCaptureHint:
-      'Браузер часто не получает Win/Alt+Tab/Alt+F4. В тренажёре нажмите {practice}. В реальной системе используйте {real}.',
+      'Windows/браузер перехватывает Win, Alt+Tab, Alt+F4 и Ctrl+Shift+Esc. В тренажёре нажмите {practice}. В реальной системе — {real}.',
     clickHint: '1) Кликните по этому блоку · 2) Нажмите {combo}',
     pressCombo: 'сочетание на клавиатуре',
     inTrainer: 'В тренажёре: {shortcut}',

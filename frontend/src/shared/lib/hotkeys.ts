@@ -36,6 +36,7 @@ export function mainKeyFromEvent(event: KeyboardEvent): string | null {
     'Insert',
   ]
   if (named.includes(raw)) return raw
+  if (raw === 'Esc') return 'Escape'
   if (/^F\d{1,2}$/.test(raw)) return raw
 
   const fromKey = normalizeMainKey(raw)
@@ -58,6 +59,7 @@ export function mainKeyFromEvent(event: KeyboardEvent): string | null {
   if (code === 'PageUp') return 'PageUp'
   if (code === 'PageDown') return 'PageDown'
   if (code === 'PrintScreen') return 'PrintScreen'
+  if (code === 'Escape') return 'Escape'
   if (code.startsWith('Arrow')) return code
   if (/^F\d+$/.test(code)) return code
 
@@ -90,25 +92,34 @@ export function usesMetaKey(keys: string[]): boolean {
 export function isOsCapturedShortcut(keys: string[]): boolean {
   if (usesMetaKey(keys)) return true
   const sorted = [...keys].sort().join('|')
-  return sorted === 'Alt|Tab' || sorted === 'Alt|F4'
+  return (
+    sorted === 'Alt|Tab' ||
+    sorted === 'Alt|F4' ||
+    // Windows opens Task Manager — browser never sees Escape
+    sorted === 'Control|Escape|Shift'
+  )
 }
 
 /**
  * Keys the student should press IN THE BROWSER.
- * OS-stolen chords are remapped to Ctrl equivalents so training still works.
+ * OS-stolen chords are remapped so training still works.
  */
 export function webPracticeKeys(keys: string[]): string[] {
   const sorted = [...keys].sort().join('|')
   if (sorted === 'Alt|Tab') return ['Control', 'Tab']
   if (sorted === 'Alt|F4') return ['Control', 'F4']
+  // Esc ≈ E — Windows steals Ctrl+Shift+Esc for Task Manager
+  if (sorted === 'Control|Escape|Shift') return ['Control', 'Shift', 'E']
   return keys.map((k) => (k === 'Meta' ? 'Control' : k))
 }
 
 export function matchesShortcut(expected: string[], event: KeyboardEvent): boolean {
   if (event.repeat) return false
   const pressed = chordFromEvent(event)
-  if (sameSet(expected, pressed)) return true
-  if (isOsCapturedShortcut(expected) && sameSet(webPracticeKeys(expected), pressed)) return true
+  const practice = webPracticeKeys(expected)
+  // Prefer browser-reachable practice chord; also accept real chord if OS lets it through
+  if (sameSet(practice, pressed)) return true
+  if (!sameSet(practice, expected) && sameSet(expected, pressed)) return true
   return false
 }
 
@@ -130,6 +141,7 @@ export function displayKey(label: string): string {
     Home: 'Home',
     End: 'End',
     Tab: 'Tab',
+    Escape: 'Esc',
   }
   return map[label] ?? label
 }
