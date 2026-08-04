@@ -158,7 +158,7 @@ export const ru: Messages = {
     badCredentials: 'Неверный email или пароль',
     accountCreated: 'Аккаунт создан',
     registerFail: 'Не удалось зарегистрироваться',
-    serverDown: 'Сервер недоступен. Запустите backend: uvicorn app.main:app --reload --port 8000',
+    serverDown: 'Сервер временно недоступен. Попробуйте позже.',
   },
   lesson: {
     steps: 'Урок · узнать → повторить с подсказкой',

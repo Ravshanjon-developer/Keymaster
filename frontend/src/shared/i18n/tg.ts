@@ -159,7 +159,7 @@ export const tg: Messages = {
     badCredentials: 'Email ё рамз нодуруст аст',
     accountCreated: 'Ҳисоб эҷод шуд',
     registerFail: 'Сабти ном нашуд',
-    serverDown: 'Сервер дастрас нест. Backend-ро оғоз кунед: uvicorn app.main:app --reload --port 8000',
+    serverDown: 'Сервер муваққатан дастрас нест. Баъдтар кӯшиш кунед.',
   },
   lesson: {
     steps: 'Дарс · омӯхтан → такрор бо ишора',
