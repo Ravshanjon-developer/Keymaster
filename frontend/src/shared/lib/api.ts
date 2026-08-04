@@ -23,7 +23,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     res = await fetch(`${API_BASE}${path}`, { ...init, headers })
   } catch {
     throw new ApiError(
-      'Сервер API не отвечает. Запустите backend в папке backend (порт 8000).',
+      'Сервер API не отвечает. Проверьте интернет или статус backend.',
       0,
     )
   }
@@ -34,8 +34,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let message = res.statusText
     if (typeof body.detail === 'string') message = body.detail
     else if (Array.isArray(body.detail)) message = body.detail.map((d) => d.msg).join(', ')
-    if (res.status === 502 || res.status === 503) {
-      message = 'Сервер API не запущен. Выполните: cd backend && uvicorn app.main:app --reload --port 8000'
+    if (res.status === 401) {
+      message = 'Неверный email или пароль'
+    } else if (res.status === 502 || res.status === 503) {
+      message = 'Сервер API временно недоступен. Попробуйте позже.'
     }
     throw new ApiError(message, res.status)
   }

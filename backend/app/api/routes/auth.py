@@ -43,7 +43,7 @@ async def login_json(body: UserLogin, request: Request, db: AsyncSession = Depen
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
     if not user or not user.hashed_password or not verify_password(body.password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Неверный email или пароль")
     await touch_user_activity(user)
     await db.commit()
     return Token(access_token=create_access_token(user.id))
@@ -59,7 +59,7 @@ async def login(
     result = await db.execute(select(User).where(User.email == form.username))
     user = result.scalar_one_or_none()
     if not user or not user.hashed_password or not verify_password(form.password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Неверный email или пароль")
     await touch_user_activity(user)
     await db.commit()
     return Token(access_token=create_access_token(user.id))

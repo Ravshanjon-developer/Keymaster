@@ -16,16 +16,28 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setError('')
     try {
       await login(email, password)
       toast.success(t('auth.welcome'))
       navigate(from)
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('auth.badCredentials'))
+      const status = err instanceof ApiError ? err.status : 0
+      const msg =
+        status === 401
+          ? t('auth.badCredentials')
+          : status === 0
+            ? t('auth.serverDown')
+            : err instanceof ApiError
+              ? err.message
+              : t('auth.badCredentials')
+      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -43,8 +55,12 @@ export function LoginPage() {
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setError('')
+              }}
               className="input-field"
+              autoComplete="email"
             />
           </label>
           <label className="block text-sm font-medium">
@@ -53,10 +69,22 @@ export function LoginPage() {
               type="password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setError('')
+              }}
               className="input-field"
+              autoComplete="current-password"
             />
           </label>
+          {error && (
+            <p
+              role="alert"
+              className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm font-medium text-signal"
+            >
+              {error}
+            </p>
+          )}
           <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
             {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
           </button>
@@ -87,12 +115,15 @@ export function RegisterPage() {
       toast.success(t('auth.accountCreated'))
       navigate('/dashboard')
     } catch (err) {
+      const status = err instanceof ApiError ? err.status : 0
       const msg =
-        err instanceof ApiError
-          ? err.message
-          : err instanceof TypeError
+        status === 401
+          ? t('auth.badCredentials')
+          : status === 0
             ? t('auth.serverDown')
-            : t('auth.registerFail')
+            : err instanceof ApiError
+              ? err.message
+              : t('auth.registerFail')
       toast.error(msg)
     } finally {
       setLoading(false)
