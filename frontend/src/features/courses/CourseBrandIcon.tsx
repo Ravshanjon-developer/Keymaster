@@ -109,13 +109,13 @@ const BRANDS: Record<string, Brand> = {
 
   'programmer-basics': {
     kind: 'svg',
-    bg: 'linear-gradient(145deg,#0f766e,#14b8a6)',
-    glow: 'rgba(15,118,110,.5)',
+    bg: 'linear-gradient(145deg,#1d4ed8,#06b6d4)',
+    glow: 'rgba(37,99,235,.5)',
     node: (
       <svg viewBox="0 0 48 48" fill="none">
         <rect x="10" y="12" width="28" height="20" rx="3" fill="#fff" fillOpacity=".95" />
-        <path d="M15 19h5v3h-5V19Zm7 0h5v3h-5V19Zm7 0h4v3h-4V19ZM15 25h18v3H15v-3Z" fill="#0f766e" />
-        <path d="M18 34h12l-2 4H20l-2-4Z" fill="#99f6e4" />
+        <path d="M15 19h5v3h-5V19Zm7 0h5v3h-5V19Zm7 0h4v3h-4V19ZM15 25h18v3H15v-3Z" fill="#2563eb" />
+        <path d="M18 34h12l-2 4H20l-2-4Z" fill="#67e8f9" />
       </svg>
     ),
   },

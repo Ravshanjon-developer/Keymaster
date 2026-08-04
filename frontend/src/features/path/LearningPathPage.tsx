@@ -21,7 +21,7 @@ function shapeClass(shape: ResolvedNode['shape'], status: ResolvedNode['status']
     status === 'locked'
       ? 'border-ink/10 bg-white/70 opacity-70 dark:border-white/10 dark:bg-slate-900/50'
       : status === 'done'
-        ? 'border-brand-600/50 bg-gradient-to-br from-brand-50 to-white shadow-[0_0_0_1px_rgb(15_118_110_/_0.15),0_16px_40px_-20px_rgb(15_118_110_/_0.55)] dark:from-brand-950/50 dark:to-slate-900'
+        ? 'border-brand-600/50 bg-gradient-to-br from-brand-50 to-white shadow-[0_0_0_1px_rgb(37_99_235_/_0.15),0_16px_40px_-20px_rgb(37_99_235_/_0.45)] dark:from-brand-950/50 dark:to-slate-900'
         : status === 'progress'
           ? 'border-brand-600/40 bg-white ring-2 ring-brand-600/20 dark:bg-slate-900'
           : 'border-ink/15 bg-white dark:border-white/15 dark:bg-slate-900'
@@ -49,7 +49,7 @@ function StatusPill({ status }: { status: NodeStatus }) {
         status === 'start'
           ? 'border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink'
           : status === 'done'
-            ? 'border-transparent bg-brand-600 text-white'
+            ? 'border-transparent bg-success-600 text-white'
             : undefined
       }
     >
@@ -149,7 +149,7 @@ function PathNodeCard({ node, index }: { node: ResolvedNode; index: number }) {
           <ProgressBar
             value={Math.min(100, node.percent)}
             className="mt-3"
-            barClassName={node.status === 'done' ? 'bg-brand-600' : 'bg-brand-500'}
+            barClassName={node.status === 'done' ? 'bg-success-600' : 'bg-brand-600'}
           />
 
           <div className="mt-3 flex items-start justify-between gap-2 text-xs font-semibold">

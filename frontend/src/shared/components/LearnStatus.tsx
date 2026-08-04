@@ -19,7 +19,7 @@ export function LearnStatusBadge({
         'status-chip',
         size === 'sm' ? 'text-[10px]' : 'text-[11px]',
         learned
-          ? 'border-brand-700/25 bg-brand-50 text-brand-800 dark:border-brand-400/30 dark:bg-brand-500/15 dark:text-brand-200'
+          ? 'border-success-600/25 bg-success-50 text-success-700 dark:border-success-400/30 dark:bg-success-500/15 dark:text-success-400'
           : 'border-ink/10 bg-ink/[0.04] text-ink-soft dark:border-white/10 dark:bg-white/5 dark:text-slate-400',
         className,
       )}
@@ -69,7 +69,7 @@ export function LearnProgressBar({
         <div
           className={cn(
             'h-full rounded-full transition-all duration-500',
-            percent >= 100 ? 'bg-brand-700' : percent > 0 ? 'bg-brand-600' : 'bg-transparent',
+            percent >= 100 ? 'bg-success-600' : percent > 0 ? 'bg-brand-600' : 'bg-transparent',
           )}
           style={{ width: `${Math.max(percent > 0 ? 6 : 0, Math.min(100, percent))}%` }}
         />

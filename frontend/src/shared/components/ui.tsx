@@ -92,7 +92,7 @@ export function StatusBadge({
         tone === 'brand' &&
           'border-brand-700/30 bg-brand-700 text-white dark:bg-brand-500 dark:text-ink',
         tone === 'success' &&
-          'border-brand-700/25 bg-brand-50 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200',
+          'border-success-600/25 bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400',
         tone === 'neutral' &&
           'border-[var(--border-default)] bg-[var(--bg-muted)] text-[var(--text-secondary)]',
         tone === 'warning' &&
