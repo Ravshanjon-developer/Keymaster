@@ -248,6 +248,8 @@ export type Messages = {
   }
   social: {
     title: string
+    eyebrow: string
+    subtitle: string
     achievements: string
     all: string
     week: string
@@ -256,6 +258,9 @@ export type Messages = {
     player: string
     xp: string
     level: string
+    you: string
+    fullTable: string
+    climbHint: string
     emptyTitle: string
     emptyDesc: string
   }

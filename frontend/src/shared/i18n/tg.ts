@@ -253,6 +253,8 @@ export const tg: Messages = {
   },
   social: {
     title: 'Рейтинг',
+    eyebrow: 'Мусобиқа',
+    subtitle: 'Беҳтарин шогирдони KeyMaster аз рӯи XP. Машқ кунед, баландтар равед ва силсиларо нигоҳ доред.',
     achievements: 'Дастовардҳо',
     all: 'Ҳама вақт',
     week: 'Ҳафта',
@@ -261,6 +263,9 @@ export const tg: Messages = {
     player: 'Бозингар',
     xp: 'XP',
     level: 'Сатҳ',
+    you: 'Шумо',
+    fullTable: 'Ҷойҳои дигар',
+    climbHint: 'Дарсҳои бештарро гузаред — ҷадвал васеътар мешавад.',
     emptyTitle: 'Рейтинг холӣ аст',
     emptyDesc: 'Дарсҳоро гузаред ва XP гиред — шумо дар ҷадвал пайдо мешавед.',
   },

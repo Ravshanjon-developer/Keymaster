@@ -251,6 +251,8 @@ export const ru: Messages = {
   },
   social: {
     title: 'Рейтинг',
+    eyebrow: 'Соревнование',
+    subtitle: 'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
     achievements: 'Достижения',
     all: 'Всё время',
     week: 'Неделя',
@@ -259,6 +261,9 @@ export const ru: Messages = {
     player: 'Игрок',
     xp: 'XP',
     level: 'Уровень',
+    you: 'Вы',
+    fullTable: 'Остальные места',
+    climbHint: 'Пройдите ещё уроки — таблица расширится, когда появятся новые игроки.',
     emptyTitle: 'Рейтинг пуст',
     emptyDesc: 'Пройдите уроки и наберите XP — вы появитесь в таблице.',
   },
