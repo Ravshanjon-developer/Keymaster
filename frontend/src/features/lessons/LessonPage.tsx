@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { useAuthStore } from '@/features/auth/authStore'
@@ -13,8 +13,11 @@ import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnStatusBadge } from '@/shared/components/LearnStatus'
 import { GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
 
+const NEXT_LESSON_MS = 1500
+
 export function LessonPage({ lessonId }: { lessonId: string }) {
   const t = useT()
+  const navigate = useNavigate()
   const { localizeLesson } = useLocalizedContent()
   const { data, isLoading } = useQuery({ queryKey: ['lesson', lessonId], queryFn: () => api.lesson(lessonId) })
   const token = useAuthStore((s) => s.token)
@@ -22,6 +25,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   const queryClient = useQueryClient()
   const [phase, setPhase] = useState<'theory' | 'practice'>('theory')
   const [succeeded, setSucceeded] = useState(false)
+  const [countdown, setCountdown] = useState(0)
 
   const lessonProgress = useQuery({
     queryKey: ['lesson-progress-item', lessonId],
@@ -32,10 +36,48 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     enabled: !!token,
   })
 
+  const courseQuery = useQuery({
+    queryKey: ['course', data?.course_slug],
+    queryFn: () => api.course(data!.course_slug!),
+    enabled: !!data?.course_slug,
+  })
+
+  const nextLessonId = useMemo(() => {
+    const cats = courseQuery.data?.categories
+    if (!cats?.length) return null
+    const flat = cats.flatMap((c) => c.lessons)
+    const idx = flat.findIndex((l) => l.id === lessonId)
+    if (idx < 0 || idx >= flat.length - 1) return null
+    return flat[idx + 1]?.id ?? null
+  }, [courseQuery.data, lessonId])
+
   const learned = useMemo(
     () => succeeded || Boolean(lessonProgress.data?.completed),
     [succeeded, lessonProgress.data?.completed],
   )
+
+  useEffect(() => {
+    setPhase('theory')
+    setSucceeded(false)
+    setCountdown(0)
+  }, [lessonId])
+
+  useEffect(() => {
+    if (!succeeded || phase !== 'practice') return
+    if (!nextLessonId) return
+    const endAt = Date.now() + NEXT_LESSON_MS
+    setCountdown(Math.ceil(NEXT_LESSON_MS / 1000))
+    const tick = window.setInterval(() => {
+      setCountdown(Math.max(0, Math.ceil((endAt - Date.now()) / 1000)))
+    }, 200)
+    const done = window.setTimeout(() => {
+      navigate(`/lessons/${nextLessonId}`)
+    }, NEXT_LESSON_MS)
+    return () => {
+      window.clearInterval(tick)
+      window.clearTimeout(done)
+    }
+  }, [succeeded, phase, nextLessonId, navigate])
 
   if (isLoading) return <Skeleton className="mx-auto mt-10 h-80 max-w-3xl" />
   if (!data) return null
@@ -106,6 +148,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
       {phase === 'practice' && (
         <div className="mt-8 space-y-4">
           <KeyboardTrainer
+            key={lessonId}
             title={t('lesson.learnMode')}
             mode="learn"
             actionPrompt={loc.action_prompt ?? data.action_prompt}
@@ -144,17 +187,38 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
                   prompt: loc.action_prompt ?? data.action_prompt,
                 })}
               </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link to="/training" className="btn-primary">
-                  {t('lesson.training')}
-                </Link>
-                <Link to="/path" className="btn-secondary">
-                  {t('lesson.path')}
-                </Link>
-                <Link to="/courses" className="btn-secondary">
-                  {t('lesson.catalog')}
-                </Link>
-              </div>
+              {nextLessonId ? (
+                <>
+                  <p className="mt-3 text-sm text-slate-500">{t('lesson.nextLessonIn', { n: countdown })}</p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/lessons/${nextLessonId}`)}
+                      className="btn-primary"
+                    >
+                      {t('lesson.nextLesson')}
+                    </button>
+                    <Link to="/training" className="btn-secondary">
+                      {t('lesson.training')}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="mt-3 text-sm text-slate-500">{t('lesson.courseFinished')}</p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link to="/training" className="btn-primary">
+                      {t('lesson.training')}
+                    </Link>
+                    <Link to="/path" className="btn-secondary">
+                      {t('lesson.path')}
+                    </Link>
+                    <Link to="/courses" className="btn-secondary">
+                      {t('lesson.catalog')}
+                    </Link>
+                  </div>
+                </>
+              )}
             </GlassCard>
           )}
 

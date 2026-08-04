@@ -173,6 +173,9 @@ export type Messages = {
     training: string
     path: string
     catalog: string
+    nextLesson: string
+    nextLessonIn: string
+    courseFinished: string
     backTheory: string
     backCatalog: string
     inArsenal: string
@@ -188,6 +191,7 @@ export type Messages = {
     task: string
     correct: string
     next: string
+    nextIn: string
     xpFail: string
     xpGain: string
   }

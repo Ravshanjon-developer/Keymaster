@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
 
@@ -10,6 +10,8 @@ import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { EmptyState, Skeleton } from '@/shared/components/ui'
+
+const NEXT_MS = 1200
 
 export function TrainingPage() {
   const t = useT()
@@ -27,6 +29,7 @@ export function TrainingPage() {
   const [index, setIndex] = useState(0)
   const [waitingNext, setWaitingNext] = useState(false)
   const [lastKeys, setLastKeys] = useState<string[] | null>(null)
+  const [countdown, setCountdown] = useState(0)
   const current = data?.[index]
   const currentLoc = current
     ? localizeLesson(current.course_slug ?? course, current.category_slug ?? undefined, current.keys, {
@@ -38,8 +41,23 @@ export function TrainingPage() {
   const next = useCallback(() => {
     setWaitingNext(false)
     setLastKeys(null)
+    setCountdown(0)
     setIndex((i) => (data ? (i + 1) % data.length : 0))
   }, [data])
+
+  useEffect(() => {
+    if (!waitingNext) return
+    const endAt = Date.now() + NEXT_MS
+    setCountdown(Math.ceil(NEXT_MS / 1000))
+    const tick = window.setInterval(() => {
+      setCountdown(Math.max(0, Math.ceil((endAt - Date.now()) / 1000)))
+    }, 200)
+    const done = window.setTimeout(() => next(), NEXT_MS)
+    return () => {
+      window.clearInterval(tick)
+      window.clearTimeout(done)
+    }
+  }, [waitingNext, next])
 
   const onResult = useCallback(
     async (correct: boolean, ms: number) => {
@@ -93,6 +111,7 @@ export function TrainingPage() {
               {currentLoc.action_prompt ?? current.action_prompt} ={' '}
               <strong>{formatShortcut(lastKeys ?? current.keys)}</strong>
             </p>
+            <p className="mt-4 text-sm text-slate-500">{t('training.nextIn', { n: countdown })}</p>
             <button
               type="button"
               onClick={next}
