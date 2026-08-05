@@ -156,7 +156,7 @@ export const ru: Messages = {
     noAccount: 'Нет аккаунта?',
     registerLink: 'Регистрация',
     registerTitle: 'Регистрация',
-    registerSub: 'Создайте аккаунт — на email придёт ссылка для подтверждения',
+    registerSub: 'Создайте аккаунт — на email придёт код подтверждения',
     name: 'Имя',
     username: 'username',
     createAccount: 'Создать аккаунт',
@@ -167,13 +167,16 @@ export const ru: Messages = {
     accountCreated: 'Аккаунт создан',
     registerFail: 'Не удалось зарегистрироваться',
     emailAlreadyRegistered:
-      'Этот email уже зарегистрирован. Войдите с паролем на странице «Войти» или восстановите доступ через поддержку.',
+      'Этот email уже зарегистрирован. Откройте «Войти» и введите свой пароль (не новый из формы регистрации).',
+    alreadyHadAccountLogin: 'Вы уже регистрировались — выполнен вход.',
     serverDown: 'Сервер временно недоступен. Попробуйте позже.',
     checkEmail: 'Код отправлен на почту',
     checkEmailExistingResent: 'Отправили новый код на почту.',
     checkEmailTitle: 'Код из письма',
     checkEmailBody: 'Мы отправили ссылку на {email}. Перейдите по ней, затем войдите в аккаунт.',
     checkEmailBodySupabase: 'Код отправлен на {email}.',
+    checkEmailBodyExistingUnconfirmed:
+      'Аккаунт уже есть, email не подтверждён. Новый код отправлен на {email}.',
     emailNotVerified: 'Введите код из письма.',
     emailDeliveryHint:
       'Письмо не пришло? Подождите 2–5 минут и проверьте папку «Спам».',

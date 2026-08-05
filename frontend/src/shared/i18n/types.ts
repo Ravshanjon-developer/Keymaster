@@ -165,12 +165,14 @@ export type Messages = {
     accountCreated: string
     registerFail: string
     emailAlreadyRegistered: string
+    alreadyHadAccountLogin: string
     serverDown: string
     checkEmail: string
     checkEmailExistingResent: string
     checkEmailTitle: string
     checkEmailBody: string
     checkEmailBodySupabase: string
+    checkEmailBodyExistingUnconfirmed: string
     emailNotVerified: string
     emailDeliveryHint: string
     resendVerification: string

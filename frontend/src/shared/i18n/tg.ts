@@ -168,13 +168,16 @@ export const tg: Messages = {
     accountCreated: 'Ҳисоб эҷод шуд',
     registerFail: 'Сабти ном нашуд',
     emailAlreadyRegistered:
-      'Ин email аллакай сабти ном шудааст. Бо парол ворид шавед ё «Войти»-ро клик кунед.',
+      'Ин email аллакай сабти ном шудааст. «Войти»-ро клик кунед ва пароли аввалинро ворид кунед.',
+    alreadyHadAccountLogin: 'Шумо аллакай сабти ном кардаед — ворид шудед.',
     serverDown: 'Сервер муваққатан дастрас нест. Баъдтар кӯшиш кунед.',
     checkEmail: 'Рамз ба почта фиристода шуд',
     checkEmailExistingResent: 'Рамзи нав фиристодем.',
     checkEmailTitle: 'Рамз аз почта',
     checkEmailBody: 'Мо истинод ба {email} фиристодем. Пас аз тасдиқ ворид шавед.',
     checkEmailBodySupabase: 'Рамз ба {email} фиристода шуд.',
+    checkEmailBodyExistingUnconfirmed:
+      'Ҳисоб аллакай ҳаст, email тасдиқ нашудааст. Рамзи нав ба {email} фиристода шуд.',
     emailNotVerified: 'Рамзро аз почта ворид кунед.',
     emailDeliveryHint:
       'Нома наомад? 2–5 дақиқа интизор шавед ва «Спам»-ро санҷед.',

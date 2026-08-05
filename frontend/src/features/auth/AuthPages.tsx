@@ -261,6 +261,7 @@ export function RegisterPage() {
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
+  const [pendingWasExisting, setPendingWasExisting] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
@@ -269,10 +270,11 @@ export function RegisterPage() {
     try {
       const res = await register(form)
       if (res.loggedIn) {
-        toast.success(t('auth.welcome'))
+        toast.success(res.alreadyHadAccount ? t('auth.alreadyHadAccountLogin') : t('auth.welcome'))
         navigate('/dashboard', { replace: true })
         return
       }
+      setPendingWasExisting(!!res.existingAccountResent)
       setPendingEmail(res.email)
       toast.success(
         res.existingAccountResent ? t('auth.checkEmailExistingResent') : t('auth.checkEmail'),
@@ -313,7 +315,12 @@ export function RegisterPage() {
         <GlassCard className="text-center">
           <h1 className="font-display text-2xl font-bold">{t('auth.checkEmailTitle')}</h1>
           <p className="text-muted mt-3">
-            {isSupabaseAuth ? t('auth.checkEmailBodySupabase', { email: pendingEmail }) : t('auth.checkEmailBody', { email: pendingEmail })}
+            {isSupabaseAuth
+              ? t(
+                  pendingWasExisting ? 'auth.checkEmailBodyExistingUnconfirmed' : 'auth.checkEmailBodySupabase',
+                  { email: pendingEmail },
+                )
+              : t('auth.checkEmailBody', { email: pendingEmail })}
           </p>
           {isSupabaseAuth ? (
             <VerifySignupOtpForm

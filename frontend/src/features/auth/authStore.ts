@@ -26,6 +26,7 @@ interface AuthState {
     email: string
     loggedIn?: boolean
     existingAccountResent?: boolean
+    alreadyHadAccount?: boolean
   }>
   confirmSignupOtp: (email: string, code: string) => Promise<void>
   resendSignupEmail: (email: string) => Promise<void>
@@ -113,12 +114,53 @@ export const useAuthStore = create<AuthState>()(
           })
           if (error) throw mapSupabaseAuthError(error)
           if (signUpData.user?.identities?.length === 0) {
-            await get().resendSignupEmail(data.email)
-            return {
-              message: 'Код отправлен повторно.',
-              email: data.email,
-              loggedIn: false,
-              existingAccountResent: true,
+            const email = data.email.trim()
+            const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+              email,
+              password: data.password,
+            })
+            if (loginData.session?.access_token) {
+              localStorage.setItem('km_token', loginData.session.access_token)
+              const user = await api.me()
+              set({ token: loginData.session.access_token, user, authReady: true })
+              return {
+                message: 'Аккаунт уже был — выполнен вход.',
+                email: data.email,
+                loggedIn: true,
+                alreadyHadAccount: true,
+              }
+            }
+            const loginMsg = (loginError?.message ?? '').toLowerCase()
+            const awaitingConfirm =
+              loginMsg.includes('not confirmed') ||
+              loginMsg.includes('email not confirmed') ||
+              loginMsg.includes('email_not_confirmed')
+            if (awaitingConfirm) {
+              await get().resendSignupEmail(email)
+              return {
+                message: 'Код отправлен повторно.',
+                email: data.email,
+                loggedIn: false,
+                existingAccountResent: true,
+              }
+            }
+            if (
+              loginMsg.includes('invalid login') ||
+              loginMsg.includes('invalid credentials') ||
+              loginMsg.includes('invalid email or password')
+            ) {
+              throw new ApiError('USER_ALREADY_REGISTERED', 409)
+            }
+            try {
+              await get().resendSignupEmail(email)
+              return {
+                message: 'Код отправлен повторно.',
+                email: data.email,
+                loggedIn: false,
+                existingAccountResent: true,
+              }
+            } catch {
+              throw new ApiError('USER_ALREADY_REGISTERED', 409)
             }
           }
           const accessToken = signUpData.session?.access_token
