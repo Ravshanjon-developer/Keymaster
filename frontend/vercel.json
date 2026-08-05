@@ -4,12 +4,6 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.keymaster.pp.ua" }],
-      "destination": "https://keymaster.pp.ua/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
       "has": [{ "type": "host", "value": "keymaster-liart.vercel.app" }],
       "destination": "https://keymaster.pp.ua/:path*",
       "permanent": true
