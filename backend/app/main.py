@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -29,16 +30,28 @@ async def lifespan(app: FastAPI):
 
     seed_task: asyncio.Task | None = None
     if settings.seed_on_startup:
+        if os.environ.get("CI") == "true":
 
-        async def _seed_bg() -> None:
-            try:
-                async with AsyncSessionLocal() as session:
-                    await seed_database(session)
-                logger.info("Database seed completed")
-            except Exception:
-                logger.exception("Database seed failed")
+            async def _seed_sync() -> None:
+                try:
+                    async with AsyncSessionLocal() as session:
+                        await seed_database(session)
+                    logger.info("Database seed completed (CI)")
+                except Exception:
+                    logger.exception("Database seed failed")
 
-        seed_task = asyncio.create_task(_seed_bg())
+            await _seed_sync()
+        else:
+
+            async def _seed_bg() -> None:
+                try:
+                    async with AsyncSessionLocal() as session:
+                        await seed_database(session)
+                    logger.info("Database seed completed")
+                except Exception:
+                    logger.exception("Database seed failed")
+
+            seed_task = asyncio.create_task(_seed_bg())
 
     yield
 
