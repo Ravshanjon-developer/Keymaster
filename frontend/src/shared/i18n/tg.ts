@@ -172,7 +172,7 @@ export const tg: Messages = {
     checkEmailTitle: 'Почтаи худро санҷед',
     checkEmailBody: 'Мо истинод ба {email} фиристодем. Пас аз тасдиқ ворид шавед.',
     checkEmailBodySupabase:
-      'Supabase ба {email} нома фиристод. Email-ро тасдиқ кунед — ба сайт бармегардед.',
+      'Ба {email} рамз ва истинод фиристода шуд. 6 рақамро дар зер ворид кунед ё истинодро дар почта клик кунед.',
     emailNotVerified: 'Email-ро тасдиқ кунед, сипас боз ворид шавед.',
     emailDeliveryHint:
       'Нома наомад? «Спам»-ро санҷед. Supabase кам нома мефиристад — дар Supabase → Users email-ро дастӣ тасдиқ кунед.',
@@ -185,6 +185,12 @@ export const tg: Messages = {
     verifySuccess: 'Email тасдиқ шуд. Метавонед ворид шавед.',
     verifyFail: 'Истинод нодуруст ё мӯҳлаташ гузаштааст',
     verifyMissingToken: 'Дар истинод рамзи тасдиқ нест',
+    otpLabel: 'Рамз аз нома',
+    otpHint: '6 рақам аз почта (бо телефон скан кунед)',
+    confirmCode: 'Рамзро тасдиқ кунед',
+    confirmingCode: 'Санҷиш…',
+    otpInvalid: 'Рамз нодуруст ё мӯҳлаташ гузаштааст.',
+    otpOrLinkHint: 'Рамз дар нома нест? SMTP ва {{ .Token }} дар Supabase — docs/SUPABASE.md',
   },
   lesson: {
     steps: 'Дарс · омӯхтан → такрор бо ишора',

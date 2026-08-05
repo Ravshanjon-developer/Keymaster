@@ -171,8 +171,8 @@ export const ru: Messages = {
     checkEmailTitle: 'Проверьте почту',
     checkEmailBody: 'Мы отправили ссылку на {email}. Перейдите по ней, затем войдите в аккаунт.',
     checkEmailBodySupabase:
-      'Supabase отправил письмо на {email}. Перейдите по ссылке — email подтвердится, и вы войдёте в аккаунт.',
-    emailNotVerified: 'Подтвердите email по ссылке из письма, затем войдите снова.',
+      'На {email} отправлен код и ссылка. Введите 6 цифр ниже (удобно, если письмо открыли на телефоне). Или нажмите ссылку в письме — откроется на том устройстве.',
+    emailNotVerified: 'Подтвердите email: введите код из письма ниже или перейдите по ссылке в письме.',
     emailDeliveryHint:
       'Письмо не пришло? Откройте «Спам» и «Промоакции» в Gmail. Supabase на бесплатном тарифе шлёт мало писем в час — подождите или подтвердите email вручную: Supabase → Authentication → Users → ваш пользователь.',
     resendVerification: 'Отправить письмо ещё раз',
@@ -184,6 +184,12 @@ export const ru: Messages = {
     verifySuccess: 'Email подтверждён. Можно войти.',
     verifyFail: 'Ссылка недействительна или устарела',
     verifyMissingToken: 'В ссылке нет кода подтверждения',
+    otpLabel: 'Код из письма',
+    otpHint: '6 цифр из письма Supabase (можно скопировать с телефона)',
+    confirmCode: 'Подтвердить код',
+    confirmingCode: 'Проверка…',
+    otpInvalid: 'Неверный или просроченный код. Запросите письмо ещё раз.',
+    otpOrLinkHint: 'Нет кода в письме? Подключите SMTP в Supabase и добавьте {{ .Token }} в шаблон Confirm signup — см. docs/SUPABASE.md',
   },
   lesson: {
     steps: 'Урок · узнать → повторить с подсказкой',

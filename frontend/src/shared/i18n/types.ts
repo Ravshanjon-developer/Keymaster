@@ -180,6 +180,12 @@ export type Messages = {
     verifySuccess: string
     verifyFail: string
     verifyMissingToken: string
+    otpLabel: string
+    otpHint: string
+    confirmCode: string
+    confirmingCode: string
+    otpInvalid: string
+    otpOrLinkHint: string
   }
   lesson: {
     steps: string

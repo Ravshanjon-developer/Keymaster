@@ -8,6 +8,91 @@ import { authRedirectUrl, isSupabaseAuth, supabase } from '@/shared/lib/supabase
 import { useT } from '@/shared/i18n'
 import { GlassCard } from '@/shared/components/ui'
 
+function VerifySignupOtpForm({
+  email,
+  onResend,
+  resendLoading,
+  showNoCodeHint,
+}: {
+  email: string
+  onResend: () => void
+  resendLoading: boolean
+  showNoCodeHint?: boolean
+}) {
+  const t = useT()
+  const confirmSignupOtp = useAuthStore((s) => s.confirmSignupOtp)
+  const navigate = useNavigate()
+  const [otp, setOtp] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function onConfirm(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      await confirmSignupOtp(email, otp)
+      toast.success(t('auth.welcome'))
+      navigate('/dashboard', { replace: true })
+    } catch (err) {
+      const msg =
+        err instanceof ApiError && err.message === 'EMAIL_NOT_VERIFIED'
+          ? t('auth.emailNotVerified')
+          : err instanceof ApiError
+            ? err.message
+            : t('auth.otpInvalid')
+      setError(msg.includes('Invalid') || msg.includes('expired') || msg.includes('otp') ? t('auth.otpInvalid') : msg)
+      toast.error(t('auth.otpInvalid'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!isSupabaseAuth) return null
+
+  return (
+    <form onSubmit={(e) => void onConfirm(e)} className="mt-6 space-y-3 text-left">
+      <label className="block text-sm font-medium">
+        {t('auth.otpLabel')}
+        <input
+          type="text"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          pattern="[0-9]*"
+          maxLength={8}
+          required
+          minLength={6}
+          value={otp}
+          onChange={(e) => {
+            setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))
+            setError('')
+          }}
+          className="input-field mt-1 text-center text-lg tracking-[0.35em]"
+          placeholder="000000"
+        />
+      </label>
+      <p className="text-muted text-xs">{t('auth.otpHint')}</p>
+      {error && (
+        <p role="alert" className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm text-signal">
+          {error}
+        </p>
+      )}
+      <button type="submit" disabled={loading || otp.replace(/\D/g, '').length < 6} className="btn-primary min-h-11 w-full">
+        {loading ? t('auth.confirmingCode') : t('auth.confirmCode')}
+      </button>
+      <button
+        type="button"
+        disabled={resendLoading}
+        onClick={onResend}
+        className="btn-secondary min-h-11 w-full"
+      >
+        {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+      </button>
+      {showNoCodeHint && <p className="text-muted text-xs leading-relaxed">{t('auth.otpOrLinkHint')}</p>}
+    </form>
+  )
+}
+
 export function LoginPage() {
   const t = useT()
   const login = useAuthStore((s) => s.login)
@@ -129,7 +214,14 @@ export function LoginPage() {
               {error}
             </p>
           )}
-          {needsVerify && (
+          {needsVerify && isSupabaseAuth && (
+            <VerifySignupOtpForm
+              email={email}
+              onResend={() => void onResend()}
+              resendLoading={resendLoading}
+            />
+          )}
+          {needsVerify && !isSupabaseAuth && (
             <>
               <button
                 type="button"
@@ -141,6 +233,9 @@ export function LoginPage() {
               </button>
               <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
             </>
+          )}
+          {needsVerify && isSupabaseAuth && (
+            <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
           )}
           <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
             {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
@@ -217,14 +312,23 @@ export function RegisterPage() {
           <p className="text-muted mt-3">
             {isSupabaseAuth ? t('auth.checkEmailBodySupabase', { email: pendingEmail }) : t('auth.checkEmailBody', { email: pendingEmail })}
           </p>
-          <button
-            type="button"
-            disabled={resendLoading}
-            onClick={() => void onResend()}
-            className="btn-secondary mt-6 min-h-11 w-full"
-          >
-            {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
-          </button>
+          {isSupabaseAuth ? (
+            <VerifySignupOtpForm
+              email={pendingEmail}
+              onResend={() => void onResend()}
+              resendLoading={resendLoading}
+              showNoCodeHint
+            />
+          ) : (
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={() => void onResend()}
+              className="btn-secondary mt-6 min-h-11 w-full"
+            >
+              {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+            </button>
+          )}
           <Link to="/login" className="btn-primary mt-3 inline-flex min-h-11 w-full items-center justify-center">
             {t('auth.loginLink')}
           </Link>

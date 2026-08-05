@@ -21,6 +21,7 @@ interface AuthState {
     password: string
     display_name: string
   }) => Promise<{ message: string; email: string }>
+  confirmSignupOtp: (email: string, code: string) => Promise<void>
 }
 
 function mapSupabaseAuthError(err: { message: string; status?: number }) {
@@ -119,6 +120,22 @@ export const useAuthStore = create<AuthState>()(
           }
         }
         return api.register(data)
+      },
+      confirmSignupOtp: async (email, code) => {
+        if (!supabase) throw new ApiError('Supabase not configured', 400)
+        const tokenDigits = code.replace(/\D/g, '')
+        if (tokenDigits.length < 6) throw new ApiError('Invalid OTP', 400)
+        const { data, error } = await supabase.auth.verifyOtp({
+          email: email.trim(),
+          token: tokenDigits,
+          type: 'signup',
+        })
+        if (error) throw mapSupabaseAuthError(error)
+        const accessToken = data.session?.access_token
+        if (!accessToken) throw new ApiError('No session', 401)
+        localStorage.setItem('km_token', accessToken)
+        const user = await api.me()
+        set({ token: accessToken, user, authReady: true })
       },
     }),
     { name: 'km-auth', partialize: (s) => ({ token: s.token, user: s.user }) },

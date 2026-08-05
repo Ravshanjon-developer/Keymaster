@@ -55,9 +55,27 @@ SMTP переменные **не нужны**, если все регистра�
 
 ## 7. Проверка
 
-1. Регистрация на сайте → письмо от Supabase
-2. Ссылка → `/auth/callback` → вход
-3. Прогресс и XP сохраняются в вашей Postgres на Railway (Neon), как раньше
+1. Регистрация на сайте → письмо от Supabase (код + ссылка)
+2. **Код:** 6 цифр на экране «Проверьте почту» → сразу dashboard (удобно с телефона → ноут)
+3. **Ссылка:** `/auth/callback` → вход на том устройстве, где открыли ссылку
+4. Прогресс и XP сохраняются в вашей Postgres на Railway (Neon), как раньше
+
+## 7.1. Код в письме (Confirm signup)
+
+Чтобы в письме была **6-значная** `{{ .Token }}`:
+
+1. **Project Settings → Authentication → SMTP** (или **Set up SMTP**) — Resend/Brevo, домен не обязателен на старте (тестовый отправитель Resend).
+2. **Authentication → Emails → Confirm signup** — в тело письма добавьте, например:
+
+```html
+<p>Ваш код: <strong>{{ .Token }}</strong></p>
+<p>Или подтвердите по ссылке:</p>
+<p><a href="{{ .ConfirmationURL }}">Confirm email</a></p>
+```
+
+3. **Email OTP length** = 6 в **Sign In / Providers → Email**.
+
+Без SMTP в письме может быть **только ссылка** — код на сайте сработает, когда в письме появится `{{ .Token }}`.
 
 База Supabase используется **только для auth**, не заменяет DATABASE_URL KeyMaster.
 
