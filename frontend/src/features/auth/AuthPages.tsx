@@ -4,9 +4,23 @@ import toast from 'react-hot-toast'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { api, ApiError } from '@/shared/lib/api'
-import { authRedirectUrl, isSupabaseAuth, supabase } from '@/shared/lib/supabase'
+import { isSupabaseAuth, supabase } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
 import { GlassCard } from '@/shared/components/ui'
+
+function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback: string) {
+  if (!(err instanceof ApiError)) return fallback
+  switch (err.message) {
+    case 'USER_ALREADY_REGISTERED':
+      return t('auth.emailAlreadyRegistered')
+    case 'RESEND_RATE_LIMIT':
+      return t('auth.resendRateLimit')
+    case 'RESEND_FAILED':
+      return t('auth.resendFail')
+    default:
+      return err.message || fallback
+  }
+}
 
 function VerifySignupOtpForm({
   email,
@@ -67,7 +81,6 @@ function VerifySignupOtpForm({
           placeholder="000000"
         />
       </label>
-      <p className="text-muted text-xs">{t('auth.otpHint')}</p>
       {error && (
         <p role="alert" className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm text-signal">
           {error}
@@ -91,6 +104,7 @@ function VerifySignupOtpForm({
 export function LoginPage() {
   const t = useT()
   const login = useAuthStore((s) => s.login)
+  const resendSignupEmail = useAuthStore((s) => s.resendSignupEmail)
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -143,19 +157,14 @@ export function LoginPage() {
     setResendLoading(true)
     try {
       if (supabase) {
-        const { error } = await supabase.auth.resend({
-          type: 'signup',
-          email,
-          options: { emailRedirectTo: authRedirectUrl() },
-        })
-        if (error) throw error
+        await resendSignupEmail(email)
         toast.success(t('auth.checkEmail'))
       } else {
         const res = await api.resendVerification(email)
         toast.success(res.message)
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('auth.resendFail'))
+      toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
     } finally {
       setResendLoading(false)
     }
@@ -247,6 +256,7 @@ export function LoginPage() {
 export function RegisterPage() {
   const t = useT()
   const register = useAuthStore((s) => s.register)
+  const resendSignupEmail = useAuthStore((s) => s.resendSignupEmail)
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
@@ -269,16 +279,11 @@ export function RegisterPage() {
       )
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0
-      const code = err instanceof ApiError ? err.message : ''
-      const msg =
-        code === 'USER_ALREADY_REGISTERED'
-          ? t('auth.emailAlreadyRegistered')
-          : status === 0
-            ? t('auth.serverDown')
-            : err instanceof ApiError
-              ? err.message
-              : t('auth.registerFail')
-      toast.error(msg)
+      toast.error(
+        status === 0 && !(err instanceof ApiError)
+          ? t('auth.serverDown')
+          : authFlowErrorMessage(t, err, t('auth.registerFail')),
+      )
     } finally {
       setLoading(false)
     }
@@ -289,19 +294,14 @@ export function RegisterPage() {
     setResendLoading(true)
     try {
       if (supabase) {
-        const { error } = await supabase.auth.resend({
-          type: 'signup',
-          email: pendingEmail,
-          options: { emailRedirectTo: authRedirectUrl() },
-        })
-        if (error) throw error
+        await resendSignupEmail(pendingEmail)
         toast.success(t('auth.checkEmail'))
       } else {
         const res = await api.resendVerification(pendingEmail)
         toast.success(res.message)
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('auth.resendFail'))
+      toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
     } finally {
       setResendLoading(false)
     }

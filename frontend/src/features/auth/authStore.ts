@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 import { api, ApiError, type UserDto } from '@/shared/lib/api'
 import { authRedirectUrl, isSupabaseAuth, supabase } from '@/shared/lib/supabase'
+import { mapSupabaseAuthError, mapSupabaseResendError } from '@/features/auth/supabaseAuthErrors'
 import { levelTitleKey, useT } from '@/shared/i18n'
 import { levelFromXp } from '@/shared/lib/levels'
 
@@ -27,14 +28,7 @@ interface AuthState {
     existingAccountResent?: boolean
   }>
   confirmSignupOtp: (email: string, code: string) => Promise<void>
-}
-
-function mapSupabaseAuthError(err: { message: string; status?: number }) {
-  const msg = err.message.toLowerCase()
-  if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
-    return new ApiError('EMAIL_NOT_VERIFIED', 403)
-  }
-  return new ApiError(err.message, err.status ?? 400)
+  resendSignupEmail: (email: string) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -119,14 +113,7 @@ export const useAuthStore = create<AuthState>()(
           })
           if (error) throw mapSupabaseAuthError(error)
           if (signUpData.user?.identities?.length === 0) {
-            const { error: resendErr } = await supabase.auth.resend({
-              type: 'signup',
-              email: data.email.trim(),
-              options: { emailRedirectTo: authRedirectUrl() },
-            })
-            if (resendErr) {
-              throw new ApiError('USER_ALREADY_REGISTERED', 409)
-            }
+            await get().resendSignupEmail(data.email)
             return {
               message: 'Код отправлен повторно.',
               email: data.email,
@@ -168,6 +155,15 @@ export const useAuthStore = create<AuthState>()(
         localStorage.setItem('km_token', accessToken)
         const user = await api.me()
         set({ token: accessToken, user, authReady: true })
+      },
+      resendSignupEmail: async (email) => {
+        if (!supabase) throw new ApiError('Supabase not configured', 400)
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email: email.trim(),
+          options: { emailRedirectTo: authRedirectUrl() },
+        })
+        if (error) throw mapSupabaseResendError(error)
       },
     }),
     { name: 'km-auth', partialize: (s) => ({ token: s.token, user: s.user }) },

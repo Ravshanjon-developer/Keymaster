@@ -176,6 +176,7 @@ export type Messages = {
     resendVerification: string
     resending: string
     resendFail: string
+    resendRateLimit: string
     resendNeedEmail: string
     verifyTitle: string
     verifyLoading: string
