@@ -26,7 +26,7 @@ class VerifyEmailResponse(BaseModel):
 class UserRegister(BaseModel):
     email: EmailStr
     username: str = Field(min_length=3, max_length=64)
-    password: str = Field(min_length=12, max_length=128)
+    password: str = Field(min_length=6, max_length=128)
     display_name: str = Field(min_length=1, max_length=128)
 
 

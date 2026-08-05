@@ -248,7 +248,7 @@ export function RegisterPage() {
               <input
                 type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
                 required
-                minLength={field === 'password' ? 12 : undefined}
+                minLength={field === 'password' ? 6 : undefined}
                 autoComplete={field === 'password' ? 'new-password' : undefined}
                 value={form[field]}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
