@@ -3,10 +3,14 @@ import { Crown, Medal, Trophy, Zap } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { useAuthStore } from '@/features/auth/authStore'
-import { api, type LeaderboardDto } from '@/shared/lib/api'
+import { api, type LeaderboardDto, type UserDto } from '@/shared/lib/api'
 import { useT } from '@/shared/i18n'
 import { EmptyState, GlassCard, Skeleton } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
+
+function isCurrentUser(row: LeaderboardDto, user: UserDto | null): boolean {
+  return Boolean(user && user.username === row.username)
+}
 
 function podiumStyle(rank: number) {
   if (rank === 1) {
@@ -187,7 +191,7 @@ export function LeaderboardPage() {
             <PodiumCard
               key={row.username}
               row={row}
-              isYou={Boolean(user && (user.username === row.username || user.display_name === row.display_name))}
+              isYou={isCurrentUser(row, user)}
               tall={row.rank === 1}
             />
           ))}
@@ -209,9 +213,7 @@ export function LeaderboardPage() {
                 </li>
               ))}
             {rest.map((row) => {
-              const isYou = Boolean(
-                user && (user.username === row.username || user.display_name === row.display_name),
-              )
+              const isYou = isCurrentUser(row, user)
               return (
                 <li
                   key={`${row.rank}-${row.username}`}
