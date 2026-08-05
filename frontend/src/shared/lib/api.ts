@@ -35,7 +35,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     if (typeof body.detail === 'string') message = body.detail
     else if (Array.isArray(body.detail)) message = body.detail.map((d) => d.msg).join(', ')
     if (res.status === 401) {
-      message = 'Неверный email или пароль'
+      if (path === '/auth/me') {
+        message =
+          typeof body.detail === 'string' && body.detail !== 'Unauthorized'
+            ? body.detail
+            : 'Сессия недействительна. Проверьте настройки API (Supabase JWT) или войдите снова.'
+      } else if (path.startsWith('/auth/login')) {
+        message = 'Неверный email или пароль'
+      }
     } else if (res.status === 403 && message === 'EMAIL_NOT_VERIFIED') {
       message = 'EMAIL_NOT_VERIFIED'
     } else if (res.status === 502 || res.status === 503) {

@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = True
 
     supabase_jwt_secret: str | None = None
+    # Optional; used for JWKS URL if JWT uses ES256 signing keys
+    supabase_url: str | None = None
 
     @field_validator("app_env")
     @classmethod

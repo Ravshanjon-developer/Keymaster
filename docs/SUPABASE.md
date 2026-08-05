@@ -43,6 +43,7 @@ Redeploy после сохранения.
 
 ```
 SUPABASE_JWT_SECRET=<JWT Secret из Supabase>
+SUPABASE_URL=https://lclkozlclxtyabkceuck.supabase.co
 FRONTEND_URL=https://keymaster-liart.vercel.app
 ```
 

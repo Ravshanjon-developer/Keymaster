@@ -31,7 +31,11 @@ async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
     if not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    confirmed = bool(payload.get("email_confirmed_at"))
+    confirmed = bool(
+        payload.get("email_confirmed_at")
+        or payload.get("email_verified") is True
+        or payload.get("app_metadata", {}).get("email_verified") is True
+    )
     meta = payload.get("user_metadata") or {}
 
     linked = await db.scalar(
