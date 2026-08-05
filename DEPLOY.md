@@ -129,14 +129,11 @@ Redeploy backend (Railway сделает сам после сохранения 
 
 ---
 
-## 6. Свой домен (опционально)
+## 6. Домен keymaster.pp.ua
 
-1. Vercel → Domains → добавь `app.yourdomain.com`
-2. Railway → Domains → добавь `api.yourdomain.com` (или оставь railway.app)
-3. Обнови:
-   - Vercel `VITE_API_BASE=https://api.yourdomain.com/api`
-   - Railway `CORS_ORIGINS=https://app.yourdomain.com`
-   - Railway `TRUSTED_HOSTS=api.yourdomain.com`
+Пошагово: **`docs/DOMAIN.md`**.
+
+Кратко: Vercel → Domains → `keymaster.pp.ua` → DNS (A + CNAME www) → Railway `FRONTEND_URL` + `CORS_ORIGINS` → Supabase Site URL / redirect.
 
 После смены `VITE_*` нужен **новый билд** на Vercel.
 

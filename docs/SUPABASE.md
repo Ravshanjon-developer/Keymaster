@@ -11,9 +11,10 @@
 
 1. **Authentication** → **Providers** → **Email** — включён
 2. **Authentication** → **URL configuration**:
-   - **Site URL:** `https://keymaster-liart.vercel.app` (или ваш URL)
+   - **Site URL:** `https://keymaster.pp.ua`
    - **Redirect URLs** (добавить все):
-     - `https://keymaster-liart.vercel.app/auth/callback`
+     - `https://keymaster.pp.ua/auth/callback`
+     - `https://keymaster-liart.vercel.app/auth/callback` (если старый URL ещё в Vercel)
      - `http://localhost:5173/auth/callback`
 3. **Authentication** → **Email** → включите **Confirm email**
 
@@ -44,7 +45,7 @@ Redeploy после сохранения.
 ```
 SUPABASE_JWT_SECRET=<JWT Secret из Supabase>
 SUPABASE_URL=https://lclkozlclxtyabkceuck.supabase.co
-FRONTEND_URL=https://keymaster-liart.vercel.app
+FRONTEND_URL=https://keymaster.pp.ua
 ```
 
 SMTP переменные **не нужны**, если все регистрации идут через Supabase.
