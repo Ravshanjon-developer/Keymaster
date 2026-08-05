@@ -7,6 +7,7 @@ import { api, ApiError } from '@/shared/lib/api'
 import { isSupabaseAuth, supabase } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
 import { GlassCard } from '@/shared/components/ui'
+import { OtpDigitInput, otpDigitCount } from '@/shared/components/OtpDigitInput'
 
 function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback: string) {
   if (!(err instanceof ApiError)) return fallback
@@ -64,29 +65,23 @@ function VerifySignupOtpForm({
 
   return (
     <form onSubmit={(e) => void onConfirm(e)} className="mt-6 space-y-3 text-left">
-      <label className="block text-sm font-medium">
-        {t('auth.otpLabel')}
-        <input
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          pattern="[0-9]*"
-          maxLength={8}
+      <fieldset disabled={loading} className="border-0 p-0">
+        <legend className="block w-full text-sm font-medium">{t('auth.otpLabel')}</legend>
+        <OtpDigitInput
           value={otp}
-          onChange={(e) => {
-            setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))
+          onChange={(v) => {
+            setOtp(v)
             setError('')
           }}
-          className="input-field mt-1 text-center text-lg tracking-[0.35em]"
-          placeholder="000000"
+          disabled={loading}
         />
-      </label>
+      </fieldset>
       {error && (
         <p role="alert" className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm text-signal">
           {error}
         </p>
       )}
-      <button type="submit" disabled={loading || otp.replace(/\D/g, '').length < 6} className="btn-primary min-h-11 w-full">
+      <button type="submit" disabled={loading || otp.replace(/\D/g, '').length < otpDigitCount} className="btn-primary min-h-11 w-full">
         {loading ? t('auth.confirmingCode') : t('auth.confirmCode')}
       </button>
       <button
