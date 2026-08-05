@@ -12,17 +12,36 @@ def _slug_username(base: str) -> str:
     return s or "user"
 
 
-async def _unique_username(db: AsyncSession, desired: str) -> str:
+async def _unique_username(db: AsyncSession, desired: str, exclude_user_id: int | None = None) -> str:
     base = _slug_username(desired)
     candidate = base[:64]
     n = 0
     while True:
-        exists = await db.scalar(select(func.count()).select_from(User).where(User.username == candidate))
+        q = select(func.count()).select_from(User).where(User.username == candidate)
+        if exclude_user_id is not None:
+            q = q.where(User.id != exclude_user_id)
+        exists = await db.scalar(q)
         if not exists:
             return candidate
         n += 1
         suffix = str(n)
         candidate = f"{base[: 64 - len(suffix)]}{suffix}"
+
+
+async def _sync_profile_from_supabase_meta(db: AsyncSession, user: User, meta: dict) -> None:
+    if user.is_admin:
+        return
+    display_name = meta.get("display_name")
+    if display_name and str(display_name).strip():
+        user.display_name = str(display_name).strip()[:128]
+    raw_username = meta.get("username")
+    if raw_username and str(raw_username).strip():
+        desired = _slug_username(str(raw_username).strip())[:64]
+        if desired and desired != user.username:
+            taken = await db.scalar(
+                select(User.id).where(User.username == desired, User.id != user.id)
+            )
+            user.username = desired if not taken else await _unique_username(db, desired, user.id)
 
 
 def _supabase_email_confirmed(payload: dict) -> bool:
@@ -53,6 +72,7 @@ async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
     )
     if linked:
         linked.email_verified = confirmed or linked.is_admin
+        await _sync_profile_from_supabase_meta(db, linked, meta)
         return linked
 
     by_email = await db.scalar(select(User).where(User.email == email))
@@ -60,6 +80,7 @@ async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
         by_email.oauth_provider = "supabase"
         by_email.oauth_subject = sub
         by_email.email_verified = confirmed or by_email.is_admin or by_email.email_verified
+        await _sync_profile_from_supabase_meta(db, by_email, meta)
         return by_email
 
     username = meta.get("username") or email.split("@")[0]
