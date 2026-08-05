@@ -33,4 +33,4 @@ services:
   frontend:
     restart: always
     ports:
-      - "${PORT:-80}:80"
+      - "${PORT:-80}:8080"

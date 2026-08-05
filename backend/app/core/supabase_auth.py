@@ -16,28 +16,26 @@ def supabase_configured() -> bool:
     return bool(settings.supabase_jwt_secret or settings.supabase_url)
 
 
-def _jwks_url_from_iss(iss: str) -> str:
-    base = iss.rstrip("/")
-    if base.endswith("/auth/v1"):
-        return f"{base}/.well-known/jwks.json"
+def _configured_jwks_url() -> str | None:
+    if not settings.supabase_url:
+        return None
+    base = settings.supabase_url.rstrip("/")
     return f"{base}/auth/v1/.well-known/jwks.json"
 
 
-def _resolve_jwks_url(token: str) -> str | None:
-    if settings.supabase_url:
-        base = settings.supabase_url.rstrip("/")
-        return f"{base}/auth/v1/.well-known/jwks.json"
-    try:
-        claims = jwt.get_unverified_claims(token)
-        iss = claims.get("iss")
-        if isinstance(iss, str) and "supabase.co" in iss:
-            return _jwks_url_from_iss(iss)
-    except JWTError:
-        pass
-    return None
+def _resolve_jwks_url(_token: str) -> str | None:
+    """JWKS URL from env only — never from unverified JWT claims (SSRF)."""
+    return _configured_jwks_url()
+
+
+def _assert_safe_jwks_url(url: str) -> None:
+    expected = _configured_jwks_url()
+    if not expected or url.rstrip("/") != expected.rstrip("/"):
+        raise ValueError("JWKS URL must match configured Supabase project")
 
 
 def _fetch_jwks(url: str) -> dict:
+    _assert_safe_jwks_url(url)
     now = time.time()
     cached = _jwks_cache.get(url)
     if cached and now - cached[0] < _JWKS_TTL_SEC:

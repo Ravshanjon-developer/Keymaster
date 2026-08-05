@@ -1549,10 +1549,14 @@ def main() -> None:
     print("\n".join(report[:8]))
     if missing_lessons:
         print("WARNING: untranslated fallbacks:", len(missing_lessons))
-    assert len(lessons_out) == unique_dump, (len(lessons_out), unique_dump)
-    assert not missing_courses, missing_courses
-    assert not missing_cats, missing_cats
-    assert not missing_lessons, missing_lessons[:20]
+    if len(lessons_out) != unique_dump:
+        raise ValueError(f"lesson count mismatch: {len(lessons_out)} vs {unique_dump}")
+    if missing_courses:
+        raise ValueError(f"missing courses: {missing_courses}")
+    if missing_cats:
+        raise ValueError(f"missing categories: {missing_cats}")
+    if missing_lessons:
+        raise ValueError(f"missing lessons: {missing_lessons[:20]}")
     print("OK wrote", OUT)
 
 
