@@ -25,17 +25,27 @@ async def _unique_username(db: AsyncSession, desired: str) -> str:
         candidate = f"{base[: 64 - len(suffix)]}{suffix}"
 
 
+def _supabase_email_confirmed(payload: dict) -> bool:
+    if payload.get("email_confirmed_at"):
+        return True
+    if payload.get("email_verified") is True:
+        return True
+    app = payload.get("app_metadata") or {}
+    if app.get("provider_email_verified") is True or app.get("email_verified") is True:
+        return True
+    # Supabase access tokens for signed-in users omit email_confirmed_at; role is enough.
+    if payload.get("role") == "authenticated":
+        return True
+    return False
+
+
 async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
     sub = str(payload["sub"])
     email = (payload.get("email") or "").lower().strip()
     if not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    confirmed = bool(
-        payload.get("email_confirmed_at")
-        or payload.get("email_verified") is True
-        or payload.get("app_metadata", {}).get("email_verified") is True
-    )
+    confirmed = _supabase_email_confirmed(payload)
     meta = payload.get("user_metadata") or {}
 
     linked = await db.scalar(
