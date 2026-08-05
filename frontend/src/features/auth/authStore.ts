@@ -20,7 +20,12 @@ interface AuthState {
     username: string
     password: string
     display_name: string
-  }) => Promise<{ message: string; email: string }>
+  }) => Promise<{
+    message: string
+    email: string
+    loggedIn?: boolean
+    existingAccountResent?: boolean
+  }>
   confirmSignupOtp: (email: string, code: string) => Promise<void>
 }
 
@@ -101,7 +106,7 @@ export const useAuthStore = create<AuthState>()(
       },
       register: async (data) => {
         if (supabase) {
-          const { error } = await supabase.auth.signUp({
+          const { data: signUpData, error } = await supabase.auth.signUp({
             email: data.email,
             password: data.password,
             options: {
@@ -113,10 +118,37 @@ export const useAuthStore = create<AuthState>()(
             },
           })
           if (error) throw mapSupabaseAuthError(error)
+          if (signUpData.user?.identities?.length === 0) {
+            const { error: resendErr } = await supabase.auth.resend({
+              type: 'signup',
+              email: data.email.trim(),
+              options: { emailRedirectTo: authRedirectUrl() },
+            })
+            if (resendErr) {
+              throw new ApiError('USER_ALREADY_REGISTERED', 409)
+            }
+            return {
+              message: 'Код отправлен повторно.',
+              email: data.email,
+              loggedIn: false,
+              existingAccountResent: true,
+            }
+          }
+          const accessToken = signUpData.session?.access_token
+          if (accessToken) {
+            localStorage.setItem('km_token', accessToken)
+            const user = await api.me()
+            set({ token: accessToken, user, authReady: true })
+            return {
+              message: 'Регистрация завершена.',
+              email: signUpData.user?.email ?? data.email,
+              loggedIn: true,
+            }
+          }
           return {
-            message:
-              'На ваш email отправлено письмо от Supabase. Перейдите по ссылке для подтверждения.',
+            message: 'На ваш email отправлен код подтверждения.',
             email: data.email,
+            loggedIn: false,
           }
         }
         return api.register(data)

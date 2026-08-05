@@ -164,8 +164,10 @@ export type Messages = {
     badCredentials: string
     accountCreated: string
     registerFail: string
+    emailAlreadyRegistered: string
     serverDown: string
     checkEmail: string
+    checkEmailExistingResent: string
     checkEmailTitle: string
     checkEmailBody: string
     checkEmailBodySupabase: string
@@ -185,7 +187,6 @@ export type Messages = {
     confirmCode: string
     confirmingCode: string
     otpInvalid: string
-    otpOrLinkHint: string
   }
   lesson: {
     steps: string

@@ -65,17 +65,20 @@ SMTP переменные **не нужны**, если все регистра�
 Чтобы в письме была **6-значная** `{{ .Token }}`:
 
 1. **Project Settings → Authentication → SMTP** (или **Set up SMTP**) — Resend/Brevo, домен не обязателен на старте (тестовый отправитель Resend).
-2. **Authentication → Emails → Confirm signup** — в тело письма добавьте, например:
+2. **Authentication → Emails → Confirm signup** — только код (без ссылки):
 
 ```html
-<p>Ваш код: <strong>{{ .Token }}</strong></p>
-<p>Или подтвердите по ссылке:</p>
-<p><a href="{{ .ConfirmationURL }}">Confirm email</a></p>
+<h2>KeyMaster</h2>
+<p>Ваш код подтверждения:</p>
+<p style="font-size:24px;letter-spacing:0.2em"><strong>{{ .Token }}</strong></p>
+<p>Код действует ограниченное время. Введите его на сайте после регистрации.</p>
 ```
+
+Не добавляйте `{{ .ConfirmationURL }}`, если нужен вход **только по коду**.
 
 3. **Email OTP length** = 6 в **Sign In / Providers → Email**.
 
-Без SMTP в письме может быть **только ссылка** — код на сайте сработает, когда в письме появится `{{ .Token }}`.
+Без Custom SMTP и `{{ .Token }}` в шаблоне код в письме не появится.
 
 База Supabase используется **только для auth**, не заменяет DATABASE_URL KeyMaster.
 

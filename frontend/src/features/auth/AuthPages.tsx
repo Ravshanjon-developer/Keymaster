@@ -12,12 +12,10 @@ function VerifySignupOtpForm({
   email,
   onResend,
   resendLoading,
-  showNoCodeHint,
 }: {
   email: string
   onResend: () => void
   resendLoading: boolean
-  showNoCodeHint?: boolean
 }) {
   const t = useT()
   const confirmSignupOtp = useAuthStore((s) => s.confirmSignupOtp)
@@ -60,8 +58,6 @@ function VerifySignupOtpForm({
           autoComplete="one-time-code"
           pattern="[0-9]*"
           maxLength={8}
-          required
-          minLength={6}
           value={otp}
           onChange={(e) => {
             setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))
@@ -88,7 +84,6 @@ function VerifySignupOtpForm({
       >
         {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
       </button>
-      {showNoCodeHint && <p className="text-muted text-xs leading-relaxed">{t('auth.otpOrLinkHint')}</p>}
     </form>
   )
 }
@@ -234,9 +229,6 @@ export function LoginPage() {
               <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
             </>
           )}
-          {needsVerify && isSupabaseAuth && (
-            <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
-          )}
           <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
             {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
           </button>
@@ -255,6 +247,7 @@ export function LoginPage() {
 export function RegisterPage() {
   const t = useT()
   const register = useAuthStore((s) => s.register)
+  const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
@@ -265,16 +258,26 @@ export function RegisterPage() {
     setLoading(true)
     try {
       const res = await register(form)
+      if (res.loggedIn) {
+        toast.success(t('auth.welcome'))
+        navigate('/dashboard', { replace: true })
+        return
+      }
       setPendingEmail(res.email)
-      toast.success(t('auth.checkEmail'))
+      toast.success(
+        res.existingAccountResent ? t('auth.checkEmailExistingResent') : t('auth.checkEmail'),
+      )
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0
+      const code = err instanceof ApiError ? err.message : ''
       const msg =
-        status === 0
-          ? t('auth.serverDown')
-          : err instanceof ApiError
-            ? err.message
-            : t('auth.registerFail')
+        code === 'USER_ALREADY_REGISTERED'
+          ? t('auth.emailAlreadyRegistered')
+          : status === 0
+            ? t('auth.serverDown')
+            : err instanceof ApiError
+              ? err.message
+              : t('auth.registerFail')
       toast.error(msg)
     } finally {
       setLoading(false)
@@ -317,21 +320,22 @@ export function RegisterPage() {
               email={pendingEmail}
               onResend={() => void onResend()}
               resendLoading={resendLoading}
-              showNoCodeHint
             />
           ) : (
-            <button
-              type="button"
-              disabled={resendLoading}
-              onClick={() => void onResend()}
-              className="btn-secondary mt-6 min-h-11 w-full"
-            >
-              {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
-            </button>
+            <>
+              <button
+                type="button"
+                disabled={resendLoading}
+                onClick={() => void onResend()}
+                className="btn-secondary mt-6 min-h-11 w-full"
+              >
+                {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+              </button>
+              <Link to="/login" className="btn-primary mt-3 inline-flex min-h-11 w-full items-center justify-center">
+                {t('auth.loginLink')}
+              </Link>
+            </>
           )}
-          <Link to="/login" className="btn-primary mt-3 inline-flex min-h-11 w-full items-center justify-center">
-            {t('auth.loginLink')}
-          </Link>
         </GlassCard>
       </div>
     )

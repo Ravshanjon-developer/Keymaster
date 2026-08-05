@@ -167,15 +167,19 @@ export const tg: Messages = {
     badCredentials: 'Email ё рамз нодуруст аст',
     accountCreated: 'Ҳисоб эҷод шуд',
     registerFail: 'Сабти ном нашуд',
+    emailAlreadyRegistered:
+      'Ин email аллакай сабти ном шудааст. Бо парол ворид шавед ё «Войти»-ро клик кунед.',
     serverDown: 'Сервер муваққатан дастрас нест. Баъдтар кӯшиш кунед.',
-    checkEmail: 'Нома фиристода шуд — email-ро тасдиқ кунед',
+    checkEmail: 'Рамз ба почта фиристода шуд',
+    checkEmailExistingResent:
+      'Ин email аллакай буд — рамзи нав фиристодем. Почта ва «Спам»-ро санҷед.',
     checkEmailTitle: 'Почтаи худро санҷед',
     checkEmailBody: 'Мо истинод ба {email} фиристодем. Пас аз тасдиқ ворид шавед.',
     checkEmailBodySupabase:
-      'Ба {email} рамз ва истинод фиристода шуд. 6 рақамро дар зер ворид кунед ё истинодро дар почта клик кунед.',
-    emailNotVerified: 'Email-ро тасдиқ кунед, сипас боз ворид шавед.',
+      'Ба {email} нома бо рамзи 6-рақама фиристода шуд. Дар зер ворид кунед. «Спам»-ро санҷед.',
+    emailNotVerified: 'Email ҳанӯз тасдиқ нашудааст. 6 рақам аз номаро дар зер ворид кунед.',
     emailDeliveryHint:
-      'Нома наомад? «Спам»-ро санҷед. Supabase кам нома мефиристад — дар Supabase → Users email-ро дастӣ тасдиқ кунед.',
+      'Нома наомад? 2–5 дақиқа интизор шавед ва «Спам»-ро санҷед.',
     resendVerification: 'Номаро боз фиристодан',
     resending: 'Фиристода истодааст…',
     resendFail: 'Фиристодан нашуд',
@@ -190,7 +194,6 @@ export const tg: Messages = {
     confirmCode: 'Рамзро тасдиқ кунед',
     confirmingCode: 'Санҷиш…',
     otpInvalid: 'Рамз нодуруст ё мӯҳлаташ гузаштааст.',
-    otpOrLinkHint: 'Рамз дар нома нест? SMTP ва {{ .Token }} дар Supabase — docs/SUPABASE.md',
   },
   lesson: {
     steps: 'Дарс · омӯхтан → такрор бо ишора',
