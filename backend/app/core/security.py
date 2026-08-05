@@ -27,6 +27,7 @@ def create_access_token(subject: str | Any, expires_delta: timedelta | None = No
 
 
 def decode_access_token(token: str) -> str | None:
+    """Legacy KeyMaster JWT (admin / password login)."""
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         sub = payload.get("sub")

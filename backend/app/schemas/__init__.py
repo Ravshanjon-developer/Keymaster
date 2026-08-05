@@ -9,6 +9,20 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 
+class RegisterResponse(BaseModel):
+    message: str
+    email: EmailStr
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
+class VerifyEmailResponse(BaseModel):
+    message: str
+    verified: bool = True
+
+
 class UserRegister(BaseModel):
     email: EmailStr
     username: str = Field(min_length=3, max_length=64)
@@ -30,6 +44,7 @@ class UserPublic(BaseModel):
     level: int
     streak_days: int
     is_admin: bool
+    email_verified: bool
     created_at: datetime
 
     model_config = {"from_attributes": True}

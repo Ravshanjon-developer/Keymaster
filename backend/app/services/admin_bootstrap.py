@@ -40,6 +40,7 @@ async def ensure_admin_user(db: AsyncSession) -> None:
             hashed_password=get_password_hash(password),
             display_name=settings.admin_display_name,
             is_admin=True,
+            email_verified=True,
             xp=0,
             level=1,
         )
@@ -64,6 +65,9 @@ async def ensure_admin_user(db: AsyncSession) -> None:
         user.hashed_password = get_password_hash(password)
         changed = True
         logger.info("Admin password synced from ADMIN_PASSWORD for %s", email)
+    if not user.email_verified:
+        user.email_verified = True
+        changed = True
 
     if changed:
         await db.commit()

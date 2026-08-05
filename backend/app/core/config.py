@@ -39,6 +39,16 @@ class Settings(BaseSettings):
     rate_limit_auth_per_minute: int = 20
     rate_limit_admin_per_minute: int = 60
 
+    frontend_url: str = "http://localhost:5173"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_from: str | None = None
+    smtp_use_tls: bool = True
+
+    supabase_jwt_secret: str | None = None
+
     @field_validator("app_env")
     @classmethod
     def normalize_env(cls, value: str) -> str:

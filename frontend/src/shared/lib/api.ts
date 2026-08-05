@@ -36,6 +36,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     else if (Array.isArray(body.detail)) message = body.detail.map((d) => d.msg).join(', ')
     if (res.status === 401) {
       message = 'Неверный email или пароль'
+    } else if (res.status === 403 && message === 'EMAIL_NOT_VERIFIED') {
+      message = 'EMAIL_NOT_VERIFIED'
     } else if (res.status === 502 || res.status === 503) {
       message = 'Сервер API временно недоступен. Попробуйте позже.'
     }
@@ -47,7 +49,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   register: (body: { email: string; username: string; password: string; display_name: string }) =>
-    request<{ access_token: string }>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
+    request<RegisterResponseDto>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
+  verifyEmail: (token: string) =>
+    request<{ message: string; verified: boolean }>('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    }),
+  resendVerification: (email: string) =>
+    request<{ message: string }>('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
   login: (body: { email: string; password: string }) =>
     request<{ access_token: string }>('/auth/login/json', { method: 'POST', body: JSON.stringify(body) }),
   me: () => request<UserDto>('/auth/me'),
@@ -112,6 +124,11 @@ export const api = {
   },
 }
 
+export interface RegisterResponseDto {
+  message: string
+  email: string
+}
+
 export interface UserDto {
   id: string
   email: string
@@ -121,6 +138,7 @@ export interface UserDto {
   level: number
   streak_days: number
   is_admin: boolean
+  email_verified?: boolean
 }
 
 export interface CourseDto {

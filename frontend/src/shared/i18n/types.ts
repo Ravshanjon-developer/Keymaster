@@ -165,6 +165,20 @@ export type Messages = {
     accountCreated: string
     registerFail: string
     serverDown: string
+    checkEmail: string
+    checkEmailTitle: string
+    checkEmailBody: string
+    checkEmailBodySupabase: string
+    emailNotVerified: string
+    resendVerification: string
+    resending: string
+    resendFail: string
+    resendNeedEmail: string
+    verifyTitle: string
+    verifyLoading: string
+    verifySuccess: string
+    verifyFail: string
+    verifyMissingToken: string
   }
   lesson: {
     steps: string

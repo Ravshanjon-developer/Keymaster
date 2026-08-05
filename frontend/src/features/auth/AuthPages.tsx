@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { useAuthStore } from '@/features/auth/authStore'
-import { ApiError } from '@/shared/lib/api'
+import { api, ApiError } from '@/shared/lib/api'
+import { authRedirectUrl, isSupabaseAuth, supabase } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
 import { GlassCard } from '@/shared/components/ui'
 
@@ -12,42 +13,84 @@ export function LoginPage() {
   const login = useAuthStore((s) => s.login)
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const from = (location.state as { from?: string } | null)?.from ?? '/dashboard'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [needsVerify, setNeedsVerify] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const verifiedBanner = searchParams.get('verified') === '1'
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setNeedsVerify(false)
     try {
       await login(email, password)
       toast.success(t('auth.welcome'))
       navigate(from)
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0
-      const msg =
-        status === 401
-          ? t('auth.badCredentials')
-          : status === 0
-            ? t('auth.serverDown')
-            : err instanceof ApiError
-              ? err.message
-              : t('auth.badCredentials')
-      setError(msg)
-      toast.error(msg)
+      const rawMsg = err instanceof ApiError ? err.message : ''
+      if (status === 403 && rawMsg === 'EMAIL_NOT_VERIFIED') {
+        setNeedsVerify(true)
+        setError(t('auth.emailNotVerified'))
+      } else {
+        const msg =
+          status === 401
+            ? t('auth.badCredentials')
+            : status === 0
+              ? t('auth.serverDown')
+              : err instanceof ApiError
+                ? err.message
+                : t('auth.badCredentials')
+        setError(msg)
+        toast.error(msg)
+      }
     } finally {
       setLoading(false)
     }
   }
 
+  async function onResend() {
+    if (!email) {
+      toast.error(t('auth.resendNeedEmail'))
+      return
+    }
+    setResendLoading(true)
+    try {
+      if (supabase) {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+          options: { emailRedirectTo: authRedirectUrl() },
+        })
+        if (error) throw error
+        toast.success(t('auth.checkEmail'))
+      } else {
+        const res = await api.resendVerification(email)
+        toast.success(res.message)
+      }
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t('auth.resendFail'))
+    } finally {
+      setResendLoading(false)
+    }
+  }
+
   return (
-    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
+    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
       <GlassCard>
         <h1 className="font-display text-2xl font-bold">{t('auth.loginTitle')}</h1>
         <p className="mt-1 text-sm text-slate-500">{t('auth.loginSub')}</p>
+        {verifiedBanner && (
+          <p className="mt-4 rounded-xl border border-success-500/30 bg-success-500/10 px-3 py-2 text-sm text-success-800 dark:text-success-300">
+            {t('auth.verifySuccess')}
+          </p>
+        )}
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <label className="block text-sm font-medium">
             {t('auth.email')}
@@ -58,6 +101,7 @@ export function LoginPage() {
               onChange={(e) => {
                 setEmail(e.target.value)
                 setError('')
+                setNeedsVerify(false)
               }}
               className="input-field"
               autoComplete="email"
@@ -85,7 +129,17 @@ export function LoginPage() {
               {error}
             </p>
           )}
-          <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
+          {needsVerify && (
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={() => void onResend()}
+              className="btn-secondary w-full min-h-11"
+            >
+              {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+            </button>
+          )}
+          <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
             {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
           </button>
         </form>
@@ -103,35 +157,81 @@ export function LoginPage() {
 export function RegisterPage() {
   const t = useT()
   const register = useAuthStore((s) => s.register)
-  const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
+  const [resendLoading, setResendLoading] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     try {
-      await register(form)
-      toast.success(t('auth.accountCreated'))
-      navigate('/dashboard')
+      const res = await register(form)
+      setPendingEmail(res.email)
+      toast.success(t('auth.checkEmail'))
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0
       const msg =
-        status === 401
-          ? t('auth.badCredentials')
-          : status === 0
-            ? t('auth.serverDown')
-            : err instanceof ApiError
-              ? err.message
-              : t('auth.registerFail')
+        status === 0
+          ? t('auth.serverDown')
+          : err instanceof ApiError
+            ? err.message
+            : t('auth.registerFail')
       toast.error(msg)
     } finally {
       setLoading(false)
     }
   }
 
+  async function onResend() {
+    if (!pendingEmail) return
+    setResendLoading(true)
+    try {
+      if (supabase) {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email: pendingEmail,
+          options: { emailRedirectTo: authRedirectUrl() },
+        })
+        if (error) throw error
+        toast.success(t('auth.checkEmail'))
+      } else {
+        const res = await api.resendVerification(pendingEmail)
+        toast.success(res.message)
+      }
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t('auth.resendFail'))
+    } finally {
+      setResendLoading(false)
+    }
+  }
+
+  if (pendingEmail) {
+    return (
+      <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
+        <GlassCard className="text-center">
+          <h1 className="font-display text-2xl font-bold">{t('auth.checkEmailTitle')}</h1>
+          <p className="text-muted mt-3">
+            {isSupabaseAuth ? t('auth.checkEmailBodySupabase', { email: pendingEmail }) : t('auth.checkEmailBody', { email: pendingEmail })}
+          </p>
+          <button
+            type="button"
+            disabled={resendLoading}
+            onClick={() => void onResend()}
+            className="btn-secondary mt-6 min-h-11 w-full"
+          >
+            {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+          </button>
+          <Link to="/login" className="btn-primary mt-3 inline-flex min-h-11 w-full items-center justify-center">
+            {t('auth.loginLink')}
+          </Link>
+        </GlassCard>
+      </div>
+    )
+  }
+
   return (
-    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
+    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
       <GlassCard>
         <h1 className="font-display text-2xl font-bold">{t('auth.registerTitle')}</h1>
         <p className="mt-1 text-sm text-slate-500">{t('auth.registerSub')}</p>
@@ -156,7 +256,7 @@ export function RegisterPage() {
               />
             </label>
           ))}
-          <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
+          <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
             {t('auth.createAccount')}
           </button>
         </form>
