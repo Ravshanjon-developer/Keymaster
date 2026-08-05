@@ -130,14 +130,17 @@ export function LoginPage() {
             </p>
           )}
           {needsVerify && (
-            <button
-              type="button"
-              disabled={resendLoading}
-              onClick={() => void onResend()}
-              className="btn-secondary w-full min-h-11"
-            >
-              {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
-            </button>
+            <>
+              <button
+                type="button"
+                disabled={resendLoading}
+                onClick={() => void onResend()}
+                className="btn-secondary w-full min-h-11"
+              >
+                {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+              </button>
+              <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
+            </>
           )}
           <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
             {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}

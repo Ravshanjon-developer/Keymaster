@@ -174,6 +174,8 @@ export const tg: Messages = {
     checkEmailBodySupabase:
       'Supabase ба {email} нома фиристод. Email-ро тасдиқ кунед — ба сайт бармегардед.',
     emailNotVerified: 'Email-ро тасдиқ кунед, сипас боз ворид шавед.',
+    emailDeliveryHint:
+      'Нома наомад? «Спам»-ро санҷед. Supabase кам нома мефиристад — дар Supabase → Users email-ро дастӣ тасдиқ кунед.',
     resendVerification: 'Номаро боз фиристодан',
     resending: 'Фиристода истодааст…',
     resendFail: 'Фиристодан нашуд',

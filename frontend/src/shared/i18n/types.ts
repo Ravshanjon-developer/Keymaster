@@ -170,6 +170,7 @@ export type Messages = {
     checkEmailBody: string
     checkEmailBodySupabase: string
     emailNotVerified: string
+    emailDeliveryHint: string
     resendVerification: string
     resending: string
     resendFail: string

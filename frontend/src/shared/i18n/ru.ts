@@ -173,6 +173,8 @@ export const ru: Messages = {
     checkEmailBodySupabase:
       'Supabase отправил письмо на {email}. Перейдите по ссылке — email подтвердится, и вы войдёте в аккаунт.',
     emailNotVerified: 'Подтвердите email по ссылке из письма, затем войдите снова.',
+    emailDeliveryHint:
+      'Письмо не пришло? Откройте «Спам» и «Промоакции» в Gmail. Supabase на бесплатном тарифе шлёт мало писем в час — подождите или подтвердите email вручную: Supabase → Authentication → Users → ваш пользователь.',
     resendVerification: 'Отправить письмо ещё раз',
     resending: 'Отправка…',
     resendFail: 'Не удалось отправить письмо',

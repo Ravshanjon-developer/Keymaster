@@ -60,3 +60,14 @@ SMTP переменные **не нужны**, если все регистра�
 3. Прогресс и XP сохраняются в вашей Postgres на Railway (Neon), как раньше
 
 База Supabase используется **только для auth**, не заменяет DATABASE_URL KeyMaster.
+
+## 8. Письмо не приходит
+
+Кнопка «Отправить письмо ещё раз» на сайте **просит Supabase отправить письмо**. KeyMaster письма сам не шлёт.
+
+1. Gmail → **Спам**, **Промоакции**, поиск `supabase`.
+2. **Authentication → Rate Limits** — на free tier мало писем в час; подождите 1 час.
+3. **Authentication → Audit Logs** — было ли событие отправки, есть ли ошибка.
+4. **Быстрый вход без письма:** **Authentication → Users** → `ravtol1207@gmail.com` → открыть пользователя → **Confirm user** / подтвердить email → снова **Войти** на сайте.
+5. Для теста без письма: **Sign In / Providers → Email** → выключить обязательное **Confirm email** (только временно).
+6. Стабильная доставка: **Custom SMTP** в Supabase (Resend, Brevo и т.д.), не обязательно Postal.
