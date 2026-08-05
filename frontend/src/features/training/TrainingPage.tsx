@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 
 import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'

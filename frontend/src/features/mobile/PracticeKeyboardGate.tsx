@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { BookOpen, Brain } from 'lucide-react'
 
 import { KeyboardIllustration } from '@/features/mobile/KeyboardIllustration'

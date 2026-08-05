@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router'
 
 import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'

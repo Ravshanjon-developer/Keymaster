@@ -1,6 +1,6 @@
 import { ChevronDown, Menu, Moon, Sun, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { useLocaleStore, useT, type Locale } from '@/shared/i18n'

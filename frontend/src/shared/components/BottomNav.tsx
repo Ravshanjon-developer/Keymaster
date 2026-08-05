@@ -1,5 +1,5 @@
 import { BookMarked, BookOpen, Brain, Map, Trophy } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router'
 
 import { useT } from '@/shared/i18n'
 import { cn } from '@/shared/lib/utils'

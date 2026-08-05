@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { GlassCard, Skeleton } from '@/shared/components/ui'

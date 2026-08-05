@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { useT } from '@/shared/i18n'

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 
 import { api } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'

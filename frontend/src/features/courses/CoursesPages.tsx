@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, CheckCircle2 } from 'lucide-react'
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
 import { useAuthStore } from '@/features/auth/authStore'

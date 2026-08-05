@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, Lock, Sparkles, Zap } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
 import { difficultyKey, type NodeStatus } from '@/features/path/growthPath'

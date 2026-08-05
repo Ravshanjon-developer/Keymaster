@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router'
 import toast from 'react-hot-toast'
 
 import { api, ApiError } from '@/shared/lib/api'
