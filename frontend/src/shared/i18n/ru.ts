@@ -171,7 +171,7 @@ export const ru: Messages = {
     checkEmailTitle: 'Проверьте почту',
     checkEmailBody: 'Мы отправили ссылку на {email}. Перейдите по ней, затем войдите в аккаунт.',
     checkEmailBodySupabase:
-      'Supabase отправил письмо на {email}. Подтвердите email и перейдите по ссылке — вас вернёт на сайт для входа.',
+      'Supabase отправил письмо на {email}. Перейдите по ссылке — email подтвердится, и вы войдёте в аккаунт.',
     emailNotVerified: 'Подтвердите email по ссылке из письма, затем войдите снова.',
     resendVerification: 'Отправить письмо ещё раз',
     resending: 'Отправка…',

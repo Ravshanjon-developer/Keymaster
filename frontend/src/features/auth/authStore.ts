@@ -114,7 +114,7 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw mapSupabaseAuthError(error)
           return {
             message:
-              'На ваш email отправлено письмо от Supabase. Подтвердите адрес, затем войдите.',
+              'На ваш email отправлено письмо от Supabase. Перейдите по ссылке для подтверждения.',
             email: data.email,
           }
         }
