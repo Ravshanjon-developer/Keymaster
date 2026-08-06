@@ -7,6 +7,21 @@ import { mapSupabaseAuthError, mapSupabaseResendError } from '@/features/auth/su
 import { levelTitleKey, useT } from '@/shared/i18n'
 import { levelFromXp } from '@/shared/lib/levels'
 
+/** Avoid onAuthStateChange racing confirmSignupOtp (navbar updates before OTP UI closes). */
+let otpConfirmInFlight = false
+
+async function fetchMeWithRetry(): Promise<UserDto> {
+  try {
+    return await api.me()
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 0) {
+      await new Promise((r) => setTimeout(r, 500))
+      return await api.me()
+    }
+    throw err
+  }
+}
+
 interface AuthState {
   token: string | null
   user: UserDto | null
@@ -58,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
           return
         }
         supabase.auth.onAuthStateChange((_event, session) => {
+          if (otpConfirmInFlight) return
           if (session?.access_token) {
             localStorage.setItem('km_token', session.access_token)
             set({ token: session.access_token })
@@ -186,17 +202,22 @@ export const useAuthStore = create<AuthState>()(
         if (!supabase) throw new ApiError('Supabase not configured', 400)
         const tokenDigits = code.replace(/\D/g, '')
         if (tokenDigits.length < 6) throw new ApiError('Invalid OTP', 400)
-        const { data, error } = await supabase.auth.verifyOtp({
-          email: email.trim(),
-          token: tokenDigits,
-          type: 'signup',
-        })
-        if (error) throw mapSupabaseAuthError(error)
-        const accessToken = data.session?.access_token
-        if (!accessToken) throw new ApiError('No session', 401)
-        localStorage.setItem('km_token', accessToken)
-        const user = await api.me()
-        set({ token: accessToken, user, authReady: true })
+        otpConfirmInFlight = true
+        try {
+          const { data, error } = await supabase.auth.verifyOtp({
+            email: email.trim(),
+            token: tokenDigits,
+            type: 'signup',
+          })
+          if (error) throw mapSupabaseAuthError(error)
+          const accessToken = data.session?.access_token
+          if (!accessToken) throw new ApiError('No session', 401)
+          localStorage.setItem('km_token', accessToken)
+          const user = await fetchMeWithRetry()
+          set({ token: accessToken, user, authReady: true })
+        } finally {
+          otpConfirmInFlight = false
+        }
       },
       resendSignupEmail: async (email) => {
         if (!supabase) throw new ApiError('Supabase not configured', 400)

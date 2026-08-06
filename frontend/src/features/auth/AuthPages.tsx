@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
@@ -23,14 +23,33 @@ function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback
   }
 }
 
+function useResendCooldown(seconds = 60) {
+  const [until, setUntil] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    if (until <= Date.now()) return
+    const id = window.setInterval(() => setNow(Date.now()), 500)
+    return () => window.clearInterval(id)
+  }, [until])
+  const left = Math.max(0, Math.ceil((until - now) / 1000))
+  return {
+    cooldownLeft: left,
+    startCooldown: () => setUntil(Date.now() + seconds * 1000),
+  }
+}
+
 function VerifySignupOtpForm({
   email,
   onResend,
   resendLoading,
+  resendCooldownLeft,
+  onSuccess,
 }: {
   email: string
   onResend: () => void
   resendLoading: boolean
+  resendCooldownLeft: number
+  onSuccess?: () => void
 }) {
   const t = useT()
   const confirmSignupOtp = useAuthStore((s) => s.confirmSignupOtp)
@@ -46,7 +65,8 @@ function VerifySignupOtpForm({
     try {
       await confirmSignupOtp(email, otp)
       toast.success(t('auth.welcome'))
-      navigate('/dashboard', { replace: true })
+      if (onSuccess) onSuccess()
+      else navigate('/dashboard', { replace: true })
     } catch (err) {
       const msg =
         err instanceof ApiError && err.message === 'EMAIL_NOT_VERIFIED'
@@ -86,12 +106,17 @@ function VerifySignupOtpForm({
       </button>
       <button
         type="button"
-        disabled={resendLoading}
+        disabled={resendLoading || resendCooldownLeft > 0}
         onClick={onResend}
         className="btn-secondary min-h-11 w-full"
       >
-        {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+        {resendLoading
+          ? t('auth.resending')
+          : resendCooldownLeft > 0
+            ? t('auth.resendWaitSeconds').replace('{sec}', String(resendCooldownLeft))
+            : t('auth.resendVerification')}
       </button>
+      <p className="text-muted text-xs leading-relaxed">{t('auth.resendSupabaseHint')}</p>
     </form>
   )
 }
@@ -110,6 +135,7 @@ export function LoginPage() {
   const [error, setError] = useState('')
   const [needsVerify, setNeedsVerify] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
+  const { cooldownLeft: resendCooldownLeft, startCooldown: startResendCooldown } = useResendCooldown()
   const verifiedBanner = searchParams.get('verified') === '1'
 
   async function onSubmit(e: React.FormEvent) {
@@ -153,12 +179,15 @@ export function LoginPage() {
     try {
       if (supabase) {
         await resendSignupEmail(email)
+        startResendCooldown()
         toast.success(t('auth.checkEmail'))
       } else {
         const res = await api.resendVerification(email)
+        startResendCooldown()
         toast.success(res.message)
       }
     } catch (err) {
+      if (err instanceof ApiError && err.message === 'RESEND_RATE_LIMIT') startResendCooldown()
       toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
     } finally {
       setResendLoading(false)
@@ -218,6 +247,7 @@ export function LoginPage() {
               email={email}
               onResend={() => void onResend()}
               resendLoading={resendLoading}
+              resendCooldownLeft={resendCooldownLeft}
             />
           )}
           {needsVerify && !isSupabaseAuth && (
@@ -258,6 +288,7 @@ export function RegisterPage() {
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
   const [pendingWasExisting, setPendingWasExisting] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
+  const { cooldownLeft: resendCooldownLeft, startCooldown: startResendCooldown } = useResendCooldown()
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -271,6 +302,7 @@ export function RegisterPage() {
       }
       setPendingWasExisting(!!res.existingAccountResent)
       setPendingEmail(res.email)
+      startResendCooldown()
       toast.success(
         res.existingAccountResent ? t('auth.checkEmailExistingResent') : t('auth.checkEmail'),
       )
@@ -292,12 +324,15 @@ export function RegisterPage() {
     try {
       if (supabase) {
         await resendSignupEmail(pendingEmail)
+        startResendCooldown()
         toast.success(t('auth.checkEmail'))
       } else {
         const res = await api.resendVerification(pendingEmail)
+        startResendCooldown()
         toast.success(res.message)
       }
     } catch (err) {
+      if (err instanceof ApiError && err.message === 'RESEND_RATE_LIMIT') startResendCooldown()
       toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
     } finally {
       setResendLoading(false)
@@ -322,6 +357,11 @@ export function RegisterPage() {
               email={pendingEmail}
               onResend={() => void onResend()}
               resendLoading={resendLoading}
+              resendCooldownLeft={resendCooldownLeft}
+              onSuccess={() => {
+                setPendingEmail(null)
+                navigate('/dashboard', { replace: true })
+              }}
             />
           ) : (
             <>
