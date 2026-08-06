@@ -1,4 +1,20 @@
-const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, '') || '/api'
+/** Same-origin /api on Vercel (see vercel.json proxy) avoids CORS and blocked railway.app in some networks. */
+function resolveApiBase(): string {
+  const fromEnv = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, '')
+  if (typeof window !== 'undefined' && import.meta.env.PROD) {
+    const host = window.location.hostname
+    if (
+      host === 'keymaster.pp.ua' ||
+      host === 'www.keymaster.pp.ua' ||
+      host.endsWith('.vercel.app')
+    ) {
+      return '/api'
+    }
+  }
+  return fromEnv || '/api'
+}
+
+const API_BASE = resolveApiBase()
 
 export class ApiError extends Error {
   status: number

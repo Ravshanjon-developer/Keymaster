@@ -35,7 +35,8 @@ Environment Variables:
 ```
 VITE_SUPABASE_URL=https://xxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ...
-VITE_API_BASE=https://keymaster-production-2e1e.up.railway.app/api
+После привязки домена фронт ходит в API через **тот же домен**: `https://keymaster.pp.ua/api/...` (прокси в `frontend/vercel.json` → Railway).  
+На Vercel можно оставить `VITE_API_BASE=/api` или не задавать — в prod на pp.ua/vercel всё равно используется `/api`.
 ```
 
 Redeploy после сохранения.
