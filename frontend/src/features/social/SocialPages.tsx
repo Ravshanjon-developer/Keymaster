@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
-import { Crown, Medal, Trophy, Zap } from 'lucide-react'
+import { Crown, Medal, Trophy, Zap, Award } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { api, type LeaderboardDto, type UserDto } from '@/shared/lib/api'
 import { useT } from '@/shared/i18n'
 import { EmptyState, GlassCard, Skeleton } from '@/shared/components/ui'
+import { PageHeader, PageShell, SkeletonCardGrid } from '@/shared/components/PageLayout'
 import { cn } from '@/shared/lib/utils'
 
 function isCurrentUser(row: LeaderboardDto, user: UserDto | null): boolean {
@@ -114,7 +115,7 @@ export function LeaderboardPage() {
   }, [top3])
 
   return (
-    <div className="page-mesh mx-auto max-w-3xl px-4 py-10">
+    <PageShell width="3xl">
       <div className="relative overflow-hidden rounded-3xl border border-brand-500/20 bg-gradient-to-br from-brand-50 via-[var(--bg-elevated)] to-accent-50/60 p-6 dark:from-brand-950/50 dark:via-[var(--bg-elevated)] dark:to-accent-900/20 md:p-8">
         <div
           aria-hidden
@@ -252,7 +253,7 @@ export function LeaderboardPage() {
       {!isLoading && data && data.length > 0 && data.length <= 3 && (
         <p className="text-muted mt-4 text-center text-sm">{t('social.climbHint')}</p>
       )}
-    </div>
+    </PageShell>
   )
 }
 
@@ -261,17 +262,20 @@ export function AchievementsPage() {
   const { data, isLoading } = useQuery({ queryKey: ['achievements'], queryFn: api.achievements })
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-page-title">{t('social.achievements')}</h1>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {isLoading && Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
+    <PageShell width="5xl">
+      <PageHeader title={t('social.achievements')} />
+      {isLoading && <SkeletonCardGrid count={4} className="sm:grid-cols-2" />}
+      {!isLoading && (!data || data.length === 0) && (
+        <EmptyState icon={Award} title={t('dashboard.noAchievements')} description={t('dashboard.achievementsEmptyDesc')} />
+      )}
+      <div className="mt-2 grid gap-4 sm:grid-cols-2">
         {data?.map((a) => (
-          <GlassCard key={a.id} className={a.unlocked ? '' : 'opacity-50 grayscale'}>
-            <h3 className="font-semibold text-[var(--text-primary)]">{a.title}</h3>
-            <p className="text-muted text-sm">{a.description}</p>
+          <GlassCard key={a.id} hover={a.unlocked} className={a.unlocked ? '' : 'opacity-55 grayscale'}>
+            <h3 className="text-h3">{a.title}</h3>
+            <p className="text-muted mt-1 text-sm">{a.description}</p>
           </GlassCard>
         ))}
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -8,7 +8,8 @@ import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { GlassCard, Skeleton } from '@/shared/components/ui'
+import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
+import { GlassCard } from '@/shared/components/ui'
 import { formatDuration } from '@/shared/lib/utils'
 
 const DURATION = 60
@@ -77,7 +78,14 @@ export function SpeedModePage() {
     [combo, current, token, refreshUser, queryClient],
   )
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-64 max-w-2xl" />
+  if (isLoading) {
+    return (
+      <PageShell width="2xl">
+        <SkeletonBlock className="h-10 w-48" />
+        <SkeletonBlock className="mt-6 h-64 w-full" />
+      </PageShell>
+    )
+  }
 
   if (finished) {
     const accuracy = total ? Math.round((correct / total) * 100) : 0

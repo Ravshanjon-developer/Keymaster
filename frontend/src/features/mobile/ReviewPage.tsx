@@ -8,7 +8,8 @@ import { api } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { EmptyState, GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
+import { EmptyState, GlassCard, KeyCombo } from '@/shared/components/ui'
+import { PageHeader, PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 import { cn } from '@/shared/lib/utils'
 
 const SWIPE_THRESHOLD = 80
@@ -46,18 +47,29 @@ export function ReviewPage() {
   const rotate = useTransform(x, [-120, 120], [-6, 6])
   const opacity = useTransform(x, [-160, 0, 160], [0.5, 1, 0.5])
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-80 max-w-md" />
+  if (isLoading) {
+    return (
+      <PageShell width="2xl">
+        <SkeletonBlock className="h-8 w-40" />
+        <SkeletonBlock className="mt-6 h-80 w-full max-w-md mx-auto rounded-[var(--radius-card)]" />
+      </PageShell>
+    )
+  }
   if (isError || !data?.length) {
-    return <EmptyState title={t('mobile.reviewEmptyTitle')} description={t('mobile.reviewEmptyDesc')} />
+    return (
+      <PageShell width="2xl">
+        <EmptyState title={t('mobile.reviewEmptyTitle')} description={t('mobile.reviewEmptyDesc')} />
+      </PageShell>
+    )
   }
 
   return (
-    <div className="page-mesh mx-auto max-w-md px-4 py-8 pb-28 lg:pb-10">
-      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700 dark:text-brand-300">
-        {t('mobile.reviewEyebrow')}
-      </p>
-      <h1 className="text-page-title mt-1">{t('mobile.reviewTitle')}</h1>
-      <p className="text-muted mt-2">{t('mobile.reviewSubtitle')}</p>
+    <PageShell width="2xl" className="max-w-md">
+      <PageHeader
+        eyebrow={t('mobile.reviewEyebrow')}
+        title={t('mobile.reviewTitle')}
+        subtitle={t('mobile.reviewSubtitle')}
+      />
 
       <div className="mt-6 flex items-center justify-between gap-2">
         <button
@@ -139,6 +151,6 @@ export function ReviewPage() {
           />
         ))}
       </div>
-    </div>
+    </PageShell>
   )
 }

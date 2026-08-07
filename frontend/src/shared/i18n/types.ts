@@ -92,6 +92,9 @@ export type Messages = {
     daily: string
     achievements: string
     noAchievements: string
+    dailyEmptyDesc: string
+    achievementsEmptyDesc: string
+    allAchievements: string
   }
   path: {
     eyebrow: string
@@ -233,6 +236,7 @@ export type Messages = {
     emptyTitle: string
     emptyDesc: string
     task: string
+    sessionCorrect: string
     correct: string
     next: string
     nextIn: string

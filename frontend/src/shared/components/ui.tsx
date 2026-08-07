@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import type { LucideIcon } from 'lucide-react'
+import { Inbox } from 'lucide-react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { displayKey } from '@/shared/lib/hotkeys'
@@ -15,9 +17,10 @@ export function GlassCard({
 }) {
   return (
     <motion.div
-      whileHover={hover ? { y: -2 } : undefined}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      className={cn('glass rounded-[1.15rem] p-5 md:p-6', className)}
+      whileHover={hover ? { y: -3, transition: { duration: 0.22 } } : undefined}
+      transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+      className={cn('glass rounded-[var(--radius-card)] p-5 md:p-6', hover && 'cursor-pointer', className)}
+      style={hover ? { boxShadow: 'var(--shadow-premium)' } : undefined}
     >
       {children}
     </motion.div>
@@ -25,19 +28,41 @@ export function GlassCard({
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded-xl bg-[var(--bg-muted)]', className)} />
+  return <div className={cn('skeleton-shimmer min-h-[1rem]', className)} aria-hidden />
 }
 
-export function EmptyState({ title, description }: { title: string; description: string }) {
+export function EmptyState({
+  title,
+  description,
+  icon: Icon = Inbox,
+  action,
+}: {
+  title: string
+  description: string
+  icon?: LucideIcon
+  action?: ReactNode
+}) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-      <p className="text-lg font-semibold text-[var(--text-primary)]">{title}</p>
-      <p className="text-muted max-w-sm text-sm">{description}</p>
+    <div
+      className="flex flex-col items-center justify-center gap-3 px-4 py-16 text-center"
+      role="status"
+    >
+      <div
+        className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-soft)] text-brand-700 dark:text-brand-300"
+        style={{ boxShadow: 'var(--shadow-sm)' }}
+      >
+        <Icon className="h-6 w-6" aria-hidden />
+      </div>
+      <div className="max-w-sm space-y-1.5">
+        <p className="text-h3">{title}</p>
+        <p className="text-muted text-sm">{description}</p>
+      </div>
+      {action && <div className="mt-2">{action}</div>}
     </div>
   )
 }
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 export function Button({
@@ -54,17 +79,14 @@ export function Button({
     <button
       type="button"
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-xl font-semibold tracking-tight transition duration-200',
-        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',
         'disabled:pointer-events-none disabled:opacity-55',
-        'active:translate-y-px active:scale-[0.985]',
-        size === 'sm' && 'px-3 py-1.5 text-xs',
-        size === 'md' && 'px-5 py-2.5 text-sm',
-        size === 'lg' && 'px-6 py-3 text-base',
+        size === 'sm' && '!min-h-9 px-3 py-1.5 text-xs',
+        size === 'md' && 'text-button',
+        size === 'lg' && 'min-h-12 px-6 py-3 text-base',
         variant === 'primary' && 'btn-primary',
         variant === 'secondary' && 'btn-secondary',
-        variant === 'ghost' &&
-          'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]',
+        variant === 'ghost' && 'btn-ghost',
+        variant === 'outline' && 'btn-outline',
         className,
       )}
       {...props}
@@ -119,17 +141,17 @@ export function ProgressBar({
   const pct = Math.max(0, Math.min(100, value))
   return (
     <div
-      className={cn(
-        'h-1.5 overflow-hidden rounded-full bg-[var(--bg-muted)]',
-        className,
-      )}
+      className={cn('h-2 overflow-hidden rounded-full bg-[var(--bg-muted)]', className)}
       role="progressbar"
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}
     >
       <div
-        className={cn('h-full rounded-full bg-brand-600 transition-[width] duration-500 ease-out', barClassName)}
+        className={cn(
+          'h-full rounded-full bg-brand-600 transition-[width] duration-500 ease-[var(--ease-out)]',
+          barClassName,
+        )}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -148,13 +170,14 @@ export function KeyCap({
   return (
     <span
       className={cn(
-        'inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-b-4 px-3 text-sm font-semibold shadow-sm transition-all duration-150',
+        'inline-flex min-h-10 min-w-10 items-center justify-center rounded-[var(--radius-md)] border border-b-4 px-3 text-sm font-semibold transition-[transform,background-color,border-color] duration-150',
         active
           ? 'scale-95 border-brand-500 border-b-brand-700 bg-brand-50 text-brand-900 dark:bg-brand-900/40 dark:text-brand-100'
           : learned
             ? 'border-brand-500/50 border-b-brand-700 bg-brand-50 text-brand-900 dark:bg-brand-950/50 dark:text-brand-100'
             : 'border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-primary)]',
       )}
+      style={{ boxShadow: 'var(--shadow-sm)' }}
     >
       {label}
     </span>

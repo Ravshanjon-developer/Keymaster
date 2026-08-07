@@ -7,7 +7,8 @@ import { api, type RandomLessonDto } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { EmptyState, GlassCard, ProgressBar, Skeleton } from '@/shared/components/ui'
+import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
+import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
 
 function shuffle<T>(arr: T[]): T[] {
@@ -96,9 +97,20 @@ export function QuizPage() {
     setIndex((i) => i + 1)
   }, [index, total])
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-80 max-w-lg" />
+  if (isLoading) {
+    return (
+      <PageShell width="2xl">
+        <SkeletonBlock className="h-8 w-40" />
+        <SkeletonBlock className="mt-6 h-80 w-full rounded-[var(--radius-card)]" />
+      </PageShell>
+    )
+  }
   if (isError || !data?.length) {
-    return <EmptyState title={t('mobile.quizEmptyTitle')} description={t('mobile.quizEmptyDesc')} />
+    return (
+      <PageShell width="2xl">
+        <EmptyState title={t('mobile.quizEmptyTitle')} description={t('mobile.quizEmptyDesc')} />
+      </PageShell>
+    )
   }
 
   if (done) {

@@ -7,13 +7,8 @@ import { useLocaleStore, useT, type Locale } from '@/shared/i18n'
 import { useThemeStore } from '@/shared/stores/themeStore'
 import { cn } from '@/shared/lib/utils'
 
-function linkClass(isActive: boolean) {
-  return cn(
-    'rounded-lg px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors',
-    isActive
-      ? 'bg-brand-700/12 text-brand-900 dark:bg-brand-400/15 dark:text-brand-100'
-      : 'text-ink/75 hover:bg-ink/[0.05] hover:text-ink dark:text-slate-300 dark:hover:bg-white/[0.06] dark:hover:text-white',
-  )
+function navLinkClass(isActive: boolean) {
+  return cn('km-nav-link', isActive && 'km-nav-link--active')
 }
 
 function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
@@ -62,6 +57,7 @@ export function Navbar() {
   const toggle = useThemeStore((s) => s.toggle)
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [practiceOpen, setPracticeOpen] = useState(false)
   const practiceRef = useRef<HTMLDivElement>(null)
 
@@ -100,6 +96,15 @@ export function Navbar() {
   }, [location.pathname])
 
   useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 6)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (!practiceRef.current?.contains(e.target as Node)) setPracticeOpen(false)
     }
@@ -108,7 +113,7 @@ export function Navbar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/[0.08] bg-white/90 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-surface-dark/90">
+    <header className={cn('km-nav-bar', scrolled && 'km-nav-bar--scrolled')}>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
         <Link to="/" className="flex shrink-0 items-center gap-2.5 tracking-tight text-ink dark:text-white">
           <img
@@ -123,7 +128,7 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label={t('nav.mainMenu')}>
           {learnNav.map((item) => (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => linkClass(isActive)}>
+            <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)}>
               {item.label}
             </NavLink>
           ))}
@@ -134,7 +139,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setPracticeOpen((v) => !v)}
-              className={cn(linkClass(practiceActive), 'inline-flex items-center gap-1')}
+              className={cn(navLinkClass(practiceActive), 'inline-flex items-center gap-1')}
               aria-expanded={practiceOpen}
               aria-haspopup="menu"
             >
@@ -144,7 +149,8 @@ export function Navbar() {
             {practiceOpen && (
               <div
                 role="menu"
-                className="absolute left-0 top-[calc(100%+0.4rem)] z-[60] min-w-[14.5rem] overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] py-1.5 shadow-[0_16px_40px_-16px_rgb(10_22_40_/_0.35)]"
+                className="absolute left-0 top-[calc(100%+0.4rem)] z-[var(--z-dropdown)] min-w-[14.5rem] overflow-hidden rounded-[var(--radius-dropdown)] border border-[var(--border-default)] bg-[var(--bg-elevated)] py-1.5"
+                style={{ boxShadow: 'var(--shadow-float)' }}
               >
                 {practiceNav.map((item) => (
                   <Link
@@ -169,7 +175,7 @@ export function Navbar() {
           <div className="mx-1 h-5 w-px bg-ink/10 dark:bg-white/15" aria-hidden />
 
           {communityNav.map((item) => (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => linkClass(isActive)}>
+            <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)}>
               {item.label}
             </NavLink>
           ))}
@@ -183,7 +189,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className="rounded-lg p-2 text-ink/70 transition hover:bg-ink/[0.05] hover:text-ink dark:text-slate-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
+            className="btn-ghost !min-h-0 p-2"
             aria-label={t('nav.toggleTheme')}
           >
             <Sun className="h-5 w-5 dark:hidden" />
@@ -218,7 +224,7 @@ export function Navbar() {
             <>
               <Link
                 to="/login"
-                className="hidden rounded-lg px-3 py-2 text-[14px] font-semibold text-ink/80 hover:text-ink dark:text-slate-200 sm:inline"
+                className="btn-ghost hidden !min-h-0 px-2.5 py-2 text-[14px] sm:inline-flex"
               >
                 {t('nav.login')}
               </Link>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -124,22 +125,77 @@ html.dark {
     letter-spacing: -0.02em;
   }
 
-  /* Page titles: Outfit — Fraunces reserved for brand wordmark */
   .text-page-title {
-    @apply text-3xl font-semibold tracking-tight md:text-[2.15rem];
+    font-size: clamp(1.75rem, 3vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
     color: var(--text-primary);
   }
 
   .text-muted {
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.6;
     color: var(--text-muted);
   }
 
+  .text-display {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+
+  .text-h1 {
+    font-size: clamp(1.75rem, 3vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+  }
+
+  .text-h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .text-h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+  }
+
+  .text-body-lg {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  .text-caption {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+  }
+
+  .text-button {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
   .glass {
-    @apply shadow-[0_1px_0_rgb(15_23_42_/_0.03),0_14px_36px_-18px_rgb(15_23_42_/_0.22)] dark:shadow-[0_1px_0_rgb(255_255_255_/_0.04),0_16px_40px_-20px_rgb(0_0_0_/_0.7)];
     border: 1px solid var(--border-default);
     background-color: var(--bg-elevated);
+    box-shadow: var(--shadow-lg);
   }
 
   .gradient-hero {
@@ -169,38 +225,232 @@ html.dark {
   }
 
   .btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold tracking-tight text-white shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset,0_6px_16px_-6px_rgb(37_99_235_/_0.55)] transition duration-200 hover:bg-brand-500 active:translate-y-px active:scale-[0.985] disabled:opacity-55;
-    @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
+    @apply inline-flex min-h-11 items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold tracking-tight text-white;
+    border-radius: var(--radius-button);
+    background-color: var(--color-brand-600, #2563eb);
+    box-shadow: var(--shadow-md), 0 6px 20px -8px rgb(37 99 235 / 0.55);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-color var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out),
+      opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-brand-500, #3b82f6);
+    box-shadow: var(--shadow-lg), 0 10px 28px -10px rgb(37 99 235 / 0.5);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(1px) scale(0.985);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-primary:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), 0 0 0 4px var(--focus-ring);
   }
 
   html.dark .btn-primary {
-    @apply bg-brand-500 shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset,0_10px_24px_-10px_rgb(37_99_235_/_0.55)] hover:bg-brand-400 hover:text-ink;
+    background-color: var(--color-brand-500, #3b82f6);
+  }
+
+  html.dark .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-brand-400, #60a5fa);
+    color: var(--color-ink, #0f172a);
   }
 
   .btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold tracking-tight shadow-sm transition duration-200 active:translate-y-px;
-    @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)];
-    border-color: var(--border-default);
+    @apply inline-flex min-h-11 items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold tracking-tight;
+    border-radius: var(--radius-button);
+    border: 1px solid var(--border-default);
     background-color: var(--bg-elevated);
     color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out),
+      background-color var(--duration-normal) var(--ease-out);
   }
 
-  .btn-secondary:hover {
-    border-color: rgb(37 99 235 / 0.3);
-    background-color: #eff6ff;
+  .btn-secondary:hover:not(:disabled) {
+    border-color: rgb(37 99 235 / 0.28);
+    background-color: var(--bg-soft);
   }
 
-  html.dark .btn-secondary:hover {
-    border-color: rgb(96 165 250 / 0.4);
+  .btn-secondary:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn-secondary:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-sm), 0 0 0 4px var(--focus-ring);
+  }
+
+  html.dark .btn-secondary:hover:not(:disabled) {
+    border-color: rgb(96 165 250 / 0.35);
     background-color: rgb(255 255 255 / 0.06);
   }
 
+  .btn-ghost {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold tracking-tight;
+    border-radius: var(--radius-button);
+    color: var(--text-secondary);
+    background: transparent;
+    transition: background-color var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--bg-muted);
+    color: var(--text-primary);
+  }
+
+  .btn-ghost:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring);
+  }
+
+  .btn-outline {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold tracking-tight;
+    border-radius: var(--radius-button);
+    border: 1.5px solid rgb(37 99 235 / 0.45);
+    color: var(--color-brand-700, #1d4ed8);
+    background: transparent;
+    transition:
+      background-color var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out);
+  }
+
+  html.dark .btn-outline {
+    border-color: rgb(96 165 250 / 0.45);
+    color: var(--color-brand-300, #93c5fd);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background-color: rgb(37 99 235 / 0.08);
+  }
+
   .input-field {
-    @apply mt-1 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition;
-    @apply focus:border-brand-600 focus:ring-4 focus:ring-[var(--focus-ring)];
-    border-color: var(--border-default);
+    @apply mt-1 w-full px-3.5 py-2.5 text-sm outline-none;
+    border-radius: var(--radius-input);
+    border: 1px solid var(--border-default);
     background-color: var(--bg-elevated);
     color: var(--text-primary);
+    transition:
+      border-color var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out);
+  }
+
+  .input-field:focus {
+    border-color: var(--color-brand-600, #2563eb);
+    box-shadow: 0 0 0 4px var(--focus-ring);
+  }
+
+  .input-field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .km-nav-link {
+    @apply relative rounded-lg px-3 py-2 text-[15px] font-semibold tracking-tight;
+    color: color-mix(in srgb, var(--text-primary) 72%, transparent);
+    transition:
+      color var(--duration-normal) var(--ease-out),
+      background-color var(--duration-normal) var(--ease-out);
+  }
+
+  .km-nav-link:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-muted);
+  }
+
+  .km-nav-link::after {
+    content: "";
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: 6px;
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: var(--nav-underline);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .km-nav-link--active {
+    color: var(--color-brand-800, #1e40af);
+    background-color: rgb(37 99 235 / 0.1);
+  }
+
+  html.dark .km-nav-link--active {
+    color: var(--color-brand-100, #dbeafe);
+    background-color: rgb(96 165 250 / 0.12);
+  }
+
+  .km-nav-link--active::after {
+    transform: scaleX(1);
+  }
+
+  .km-nav-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+
+  .km-nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface-glass);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    transition:
+      box-shadow var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out);
+  }
+
+  .km-nav-bar--scrolled {
+    box-shadow: var(--shadow-md);
+    border-bottom-color: var(--border-default);
+  }
+
+  .skeleton-shimmer {
+    @apply relative overflow-hidden rounded-xl bg-[var(--bg-muted)];
+  }
+
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.35),
+      transparent
+    );
+    animation: km-shimmer 1.4s ease-in-out infinite;
+  }
+
+  html.dark .skeleton-shimmer::after {
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.08), transparent);
+  }
+
+  @keyframes km-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer::after {
+      animation: none;
+    }
   }
 
   .nav-pill-active {

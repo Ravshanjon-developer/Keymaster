@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { CheckCircle2, Keyboard } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
@@ -10,7 +11,8 @@ import { api } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { EmptyState, Skeleton } from '@/shared/components/ui'
+import { PageHeader, PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
+import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 
 const NEXT_MS = 1200
 
@@ -32,6 +34,7 @@ export function TrainingPage() {
   const [waitingNext, setWaitingNext] = useState(false)
   const [lastKeys, setLastKeys] = useState<string[] | null>(null)
   const [countdown, setCountdown] = useState(0)
+  const [sessionCorrect, setSessionCorrect] = useState(0)
   const current = data?.[index]
   const currentLoc = current
     ? localizeLesson(current.course_slug ?? course, current.category_slug ?? undefined, current.keys, {
@@ -39,6 +42,8 @@ export function TrainingPage() {
         action_prompt: current.action_prompt,
       })
     : null
+
+  const progressPct = data?.length ? Math.round(((index + (waitingNext ? 1 : 0)) / data.length) * 100) : 0
 
   const next = useCallback(() => {
     setWaitingNext(false)
@@ -79,6 +84,7 @@ export function TrainingPage() {
         }
       }
       if (correct && current) {
+        setSessionCorrect((n) => n + 1)
         setLastKeys(current.keys)
         setWaitingNext(true)
       }
@@ -86,20 +92,42 @@ export function TrainingPage() {
     [current, token, refreshUser, t, queryClient],
   )
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-64 max-w-2xl" />
+  if (isLoading) {
+    return (
+      <PageShell width="2xl">
+        <SkeletonBlock className="h-10 w-48" />
+        <SkeletonBlock className="mt-6 h-64 w-full rounded-[var(--radius-card)]" />
+      </PageShell>
+    )
+  }
+
   if (isError || !data?.length) {
-    return <EmptyState title={t('training.emptyTitle')} description={t('training.emptyDesc')} />
+    return (
+      <PageShell width="2xl">
+        <EmptyState icon={Keyboard} title={t('training.emptyTitle')} description={t('training.emptyDesc')} />
+      </PageShell>
+    )
   }
 
   return (
-    <div className="page-mesh mx-auto max-w-2xl px-4 py-10 pb-28 lg:pb-10">
-      <h1 className="text-page-title">{t('training.title')}</h1>
-      <p className="text-muted mt-2">{t('training.subtitle')}</p>
+    <PageShell width="2xl">
+      <PageHeader title={t('training.title')} subtitle={t('training.subtitle')} />
 
-      <div className="mt-6">
-        <PracticeKeyboardGate courseQuery={course}>
-          {current && currentLoc && !waitingNext && (
-            <KeyboardTrainer
+      <GlassCard className="mb-6 !p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <span className="font-semibold text-[var(--text-primary)]">
+            {t('training.task', { n: index + 1, total: data.length })}
+          </span>
+          <span className="text-caption tabular-nums">
+            {t('training.sessionCorrect', { n: sessionCorrect })}
+          </span>
+        </div>
+        <ProgressBar value={progressPct} className="mt-3 h-2" />
+      </GlassCard>
+
+      <PracticeKeyboardGate courseQuery={course}>
+        {current && currentLoc && !waitingNext && (
+          <KeyboardTrainer
             key={current.id}
             mode="practice"
             title={t('training.task', { n: index + 1, total: data.length })}
@@ -107,31 +135,25 @@ export function TrainingPage() {
             keys={current.keys}
             onResult={onResult}
           />
-          )}
+        )}
 
-          {waitingNext && current && currentLoc && (
-          <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center">
-            <p className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">{t('training.correct')}</p>
-            <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+        {waitingNext && current && currentLoc && (
+          <GlassCard className="border-success-500/35 bg-gradient-to-br from-success-50/80 to-[var(--bg-elevated)] text-center dark:from-success-500/10">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-success-500/15 text-success-700 dark:text-success-400">
+              <CheckCircle2 className="h-6 w-6" aria-hidden />
+            </div>
+            <p className="text-h3 text-success-800 dark:text-success-300">{t('training.correct')}</p>
+            <p className="mt-3 text-sm text-[var(--text-secondary)]">
               {currentLoc.action_prompt ?? current.action_prompt} ={' '}
-              <strong>{formatShortcut(lastKeys ?? current.keys)}</strong>
+              <strong className="font-mono">{formatShortcut(lastKeys ?? current.keys)}</strong>
             </p>
-            <p className="mt-4 text-sm text-slate-500">{t('training.nextIn', { n: countdown })}</p>
-            <button
-              type="button"
-              onClick={next}
-              className="mt-6 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white"
-            >
+            <p className="mt-4 text-caption">{t('training.nextIn', { n: countdown })}</p>
+            <button type="button" onClick={next} className="btn-primary mt-6">
               {t('training.next')}
             </button>
-          </div>
-          )}
-        </PracticeKeyboardGate>
-      </div>
-
-      <p className="mt-4 text-center text-sm text-slate-500">
-        {t('training.task', { n: index + 1, total: data.length })}
-      </p>
-    </div>
+          </GlassCard>
+        )}
+      </PracticeKeyboardGate>
+    </PageShell>
   )
 }

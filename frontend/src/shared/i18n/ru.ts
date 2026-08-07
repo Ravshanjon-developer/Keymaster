@@ -93,6 +93,9 @@ export const ru: Messages = {
     daily: 'Ежедневные задания',
     achievements: 'Последние достижения',
     noAchievements: 'Пройдите первый урок, чтобы открыть достижения',
+    dailyEmptyDesc: 'Задания на сегодня появятся после следующей активности.',
+    achievementsEmptyDesc: 'Учитесь и тренируйтесь — бейджи откроются автоматически.',
+    allAchievements: 'Все достижения',
   },
   path: {
     eyebrow: 'Мой путь развития',
@@ -241,6 +244,7 @@ export const ru: Messages = {
     emptyTitle: 'Нет заданий',
     emptyDesc: 'Запустите backend и обновите страницу',
     task: 'Задание {n} / {total}',
+    sessionCorrect: 'Верно в сессии: {n}',
     correct: 'Правильно',
     next: 'Следующее задание',
     nextIn: 'Следующее задание через {n}…',

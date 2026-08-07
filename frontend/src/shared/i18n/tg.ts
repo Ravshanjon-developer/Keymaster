@@ -94,6 +94,9 @@ export const tg: Messages = {
     daily: 'Вазифаҳои ҳаррӯза',
     achievements: 'Дастовардҳои охирин',
     noAchievements: 'Аввалин дарсро гузаред, то дастовардҳо кушода шаванд',
+    dailyEmptyDesc: 'Вазифаҳои имрӯз пас аз фаъолият нав мешаванд.',
+    achievementsEmptyDesc: 'Омӯзед ва машқ кунед — нишонҳо худкор кушода мешаванд.',
+    allAchievements: 'Ҳамаи дастовардҳо',
   },
   path: {
     eyebrow: 'Роҳи рушди ман',
@@ -242,6 +245,7 @@ export const tg: Messages = {
     emptyTitle: 'Вазифа нест',
     emptyDesc: 'Backend-ро оғоз кунед ва саҳифаро навсозӣ кунед',
     task: 'Вазифа {n} / {total}',
+    sessionCorrect: 'Дуруст дар сессия: {n}',
     correct: 'Дуруст',
     next: 'Вазифаи навбатӣ',
     nextIn: 'Вазифаи навбатӣ пас аз {n}…',

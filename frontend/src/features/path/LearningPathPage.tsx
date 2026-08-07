@@ -251,10 +251,10 @@ export function LearningPathPage() {
           </div>
 
           {!user && (
-            <p className="mt-4 rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300">
-              {t('path.loginHint')}{' '}
-              <Link to="/login" className="font-semibold text-brand-700 hover:underline">
-                {t('path.login')}
+            <p className="mt-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-elevated)]/90 px-4 py-3 text-sm text-[var(--text-secondary)]">
+              {t('path.guestText')}{' '}
+              <Link to="/register" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+                {t('nav.register')}
               </Link>
             </p>
           )}

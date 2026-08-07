@@ -1,56 +1,82 @@
-# KeyMaster Design System
+# KeyMaster Design System (2026)
 
-## Brand
+Premium SaaS polish on top of the existing KeyMaster brand — **not** a clone of Duolingo/Notion.
+
+## Brand (unchanged)
 
 - **UI font:** Outfit (`--font-sans`)
-- **Wordmark / display:** Fraunces (`--font-display`) — brand name only, not long body copy
-- **Primary (action):** Electric Blue `#2563EB` → `brand-600`
-- **Atmosphere:** Cyan `#06B6D4` → `accent-500` (gradients, soft glow)
-- **Success / XP / done:** Green `#16A34A` / `#10B981` → `success-600` / `success-500`
-- **Background:** `#F9FAFB`, soft panel `#EFF6FF`
-- **Text:** `#0F172A`
+- **Wordmark:** Fraunces (`--font-display`)
+- **Primary:** Electric Blue `#2563EB` → `brand-600`
+- **Atmosphere:** Cyan → `accent-*` (mesh, hero)
+- **Success / XP:** Green → `success-*`
 
-## Role rules
+## Token files
 
-| Role | Color | Use |
-|------|-------|-----|
-| Action | Blue | Buttons, links, focus, active nav |
-| Atmosphere | Cyan | Page glows, hero mesh, brand personality |
-| Reward | Green | Learned badges, XP toasts, completed progress |
-| Neutral | Slate ink | Body text, borders |
+| File | Contents |
+|------|----------|
+| `src/styles/tokens.css` | Spacing, radius, shadows, motion, z-index, warning/danger/info |
+| `src/index.css` | `@theme` palette, semantic surfaces, component classes |
 
-Do not paint every surface with all three — green only for success states.
+## Spacing scale
 
-## Semantic tokens
+`4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 · 96` → `--space-1` … `--space-24`
 
-Defined in `src/index.css` (same names in light/dark):
+## Radius
 
-| Token | Role |
-|-------|------|
-| `--bg-primary` | Page background |
-| `--bg-elevated` | Cards, surfaces |
-| `--bg-soft` | Soft blue panel (`#EFF6FF`) |
-| `--bg-muted` | Soft fills, progress tracks |
-| `--text-primary` | Headings, primary copy |
-| `--text-secondary` | Supporting copy |
-| `--text-muted` | Captions (WCAG AA) |
-| `--border-default` | Borders |
-| `--focus-ring` | `focus-visible` rings |
+| Token | Use |
+|-------|-----|
+| `--radius-input` | Inputs, OTP |
+| `--radius-button` | Buttons |
+| `--radius-card` | GlassCard |
+| `--radius-dropdown` | Nav menus |
+
+## Shadows
+
+`--shadow-sm` · `--shadow-md` · `--shadow-lg` · `--shadow-float` · `--shadow-premium` — soft, no heavy black.
+
+## Typography utilities
+
+| Class | Use |
+|-------|-----|
+| `text-display` | Hero wordmark blocks |
+| `text-h1` / `text-page-title` | Page titles |
+| `text-h2` / `text-h3` | Sections |
+| `text-body-lg` | Lead paragraphs |
+| `text-muted` | Secondary body |
+| `text-caption` | Hints, meta |
+| `text-button` | Button labels |
+
+## Semantic surfaces (`:root` / `html.dark`)
+
+`--bg-primary` · `--bg-elevated` · `--bg-soft` · `--bg-muted` · `--text-*` · `--border-default` · `--focus-ring` · `--surface-glass`
 
 ## Components (`src/shared/components/ui.tsx`)
 
-| Component | Use |
-|-----------|-----|
-| `Button` | `variant`: primary / secondary / ghost |
-| `StatusBadge` | `tone`: brand / success / neutral / warning / locked |
-| `ProgressBar` | Animated width fill |
-| `GlassCard` | Interactive / content containers |
-| `EmptyState` | Empty / error edges |
-| `KeyCombo` / `KeyCap` | Shortcut display |
+| Component | Notes |
+|-----------|--------|
+| `Button` | `primary` · `secondary` · `ghost` · `outline` |
+| `GlassCard` | Premium shadow on hover |
+| `Skeleton` | Shimmer (respects `prefers-reduced-motion`) |
+| `EmptyState` | Icon + title + optional action |
+| `FloatingLabelInput` | Focus, error, password toggle |
+| `StatusBadge` · `ProgressBar` · `KeyCombo` | Unchanged roles |
+
+## Navigation
+
+- `.km-nav-bar` — sticky glass + blur
+- `.km-nav-bar--scrolled` — elevation on scroll
+- `.km-nav-link` / `--active` — underline animation
 
 ## Rules
 
-1. Prefer semantic tokens over raw `slate-*` for text/background.
-2. Every interactive control needs `focus-visible`.
-3. One status badge per course card — `getCourseStatus()`.
-4. Global XP = `user.xp`; course XP = `xp_earned` / `xp_total`.
+1. Prefer tokens and semantic CSS over one-off pixels/colors.
+2. Animations: **transform + opacity** only; honor reduced motion.
+3. Icons: **Lucide** only.
+4. Every interactive control: visible `focus-visible` / focus ring.
+5. Do not change routing, business logic, or page inventory — polish in place.
+
+## Rollout phases
+
+1. **Done:** tokens, buttons, nav, core UI primitives, toasts, forms base.
+2. **Done:** `PageShell` / `PageHeader` / `StatTile`, courses, training, dashboard, leaderboard shell, review/quiz/lesson loading, achievements empty states.
+3. **Done:** skeleton grids on lazy routes, shimmer skeletons, EmptyState with icons on key edges.

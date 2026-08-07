@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, CheckCircle2 } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, Library } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnProgressBar, LearnStatusBadge } from '@/shared/components/LearnStatus'
+import { PageHeader, PageShell, SkeletonCardGrid } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
 
@@ -39,34 +40,30 @@ export function CoursesPage() {
   }, [courseProgress.data])
 
   return (
-    <div className="page-mesh mx-auto max-w-6xl px-4 py-10 md:py-12">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-xl">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-800 dark:text-brand-300">
-            {t('courses.eyebrow')}
-          </p>
-          <h1 className="text-page-title">{t('courses.title')}</h1>
-          <p className="text-muted mt-2.5">{t('courses.subtitle')}</p>
-        </div>
-        <Link to="/path" className="btn-secondary shrink-0 self-start sm:self-auto">
-          {t('courses.openPath')}
-          <ArrowUpRight className="h-4 w-4" />
-        </Link>
-      </div>
+    <PageShell>
+      <PageHeader
+        eyebrow={t('courses.eyebrow')}
+        title={t('courses.title')}
+        subtitle={t('courses.subtitle')}
+        actions={
+          <Link to="/path" className="btn-secondary shrink-0">
+            {t('courses.openPath')}
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        }
+      />
 
-      {isLoading && (
-        <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <Skeleton key={i} className="h-48 w-full" />
-          ))}
-        </div>
-      )}
+      {isLoading && <SkeletonCardGrid count={9} />}
 
       {isError && (
-        <EmptyState title={t('courses.apiDownTitle')} description={t('courses.apiDownDesc')} />
+        <EmptyState
+          title={t('courses.apiDownTitle')}
+          description={t('courses.apiDownDesc')}
+        />
       )}
 
-      <div className="mt-9 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {!isLoading && !isError && (
+      <div className="mt-2 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.map((course, i) => {
           const isRequired = course.slug === 'programmer-basics'
           const prog = progressBySlug.get(course.slug)
@@ -156,7 +153,16 @@ export function CoursesPage() {
           )
         })}
       </div>
-    </div>
+      )}
+
+      {!isLoading && !isError && data?.length === 0 && (
+        <EmptyState
+          icon={Library}
+          title={t('courses.notFound')}
+          description={t('courses.subtitle')}
+        />
+      )}
+    </PageShell>
   )
 }
 
@@ -180,13 +186,26 @@ export function CourseDetailPage({ slug }: { slug: string }) {
   const totalLessons = data?.lesson_count ?? 0
   const doneLessons = lessonProgress.data?.filter((p) => p.completed).length ?? 0
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-64 max-w-6xl" />
-  if (!data) return <EmptyState title={t('courses.notFound')} description="" />
+  if (isLoading) {
+    return (
+      <PageShell>
+        <Skeleton className="h-10 max-w-md w-full" />
+        <Skeleton className="mt-4 h-64 w-full" />
+      </PageShell>
+    )
+  }
+  if (!data) {
+    return (
+      <PageShell width="3xl">
+        <EmptyState title={t('courses.notFound')} description="" />
+      </PageShell>
+    )
+  }
 
   const courseLoc = localizeCourse(data.slug, data.title, data.description)
 
   return (
-    <div className="page-mesh mx-auto max-w-6xl px-4 py-10 md:py-12">
+    <PageShell>
       <div className="mb-8 flex flex-wrap items-start gap-5">
         <CourseBrandIcon slug={data.slug} icon={data.icon} size={56} />
         <div className="min-w-0 flex-1">
@@ -278,6 +297,6 @@ export function CourseDetailPage({ slug }: { slug: string }) {
           {t('courses.exam')}
         </Link>
       </div>
-    </div>
+    </PageShell>
   )
 }

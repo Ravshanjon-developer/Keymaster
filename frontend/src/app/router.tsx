@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 
 import { AppLayout } from '@/shared/components/AppLayout'
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute'
+import { SkeletonCardGrid } from '@/shared/components/PageLayout'
 import { Skeleton } from '@/shared/components/ui'
 
 const HomePage = lazy(() => import('@/features/home/HomePage').then((m) => ({ default: m.HomePage })))
@@ -52,7 +53,12 @@ const TrainingPage = lazy(() =>
 )
 
 function PageFallback() {
-  return <Skeleton className="mx-auto mt-16 h-64 max-w-2xl" />
+  return (
+    <div className="page-mesh mx-auto max-w-6xl px-4 py-10">
+      <Skeleton className="h-10 max-w-xs" />
+      <SkeletonCardGrid count={3} />
+    </div>
+  )
 }
 
 function CourseRoute() {

@@ -13,7 +13,8 @@ import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnStatusBadge } from '@/shared/components/LearnStatus'
 import { PracticeRegisterGate } from '@/shared/components/PracticeRegisterGate'
-import { GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
+import { GlassCard, KeyCombo } from '@/shared/components/ui'
+import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 
 const NEXT_LESSON_MS = 1500
 
@@ -81,7 +82,14 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     }
   }, [succeeded, phase, nextLessonId, navigate])
 
-  if (isLoading) return <Skeleton className="mx-auto mt-10 h-80 max-w-3xl" />
+  if (isLoading) {
+    return (
+      <PageShell width="3xl">
+        <SkeletonBlock className="h-8 w-56" />
+        <SkeletonBlock className="mt-6 h-96 w-full rounded-[var(--radius-card)]" />
+      </PageShell>
+    )
+  }
   if (!data) return null
 
   const loc = localizeLesson(data.course_slug ?? undefined, data.category_slug ?? undefined, data.keys, {
@@ -92,7 +100,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   })
 
   return (
-    <div className="page-mesh mx-auto max-w-3xl px-4 py-10 pb-28 lg:pb-10">
+    <PageShell width="3xl">
       <GlassCard className={learned ? 'border-brand-600/30' : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-brand-600">{t('lesson.steps')}</p>
@@ -250,6 +258,6 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
           {t('lesson.backCatalog')}
         </Link>
       )}
-    </div>
+    </PageShell>
   )
 }
