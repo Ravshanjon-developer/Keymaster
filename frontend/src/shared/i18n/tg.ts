@@ -3,6 +3,7 @@ import type { Messages } from '@/shared/i18n/types'
 /** Тоҷикӣ (кириллӣ) — UI chrome only */
 export const tg: Messages = {
   nav: {
+    home: 'Асосӣ',
     courses: 'Курсҳо',
     path: 'Роҳи ман',
     practice: 'Машқ',

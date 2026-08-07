@@ -3,16 +3,17 @@ import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { useAuthStore } from '@/features/auth/authStore'
+import { HomeFeatureVisual } from '@/features/home/HomeFeatureVisuals'
 import { useT } from '@/shared/i18n'
 
 export function HomePage() {
   const user = useAuthStore((s) => s.user)
   const t = useT()
 
-  const features = [
-    { title: t('home.f1Title'), text: t('home.f1Text') },
-    { title: t('home.f2Title'), text: t('home.f2Text') },
-    { title: t('home.f3Title'), text: t('home.f3Text') },
+  const features: { variant: 'path' | 'keyboard' | 'exam'; title: string; text: string }[] = [
+    { variant: 'path', title: t('home.f1Title'), text: t('home.f1Text') },
+    { variant: 'keyboard', title: t('home.f2Title'), text: t('home.f2Text') },
+    { variant: 'exam', title: t('home.f3Title'), text: t('home.f3Text') },
   ]
 
   return (
@@ -95,9 +96,17 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ delay: i * 0.07, duration: 0.45 }}
-              className="km-feature-tile p-6 md:p-7"
+              className="km-feature-tile flex flex-col p-6 md:p-7"
             >
-              <p className="mb-3 font-mono text-[11px] font-semibold tracking-[0.18em] text-brand-700 dark:text-brand-300">
+              <div
+                className="mb-4 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-soft)]/80 p-2 shadow-[var(--shadow-sm)] dark:bg-[var(--bg-elevated)]/60"
+                aria-hidden
+              >
+                <div className="aspect-[240/136] w-full">
+                  <HomeFeatureVisual variant={item.variant} />
+                </div>
+              </div>
+              <p className="mb-2 font-mono text-[11px] font-semibold tracking-[0.18em] text-brand-700 dark:text-brand-300">
                 0{i + 1}
               </p>
               <h2 className="text-h3">{item.title}</h2>

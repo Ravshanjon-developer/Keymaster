@@ -2,6 +2,7 @@ export type Locale = 'ru' | 'tg'
 
 export type Messages = {
   nav: {
+    home: string
     courses: string
     path: string
     practice: string

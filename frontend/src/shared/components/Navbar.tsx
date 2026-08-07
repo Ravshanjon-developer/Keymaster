@@ -61,7 +61,8 @@ export function Navbar() {
   const [practiceOpen, setPracticeOpen] = useState(false)
   const practiceRef = useRef<HTMLDivElement>(null)
 
-  const learnNav = [
+  const learnNav: { to: string; label: string; end?: boolean }[] = [
+    { to: '/', label: t('nav.home'), end: true },
     { to: '/courses', label: t('nav.courses') },
     { to: '/path', label: t('nav.path') },
   ]
@@ -128,7 +129,12 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label={t('nav.mainMenu')}>
           {learnNav.map((item) => (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)}>
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => navLinkClass(isActive)}
+            >
               {item.label}
             </NavLink>
           ))}
@@ -260,6 +266,7 @@ export function Navbar() {
                     <NavLink
                       key={item.to}
                       to={item.to}
+                      end={item.to === '/'}
                       onClick={() => setOpen(false)}
                       className={({ isActive }) =>
                         cn(

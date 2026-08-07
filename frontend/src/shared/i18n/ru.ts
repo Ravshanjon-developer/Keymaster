@@ -2,6 +2,7 @@ import type { Messages } from '@/shared/i18n/types'
 
 export const ru: Messages = {
   nav: {
+    home: 'Главная',
     courses: 'Курсы',
     path: 'Мой путь',
     practice: 'Практика',
