@@ -31,7 +31,7 @@ function GoogleIcon() {
   )
 }
 
-export function GoogleSignInBlock({ className }: { className?: string }) {
+export function GoogleSignInBlock({ className, dense }: { className?: string; dense?: boolean }) {
   const t = useT()
   const loginWithGoogle = useAuthStore((s) => s.loginWithGoogle)
   const [loading, setLoading] = useState(false)
@@ -50,14 +50,15 @@ export function GoogleSignInBlock({ className }: { className?: string }) {
   }
 
   return (
-    <div className={cn('space-y-5', className)}>
+    <div className={cn(dense ? 'space-y-3' : 'space-y-5', className)}>
       <button
         type="button"
         disabled={loading}
         aria-busy={loading}
         onClick={() => void onGoogle()}
         className={cn(
-          'flex min-h-[2.75rem] w-full items-center justify-center gap-3 rounded-xl border px-4 text-sm font-semibold shadow-sm transition',
+          'flex w-full items-center justify-center gap-3 rounded-xl border px-4 text-sm font-semibold shadow-sm transition',
+          dense ? 'min-h-11' : 'min-h-[2.75rem]',
           'border-[var(--border-default)] bg-white text-[var(--text-primary)]',
           'hover:bg-slate-50 active:scale-[0.99]',
           'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',

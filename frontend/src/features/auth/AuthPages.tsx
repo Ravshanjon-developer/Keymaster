@@ -7,6 +7,7 @@ import { api, ApiError } from '@/shared/lib/api'
 import { isSupabaseAuth, supabase } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
 import { OtpDigitInput, otpDigitCount } from '@/shared/components/OtpDigitInput'
+import { FloatingLabelInput } from '@/shared/components/FloatingLabelInput'
 import { AuthScreen } from '@/features/auth/AuthScreen'
 import { GoogleSignInBlock } from '@/features/auth/GoogleSignInButton'
 
@@ -216,36 +217,32 @@ export function LoginPage() {
       }
     >
       <GoogleSignInBlock className="!mt-0" />
-      <form onSubmit={onSubmit} className="mt-1 space-y-4">
-          <label className="block text-sm font-medium">
-            {t('auth.email')}
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                setError('')
-                setNeedsVerify(false)
-              }}
-              className="input-field"
-              autoComplete="email"
-            />
-          </label>
-          <label className="block text-sm font-medium">
-            {t('auth.password')}
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                setError('')
-              }}
-              className="input-field"
-              autoComplete="current-password"
-            />
-          </label>
+      <form onSubmit={onSubmit} className="mt-1 space-y-3">
+          <FloatingLabelInput
+            id="login-email"
+            label={t('auth.email')}
+            type="email"
+            required
+            value={email}
+            autoComplete="email"
+            onChange={(v) => {
+              setEmail(v)
+              setError('')
+              setNeedsVerify(false)
+            }}
+          />
+          <FloatingLabelInput
+            id="login-password"
+            label={t('auth.password')}
+            type="password"
+            required
+            value={password}
+            autoComplete="current-password"
+            onChange={(v) => {
+              setPassword(v)
+              setError('')
+            }}
+          />
           {error && (
             <p
               role="alert"
@@ -391,8 +388,9 @@ export function RegisterPage() {
 
   return (
     <AuthScreen
+      compact
       title={t('auth.registerTitle')}
-      subtitle={t('auth.registerSub')}
+      subtitle={t('auth.loginSub')}
       footer={
         <>
           {t('auth.haveAccount')}{' '}
@@ -402,29 +400,44 @@ export function RegisterPage() {
         </>
       }
     >
-      <GoogleSignInBlock className="!mt-0" />
-      <form onSubmit={onSubmit} className="mt-1 space-y-4">
-          {(['display_name', 'username', 'email', 'password'] as const).map((field) => (
-            <label key={field} className="block text-sm font-medium capitalize">
-              {field === 'display_name'
-                ? t('auth.name')
-                : field === 'password'
-                  ? t('auth.password')
-                  : field === 'username'
-                    ? t('auth.username')
-                    : t('auth.email')}
-              <input
-                type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
-                required
-                minLength={field === 'password' ? 6 : undefined}
-                autoComplete={field === 'password' ? 'new-password' : undefined}
-                value={form[field]}
-                onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                className="input-field"
-              />
-            </label>
-          ))}
-          <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
+      <GoogleSignInBlock className="!mt-0" dense />
+      <form onSubmit={onSubmit} className="mt-3 space-y-2.5">
+          <FloatingLabelInput
+            id="reg-name"
+            label={t('auth.name')}
+            required
+            value={form.display_name}
+            autoComplete="name"
+            onChange={(v) => setForm({ ...form, display_name: v })}
+          />
+          <FloatingLabelInput
+            id="reg-username"
+            label={t('auth.username')}
+            required
+            value={form.username}
+            autoComplete="username"
+            onChange={(v) => setForm({ ...form, username: v })}
+          />
+          <FloatingLabelInput
+            id="reg-email"
+            label={t('auth.email')}
+            type="email"
+            required
+            value={form.email}
+            autoComplete="email"
+            onChange={(v) => setForm({ ...form, email: v })}
+          />
+          <FloatingLabelInput
+            id="reg-password"
+            label={t('auth.password')}
+            type="password"
+            required
+            minLength={6}
+            value={form.password}
+            autoComplete="new-password"
+            onChange={(v) => setForm({ ...form, password: v })}
+          />
+          <button type="submit" disabled={loading} className="btn-primary !mt-3 w-full min-h-11 py-2.5">
           {t('auth.createAccount')}
         </button>
       </form>
