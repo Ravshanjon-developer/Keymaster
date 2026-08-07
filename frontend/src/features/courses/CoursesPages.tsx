@@ -203,7 +203,7 @@ export function CourseDetailPage({ slug }: { slug: string }) {
             </div>
           ) : (
             <p className="mt-3 text-[14px] text-ink-soft">
-              <Link to="/login" className="font-semibold text-brand-800 hover:underline">
+              <Link to="/register" state={{ from: `/courses/${slug}` }} className="font-semibold text-brand-800 hover:underline">
                 {t('courses.loginLink')}
               </Link>
               {t('courses.loginToTrack')}

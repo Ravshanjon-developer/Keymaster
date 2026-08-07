@@ -80,17 +80,59 @@ export function AppRouter() {
           <Route path="courses" element={<CoursesPage />} />
           <Route path="courses/:slug" element={<CourseRoute />} />
           <Route path="lessons/:id" element={<LessonRoute />} />
-          <Route path="path" element={<LearningPathPage />} />
-          <Route path="review" element={<ReviewPage />} />
-          <Route path="quiz" element={<QuizPage />} />
-          <Route path="training" element={<TrainingPage />} />
-          <Route path="speed" element={<SpeedModePage />} />
-          <Route path="exam" element={<ExamPage />} />
+          <Route
+            path="path"
+            element={
+              <ProtectedRoute>
+                <LearningPathPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="review"
+            element={
+              <ProtectedRoute>
+                <ReviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="quiz"
+            element={
+              <ProtectedRoute>
+                <QuizPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="training"
+            element={
+              <ProtectedRoute>
+                <TrainingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="speed"
+            element={
+              <ProtectedRoute>
+                <SpeedModePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="exam"
+            element={
+              <ProtectedRoute>
+                <ExamPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="leaderboard" element={<LeaderboardPage />} />
           <Route
             path="achievements"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute redirect="login">
                 <AchievementsPage />
               </ProtectedRoute>
             }
@@ -98,7 +140,7 @@ export function AppRouter() {
           <Route
             path="dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute redirect="login">
                 <DashboardPage />
               </ProtectedRoute>
             }
@@ -106,7 +148,7 @@ export function AppRouter() {
           <Route
             path="stats"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute redirect="login">
                 <StatsPage />
               </ProtectedRoute>
             }
@@ -114,7 +156,7 @@ export function AppRouter() {
           <Route
             path="admin"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute redirect="login">
                 <AdminPage />
               </ProtectedRoute>
             }

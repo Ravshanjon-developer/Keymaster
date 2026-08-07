@@ -196,6 +196,11 @@ export type Messages = {
     googleRedirecting: string
     googleSignInFail: string
     orDivider: string
+    practiceGateEyebrow: string
+    practiceGateTitle: string
+    practiceGateBody: string
+    practiceGateRegister: string
+    practiceGateLogin: string
   }
   lesson: {
     steps: string

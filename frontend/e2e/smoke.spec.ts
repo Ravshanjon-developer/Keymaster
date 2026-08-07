@@ -31,8 +31,10 @@ test.describe('KeyMaster smoke', () => {
     await expect(page.getByRole('button', { name: 'Войти' })).toBeVisible()
   })
 
-  test('review page loads', async ({ page }) => {
+  test('practice routes ask for registration', async ({ page }) => {
+    await page.goto('/training')
+    await expect(page).toHaveURL(/\/register/)
     await page.goto('/review')
-    await expect(page.getByRole('heading', { name: /Повторение/i })).toBeVisible()
+    await expect(page).toHaveURL(/\/register/)
   })
 })

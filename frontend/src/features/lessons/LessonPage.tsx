@@ -12,6 +12,7 @@ import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnStatusBadge } from '@/shared/components/LearnStatus'
+import { PracticeRegisterGate } from '@/shared/components/PracticeRegisterGate'
 import { GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
 
 const NEXT_LESSON_MS = 1500
@@ -98,7 +99,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
           {token ? (
             <LearnStatusBadge learned={learned} />
           ) : (
-            <Link to="/login" className="text-xs font-semibold text-brand-700 hover:underline">
+            <Link to="/register" state={{ from: `/lessons/${lessonId}` }} className="text-xs font-semibold text-brand-700 hover:underline">
               {t('lesson.saveProgress')}
             </Link>
           )}
@@ -131,22 +132,28 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
 
         {phase === 'theory' && (
           <div className="mt-8 space-y-3">
-            <button
-              type="button"
-              onClick={() => {
-                setSucceeded(false)
-                setPhase('practice')
-              }}
-              className="btn-primary w-full py-3 text-base"
-            >
-              {learned ? t('lesson.repeat') : t('lesson.learn')}
-            </button>
-            <p className="text-center text-xs text-slate-500">{t('lesson.selfCheckHint')}</p>
+            {!token ? (
+              <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSucceeded(false)
+                    setPhase('practice')
+                  }}
+                  className="btn-primary w-full py-3 text-base"
+                >
+                  {learned ? t('lesson.repeat') : t('lesson.learn')}
+                </button>
+                <p className="text-center text-xs text-slate-500">{t('lesson.selfCheckHint')}</p>
+              </>
+            )}
           </div>
         )}
       </GlassCard>
 
-      {phase === 'practice' && (
+      {phase === 'practice' && token && (
         <div className="mt-8 space-y-4">
           <PracticeKeyboardGate courseQuery={data.course_slug ?? undefined}>
             <KeyboardTrainer

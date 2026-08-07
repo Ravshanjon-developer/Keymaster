@@ -285,6 +285,8 @@ export function RegisterPage() {
   const register = useAuthStore((s) => s.register)
   const resendSignupEmail = useAuthStore((s) => s.resendSignupEmail)
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { from?: string } | null)?.from ?? '/dashboard'
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
@@ -299,7 +301,7 @@ export function RegisterPage() {
       const res = await register(form)
       if (res.loggedIn) {
         toast.success(res.alreadyHadAccount ? t('auth.alreadyHadAccountLogin') : t('auth.welcome'))
-        navigate('/dashboard', { replace: true })
+        navigate(returnTo, { replace: true })
         return
       }
       setPendingWasExisting(!!res.existingAccountResent)
@@ -367,7 +369,7 @@ export function RegisterPage() {
             resendCooldownLeft={resendCooldownLeft}
             onSuccess={() => {
               setPendingEmail(null)
-              navigate('/dashboard', { replace: true })
+              navigate(returnTo, { replace: true })
             }}
           />
         ) : (
