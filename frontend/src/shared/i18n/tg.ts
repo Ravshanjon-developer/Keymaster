@@ -185,6 +185,9 @@ export const tg: Messages = {
     resending: 'Фиристода истодааст…',
     resendFail: 'Фиристодан нашуд',
     resendRateLimit: '1 дақиқа интизор шавед, сипас боз кӯшиш кунед.',
+    resendWaitSeconds: 'Такрор баъди {sec} сон',
+    resendSupabaseHint:
+      'Почтаро Supabase мефиристад: на бештар аз ҳар 60 сон. Спам ва Audit Logs-ро санҷед.',
     resendNeedEmail: 'Email-ро дар майдон ворид кунед',
     verifyTitle: 'Тасдиқи email',
     verifyLoading: 'Истинод санҷида мешавад…',
@@ -196,6 +199,10 @@ export const tg: Messages = {
     confirmCode: 'Рамзро тасдиқ кунед',
     confirmingCode: 'Санҷиш…',
     otpInvalid: 'Рамз нодуруст ё мӯҳлаташ гузаштааст.',
+    continueWithGoogle: 'Воридшавӣ бо Google',
+    googleRedirecting: 'Ба Google…',
+    googleSignInFail: 'Воридшавӣ бо Google нашуд',
+    orDivider: 'ё',
   },
   lesson: {
     steps: 'Дарс · омӯхтан → такрор бо ишора',

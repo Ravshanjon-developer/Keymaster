@@ -45,6 +45,7 @@ interface AuthState {
   }>
   confirmSignupOtp: (email: string, code: string) => Promise<void>
   resendSignupEmail: (email: string) => Promise<void>
+  loginWithGoogle: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -227,6 +228,14 @@ export const useAuthStore = create<AuthState>()(
           options: { emailRedirectTo: authRedirectUrl() },
         })
         if (error) throw mapSupabaseResendError(error)
+      },
+      loginWithGoogle: async () => {
+        if (!supabase) throw new ApiError('Supabase not configured', 400)
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: authRedirectUrl() },
+        })
+        if (error) throw mapSupabaseAuthError(error)
       },
     }),
     { name: 'km-auth', partialize: (s) => ({ token: s.token, user: s.user }) },

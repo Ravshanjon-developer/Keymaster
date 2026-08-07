@@ -34,6 +34,12 @@ async def _sync_profile_from_supabase_meta(db: AsyncSession, user: User, meta: d
     display_name = meta.get("display_name")
     if display_name and str(display_name).strip():
         user.display_name = str(display_name).strip()[:128]
+    else:
+        for key in ("full_name", "name"):
+            val = meta.get(key)
+            if val and str(val).strip():
+                user.display_name = str(val).strip()[:128]
+                break
     raw_username = meta.get("username")
     if raw_username and str(raw_username).strip():
         desired = _slug_username(str(raw_username).strip())[:64]
@@ -67,6 +73,13 @@ async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
     confirmed = _supabase_email_confirmed(payload)
     meta = payload.get("user_metadata") or {}
 
+    def _display_from_meta(m: dict, fallback: str) -> str:
+        for key in ("display_name", "full_name", "name"):
+            val = m.get(key)
+            if val and str(val).strip():
+                return str(val).strip()[:128]
+        return fallback[:128]
+
     linked = await db.scalar(
         select(User).where(User.oauth_provider == "supabase", User.oauth_subject == sub)
     )
@@ -85,7 +98,7 @@ async def ensure_user_from_supabase(db: AsyncSession, payload: dict) -> User:
 
     username = meta.get("username") or email.split("@")[0]
     username = await _unique_username(db, str(username))
-    display_name = (meta.get("display_name") or username)[:128]
+    display_name = _display_from_meta(meta, str(username))
 
     user = User(
         email=email,

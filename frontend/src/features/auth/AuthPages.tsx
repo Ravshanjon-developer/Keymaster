@@ -6,8 +6,9 @@ import { useAuthStore } from '@/features/auth/authStore'
 import { api, ApiError } from '@/shared/lib/api'
 import { isSupabaseAuth, supabase } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
-import { GlassCard } from '@/shared/components/ui'
 import { OtpDigitInput, otpDigitCount } from '@/shared/components/OtpDigitInput'
+import { AuthScreen } from '@/features/auth/AuthScreen'
+import { GoogleSignInBlock } from '@/features/auth/GoogleSignInButton'
 
 function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback: string) {
   if (!(err instanceof ApiError)) return fallback
@@ -195,16 +196,27 @@ export function LoginPage() {
   }
 
   return (
-    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
-      <GlassCard>
-        <h1 className="font-display text-2xl font-bold">{t('auth.loginTitle')}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t('auth.loginSub')}</p>
-        {verifiedBanner && (
+    <AuthScreen
+      title={t('auth.loginTitle')}
+      subtitle={t('auth.loginSub')}
+      banner={
+        verifiedBanner ? (
           <p className="mt-4 rounded-xl border border-success-500/30 bg-success-500/10 px-3 py-2 text-sm text-success-800 dark:text-success-300">
             {t('auth.verifySuccess')}
           </p>
-        )}
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        ) : undefined
+      }
+      footer={
+        <>
+          {t('auth.noAccount')}{' '}
+          <Link to="/register" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+            {t('auth.registerLink')}
+          </Link>
+        </>
+      }
+    >
+      <GoogleSignInBlock className="!mt-0" />
+      <form onSubmit={onSubmit} className="mt-1 space-y-4">
           <label className="block text-sm font-medium">
             {t('auth.email')}
             <input
@@ -263,18 +275,11 @@ export function LoginPage() {
               <p className="text-muted text-xs leading-relaxed">{t('auth.emailDeliveryHint')}</p>
             </>
           )}
-          <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
-            {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
-          </button>
-        </form>
-        <p className="mt-4 text-center text-sm">
-          {t('auth.noAccount')}{' '}
-          <Link to="/register" className="font-semibold text-brand-700 hover:underline">
-            {t('auth.registerLink')}
-          </Link>
-        </p>
-      </GlassCard>
-    </div>
+        <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
+          {loading ? t('auth.submittingLogin') : t('auth.submitLogin')}
+        </button>
+      </form>
+    </AuthScreen>
   )
 }
 
@@ -341,54 +346,64 @@ export function RegisterPage() {
 
   if (pendingEmail) {
     return (
-      <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
-        <GlassCard className="text-center">
-          <h1 className="font-display text-2xl font-bold">{t('auth.checkEmailTitle')}</h1>
-          <p className="text-muted mt-3">
-            {isSupabaseAuth
-              ? t(
-                  pendingWasExisting ? 'auth.checkEmailBodyExistingUnconfirmed' : 'auth.checkEmailBodySupabase',
-                  { email: pendingEmail },
-                )
-              : t('auth.checkEmailBody', { email: pendingEmail })}
-          </p>
-          {isSupabaseAuth ? (
-            <VerifySignupOtpForm
-              email={pendingEmail}
-              onResend={() => void onResend()}
-              resendLoading={resendLoading}
-              resendCooldownLeft={resendCooldownLeft}
-              onSuccess={() => {
-                setPendingEmail(null)
-                navigate('/dashboard', { replace: true })
-              }}
-            />
-          ) : (
-            <>
-              <button
-                type="button"
-                disabled={resendLoading}
-                onClick={() => void onResend()}
-                className="btn-secondary mt-6 min-h-11 w-full"
-              >
-                {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
-              </button>
-              <Link to="/login" className="btn-primary mt-3 inline-flex min-h-11 w-full items-center justify-center">
-                {t('auth.loginLink')}
-              </Link>
-            </>
-          )}
-        </GlassCard>
-      </div>
+      <AuthScreen
+        title={t('auth.checkEmailTitle')}
+        subtitle={
+          isSupabaseAuth
+            ? t(
+                pendingWasExisting ? 'auth.checkEmailBodyExistingUnconfirmed' : 'auth.checkEmailBodySupabase',
+                { email: pendingEmail },
+              )
+            : t('auth.checkEmailBody', { email: pendingEmail })
+        }
+        footer={
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+            {t('auth.loginLink')}
+          </Link>
+        }
+      >
+        {isSupabaseAuth ? (
+          <VerifySignupOtpForm
+            email={pendingEmail}
+            onResend={() => void onResend()}
+            resendLoading={resendLoading}
+            resendCooldownLeft={resendCooldownLeft}
+            onSuccess={() => {
+              setPendingEmail(null)
+              navigate('/dashboard', { replace: true })
+            }}
+          />
+        ) : (
+          <>
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={() => void onResend()}
+              className="btn-secondary min-h-11 w-full"
+            >
+              {resendLoading ? t('auth.resending') : t('auth.resendVerification')}
+            </button>
+          </>
+        )}
+      </AuthScreen>
     )
   }
 
   return (
-    <div className="page-mesh mx-auto flex max-w-md flex-col gap-6 px-4 py-16 pb-28 lg:pb-10">
-      <GlassCard>
-        <h1 className="font-display text-2xl font-bold">{t('auth.registerTitle')}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t('auth.registerSub')}</p>
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+    <AuthScreen
+      title={t('auth.registerTitle')}
+      subtitle={t('auth.registerSub')}
+      footer={
+        <>
+          {t('auth.haveAccount')}{' '}
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+            {t('auth.loginLink')}
+          </Link>
+        </>
+      }
+    >
+      <GoogleSignInBlock className="!mt-0" />
+      <form onSubmit={onSubmit} className="mt-1 space-y-4">
           {(['display_name', 'username', 'email', 'password'] as const).map((field) => (
             <label key={field} className="block text-sm font-medium capitalize">
               {field === 'display_name'
@@ -410,16 +425,9 @@ export function RegisterPage() {
             </label>
           ))}
           <button type="submit" disabled={loading} className="btn-primary w-full min-h-11 py-2.5">
-            {t('auth.createAccount')}
-          </button>
-        </form>
-        <p className="mt-4 text-center text-sm">
-          {t('auth.haveAccount')}{' '}
-          <Link to="/login" className="font-semibold text-brand-700 hover:underline">
-            {t('auth.loginLink')}
-          </Link>
-        </p>
-      </GlassCard>
-    </div>
+          {t('auth.createAccount')}
+        </button>
+      </form>
+    </AuthScreen>
   )
 }

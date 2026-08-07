@@ -18,6 +18,8 @@
      - `http://localhost:5173/auth/callback`
 3. **Authentication** → **Email** → включите **Confirm email**
 
+**Google:** см. `docs/GOOGLE_AUTH.md`.
+
 ## 3. Ключи API
 
 **Project Settings** → **API**:
@@ -94,3 +96,16 @@ SMTP переменные **не нужны**, если все регистра�
 4. **Быстрый вход без письма:** **Authentication → Users** → `ravtol1207@gmail.com` → открыть пользователя → **Confirm user** / подтвердить email → снова **Войти** на сайте.
 5. Для теста без письма: **Sign In / Providers → Email** → выключить обязательное **Confirm email** (только временно).
 6. Стабильная доставка: **Custom SMTP** в Supabase (Resend, Brevo и т.д.), не обязательно Postal.
+
+## 8.1. «Отправить снова» не шлёт письмо
+
+Кнопка вызывает **`supabase.auth.resend({ type: 'signup' })`** — письмо снова отправляет **только Supabase**, не KeyMaster.
+
+Частые причины:
+
+1. **Rate limit** — на free часто **не чаще 1 раза в ~60 секунд** на email и **мало писем в час** (**Authentication → Rate Limits**). Supabase может вернуть ошибку или «успех» без нового письма, если лимит исчерпан.
+2. **Первое письмо уже ушло** — повторное приходит с задержкой; проверьте **Спам** и **Authentication → Audit Logs** (событие `user_confirmation_requested` / ошибка SMTP).
+3. **Email уже подтверждён** — повтор signup не нужен, используйте **Вход**.
+4. **Квота SMTP** (Resend free) — смотрите логи в Resend и Supabase Audit.
+
+Подождите **60+ секунд** между нажатиями «Отправить снова».

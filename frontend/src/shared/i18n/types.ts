@@ -179,6 +179,8 @@ export type Messages = {
     resending: string
     resendFail: string
     resendRateLimit: string
+    resendWaitSeconds: string
+    resendSupabaseHint: string
     resendNeedEmail: string
     verifyTitle: string
     verifyLoading: string
@@ -190,6 +192,10 @@ export type Messages = {
     confirmCode: string
     confirmingCode: string
     otpInvalid: string
+    continueWithGoogle: string
+    googleRedirecting: string
+    googleSignInFail: string
+    orDivider: string
   }
   lesson: {
     steps: string

@@ -184,6 +184,9 @@ export const ru: Messages = {
     resending: 'Отправка…',
     resendFail: 'Не удалось отправить код',
     resendRateLimit: 'Подождите около минуты и нажмите «Отправить снова».',
+    resendWaitSeconds: 'Повтор через {sec} сек',
+    resendSupabaseHint:
+      'Письмо шлёт Supabase: не чаще ~1 раза в 60 сек и лимит в час на free. Проверьте спам и Authentication → Audit Logs.',
     resendNeedEmail: 'Введите email в поле выше',
     verifyTitle: 'Подтверждение email',
     verifyLoading: 'Проверяем ссылку…',
@@ -195,6 +198,10 @@ export const ru: Messages = {
     confirmCode: 'Подтвердить код',
     confirmingCode: 'Проверка…',
     otpInvalid: 'Неверный или просроченный код. Запросите письмо ещё раз.',
+    continueWithGoogle: 'Продолжить с Google',
+    googleRedirecting: 'Переход в Google…',
+    googleSignInFail: 'Не удалось открыть вход через Google',
+    orDivider: 'или',
   },
   lesson: {
     steps: 'Урок · узнать → повторить с подсказкой',
