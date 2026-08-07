@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
-import { Inbox } from 'lucide-react'
+import { Inbox, Loader2 } from 'lucide-react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { displayKey } from '@/shared/lib/hotkeys'
@@ -16,14 +15,15 @@ export function GlassCard({
   hover?: boolean
 }) {
   return (
-    <motion.div
-      whileHover={hover ? { y: -3, transition: { duration: 0.22 } } : undefined}
-      transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-      className={cn('glass rounded-[var(--radius-card)] p-5 md:p-6', hover && 'cursor-pointer', className)}
-      style={hover ? { boxShadow: 'var(--shadow-premium)' } : undefined}
+    <div
+      className={cn(
+        'km-card rounded-[var(--radius-card)] p-5 md:p-6',
+        hover && 'km-card--interactive cursor-pointer',
+        className,
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -70,14 +70,18 @@ export function Button({
   className,
   variant = 'primary',
   size = 'md',
+  loading = false,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
   size?: ButtonSize
+  loading?: boolean
 }) {
   return (
     <button
       type="button"
+      aria-busy={loading || undefined}
+      disabled={props.disabled || loading}
       className={cn(
         'disabled:pointer-events-none disabled:opacity-55',
         size === 'sm' && '!min-h-9 px-3 py-1.5 text-xs',
@@ -87,11 +91,19 @@ export function Button({
         variant === 'secondary' && 'btn-secondary',
         variant === 'ghost' && 'btn-ghost',
         variant === 'outline' && 'btn-outline',
+        variant === 'primary' && loading && 'is-loading',
         className,
       )}
       {...props}
     >
-      {children}
+      {loading && variant !== 'primary' ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          {children}
+        </>
+      ) : (
+        children
+      )}
     </button>
   )
 }
@@ -149,7 +161,7 @@ export function ProgressBar({
     >
       <div
         className={cn(
-          'h-full rounded-full bg-brand-600 transition-[width] duration-500 ease-[var(--ease-out)]',
+          'h-full rounded-full bg-[var(--color-accent)] transition-[width] duration-500 ease-[var(--ease-out)]',
           barClassName,
         )}
         style={{ width: `${pct}%` }}

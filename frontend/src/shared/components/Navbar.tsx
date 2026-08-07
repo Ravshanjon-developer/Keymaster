@@ -189,7 +189,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className="btn-ghost !min-h-0 p-2"
+            className="btn-ghost km-theme-toggle !min-h-0 p-2"
             aria-label={t('nav.toggleTheme')}
           >
             <Sun className="h-5 w-5 dark:hidden" />
@@ -246,7 +246,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-ink/[0.08] bg-white px-4 py-4 lg:hidden dark:border-white/[0.08] dark:bg-surface-dark">
+        <div className="km-mobile-nav px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-4" aria-label={t('nav.mobileMenu')}>
             <LanguageSwitcher compact />
 

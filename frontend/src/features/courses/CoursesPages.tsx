@@ -86,7 +86,7 @@ export function CoursesPage() {
                   hover
                   className={cn(
                     'group relative flex h-full min-h-[188px] flex-col overflow-hidden p-5',
-                    isRequired && 'border-brand-700/35 bg-gradient-to-b from-brand-50/90 to-white dark:from-brand-950/35 dark:to-card-dark',
+                    isRequired && 'border-[var(--border-hover)] bg-gradient-to-b from-brand-50/90 to-[var(--bg-card)] dark:from-brand-950/35 dark:to-[var(--bg-card)]',
                     status === 'completed' && !isRequired && 'border-brand-700/25',
                     status === 'in_progress' && !isRequired && 'ring-1 ring-brand-600/20',
                   )}
@@ -133,18 +133,22 @@ export function CoursesPage() {
                       <div className="mb-3 h-8" />
                     )}
 
-                    <div className="flex items-center justify-between border-t border-ink/[0.07] pt-3 text-[12px] font-medium text-ink-soft dark:border-white/10 dark:text-slate-400">
+                    <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-3 text-[12px] font-medium text-[var(--text-muted)]">
                       <span>
                         <span className="tabular-nums text-brand-800 dark:text-brand-300">
                           {course.lesson_count}
                         </span>{' '}
                         {t('courses.lessons')}
-                        <span className="mx-1.5 text-ink/20 dark:text-white/20">·</span>
+                        <span className="mx-1.5 text-[var(--text-disabled)]">·</span>
                         {course.category_count} {t('courses.categories')}
                       </span>
-                      {isRequired && (
-                        <span className="text-brand-800 dark:text-brand-300">{t('courses.startHere')}</span>
-                      )}
+                      <span
+                        className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent-muted)] px-2.5 py-1 text-[11px] font-semibold text-brand-800 transition group-hover:bg-[var(--color-accent)] group-hover:text-white dark:text-brand-200 dark:group-hover:text-[var(--bg-primary)]"
+                        aria-hidden
+                      >
+                        {isRequired ? t('courses.startHere') : null}
+                        <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </span>
                     </div>
                   </div>
                 </GlassCard>

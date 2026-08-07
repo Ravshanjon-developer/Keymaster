@@ -10,6 +10,7 @@ import { OtpDigitInput, otpDigitCount } from '@/shared/components/OtpDigitInput'
 import { FloatingLabelInput } from '@/shared/components/FloatingLabelInput'
 import { AuthScreen } from '@/features/auth/AuthScreen'
 import { GoogleSignInBlock } from '@/features/auth/GoogleSignInButton'
+import { cn } from '@/shared/lib/utils'
 
 function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback: string) {
   if (!(err instanceof ApiError)) return fallback
@@ -437,9 +438,10 @@ export function RegisterPage() {
             minLength={6}
             value={form.password}
             autoComplete="new-password"
+            showPasswordStrength
             onChange={(v) => setForm({ ...form, password: v })}
           />
-          <button type="submit" disabled={loading} className="btn-primary !mt-3 w-full min-h-11 py-2.5">
+          <button type="submit" disabled={loading} className={cn('btn-primary !mt-3 w-full min-h-11 py-2.5', loading && 'is-loading')}>
           {t('auth.createAccount')}
         </button>
       </form>

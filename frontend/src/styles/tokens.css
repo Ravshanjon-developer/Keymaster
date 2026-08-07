@@ -1,6 +1,6 @@
 /**
  * KeyMaster design tokens — spacing, radius, motion, elevation, z-index.
- * Colors & semantic surfaces live in index.css (@theme + :root).
+ * Semantic colors: index.css (:root / html.dark). Palette: @theme in index.css.
  */
 
 :root {
@@ -30,19 +30,21 @@
   --radius-dropdown: var(--radius-lg);
   --radius-full: 9999px;
 
-  /* Elevation — soft, no muddy black */
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 0 rgb(255 255 255 / 0.6) inset;
-  --shadow-md: 0 4px 16px -4px rgb(15 23 42 / 0.1), 0 1px 0 rgb(255 255 255 / 0.5) inset;
-  --shadow-lg: 0 12px 40px -16px rgb(15 23 42 / 0.14), 0 1px 0 rgb(255 255 255 / 0.4) inset;
-  --shadow-float: 0 20px 50px -24px rgb(37 99 235 / 0.22);
-  --shadow-premium: 0 24px 60px -28px rgb(15 23 42 / 0.18), 0 0 0 1px rgb(15 23 42 / 0.04);
+  --border-width: 1px;
 
-  /* Motion */
+  /* Elevation — light */
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05), 0 1px 0 rgb(255 255 255 / 0.65) inset;
+  --shadow-md: 0 4px 18px -4px rgb(15 23 42 / 0.11), 0 1px 0 rgb(255 255 255 / 0.55) inset;
+  --shadow-lg: 0 14px 44px -18px rgb(15 23 42 / 0.14), 0 1px 0 rgb(255 255 255 / 0.45) inset;
+  --shadow-float: 0 20px 50px -24px rgb(37 99 235 / 0.22);
+  --shadow-premium: 0 24px 56px -26px rgb(15 23 42 / 0.16), 0 0 0 1px rgb(15 23 42 / 0.05);
+
+  /* Motion — 150–250 ms */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --duration-fast: 150ms;
   --duration-normal: 220ms;
-  --duration-slow: 360ms;
+  --duration-slow: 320ms;
 
   /* Z-index */
   --z-dropdown: 60;
@@ -50,25 +52,31 @@
   --z-toast: 80;
   --z-modal: 90;
 
-  /* Semantic extras */
+  /* Status (reference @theme success where possible) */
   --color-warning: #d97706;
   --color-warning-bg: rgb(217 119 6 / 0.12);
   --color-danger: #e11d48;
   --color-danger-bg: rgb(225 29 72 / 0.1);
+  --color-success: #16a34a;
+  --color-success-bg: rgb(22 163 74 / 0.12);
   --color-info: #0891b2;
   --color-info-bg: rgb(8 145 178 / 0.12);
-  --surface-glass: rgb(255 255 255 / 0.82);
+
+  --surface-glass: rgb(255 255 255 / 0.78);
   --border-subtle: rgb(15 23 42 / 0.06);
-  --nav-underline: var(--color-brand-600, #2563eb);
+  --nav-underline: var(--color-accent, var(--color-brand-600, #2563eb));
 }
 
 html.dark {
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35), 0 1px 0 rgb(255 255 255 / 0.04) inset;
-  --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.45), 0 1px 0 rgb(255 255 255 / 0.05) inset;
-  --shadow-lg: 0 16px 48px -20px rgb(0 0 0 / 0.55);
-  --shadow-float: 0 24px 56px -28px rgb(37 99 235 / 0.35);
-  --shadow-premium: 0 28px 64px -32px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.06);
-  --surface-glass: rgb(2 6 23 / 0.88);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 0 rgb(255 255 255 / 0.04) inset;
+  --shadow-md: 0 10px 28px -10px rgb(0 0 0 / 0.5), 0 1px 0 rgb(255 255 255 / 0.05) inset;
+  --shadow-lg: 0 18px 52px -22px rgb(0 0 0 / 0.58);
+  --shadow-float: 0 24px 56px -28px rgb(37 99 235 / 0.32);
+  --shadow-premium:
+    0 28px 64px -32px rgb(0 0 0 / 0.68), 0 0 0 1px rgb(255 255 255 / 0.07),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
+
+  --surface-glass: rgb(2 6 23 / 0.82);
   --border-subtle: rgb(255 255 255 / 0.06);
 }
 

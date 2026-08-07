@@ -55,7 +55,7 @@ export function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-5 text-lg font-medium tracking-tight text-ink-soft dark:text-slate-300 md:text-2xl"
+            className="mt-5 text-lg font-medium tracking-tight text-[var(--text-secondary)] md:text-2xl"
           >
             {t('home.headline')}
           </motion.h1>
@@ -64,7 +64,7 @@ export function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-slate-600 dark:text-slate-400"
+            className="mx-auto mt-4 max-w-lg text-body-lg text-[var(--text-muted)]"
           >
             {t('home.lead')}
           </motion.p>
@@ -95,13 +95,13 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ delay: i * 0.07, duration: 0.45 }}
-              className="border-t border-black/[0.08] pt-6 dark:border-white/[0.1]"
+              className="km-feature-tile p-6 md:p-7"
             >
               <p className="mb-3 font-mono text-[11px] font-semibold tracking-[0.18em] text-brand-700 dark:text-brand-300">
                 0{i + 1}
               </p>
-              <h2 className="text-lg font-semibold tracking-tight text-ink dark:text-white">{item.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{item.text}</p>
+              <h2 className="text-h3">{item.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{item.text}</p>
             </motion.div>
           ))}
         </div>

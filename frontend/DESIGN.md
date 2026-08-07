@@ -6,77 +6,68 @@ Premium SaaS polish on top of the existing KeyMaster brand — **not** a clone o
 
 - **UI font:** Outfit (`--font-sans`)
 - **Wordmark:** Fraunces (`--font-display`)
-- **Primary:** Electric Blue `#2563EB` → `brand-600`
+- **Primary / Accent:** Electric Blue → `brand-600` / `--color-accent`
 - **Atmosphere:** Cyan → `accent-*` (mesh, hero)
-- **Success / XP:** Green → `success-*`
+- **Success / XP:** Green → `success-*` / `--color-success`
 
 ## Token files
 
 | File | Contents |
 |------|----------|
-| `src/styles/tokens.css` | Spacing, radius, shadows, motion, z-index, warning/danger/info |
-| `src/index.css` | `@theme` palette, semantic surfaces, component classes |
+| `src/styles/tokens.css` | Spacing, radius, shadows (light/dark), motion, z-index, status colors |
+| `src/index.css` | `@theme` palette, semantic surfaces (both themes), component classes |
+
+## Semantic surfaces (use these in UI)
+
+| Token | Light | Dark role |
+|-------|-------|-----------|
+| `--bg-primary` | Page canvas (neutral, not pure white) | Deepest background |
+| `--bg-surface` | Section wash | Container layer |
+| `--bg-elevated` | Panels, inputs | Raised panels |
+| `--bg-card` | Card fill (white) | Card layer |
+| `--bg-soft` | Brand-tinted areas | Brand depth |
+| `--text-primary` / `--text-secondary` / `--text-muted` | WCAG-tuned hierarchy | Stronger muted contrast |
+| `--color-accent` | Primary actions | Slightly softer blue |
+| `--border-default` / `--border-hover` | 1px system | Subtle borders |
+| `--focus-ring` | Keyboard focus | Same |
+
+Also: `--bg-hover`, `--bg-active`, `--bg-disabled`, `--text-disabled`, `--color-accent-muted`.
 
 ## Spacing scale
 
 `4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 · 96` → `--space-1` … `--space-24`
 
-## Radius
-
-| Token | Use |
-|-------|-----|
-| `--radius-input` | Inputs, OTP |
-| `--radius-button` | Buttons |
-| `--radius-card` | GlassCard |
-| `--radius-dropdown` | Nav menus |
-
 ## Shadows
 
-`--shadow-sm` · `--shadow-md` · `--shadow-lg` · `--shadow-float` · `--shadow-premium` — soft, no heavy black.
+Light & dark each define: `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-float`, `--shadow-premium` (dark premium adds inner highlight).
 
-## Typography utilities
+## Components
 
-| Class | Use |
-|-------|-----|
-| `text-display` | Hero wordmark blocks |
-| `text-h1` / `text-page-title` | Page titles |
-| `text-h2` / `text-h3` | Sections |
-| `text-body-lg` | Lead paragraphs |
-| `text-muted` | Secondary body |
-| `text-caption` | Hints, meta |
-| `text-button` | Button labels |
+| Class / component | Notes |
+|-------------------|--------|
+| `.km-card` / `.km-card--interactive` | Gradient card, hover lift (transform) |
+| `.km-feature-tile` | Home feature blocks |
+| `.km-nav-bar` / `.km-nav-link` | Glass nav, scroll elevation |
+| `.km-theme-toggle` | Theme switch micro-animation |
+| `.km-password-strength` | Register password meter |
+| `GlassCard` | Wraps `.km-card` |
+| `Button` | `loading` prop; primary uses `.is-loading` spinner |
+| `FloatingLabelInput` | Focus/error/success, password toggle & strength |
 
-## Semantic surfaces (`:root` / `html.dark`)
+## Theme transition
 
-`--bg-primary` · `--bg-elevated` · `--bg-soft` · `--bg-muted` · `--text-*` · `--border-default` · `--focus-ring` · `--surface-glass`
-
-## Components (`src/shared/components/ui.tsx`)
-
-| Component | Notes |
-|-----------|--------|
-| `Button` | `primary` · `secondary` · `ghost` · `outline` |
-| `GlassCard` | Premium shadow on hover |
-| `Skeleton` | Shimmer (respects `prefers-reduced-motion`) |
-| `EmptyState` | Icon + title + optional action |
-| `FloatingLabelInput` | Focus, error, password toggle |
-| `StatusBadge` · `ProgressBar` · `KeyCombo` | Unchanged roles |
-
-## Navigation
-
-- `.km-nav-bar` — sticky glass + blur
-- `.km-nav-bar--scrolled` — elevation on scroll
-- `.km-nav-link` / `--active` — underline animation
+`themeStore` adds `html.theme-animate` for ~280ms when toggling light/dark (background, border, color).
 
 ## Rules
 
-1. Prefer tokens and semantic CSS over one-off pixels/colors.
-2. Animations: **transform + opacity** only; honor reduced motion.
+1. No ad-hoc HEX in components — semantic tokens or `@theme` palette.
+2. Animations: **transform + opacity**; 150–250ms; honor `prefers-reduced-motion`.
 3. Icons: **Lucide** only.
-4. Every interactive control: visible `focus-visible` / focus ring.
+4. Visible `focus-visible` on interactive controls.
 5. Do not change routing, business logic, or page inventory — polish in place.
 
-## Rollout phases
+## Final polish (2026)
 
-1. **Done:** tokens, buttons, nav, core UI primitives, toasts, forms base.
-2. **Done:** `PageShell` / `PageHeader` / `StatTile`, courses, training, dashboard, leaderboard shell, review/quiz/lesson loading, achievements empty states.
-3. **Done:** skeleton grids on lazy routes, shimmer skeletons, EmptyState with icons on key edges.
+- Light: off-white page, white cards, depth via shadow + border.
+- Dark: 4-level depth (primary → surface → elevated → card).
+- Unified buttons, inputs, course cards, hero, navbar in both themes.

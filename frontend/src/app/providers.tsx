@@ -24,11 +24,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
             boxShadow: 'var(--shadow-float)',
           },
           success: {
-            iconTheme: { primary: '#16a34a', secondary: '#fff' },
+            iconTheme: { primary: 'var(--color-success)', secondary: '#fff' },
             style: { borderColor: 'rgb(22 163 74 / 0.35)' },
           },
           error: {
-            iconTheme: { primary: '#e11d48', secondary: '#fff' },
+            iconTheme: { primary: 'var(--color-danger)', secondary: '#fff' },
             style: { borderColor: 'rgb(225 29 72 / 0.35)' },
           },
         }}
