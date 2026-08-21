@@ -46,8 +46,8 @@ Redeploy после сохранения.
 ## 5. Railway (backend API)
 
 ```
-SUPABASE_JWT_SECRET=<JWT Secret из Supabase>
-SUPABASE_URL=https://lclkozlclxtyabkceuck.supabase.co
+SUPABASE_JWT_SECRET=<JWT Secret из Supabase → Settings → API>
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 FRONTEND_URL=https://keymaster.pp.ua
 ```
 

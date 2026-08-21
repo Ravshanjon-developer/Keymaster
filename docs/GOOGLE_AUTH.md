@@ -19,10 +19,10 @@ KeyMaster использует **Supabase Auth**. Отдельный `GOOGLE_CLI
 5. **Authorized redirect URIs** — **только Supabase**, не ваш сайт:
 
 ```text
-https://lclkozlclxtyabkceuck.supabase.co/auth/v1/callback
+https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
 ```
 
-(Замените на **Project URL** из Supabase → Settings → API, путь всегда `/auth/v1/callback`.)
+(Замените `YOUR_PROJECT_REF` на **Project URL** из Supabase → Settings → API, путь всегда `/auth/v1/callback`.)
 
 Скопируйте **Client ID** и **Client secret**.
 
@@ -50,6 +50,7 @@ https://lclkozlclxtyabkceuck.supabase.co/auth/v1/callback
 
 | Симптом | Решение |
 |---------|---------|
+| `DNS_PROBE_FINISHED_NXDOMAIN` / «нет такого хоста» | Проект Supabase удалён или пауза. Откройте [supabase.com/dashboard](https://supabase.com/dashboard): Restore или **New project**. Обновите `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` на Vercel и `SUPABASE_JWT_SECRET` (+ URL) на Railway, затем Redeploy. В Google OAuth обновите redirect URI на новый `…supabase.co/auth/v1/callback` |
 | `redirect_uri_mismatch` | Redirect URI в Google = `https://<project>.supabase.co/auth/v1/callback` |
 | После Google белый экран / API | Railway `SUPABASE_JWT_SECRET`, Vercel прокси `/api` |
 | Google disabled | Providers → Google → Enable + ключи |
