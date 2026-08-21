@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle2, XCircle } from 'lucide-react'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { api, type RandomLessonDto } from '@/shared/lib/api'
@@ -87,16 +87,24 @@ export function QuizPage() {
     const fromSeed = (loc?.description || loc?.usage_example || '').trim()
     if (
       fromSeed &&
-      fromSeed.length >= 20 &&
+      fromSeed.length >= 12 &&
       !/^desktop:\d+$/i.test(fromSeed) &&
-      fromSeed !== correctLabel
+      fromSeed !== correctLabel &&
+      !/это сочетание клавиш выполняет действие без мыши/i.test(fromSeed)
     ) {
       return fromSeed
     }
-    return explainShortcut(current.keys, locale, {
+    const explained = explainShortcut(current.keys, locale, {
       title: loc?.title ?? current.title,
       description: loc?.description ?? current.description,
     })
+    // Drop the long generic fallback — keep a short useful line.
+    const generic = /это сочетание клавиш выполняет действие без мыши|ин клавишаҳо амалро бе муш/i
+    if (generic.test(explained)) {
+      const title = (loc?.title ?? current.title ?? '').trim()
+      return title || explained.split('.')[0] || explained
+    }
+    return explained
   }, [current, loc, locale, correctLabel])
 
   const onPick = useCallback(
@@ -126,6 +134,24 @@ export function QuizPage() {
     setPicked(null)
     setIndex((i) => i + 1)
   }, [index, total])
+
+  useEffect(() => {
+    if (!picked) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+      const tag = (e.target as HTMLElement | null)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement | null)?.isContentEditable) {
+        return
+      }
+      // `>` / Period / ArrowRight / Enter → same as «Дальше»
+      if (e.key === '>' || e.key === '.' || e.code === 'Period' || e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault()
+        nextQuestion()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [picked, nextQuestion])
 
   if (isLoading) {
     return (
@@ -189,7 +215,7 @@ export function QuizPage() {
 
       <ProgressBar value={progressPct} className="mt-4" />
 
-      {/* Outside the question card: top-right feedback with full explanation */}
+      {/* Outside the question card: compact top-right feedback */}
       <AnimatePresence>
         {picked && current ? (
           <motion.aside
@@ -199,9 +225,9 @@ export function QuizPage() {
             exit={{ opacity: 0, y: -6, x: 8 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             className={cn(
-              'mt-4 ml-auto w-full max-w-sm rounded-2xl border p-4',
-              'shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] backdrop-blur-md',
-              'lg:fixed lg:right-6 lg:top-24 lg:z-40 lg:mt-0 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto',
+              'mt-4 ml-auto w-full max-w-xs rounded-xl border px-3 py-2.5',
+              'shadow-[0_14px_40px_-22px_rgba(0,0,0,0.6)] backdrop-blur-md',
+              'lg:fixed lg:right-6 lg:top-24 lg:z-40 lg:mt-0',
               answerOk ? 'border-emerald-500/40 bg-[var(--bg-elevated)]/95' : 'border-rose-500/40 bg-[var(--bg-elevated)]/95',
             )}
             role="status"
@@ -209,40 +235,31 @@ export function QuizPage() {
           >
             <div className="flex items-center gap-2">
               {answerOk ? (
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" aria-hidden />
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" aria-hidden />
               ) : (
-                <XCircle className="h-5 w-5 shrink-0 text-rose-500" aria-hidden />
+                <XCircle className="h-4 w-4 shrink-0 text-rose-500" aria-hidden />
               )}
               <p
                 className={cn(
-                  'text-base font-bold',
+                  'text-sm font-bold',
                   answerOk ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300',
                 )}
               >
                 {answerOk ? t('mobile.quizExplainOk') : t('mobile.quizExplainBad')}
               </p>
+              <span className="ml-auto font-mono text-xs font-bold text-[var(--text-primary)]">{correctLabel}</span>
             </div>
 
-            <div className="mt-3 space-y-2 rounded-xl bg-[var(--bg-muted)]/80 px-3 py-2.5 text-sm">
-              <p>
-                <span className="font-semibold text-[var(--text-muted)]">{t('mobile.quizCorrectAnswer')}: </span>
-                <span className="font-mono font-bold text-[var(--text-primary)]">{correctLabel}</span>
-              </p>
-              {!answerOk && picked ? (
-                <p>
-                  <span className="font-semibold text-[var(--text-muted)]">{t('mobile.quizYourAnswer')}: </span>
-                  <span className="font-mono text-rose-600 dark:text-rose-300">{picked}</span>
-                </p>
-              ) : null}
-            </div>
+            {tip ? (
+              <p className="mt-1.5 line-clamp-2 text-[12px] leading-snug text-[var(--text-secondary)]">{tip}</p>
+            ) : null}
 
-            <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
-              {t('mobile.quizExplainHint')}
-            </p>
-            <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tip}</p>
-
-            <button type="button" className="btn-primary mt-4 min-h-10 w-full" onClick={nextQuestion}>
-              {index + 1 >= total ? t('mobile.quizFinish') : t('mobile.quizNext')}
+            <button
+              type="button"
+              className="btn-primary mt-2.5 min-h-8 w-full px-3 text-[13px]"
+              onClick={nextQuestion}
+            >
+              {index + 1 >= total ? t('mobile.quizFinish') : `${t('mobile.quizNext')} ›`}
             </button>
           </motion.aside>
         ) : null}
