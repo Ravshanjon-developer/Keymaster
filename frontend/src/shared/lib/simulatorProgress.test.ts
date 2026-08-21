@@ -2,7 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   desktopSimulatorHref,
+  isDesktopTaskDoneLocally,
   parseDesktopTaskId,
+  saveDesktopLocalProgress,
   saveTypingBest,
 } from './simulatorProgress'
 
@@ -38,6 +40,15 @@ describe('desktopSimulatorHref', () => {
       '/simulator?mode=desktop&task=4&fromLesson=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
     )
     expect(desktopSimulatorHref()).toBe('/simulator?mode=desktop')
+  })
+})
+
+describe('isDesktopTaskDoneLocally', () => {
+  it('reads completed task ids from local progress', () => {
+    expect(isDesktopTaskDoneLocally(1)).toBe(false)
+    saveDesktopLocalProgress(new Set([1, 3]), 20)
+    expect(isDesktopTaskDoneLocally(1)).toBe(true)
+    expect(isDesktopTaskDoneLocally(2)).toBe(false)
   })
 })
 

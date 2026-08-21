@@ -13,7 +13,7 @@ import { useBlockBrowserChord } from '@/shared/hooks/useBlockBrowserChord'
 import { isTaskLesson } from '@/shared/lib/lessonKind'
 import { deriveTrainerCopy } from '@/shared/lib/lessonCopy'
 import { parseTaskSteps } from '@/shared/lib/taskSteps'
-import { desktopSimulatorHref, parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
+import { desktopSimulatorHref, parseDesktopTaskId, DESKTOP_PROGRESS_EVENT, isDesktopTaskDoneLocally } from '@/shared/lib/simulatorProgress'
 import { useT, useLocaleStore } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnStatusBadge } from '@/shared/components/LearnStatus'
@@ -43,6 +43,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     },
     enabled: !!token,
     refetchOnWindowFocus: true,
+    refetchOnMount: 'always',
   })
 
   const courseQuery = useQuery({
@@ -60,9 +61,15 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     return flat[idx + 1]?.id ?? null
   }, [courseQuery.data, lessonId])
 
+  const desktopTaskId = data ? parseDesktopTaskId(data.keys) : null
+  const localDesktopDone = desktopTaskId ? isDesktopTaskDoneLocally(desktopTaskId) : false
+
   const learned = useMemo(
-    () => succeeded || Boolean(lessonProgress.data?.completed),
-    [succeeded, lessonProgress.data?.completed],
+    () =>
+      succeeded ||
+      Boolean(lessonProgress.data?.completed) ||
+      localDesktopDone,
+    [succeeded, lessonProgress.data?.completed, localDesktopDone],
   )
 
   useEffect(() => {
@@ -71,9 +78,50 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   }, [lessonId])
 
   const taskModeLesson = data ? isTaskLesson(data.course_slug ?? undefined, data.keys) : false
-  const desktopTaskId = data ? parseDesktopTaskId(data.keys) : null
   const studyOnly = Boolean(data && !taskModeLesson && isBrowserHostileForTraining(data.keys))
   const keyboardPractice = Boolean(data && !taskModeLesson && !studyOnly && token)
+
+  // Sync desktop-sim completion as soon as localStorage / focus updates (no long wait).
+  useEffect(() => {
+    if (!token || !desktopTaskId) return
+
+    const refresh = () => {
+      void queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+      void queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+      void queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+      // Force a re-render so isDesktopTaskDoneLocally() is read again.
+      if (isDesktopTaskDoneLocally(desktopTaskId)) setSucceeded(true)
+    }
+
+    const onProgress = (event: Event) => {
+      const detail = (event as CustomEvent<{ completed?: number[] }>).detail
+      if (detail?.completed?.includes(desktopTaskId)) refresh()
+    }
+
+    const onStorage = (event: StorageEvent) => {
+      if (event.key && event.key !== 'km_desktop_tasks_v1') return
+      refresh()
+    }
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refresh()
+    }
+
+    refresh()
+    window.addEventListener(DESKTOP_PROGRESS_EVENT, onProgress)
+    window.addEventListener('storage', onStorage)
+    document.addEventListener('visibilitychange', onVisible)
+    const poll = window.setInterval(() => {
+      if (!lessonProgress.data?.completed) refresh()
+    }, 1500)
+
+    return () => {
+      window.removeEventListener(DESKTOP_PROGRESS_EVENT, onProgress)
+      window.removeEventListener('storage', onStorage)
+      document.removeEventListener('visibilitychange', onVisible)
+      window.clearInterval(poll)
+    }
+  }, [token, desktopTaskId, lessonId, queryClient, lessonProgress.data?.completed])
 
   // Block Ctrl+S / lesson chord so Chrome does not open “Save page as…” before the trainer is focused.
   useBlockBrowserChord(
@@ -83,6 +131,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
 
   useEffect(() => {
     if (!succeeded) return
+    // Desktop lessons: show «Следующий урок» immediately; user often stays in the sim queue.
     if (desktopTaskId) return
     if (!taskModeLesson && !studyOnly && !keyboardPractice) return
     if (!nextLessonId) return

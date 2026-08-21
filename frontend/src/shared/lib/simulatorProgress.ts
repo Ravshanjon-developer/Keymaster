@@ -2,6 +2,7 @@ import { api, type TrainingResultDto } from '@/shared/lib/api'
 
 export const DESKTOP_COURSE_SLUG = 'computer-basics'
 export const DESKTOP_TASK_PREFIX = 'desktop:'
+export const DESKTOP_PROGRESS_EVENT = 'km-desktop-progress'
 const DESKTOP_LOCAL_KEY = 'km_desktop_tasks_v1'
 const CODELAB_LOCAL_KEY = 'km_codelab_completed_v1'
 const TYPING_BEST_KEY = 'km_typing_best_v1'
@@ -29,6 +30,16 @@ export function desktopSimulatorHref(taskId?: number | null, lessonId?: string) 
 
 type DesktopLocal = { completed: number[]; xp: number }
 
+function notifyDesktopProgress(completed: number[]) {
+  try {
+    window.dispatchEvent(
+      new CustomEvent(DESKTOP_PROGRESS_EVENT, { detail: { completed } }),
+    )
+  } catch {
+    /* SSR / non-browser */
+  }
+}
+
 function readDesktopLocal(): DesktopLocal {
   try {
     const raw = localStorage.getItem(DESKTOP_LOCAL_KEY)
@@ -49,13 +60,28 @@ export function loadDesktopLocalProgress(): { completed: Set<number>; xp: number
   return { completed: new Set(data.completed), xp: data.xp }
 }
 
+/** True when this desktop task id is marked done in localStorage (instant UX). */
+export function isDesktopTaskDoneLocally(taskId: number | null | undefined): boolean {
+  if (!taskId) return false
+  return readDesktopLocal().completed.includes(taskId)
+}
+
 export function saveDesktopLocalProgress(completed: Set<number>, xp: number) {
   const payload: DesktopLocal = { completed: [...completed].sort((a, b) => a - b), xp }
   localStorage.setItem(DESKTOP_LOCAL_KEY, JSON.stringify(payload))
+  notifyDesktopProgress(payload.completed)
 }
 
-export async function creditDesktopTask(taskId: number): Promise<TrainingResultDto | null> {
+export async function creditDesktopTask(
+  taskId: number,
+  lessonId?: string | null,
+): Promise<TrainingResultDto | null> {
   if (!localStorage.getItem('km_token')) return null
+
+  if (lessonId && isLessonId(lessonId)) {
+    return api.submitTraining({ lesson_id: lessonId, correct: true, response_time_ms: 0 })
+  }
+
   const rows = await api.lessonProgress({ courseSlug: DESKTOP_COURSE_SLUG })
   const lesson = rows.find((row) => parseDesktopTaskId(row.keys) === taskId)
   if (!lesson || lesson.completed) return null

@@ -285,7 +285,10 @@ export function BoltDesktopSimulator() {
 
     if (creditingRef.current.has(task.id)) return;
     creditingRef.current.add(task.id);
-    void creditDesktopTask(task.id)
+    void creditDesktopTask(
+      task.id,
+      requestedTaskId === task.id ? fromLesson : null,
+    )
       .then(async (result) => {
         const accountXp = result?.xp_gained ?? 0;
         setTaskToast(
@@ -301,7 +304,7 @@ export function BoltDesktopSimulator() {
       .finally(() => {
         window.setTimeout(() => setTaskToast(null), 3000);
       });
-  }, [currentTask, vfs, completed, vfsTick, t, refreshUser]);
+  }, [currentTask, vfs, completed, vfsTick, t, refreshUser, fromLesson, requestedTaskId]);
 
   const openFiles = useCallback((folderId?: string) => {
     const target = folderId ?? vfs.getDesktopId();

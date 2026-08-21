@@ -735,6 +735,9 @@ export type Messages = {
     quizStreak: string
     quizExplainOk: string
     quizExplainBad: string
+    quizExplainHint: string
+    quizCorrectAnswer: string
+    quizYourAnswer: string
     quizNext: string
     quizFinish: string
     quizDoneTitle: string

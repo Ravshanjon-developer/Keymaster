@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
+import { CheckCircle2, XCircle } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { api, type RandomLessonDto } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
-import { useT } from '@/shared/i18n'
+import { useLocaleStore, useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
+import { explainShortcut } from '@/shared/lib/shortcutExplain'
+import { parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
 import { cn } from '@/shared/lib/utils'
 
 function shuffle<T>(arr: T[]): T[] {
@@ -20,10 +23,18 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
+/** Human label for a quiz choice — never raw `desktop:7`. */
+function lessonChoiceLabel(lesson: RandomLessonDto): string {
+  if (parseDesktopTaskId(lesson.keys)) {
+    return (lesson.title || lesson.action_prompt || '').trim() || formatShortcut(lesson.keys)
+  }
+  return formatShortcut(lesson.keys)
+}
+
 function buildOptions(correct: string, pool: RandomLessonDto[], lessonId: string): string[] {
   const wrong = pool
     .filter((l) => l.id !== lessonId)
-    .map((l) => formatShortcut(l.keys))
+    .map((l) => lessonChoiceLabel(l))
     .filter((s) => s && s !== correct)
   const unique = [...new Set(wrong)]
   const picks = shuffle(unique).slice(0, 3)
@@ -35,6 +46,7 @@ function buildOptions(correct: string, pool: RandomLessonDto[], lessonId: string
 
 export function QuizPage() {
   const t = useT()
+  const locale = useLocaleStore((s) => s.locale)
   const { localizeLesson } = useLocalizedContent()
   const [params] = useSearchParams()
   const course = params.get('course') ?? undefined
@@ -54,20 +66,38 @@ export function QuizPage() {
   const total = data?.length ?? 0
   const current = data?.[index]
 
+  const correctLabel = current ? lessonChoiceLabel(current) : ''
+
   const options = useMemo(() => {
     if (!current || !data) return []
-    const correct = formatShortcut(current.keys)
-    return buildOptions(correct, data, current.id)
-  }, [current, data])
+    return buildOptions(correctLabel, data, current.id)
+  }, [current, data, correctLabel])
 
   const loc = current
     ? localizeLesson(current.course_slug ?? course, current.category_slug ?? undefined, current.keys, {
         title: current.title,
         action_prompt: current.action_prompt,
+        usage_example: current.usage_example ?? undefined,
+        description: current.description ?? undefined,
       })
     : null
 
-  const correctLabel = current ? formatShortcut(current.keys) : ''
+  const tip = useMemo(() => {
+    if (!current) return ''
+    const fromSeed = (loc?.description || loc?.usage_example || '').trim()
+    if (
+      fromSeed &&
+      fromSeed.length >= 20 &&
+      !/^desktop:\d+$/i.test(fromSeed) &&
+      fromSeed !== correctLabel
+    ) {
+      return fromSeed
+    }
+    return explainShortcut(current.keys, locale, {
+      title: loc?.title ?? current.title,
+      description: loc?.description ?? current.description,
+    })
+  }, [current, loc, locale, correctLabel])
 
   const onPick = useCallback(
     (label: string) => {
@@ -131,9 +161,10 @@ export function QuizPage() {
   }
 
   const progressPct = total ? Math.round(((index + (picked ? 1 : 0)) / total) * 100) : 0
+  const answerOk = picked === correctLabel
 
   return (
-    <div className="page-mesh mx-auto max-w-lg px-4 py-8 pb-28 lg:pb-10">
+    <div className="page-mesh relative mx-auto max-w-lg px-4 py-8 pb-28 lg:pb-10">
       <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700 dark:text-brand-300">
         {t('mobile.quizEyebrow')}
       </p>
@@ -158,6 +189,65 @@ export function QuizPage() {
 
       <ProgressBar value={progressPct} className="mt-4" />
 
+      {/* Outside the question card: top-right feedback with full explanation */}
+      <AnimatePresence>
+        {picked && current ? (
+          <motion.aside
+            key={`feedback-${current.id}`}
+            initial={{ opacity: 0, y: -8, x: 8 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -6, x: 8 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+            className={cn(
+              'mt-4 ml-auto w-full max-w-sm rounded-2xl border p-4',
+              'shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] backdrop-blur-md',
+              'lg:fixed lg:right-6 lg:top-24 lg:z-40 lg:mt-0 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto',
+              answerOk ? 'border-emerald-500/40 bg-[var(--bg-elevated)]/95' : 'border-rose-500/40 bg-[var(--bg-elevated)]/95',
+            )}
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex items-center gap-2">
+              {answerOk ? (
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" aria-hidden />
+              ) : (
+                <XCircle className="h-5 w-5 shrink-0 text-rose-500" aria-hidden />
+              )}
+              <p
+                className={cn(
+                  'text-base font-bold',
+                  answerOk ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300',
+                )}
+              >
+                {answerOk ? t('mobile.quizExplainOk') : t('mobile.quizExplainBad')}
+              </p>
+            </div>
+
+            <div className="mt-3 space-y-2 rounded-xl bg-[var(--bg-muted)]/80 px-3 py-2.5 text-sm">
+              <p>
+                <span className="font-semibold text-[var(--text-muted)]">{t('mobile.quizCorrectAnswer')}: </span>
+                <span className="font-mono font-bold text-[var(--text-primary)]">{correctLabel}</span>
+              </p>
+              {!answerOk && picked ? (
+                <p>
+                  <span className="font-semibold text-[var(--text-muted)]">{t('mobile.quizYourAnswer')}: </span>
+                  <span className="font-mono text-rose-600 dark:text-rose-300">{picked}</span>
+                </p>
+              ) : null}
+            </div>
+
+            <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+              {t('mobile.quizExplainHint')}
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tip}</p>
+
+            <button type="button" className="btn-primary mt-4 min-h-10 w-full" onClick={nextQuestion}>
+              {index + 1 >= total ? t('mobile.quizFinish') : t('mobile.quizNext')}
+            </button>
+          </motion.aside>
+        ) : null}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait">
         {current && (
           <motion.div
@@ -167,7 +257,7 @@ export function QuizPage() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22 }}
           >
-            <GlassCard className="mt-6 p-5 sm:p-6">
+            <GlassCard className="mt-4 p-5 sm:p-6 lg:mt-6">
               <p className="text-sm font-medium text-[var(--text-muted)]">{t('mobile.quizQuestion')}</p>
               <p className="mt-2 text-lg font-semibold leading-snug text-[var(--text-primary)]">
                 {t('mobile.quizPrompt', { action: loc?.action_prompt ?? current.action_prompt })}
@@ -206,30 +296,14 @@ export function QuizPage() {
                           )}
                           aria-hidden
                         />
-                        <span className="font-mono">{opt}</span>
+                        <span className={/\+/.test(opt) || /^(Ctrl|Alt|Shift|Win|F\d)/i.test(opt) ? 'font-mono' : ''}>
+                          {opt}
+                        </span>
                       </button>
                     </li>
                   )
                 })}
               </ul>
-
-              {picked && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-soft)] p-4 text-sm"
-                >
-                  <p className="font-semibold text-[var(--text-primary)]">
-                    {picked === correctLabel ? t('mobile.quizExplainOk') : t('mobile.quizExplainBad')}
-                  </p>
-                  <p className="text-muted mt-2">
-                    {loc?.usage_example ?? t('mobile.reviewNoExample')}
-                  </p>
-                  <button type="button" className="btn-primary mt-4 min-h-11 w-full sm:w-auto" onClick={nextQuestion}>
-                    {index + 1 >= total ? t('mobile.quizFinish') : t('mobile.quizNext')}
-                  </button>
-                </motion.div>
-              )}
             </GlassCard>
           </motion.div>
         )}
