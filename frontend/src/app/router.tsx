@@ -51,6 +51,18 @@ const QuizPage = lazy(() => import('@/features/mobile/QuizPage').then((m) => ({ 
 const TrainingPage = lazy(() =>
   import('@/features/training/TrainingPage').then((m) => ({ default: m.TrainingPage })),
 )
+const PracticeHubPage = lazy(() =>
+  import('@/features/practice/PracticeHubPage').then((m) => ({ default: m.PracticeHubPage })),
+)
+const TypingPage = lazy(() =>
+  import('@/features/typing/TypingPage').then((m) => ({ default: m.TypingPage })),
+)
+const DesktopSimulatorPage = lazy(() =>
+  import('@/features/simulator/DesktopSimulatorPage').then((m) => ({ default: m.DesktopSimulatorPage })),
+)
+const PracticeShell = lazy(() =>
+  import('@/features/practice/PracticeShell').then((m) => ({ default: m.PracticeShell })),
+)
 
 function PageFallback() {
   return (
@@ -95,45 +107,21 @@ export function AppRouter() {
             }
           />
           <Route
-            path="review"
             element={
               <ProtectedRoute>
-                <ReviewPage />
+                <PracticeShell />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="quiz"
-            element={
-              <ProtectedRoute>
-                <QuizPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="training"
-            element={
-              <ProtectedRoute>
-                <TrainingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="speed"
-            element={
-              <ProtectedRoute>
-                <SpeedModePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="exam"
-            element={
-              <ProtectedRoute>
-                <ExamPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route path="practice" element={<PracticeHubPage />} />
+            <Route path="typing" element={<TypingPage />} />
+            <Route path="simulator" element={<DesktopSimulatorPage />} />
+            <Route path="training" element={<TrainingPage />} />
+            <Route path="speed" element={<SpeedModePage />} />
+            <Route path="review" element={<ReviewPage />} />
+            <Route path="quiz" element={<QuizPage />} />
+            <Route path="exam" element={<ExamPage />} />
+          </Route>
           <Route path="leaderboard" element={<LeaderboardPage />} />
           <Route
             path="achievements"

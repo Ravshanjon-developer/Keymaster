@@ -60,6 +60,7 @@ function resolveKey(slug: string, icon?: string): string {
 
 const ICON_ALIAS: Record<string, string> = {
   'graduation-cap': 'programmer-basics',
+  folder: 'computer-basics',
   code: 'vscode',
   monitor: 'windows',
   globe: 'chrome',
@@ -116,6 +117,22 @@ const BRANDS: Record<string, Brand> = {
         <rect x="10" y="12" width="28" height="20" rx="3" fill="#fff" fillOpacity=".95" />
         <path d="M15 19h5v3h-5V19Zm7 0h5v3h-5V19Zm7 0h4v3h-4V19ZM15 25h18v3H15v-3Z" fill="#2563eb" />
         <path d="M18 34h12l-2 4H20l-2-4Z" fill="#67e8f9" />
+      </svg>
+    ),
+  },
+
+  'computer-basics': {
+    kind: 'svg',
+    bg: 'linear-gradient(145deg,#d97706,#f59e0b)',
+    glow: 'rgba(217,119,6,.45)',
+    node: (
+      <svg viewBox="0 0 48 48" fill="none">
+        <path
+          d="M10 18h12l2 3h14a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V21a3 3 0 0 1 3-3Z"
+          fill="#fff"
+          fillOpacity=".95"
+        />
+        <path d="M10 24h28v2H10v-2Z" fill="#d97706" fillOpacity=".35" />
       </svg>
     ),
   },

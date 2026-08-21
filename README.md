@@ -60,6 +60,10 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 - `/` — landing  
 - `/register`, `/login` — JWT  
 - `/dashboard`, `/path`, `/courses`  
+- `/practice` — хаб: печать, симулятор, hotkeys  
+- `/typing` — слепая печать  
+- `/simulator` — Code Lab (VS Code)  
+- `/simulator?mode=desktop` — проводник Windows + курс «Первый ноутбук»  
 - `/training`, `/speed`, `/exam`  
 - `/leaderboard`, `/achievements`, `/stats`  
 - `/admin` — полноценная админка (только `is_admin`)

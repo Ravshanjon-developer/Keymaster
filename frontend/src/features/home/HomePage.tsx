@@ -80,8 +80,8 @@ export function HomePage() {
               {user ? t('home.ctaPath') : t('home.ctaStart')}
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/courses" className="btn-secondary px-7 py-3 text-[15px]">
-              {t('home.ctaCourses')}
+            <Link to={user ? '/practice' : '/courses'} className="btn-secondary px-7 py-3 text-[15px]">
+              {user ? t('home.ctaPractice') : t('home.ctaCourses')}
             </Link>
           </motion.div>
         </div>

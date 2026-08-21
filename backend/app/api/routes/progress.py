@@ -409,7 +409,7 @@ async def random_lessons(
     browser_safe: bool = True,
     db: AsyncSession = Depends(get_db),
 ):
-    """browser_safe=True excludes Meta/Win/Cmd chords — OS often steals them from the browser."""
+    """browser_safe=True keeps only chords that work reliably in a browser trainer."""
     q = (
         select(Lesson, Category.slug, Course.slug)
         .join(Category, Lesson.category_id == Category.id)
@@ -418,23 +418,80 @@ async def random_lessons(
     if course_slug:
         q = q.where(Course.slug == course_slug)
     rows = list((await db.execute(q)).all())
+    rows = [row for row in rows if row[0].keys and not _is_filler_lesson(row[0])]
     if browser_safe:
+        rows = [row for row in rows if not _is_browser_hostile_keys(row[0].keys or [])]
+    if not rows:
         rows = [
             row
-            for row in rows
-            if not any(str(k) in ("Meta", "OS", "Win") for k in (row[0].keys or []))
+            for row in list((await db.execute(q)).all())
+            if row[0].keys and not _is_filler_lesson(row[0])
         ]
+        if browser_safe:
+            rows = [row for row in rows if not _is_browser_hostile_keys(row[0].keys or [])]
     if not rows:
-        rows = list((await db.execute(q)).all())
+        return []
     sample = random.sample(rows, min(limit, len(rows)))
     return [
         {
             "id": str(lesson.id),
             "title": lesson.title,
             "action_prompt": lesson.action_prompt,
+            "usage_example": lesson.usage_example,
+            "description": lesson.description,
             "keys": lesson.keys,
             "course_slug": c_slug,
             "category_slug": cat_slug,
         }
         for lesson, cat_slug, c_slug in sample
     ]
+
+
+def _chord_label(keys: list) -> str:
+    parts = [str(k) for k in keys]
+    mapped = [("Ctrl" if p == "Control" else "Win" if p == "Meta" else p) for p in parts]
+    return "+".join(mapped)
+
+
+def _is_filler_lesson(lesson: Lesson) -> bool:
+    """Drop alphabet-spam / «Нажмите Ctrl+X» stubs that only repeat the chord."""
+    title = (lesson.title or "").strip()
+    prompt = (lesson.action_prompt or "").strip()
+    keys = lesson.keys or []
+    chord = _chord_label(keys)
+    compact = chord.replace(" ", "").lower()
+    title_c = title.replace(" ", "").lower()
+    prompt_c = prompt.replace(" ", "").lower()
+    if title_c == compact or title_c == f"chrome{compact}":
+        return True
+    if prompt_c in {f"нажмите{compact}", f"комбинация{compact}", compact, f"панель:{compact}"}:
+        return True
+    if title.startswith("Chrome Ctrl+Alt+"):
+        return True
+    return False
+
+
+def _is_browser_hostile_keys(keys: list) -> bool:
+    """F-keys, Win/Meta, PrintScreen, Alt+Tab/F4, and other OS-stolen chords."""
+    parts = [str(k) for k in keys]
+    keyset = set(parts)
+    if keyset & {"Meta", "OS", "Win"}:
+        return True
+    if "PrintScreen" in keyset:
+        return True
+    if any(p.startswith("F") and p[1:].isdigit() for p in parts):
+        return True
+    frozen = frozenset(parts)
+    hostile = {
+        frozenset({"Alt", "Tab"}),
+        frozenset({"Alt", "F4"}),
+        frozenset({"Control", "W"}),
+        frozenset({"Control", "Shift", "W"}),
+        frozenset({"Control", "N", "Shift"}),
+        frozenset({"Control", "Escape", "Shift"}),
+        frozenset({"Alt", "ArrowLeft"}),
+        frozenset({"Alt", "ArrowRight"}),
+        frozenset({"Alt", "Enter"}),
+        frozenset({"Alt", "D"}),
+    }
+    return frozen in hostile

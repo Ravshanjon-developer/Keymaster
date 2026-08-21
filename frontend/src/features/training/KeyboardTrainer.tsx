@@ -1,34 +1,58 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { HelpCircle, RotateCcw, SkipForward } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import {
-  chordDisplay,
+  allExpectedModifiersHeld,
   chordFromEvent,
   displayKey,
   explainMismatch,
   formatShortcut,
+  heldModifiersAreExpected,
+  heldModifiersFromEvent,
+  isDestructiveBrowserEvent,
+  isModifierKey,
+  isOsCapturedShortcut,
+  isStandaloneFunctionKey,
+  keysForActiveHighlight,
   mainKeyFromEvent,
-  matchesShortcut,
+  matchesShortcutKeys,
   modifiersFromEvent,
   needsDemoEditor,
+  normalizeShortcutKeys,
+  sanitizeChordForMatch,
   splitShortcut,
   webPracticeKeys,
-  isOsCapturedShortcut,
+  type HeldModifiers,
   type TrainerMode,
 } from '@/shared/lib/hotkeys'
 import { useT, type TranslateFn } from '@/shared/i18n'
-import { KeyCombo, ProgressBar } from '@/shared/components/ui'
+import { KeyCombo } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
+
+/** 0 = nothing shown, 1 = first key, 2 = all keys + steps, 3 = full answer. */
+type HintLevel = 0 | 1 | 2 | 3
 
 interface Props {
   actionPrompt: string
   keys: string[]
-  onResult: (correct: boolean, responseMs: number) => void
+  onResult: (correct: boolean, responseMs: number, meta?: { mistakes: number; usedHint: boolean }) => void
   disabled?: boolean
-  /** learn = show answer + steps; practice = hide until hints; exam = never show */
   mode?: TrainerMode
+  /** Short action name, e.g. «Откройте поиск» */
+  headline?: string
+  /** @deprecated use taskLabel / headline */
   title?: string
+  /** One-line why, e.g. «Найдите текст без мыши» */
+  why?: string
+  /** Plain detailed explanation shown on the card back. */
+  detail?: string
+  taskLabel?: string
+  /** Start with more support for a chord the learner already struggled with. */
+  initialHintLevel?: HintLevel
+  /** Shows a «пропустить» action when the learner is stuck. */
+  onSkip?: () => void
 }
 
 function demoEffectMessage(keys: string[], t: TranslateFn): string | null {
@@ -40,11 +64,7 @@ function demoEffectMessage(keys: string[], t: TranslateFn): string | null {
   return null
 }
 
-function applyDemoEffect(
-  keys: string[],
-  text: string,
-  pastedFragment: string,
-): string {
+function applyDemoEffect(keys: string[], text: string, pastedFragment: string): string {
   const sorted = [...keys].sort().join('|')
   if (sorted === 'Control|X') return ''
   if (sorted === 'Control|C') return text
@@ -58,48 +78,212 @@ export function KeyboardTrainer({
   onResult,
   disabled,
   mode = 'learn',
+  headline,
   title,
+  why,
+  detail,
+  taskLabel,
+  initialHintLevel = 0,
+  onSkip,
 }: Props) {
   const t = useT()
   const demoDefault = t('trainer.demoDefault')
+  const baseHint: HintLevel = mode === 'learn' ? 2 : mode === 'exam' ? 0 : initialHintLevel
+
   const [flash, setFlash] = useState<'ok' | 'err' | null>(null)
   const [liveChord, setLiveChord] = useState<string[]>([])
   const [focused, setFocused] = useState(false)
   const [demoText, setDemoText] = useState(demoDefault)
-  const [resultHint, setResultHint] = useState<string | null>(null)
   const [mistakes, setMistakes] = useState(0)
   const [coachTip, setCoachTip] = useState<string | null>(null)
   const [done, setDone] = useState(false)
-  const [revealKeys, setRevealKeys] = useState(mode === 'learn')
+  const [hintLevel, setHintLevel] = useState<HintLevel>(baseHint)
+  const [flipped, setFlipped] = useState(false)
+  const [shake, setShake] = useState(false)
 
   const started = useRef(Date.now())
   const boxRef = useRef<HTMLDivElement>(null)
   const submitted = useRef(false)
   const lastWrongAt = useRef(0)
+  const heldMods = useRef<HeldModifiers>({})
+  const mistakesRef = useRef(0)
+  const hintRef = useRef<HintLevel>(baseHint)
+  const askedRef = useRef(false)
 
-  const practiceKeys = useMemo(() => webPracticeKeys(keys), [keys])
-  const metaBlocked = isOsCapturedShortcut(keys)
+  const normalizedKeys = useMemo(() => normalizeShortcutKeys(keys), [keys])
+  const practiceKeys = useMemo(() => webPracticeKeys(normalizedKeys), [normalizedKeys])
+  const metaBlocked = isOsCapturedShortcut(normalizedKeys)
+  const fnKeyLesson = isStandaloneFunctionKey(normalizedKeys)
   const { modifiers, main } = useMemo(() => splitShortcut(practiceKeys), [practiceKeys])
-  const showDemo = needsDemoEditor(keys)
-  const showAnswerKeys = mode === 'learn' || (mode === 'practice' && revealKeys)
+  const showDemo = needsDemoEditor(normalizedKeys)
+  const titleText = (headline ?? actionPrompt).trim()
+  const labelText = (taskLabel ?? title ?? '').trim()
+  const whyText = (why ?? '').trim()
+  const coached = mode !== 'exam'
+
+  const focusBox = useCallback(() => {
+    window.setTimeout(() => boxRef.current?.focus(), 0)
+  }, [])
+
+  const raiseHint = useCallback((level: HintLevel) => {
+    setHintLevel((prev) => {
+      const next = (Math.max(prev, level) as HintLevel)
+      hintRef.current = next
+      return next
+    })
+  }, [])
 
   const reset = useCallback(() => {
     setDone(false)
     setFlash(null)
     setLiveChord([])
     setDemoText(demoDefault)
-    setResultHint(null)
     setMistakes(0)
+    mistakesRef.current = 0
     setCoachTip(null)
-    setRevealKeys(mode === 'learn')
+    setHintLevel(baseHint)
+    hintRef.current = baseHint
+    askedRef.current = false
+    setFlipped(false)
+    setShake(false)
     submitted.current = false
     started.current = Date.now()
-    setTimeout(() => boxRef.current?.focus(), 50)
-  }, [mode, demoDefault])
+    heldMods.current = {}
+    focusBox()
+  }, [baseHint, demoDefault, focusBox])
 
   useEffect(() => {
     reset()
-  }, [actionPrompt, keys, reset])
+  }, [actionPrompt, keys, headline, reset])
+
+  const bumpMistake = useCallback(
+    (tip: string) => {
+      const now = Date.now()
+      if (now - lastWrongAt.current < 450) return
+      lastWrongAt.current = now
+      setFlash('err')
+      setShake(true)
+      window.setTimeout(() => setShake(false), 420)
+      setCoachTip(tip)
+      setMistakes((m) => {
+        const next = m + 1
+        mistakesRef.current = next
+        if (coached) raiseHint(Math.min(next, 2) as HintLevel)
+        return next
+      })
+      window.setTimeout(() => setFlash(null), 700)
+    },
+    [coached, raiseHint],
+  )
+
+  const succeed = useCallback(() => {
+    setDone(true)
+    setFlash('ok')
+    setCoachTip(null)
+    raiseHint(3)
+    setDemoText((prev) => applyDemoEffect(practiceKeys, prev, t('trainer.pastedFragment')))
+    if (!submitted.current) {
+      submitted.current = true
+      onResult(true, Date.now() - started.current, {
+        mistakes: mistakesRef.current,
+        usedHint: askedRef.current,
+      })
+    }
+    if (mode !== 'exam') toast.success(t('trainer.okToast'))
+  }, [mode, onResult, practiceKeys, raiseHint, t])
+
+  const evaluateChord = useCallback(
+    (chord: string[]) => {
+      if (disabled || done) return
+      if (chord.length === 0) return
+      setLiveChord(chord)
+
+      const onlyMods = chord.every((k) => isModifierKey(k))
+      if (onlyMods) {
+        if (heldModifiersAreExpected(chord, modifiers)) {
+          setFlash(null)
+          setCoachTip(t('trainer.holdMods', { main: displayKey(main ?? '') }))
+        } else if (coached) {
+          bumpMistake(
+            mistakesRef.current === 0
+              ? t('trainer.softFirst')
+              : t('hotkeys.wrongMods', {
+                  got: chord.map(displayKey).join('+'),
+                  need: modifiers.map(displayKey).join('+') || formatShortcut(practiceKeys),
+                  target: formatShortcut(practiceKeys),
+                }),
+          )
+        }
+        return
+      }
+
+      if (matchesShortcutKeys(normalizedKeys, chord)) {
+        succeed()
+        return
+      }
+
+      if (mode === 'exam') {
+        setFlash('err')
+        setCoachTip(t('trainer.badExam'))
+        setDone(true)
+        raiseHint(3)
+        if (!submitted.current) {
+          submitted.current = true
+          onResult(false, Date.now() - started.current, { mistakes: 1, usedHint: false })
+        }
+        return
+      }
+
+      const got = splitShortcut(chord)
+      const mainOk = Boolean(main && got.main && got.main === main)
+      const missingMods = modifiers.filter((m) => !chord.includes(m))
+
+      // Right letter, no modifier held — teach the order instead of counting a failure
+      if (mainOk && missingMods.length) {
+        setFlash(null)
+        setCoachTip(
+          t('trainer.holdThenMain', {
+            mods: missingMods.map(displayKey).join(' + '),
+            main: displayKey(main ?? ''),
+          }),
+        )
+        return
+      }
+
+      const nextMistakes = mistakesRef.current + 1
+      let tip: string
+      if (main && got.main === 'E' && main === 'Y') {
+        tip = t('hotkeys.yNotU')
+      } else if (nextMistakes === 1) {
+        tip = modifiers.length
+          ? t('trainer.hintStartWith', { key: displayKey(modifiers[0]!) })
+          : t('trainer.softFirst')
+      } else if (nextMistakes === 2) {
+        tip = t('trainer.hintSteps', {
+          mods: modifiers.map(displayKey).join(' + ') || '—',
+          main: displayKey(main ?? ''),
+        })
+      } else {
+        tip = explainMismatch(normalizedKeys, chord, t)
+      }
+      bumpMistake(tip)
+    },
+    [
+      bumpMistake,
+      coached,
+      disabled,
+      done,
+      main,
+      mode,
+      modifiers,
+      normalizedKeys,
+      onResult,
+      practiceKeys,
+      raiseHint,
+      succeed,
+      t,
+    ],
+  )
 
   const evaluate = useCallback(
     (e: KeyboardEvent) => {
@@ -108,81 +292,101 @@ export function KeyboardTrainer({
         if (!boxRef.current?.contains(e.target)) return
       }
 
+      heldMods.current = heldModifiersFromEvent(e)
       e.preventDefault()
       e.stopPropagation()
 
+      const held = heldMods.current
       const mods = modifiersFromEvent(e)
       const mainKey = mainKeyFromEvent(e)
-      const chord = chordFromEvent(e)
-      setLiveChord(mainKey ? [...mods, mainKey] : mods)
-      if (chord.length === 0) return
+      const rawChord = chordFromEvent(e, held)
+      const fallback = rawChord.length ? rawChord : mainKey ? [...mods, mainKey] : mods
+      evaluateChord(sanitizeChordForMatch(fallback, practiceKeys))
+    },
+    [disabled, done, evaluateChord, practiceKeys],
+  )
 
-      // Only modifier held — coach, don't count as error
-      const onlyMods = chord.every((k) => ['Control', 'Shift', 'Alt', 'Meta'].includes(k))
-      if (onlyMods) {
+  const onVirtualKey = useCallback(
+    (key: string) => {
+      if (disabled || done) return
+      focusBox()
+      if (isModifierKey(key)) {
+        const name = key as keyof HeldModifiers
+        const nextDown = !heldMods.current[name]
+        heldMods.current = { ...heldMods.current, [name]: nextDown }
+        const chord = (['Control', 'Shift', 'Alt', 'Meta'] as const).filter((m) => heldMods.current[m])
+        setLiveChord(chord)
+        if (nextDown && heldModifiersAreExpected(chord, modifiers)) {
+          setFlash(null)
+          setCoachTip(t('trainer.holdMods', { main: displayKey(main ?? '') }))
+        } else if (!nextDown) {
+          setCoachTip(null)
+        }
+        return
+      }
+      const mods = (['Control', 'Shift', 'Alt', 'Meta'] as const).filter((m) => heldMods.current[m])
+      if (modifiers.length && mods.length === 0) {
+        setLiveChord([key])
+        setFlash(null)
         setCoachTip(
-          t('trainer.holdMods', {
-            mods: chord.map(displayKey).join('+'),
-            main: displayKey(main ?? ''),
+          t('trainer.holdThenMain', {
+            mods: modifiers.map(displayKey).join(' + '),
+            main: displayKey(main ?? key),
           }),
         )
         return
       }
-
-      if (matchesShortcut(keys, e)) {
-        setDone(true)
-        setFlash('ok')
-        setCoachTip(null)
-        setDemoText((prev) => applyDemoEffect(practiceKeys, prev, t('trainer.pastedFragment')))
-        setResultHint(
-          demoEffectMessage(practiceKeys, t) ??
-            t('trainer.remember', { shortcut: formatShortcut(keys), prompt: actionPrompt }),
-        )
-        if (!submitted.current) {
-          submitted.current = true
-          onResult(true, Date.now() - started.current)
-        }
-        if (mode !== 'exam') toast.success(t('trainer.okToast'))
-        return
-      }
-
-      // Wrong full attempt — throttle spam
-      const now = Date.now()
-      if (now - lastWrongAt.current < 450) return
-      lastWrongAt.current = now
-
-      const tip = mode === 'exam' ? t('trainer.badExam') : explainMismatch(keys, chord, t)
-
-      setFlash('err')
-      setCoachTip(tip)
-      setMistakes((m) => {
-        const next = m + 1
-        if (mode === 'practice' && next >= 2) setRevealKeys(true)
-        return next
-      })
-
-      if (mode === 'exam') {
-        setDone(true)
-        if (!submitted.current) {
-          submitted.current = true
-          onResult(false, Date.now() - started.current)
-        }
-        return
-      }
-
-      // Learn/practice: UI feedback only — do not spam API on every wrong chord
-      toast.error(mode === 'learn' ? t('trainer.almost') : t('trainer.wrong'))
-      setTimeout(() => setFlash(null), 700)
+      evaluateChord([...mods, key])
+      heldMods.current = {}
     },
-    [actionPrompt, disabled, done, keys, main, mode, onResult, practiceKeys, t],
+    [disabled, done, evaluateChord, focusBox, main, modifiers, t],
   )
 
   useEffect(() => {
     if (disabled || done) return
-    const onKeyDown = (e: KeyboardEvent) => evaluate(e)
+    const id = window.setTimeout(() => boxRef.current?.focus(), 80)
+    return () => window.clearTimeout(id)
+  }, [disabled, done, actionPrompt, normalizedKeys])
+
+  useEffect(() => {
+    if (disabled || done) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      const insideTrainer = Boolean(boxRef.current?.contains(document.activeElement))
+      // Let the learner operate hint/skip buttons with the keyboard
+      if (insideTrainer && document.activeElement !== boxRef.current) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab') return
+      }
+
+      heldMods.current = heldModifiersFromEvent(e)
+      const chord = sanitizeChordForMatch(chordFromEvent(e, heldMods.current), practiceKeys)
+      const isTargetChord = matchesShortcutKeys(normalizedKeys, chord)
+      const isDestructive = isDestructiveBrowserEvent(e, heldMods.current)
+
+      if (insideTrainer || isTargetChord || isDestructive || e.ctrlKey || e.metaKey || e.altKey) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+
+      if (isDestructive) {
+        setCoachTip(t('trainer.closeBlocked', { practice: formatShortcut(practiceKeys) }))
+        setFlash('err')
+        window.setTimeout(() => setFlash(null), 600)
+        return
+      }
+
+      if (!insideTrainer) {
+        if (isTargetChord) {
+          boxRef.current?.focus()
+          setCoachTip(t('trainer.clickToStart'))
+        }
+        return
+      }
+
+      evaluate(e)
+    }
     const onKeyUp = (e: KeyboardEvent) => {
-      // After release, only remaining modifier flags (never include the released main key)
-      setLiveChord(modifiersFromEvent(e))
+      heldMods.current = heldModifiersFromEvent(e)
+      setLiveChord(sanitizeChordForMatch(chordFromEvent(e, heldMods.current), practiceKeys))
     }
 
     window.addEventListener('keydown', onKeyDown, true)
@@ -191,130 +395,112 @@ export function KeyboardTrainer({
       window.removeEventListener('keydown', onKeyDown, true)
       window.removeEventListener('keyup', onKeyUp, true)
     }
-  }, [disabled, done, evaluate])
+  }, [disabled, done, evaluate, normalizedKeys, practiceKeys, t])
 
-  const step = !done
-    ? liveChord.some((k) => ['Control', 'Shift', 'Alt', 'Meta'].includes(k))
-      ? 2
-      : 1
-    : 3
+  const modsReady = allExpectedModifiersHeld(liveChord, modifiers)
 
-  const stepLabels = [
-    {
-      n: 1,
-      label: modifiers.length
-        ? t('trainer.stepHold', { mods: modifiers.map(displayKey).join('+') })
-        : t('trainer.stepReady'),
-    },
-    {
-      n: 2,
-      label: main ? t('trainer.stepPress', { key: displayKey(main) }) : t('trainer.stepPressKey'),
-    },
-    { n: 3, label: t('trainer.stepDone') },
-  ]
+  // Green check only for held modifiers that belong to the chord — not a lone letter press
+  const checkedKeys = practiceKeys.filter((k) => {
+    if (!liveChord.some((c) => c.toLowerCase() === k.toLowerCase())) return false
+    if (isModifierKey(k)) return true
+    return modsReady || done
+  })
 
-  return (
-    <div
-      ref={boxRef}
-      tabIndex={0}
-      role="application"
-      aria-label={t('trainer.aria')}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      className={cn(
-        'relative overflow-hidden rounded-3xl border p-6 outline-none transition-colors duration-300 md:p-8',
-        'focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',
-        focused && !done && 'ring-2 ring-brand-500/40',
-        flash === 'ok' && 'border-emerald-500/50 bg-emerald-500/10',
-        flash === 'err' && 'border-rose-500/50 bg-rose-500/10',
-        !flash && 'border-[var(--border-default)] bg-[var(--bg-elevated)]',
-      )}
-    >
-      {title && (
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600">{title}</p>
-      )}
+  const mystery = hintLevel === 0 && !done
+  const revealedKeys =
+    done || hintLevel >= 2 ? practiceKeys : hintLevel === 1 ? [modifiers[0] ?? practiceKeys[0]!] : []
+  const highlightKeys =
+    hintLevel >= 1 && modifiers[0] && !modsReady
+      ? [modifiers[0]]
+      : !done && liveChord.length
+        ? keysForActiveHighlight(liveChord, practiceKeys)
+        : hintLevel >= 2
+          ? practiceKeys
+          : undefined
 
-      {metaBlocked && !done && (
-        <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 text-sm text-amber-900 dark:text-amber-100">
-          <p className="font-semibold">{t('trainer.osCapture', { shortcut: formatShortcut(keys) })}</p>
-          <p className="mt-1 text-xs opacity-90">
-            {t('trainer.osCaptureHint', {
-              practice: formatShortcut(practiceKeys),
-              real: formatShortcut(keys),
-            })}
-          </p>
-        </div>
-      )}
+  // Exactly one helper line under the keys: coaching wins, otherwise the basic how-to
+  const helperLine =
+    coachTip ??
+    (mode === 'exam'
+      ? t('trainer.examHint')
+      : modifiers.length && !mystery
+        ? t('trainer.tapOrderHint', { mods: modifiers.map(displayKey).join(' + ') })
+        : t('trainer.pressShortcut'))
 
-      {!focused && !done && (
-        <p className="mb-4 rounded-xl bg-amber-500/10 px-3 py-2 text-center text-xs font-medium text-amber-800 dark:text-amber-200">
-          {t('trainer.clickHint', {
-            combo: metaBlocked ? formatShortcut(practiceKeys) : t('trainer.pressCombo'),
-          })}
-        </p>
-      )}
+  const requestHint = () => {
+    askedRef.current = true
+    const next = Math.min(hintLevel + 1, 3) as HintLevel
+    raiseHint(next)
+    if (next === 1 && modifiers.length) {
+      setCoachTip(t('trainer.hintStartWith', { key: displayKey(modifiers[0]!) }))
+    } else if (next === 2) {
+      setCoachTip(
+        t('trainer.hintSteps', {
+          mods: modifiers.map(displayKey).join(' + ') || '—',
+          main: displayKey(main ?? ''),
+        }),
+      )
+    } else {
+      setCoachTip(t('trainer.pressAsShown', { shortcut: formatShortcut(practiceKeys) }))
+    }
+    setFlash(null)
+    focusBox()
+  }
 
+  const revealAnswer = () => {
+    askedRef.current = true
+    raiseHint(3)
+    setCoachTip(t('trainer.pressAsShown', { shortcut: formatShortcut(practiceKeys) }))
+    setFlash(null)
+    focusBox()
+  }
+
+  const frontContent = (
+    <>
       <AnimatePresence mode="wait">
-        <motion.p
-          key={actionPrompt}
+        <motion.div
+          key={titleText}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-2 text-center text-xl font-semibold text-[var(--text-primary)] md:text-2xl"
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.22 }}
         >
-          {actionPrompt}
-        </motion.p>
-      </AnimatePresence>
-      {metaBlocked && (
-        <p className="mb-4 text-center text-sm font-medium text-brand-600">
-          {t('trainer.inTrainer', { shortcut: formatShortcut(practiceKeys) })}
-        </p>
-      )}
-      <p className="text-muted mb-4 text-center text-sm">
-        {mode === 'exam'
-          ? t('trainer.examHint')
-          : mode === 'practice'
-            ? t('trainer.practiceHint')
-            : t('trainer.learnHint')}
-      </p>
-
-      {mode === 'practice' && !done && (
-        <div className="mb-6">
-          <div className="mb-1.5 flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
-            <span>{t('trainer.mistakesProgress', { n: Math.min(mistakes, 2) })}</span>
-            <span>{revealKeys ? t('trainer.hintShown') : t('trainer.hintHidden')}</span>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              {labelText ? (
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300">
+                  {labelText}
+                </p>
+              ) : null}
+              <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl">
+                {titleText}
+              </h2>
+              {whyText ? <p className="text-muted mt-1 text-sm leading-snug">{whyText}</p> : null}
+            </div>
+            {coached && !done ? (
+              <span
+                className="mt-2 flex shrink-0 items-center gap-1"
+                aria-label={t('trainer.attempts', { n: mistakes })}
+              >
+                {[0, 1].map((i) => (
+                  <span
+                    key={i}
+                    className={cn(
+                      'h-1.5 w-1.5 rounded-full',
+                      mistakes > i ? 'bg-amber-500' : 'bg-[var(--border-default)]',
+                    )}
+                  />
+                ))}
+              </span>
+            ) : null}
           </div>
-          <ProgressBar value={(Math.min(mistakes, 2) / 2) * 100} barClassName="bg-signal" />
-        </div>
-      )}
-
-      {/* Progressive steps */}
-      {mode !== 'exam' && !done && (
-        <ol className="mb-6 grid gap-2 sm:grid-cols-3">
-          {stepLabels.map((s) => (
-            <li
-              key={s.n}
-              className={cn(
-                'rounded-xl border px-3 py-2 text-center text-xs font-medium',
-                step === s.n && 'border-brand-500 bg-brand-500/10 text-brand-700 dark:text-brand-200',
-                step > s.n && 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
-                step < s.n && 'border-[var(--border-default)] text-[var(--text-muted)]',
-              )}
-            >
-              {t('trainer.step', { n: s.n, label: s.label })}
-            </li>
-          ))}
-        </ol>
-      )}
+        </motion.div>
+      </AnimatePresence>
 
       {showDemo && (
-        <div className="mb-6 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] p-4">
+        <div className="mt-4 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] p-3">
           <p className="text-muted mb-2 text-xs">{t('trainer.demoField')}</p>
-          <div
-            className={cn(
-              'min-h-[3.25rem] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-sm',
-              !done && demoText && 'selection:bg-sky-300/80',
-            )}
-          >
+          <div className="min-h-[2.75rem] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-sm">
             {!done && demoText ? (
               <mark className="rounded bg-sky-300/70 px-0.5 text-slate-900 dark:bg-sky-500/40 dark:text-slate-100">
                 {demoText}
@@ -325,67 +511,210 @@ export function KeyboardTrainer({
               <span className="italic text-[var(--text-muted)]">{t('trainer.textCut')}</span>
             )}
           </div>
-          <p className="text-muted mt-2 text-xs">
-            {done ? resultHint ?? t('trainer.done') : t('trainer.selectedHelp')}
-          </p>
         </div>
       )}
 
-      {showAnswerKeys ? (
-        <div className="mb-2">
-          <p className="text-muted mb-3 text-center text-xs font-medium">
-            {t('trainer.needPress', { hint: metaBlocked ? t('trainer.inBrowser') : '' })}
+      <div
+        className={cn(
+          'mt-5 rounded-2xl border px-4 py-6 transition-colors',
+          flash === 'err'
+            ? 'border-amber-500/40 bg-amber-500/5'
+            : 'border-[var(--border-default)] bg-[var(--bg-muted)]',
+        )}
+      >
+        <KeyCombo
+          keys={practiceKeys}
+          mystery={mystery}
+          checkedKeys={checkedKeys}
+          revealedKeys={revealedKeys}
+          activeKeys={highlightKeys}
+          learned={done}
+          size="lg"
+          onKeyActivate={mode === 'exam' ? undefined : onVirtualKey}
+        />
+        {!done ? (
+          <p
+            className={cn(
+              'mt-4 text-center text-sm leading-snug',
+              flash === 'err'
+                ? 'font-medium text-amber-800 dark:text-amber-200'
+                : 'text-[var(--text-secondary)]',
+            )}
+          >
+            {!focused ? t('trainer.clickToStart') : helperLine}
           </p>
-          <KeyCombo keys={practiceKeys} activeKeys={!done && liveChord.length ? liveChord : undefined} />
-          {metaBlocked && (
-            <p className="text-muted mt-2 text-center text-xs">
-              {t('trainer.inSystem', { shortcut: formatShortcut(keys) })}
-            </p>
-          )}
-        </div>
-      ) : (
-        mode !== 'practice' && (
-          <p className="text-muted mb-4 text-center text-sm">{t('trainer.hintHidden')}</p>
-        )
-      )}
+        ) : null}
+      </div>
 
-      <p className="mt-4 text-center font-mono text-sm text-[var(--text-secondary)]">
-        {t('trainer.currentlyPressed')}{' '}
-        <span className="font-semibold text-brand-600 dark:text-brand-400">
-          {done ? formatShortcut(practiceKeys) : chordDisplay(liveChord)}
-        </span>
+      <p aria-live="polite" className="sr-only">
+        {coachTip ?? ''}
       </p>
 
-      {coachTip && !done && (
-        <p className="mt-4 rounded-xl bg-[var(--bg-muted)] px-3 py-2 text-center text-sm text-[var(--text-secondary)]">
-          {coachTip}
+      {(metaBlocked || fnKeyLesson) && !done && coached && (
+        <p className="text-muted mt-3 text-center text-xs">
+          {t('trainer.browserNoteShort', { practice: formatShortcut(practiceKeys) })}
         </p>
       )}
 
-      {done && (
-        <div className="mt-6 space-y-3 text-center">
-          <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">{t('trainer.accepted')}</p>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {t('trainer.rememberDone', {
-              shortcut: formatShortcut(keys),
-              trainerNote: metaBlocked
-                ? t('trainer.inTrainerWas', { shortcut: formatShortcut(practiceKeys) })
-                : '',
-              prompt: actionPrompt,
-            })}
-          </p>
-          {resultHint && <p className="text-muted text-xs">{resultHint}</p>}
-          {mode !== 'exam' && (
+      {!done && (coached || detail) ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {coached && hintLevel < 3 ? (
+              <button
+                type="button"
+                onClick={hintLevel >= 2 ? revealAnswer : requestHint}
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[var(--border-default)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+              >
+                <HelpCircle className="h-4 w-4" aria-hidden />
+                {hintLevel >= 2 ? t('trainer.showAnswer') : t('trainer.showHint')}
+              </button>
+            ) : null}
+            {detail ? (
+              <button
+                type="button"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[var(--border-default)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                onClick={() => {
+                  setFlipped(true)
+                  focusBox()
+                }}
+              >
+                <RotateCcw className="h-4 w-4" aria-hidden />
+                {t('trainer.flipExplain')}
+              </button>
+            ) : null}
+          </div>
+          {onSkip && coached ? (
             <button
               type="button"
-              onClick={reset}
-              className="btn-secondary"
+              onClick={onSkip}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
             >
+              {t('trainer.skip')}
+              <SkipForward className="h-4 w-4" aria-hidden />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {done && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mt-5 space-y-1 text-center"
+        >
+          <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
+            {t('trainer.accepted')}
+          </p>
+          <p className="text-sm text-[var(--text-secondary)]">
+            {demoEffectMessage(practiceKeys, t) ?? (whyText || titleText)}
+          </p>
+          {detail ? (
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-[var(--text-secondary)]">
+              {detail}
+            </p>
+          ) : null}
+          {metaBlocked ? (
+            <p className="text-muted text-xs">
+              {t('trainer.inTrainerWas', { shortcut: formatShortcut(practiceKeys) })}
+            </p>
+          ) : null}
+          {mode !== 'exam' && (
+            <button type="button" onClick={reset} className="btn-secondary mt-3">
               {t('trainer.tryAgain')}
             </button>
           )}
-        </div>
+        </motion.div>
       )}
+    </>
+  )
+
+  const backContent = detail ? (
+    <div className="flex min-h-full flex-col">
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300">
+        {t('trainer.cardBackLabel')}
+      </p>
+      <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl">
+        {titleText}
+      </h2>
+      <div className="mt-4 flex justify-center">
+        <KeyCombo keys={practiceKeys} learned size="lg" />
+      </div>
+      <p className="mt-5 flex-1 text-base leading-relaxed text-[var(--text-secondary)] md:text-[1.05rem]">
+        {detail}
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          setFlipped(false)
+          focusBox()
+        }}
+        className="btn-secondary mt-6 inline-flex w-fit items-center gap-2"
+      >
+        <RotateCcw className="h-4 w-4" aria-hidden />
+        {t('trainer.flipBack')}
+      </button>
+    </div>
+  ) : null
+
+  return (
+    <div
+      ref={boxRef}
+      tabIndex={0}
+      role="application"
+      aria-label={t('trainer.aria')}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (boxRef.current?.contains(e.relatedTarget as Node | null)) return
+        setFocused(false)
+      }}
+      className={cn(
+        'relative rounded-3xl border outline-none transition-colors duration-300',
+        'focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',
+        focused && !done && 'ring-2 ring-brand-500/40',
+        flash === 'ok' && 'border-emerald-500/50 bg-emerald-500/10',
+        flash === 'err' && 'border-rose-500/40 bg-rose-500/5',
+        !flash && 'border-[var(--border-default)] bg-[var(--bg-elevated)]',
+        shake && 'animate-[km-shake_0.4s_ease-in-out]',
+      )}
+      style={{ perspective: '1400px' }}
+    >
+      <div
+        className={cn(
+          'relative grid transition-transform ease-[cubic-bezier(0.4,0.0,0.2,1)]',
+          '[transform-style:preserve-3d]',
+          flipped && detail && '[transform:rotateY(180deg)]',
+        )}
+        style={{ transitionDuration: '550ms' }}
+      >
+        <div
+          className={cn(
+            'col-start-1 row-start-1 rounded-3xl bg-[var(--bg-elevated)] p-5 md:p-8',
+            '[backface-visibility:hidden] [-webkit-backface-visibility:hidden]',
+            flipped && detail && 'pointer-events-none',
+          )}
+        >
+          {frontContent}
+        </div>
+        {backContent ? (
+          <div
+            className={cn(
+              'col-start-1 row-start-1 rounded-3xl bg-[var(--bg-elevated)] p-5 md:p-8',
+              '[backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)]',
+              !flipped && 'pointer-events-none',
+            )}
+          >
+            {backContent}
+          </div>
+        ) : null}
+      </div>
+
+      <style>{`
+        @keyframes km-shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-4px); }
+          75% { transform: translateX(4px); }
+        }
+      `}</style>
     </div>
   )
 }

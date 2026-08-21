@@ -91,10 +91,11 @@ export const api = {
   lesson: (id: string) => request<LessonDto>(`/courses/lessons/${id}`),
   submitTraining: (body: { lesson_id: string; correct: boolean; response_time_ms?: number }) =>
     request<TrainingResultDto>('/training/submit', { method: 'POST', body: JSON.stringify(body) }),
-  randomLessons: (params?: { course_slug?: string; limit?: number }) => {
+  randomLessons: (params?: { course_slug?: string; limit?: number; browser_safe?: boolean }) => {
     const q = new URLSearchParams()
     if (params?.course_slug) q.set('course_slug', params.course_slug)
     if (params?.limit) q.set('limit', String(params.limit))
+    if (params?.browser_safe === false) q.set('browser_safe', 'false')
     return request<RandomLessonDto[]>(`/training/random?${q}`)
   },
   achievements: () => request<AchievementDto[]>('/achievements'),
@@ -209,6 +210,8 @@ export interface RandomLessonDto {
   id: string
   title: string
   action_prompt: string
+  usage_example?: string | null
+  description?: string | null
   keys: string[]
   course_slug?: string | null
   category_slug?: string | null

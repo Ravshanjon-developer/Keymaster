@@ -12,8 +12,8 @@ OUT = HERE / "contentTg.ts"
 
 COURSES = {
     "programmer-basics": {
-        "title": "Омезишҳои асосии барномасоз",
-        "description": "Ин курс бо муҳимтарин омезишҳои тугмаҳо шинос мекунад, ки ҳар рӯз новобаста аз забон, муҳаррир ва ОС истифода мешаванд. Аввал инро гузаред.",
+        "title": "Клавишаҳои асосии барномасоз",
+        "description": "Ин курс бо муҳимтарин Клавишаҳои тугмаҳо шинос мекунад, ки ҳар рӯз новобаста аз забон, муҳаррир ва ОС истифода мешаванд. Аввал инро гузаред.",
     },
     "vscode": {
         "title": "VS Code",
@@ -1384,9 +1384,9 @@ def translate_bulk(course: str, keys: list[str], title: str, action: str, usage:
     if course == "chrome" and title.startswith("Chrome "):
         return {
             "title": f"Chrome {combo}",
-            "action_prompt": f"Омезиш {combo}",
-            "usage_example": "Омезишҳои васеъи Chrome",
-            "description": "Омезишҳои васеъи Chrome",
+            "action_prompt": f"Клавиша {combo}",
+            "usage_example": "Клавишаҳои васеъи Chrome",
+            "description": "Клавишаҳои васеъи Chrome",
         }
     # Windows F-keys
     if course == "windows" and re.fullmatch(r"F\d{1,2}", combo):
@@ -1409,8 +1409,8 @@ def translate_bulk(course: str, keys: list[str], title: str, action: str, usage:
             return {
                 "title": combo,
                 "action_prompt": f"{combo}-ро пахш кунед",
-                "usage_example": f"Омезиши системавии {combo}",
-                "description": f"Омезиши системавии {combo}",
+                "usage_example": f"Клавишаи системавии {combo}",
+                "description": f"Клавишаи системавии {combo}",
             }
         return {
             "title": combo,

@@ -1,15 +1,20 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
+import { TaskLessonPanel } from '@/features/lessons/TaskLessonPanel'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
-import { formatShortcut } from '@/shared/lib/hotkeys'
-import { useT } from '@/shared/i18n'
+import { formatShortcut, isBrowserHostileForTraining } from '@/shared/lib/hotkeys'
+import { useBlockBrowserChord } from '@/shared/hooks/useBlockBrowserChord'
+import { isTaskLesson } from '@/shared/lib/lessonKind'
+import { deriveTrainerCopy } from '@/shared/lib/lessonCopy'
+import { parseTaskSteps } from '@/shared/lib/taskSteps'
+import { desktopSimulatorHref, parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
+import { useT, useLocaleStore } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnStatusBadge } from '@/shared/components/LearnStatus'
 import { PracticeRegisterGate } from '@/shared/components/PracticeRegisterGate'
@@ -20,13 +25,13 @@ const NEXT_LESSON_MS = 1500
 
 export function LessonPage({ lessonId }: { lessonId: string }) {
   const t = useT()
+  const locale = useLocaleStore((s) => s.locale)
   const navigate = useNavigate()
   const { localizeLesson } = useLocalizedContent()
   const { data, isLoading } = useQuery({ queryKey: ['lesson', lessonId], queryFn: () => api.lesson(lessonId) })
   const token = useAuthStore((s) => s.token)
   const refreshUser = useAuthStore((s) => s.refreshUser)
   const queryClient = useQueryClient()
-  const [phase, setPhase] = useState<'theory' | 'practice'>('theory')
   const [succeeded, setSucceeded] = useState(false)
   const [countdown, setCountdown] = useState(0)
 
@@ -37,6 +42,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
       return rows[0] ?? null
     },
     enabled: !!token,
+    refetchOnWindowFocus: true,
   })
 
   const courseQuery = useQuery({
@@ -60,13 +66,25 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   )
 
   useEffect(() => {
-    setPhase('theory')
     setSucceeded(false)
     setCountdown(0)
   }, [lessonId])
 
+  const taskModeLesson = data ? isTaskLesson(data.course_slug ?? undefined, data.keys) : false
+  const desktopTaskId = data ? parseDesktopTaskId(data.keys) : null
+  const studyOnly = Boolean(data && !taskModeLesson && isBrowserHostileForTraining(data.keys))
+  const keyboardPractice = Boolean(data && !taskModeLesson && !studyOnly && token)
+
+  // Block Ctrl+S / lesson chord so Chrome does not open “Save page as…” before the trainer is focused.
+  useBlockBrowserChord(
+    keyboardPractice ? data?.keys ?? null : null,
+    keyboardPractice,
+  )
+
   useEffect(() => {
-    if (!succeeded || phase !== 'practice') return
+    if (!succeeded) return
+    if (desktopTaskId) return
+    if (!taskModeLesson && !studyOnly && !keyboardPractice) return
     if (!nextLessonId) return
     const endAt = Date.now() + NEXT_LESSON_MS
     setCountdown(Math.ceil(NEXT_LESSON_MS / 1000))
@@ -80,7 +98,7 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
       window.clearInterval(tick)
       window.clearTimeout(done)
     }
-  }, [succeeded, phase, nextLessonId, navigate])
+  }, [succeeded, taskModeLesson, studyOnly, keyboardPractice, desktopTaskId, nextLessonId, navigate])
 
   if (isLoading) {
     return (
@@ -99,98 +117,190 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     description: data.description,
   })
 
+  const taskSteps = parseTaskSteps(loc.usage_example ?? data.usage_example ?? '')
+  const copy = deriveTrainerCopy({
+    keys: data.keys,
+    title: loc.title ?? data.title,
+    action_prompt: loc.action_prompt ?? data.action_prompt,
+    usage_example: loc.usage_example ?? data.usage_example,
+    description: loc.description ?? data.description,
+    locale,
+  })
+
+  const markTaskComplete = async () => {
+    setSucceeded(true)
+    if (!token) return
+    try {
+      const result = await api.submitTraining({
+        lesson_id: data.id,
+        correct: true,
+        response_time_ms: 0,
+      })
+      await refreshUser()
+      await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+      if (result.xp_gained > 0) toast.success(t('lesson.xpLearned', { n: result.xp_gained }))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
+    }
+  }
+
   return (
     <PageShell width="3xl">
+      {!keyboardPractice && (
       <GlassCard className={learned ? 'border-brand-600/30' : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm text-brand-600">{t('lesson.steps')}</p>
-          {token ? (
-            <LearnStatusBadge learned={learned} />
-          ) : (
+          {token ? <LearnStatusBadge learned={learned} /> : (
             <Link to="/register" state={{ from: `/lessons/${lessonId}` }} className="text-xs font-semibold text-brand-700 hover:underline">
               {t('lesson.saveProgress')}
             </Link>
           )}
         </div>
         <h1 className="font-display mt-1 text-3xl font-bold text-ink dark:text-white">{loc.title}</h1>
-        <p className="mt-4 text-slate-600 dark:text-slate-300">{loc.description}</p>
+        {copy.why ? <p className="mt-3 text-slate-700 dark:text-slate-200">{copy.why}</p> : null}
 
-        <div className="mt-6 rounded-2xl bg-slate-100 p-4 dark:bg-slate-800/80">
-          <p className="text-sm font-medium text-slate-500">{t('lesson.action')}</p>
-          <p className="mt-1 text-lg font-semibold">{loc.action_prompt}</p>
-        </div>
-
-        <div className="mt-8">
-          <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
-            <p className="text-sm font-medium text-slate-500">{t('lesson.shortcut')}</p>
-            {token && <LearnStatusBadge learned={learned} size="sm" />}
+        {!taskModeLesson && (
+          <div className="mt-8">
+            <KeyCombo keys={data.keys} learned={learned} />
+            {learned && (
+              <p className="mt-2 text-center text-sm font-medium text-brand-700 dark:text-brand-300">
+                {t('lesson.inArsenal')}
+              </p>
+            )}
           </div>
-          <KeyCombo keys={data.keys} learned={learned} />
-          <p className="mt-4 text-center text-lg font-semibold tracking-wide">{formatShortcut(data.keys)}</p>
-          {learned && (
-            <p className="mt-2 text-center text-sm font-medium text-brand-700 dark:text-brand-300">
-              {t('lesson.inArsenal')}
-            </p>
-          )}
-        </div>
+        )}
 
-        <motion.div className="mt-6 rounded-2xl border border-slate-200 p-4 text-sm dark:border-slate-700">
-          <strong>{t('lesson.why')}</strong> {loc.usage_example}
-        </motion.div>
+        {taskModeLesson && (
+          <div className="mt-6 rounded-2xl bg-slate-100 p-4 dark:bg-slate-800/80">
+            <p className="text-lg font-semibold">{loc.action_prompt}</p>
+          </div>
+        )}
 
-        {phase === 'theory' && (
+        {taskModeLesson && (
+          <div className="mt-8">
+            {!token ? (
+              <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
+            ) : (
+              <TaskLessonPanel
+                title={loc.title}
+                actionPrompt={loc.action_prompt ?? data.action_prompt}
+                steps={taskSteps}
+                simulatorHref={desktopSimulatorHref(desktopTaskId, data.id)}
+                requiresSimulator={desktopTaskId !== null}
+                onComplete={() => void markTaskComplete()}
+                completed={learned}
+              />
+            )}
+          </div>
+        )}
+
+        {!taskModeLesson && studyOnly && (
           <div className="mt-8 space-y-3">
+            <p className="text-center text-sm text-slate-600 dark:text-slate-300">
+              {t('lesson.studyOnlyHint')}
+            </p>
             {!token ? (
               <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSucceeded(false)
-                    setPhase('practice')
-                  }}
-                  className="btn-primary w-full py-3 text-base"
+                {!learned && (
+                  <button
+                    type="button"
+                    onClick={() => void markTaskComplete()}
+                    className="btn-primary w-full py-3 text-base"
+                  >
+                    {t('lesson.markLearned')}
+                  </button>
+                )}
+                <Link
+                  to={`/review?course=${encodeURIComponent(data.course_slug ?? 'programmer-basics')}`}
+                  className="btn-secondary flex w-full justify-center py-3 text-base"
                 >
-                  {learned ? t('lesson.repeat') : t('lesson.learn')}
-                </button>
-                <p className="text-center text-xs text-slate-500">{t('lesson.selfCheckHint')}</p>
+                  {t('lesson.openReview')}
+                </Link>
               </>
             )}
           </div>
         )}
-      </GlassCard>
 
-      {phase === 'practice' && token && (
-        <div className="mt-8 space-y-4">
+        {!taskModeLesson && !studyOnly && !token && (
+          <div className="mt-8">
+            <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
+          </div>
+        )}
+      </GlassCard>
+      )}
+
+      {taskModeLesson && learned && token && (
+        <GlassCard className="mt-8 border-brand-600/30 bg-brand-50/50 dark:bg-brand-950/30">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-lg font-bold text-brand-800 dark:text-brand-200">{t('lesson.doneTaskTitle')}</h2>
+            <LearnStatusBadge learned />
+          </div>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            {t('lesson.rememberTaskLine', { prompt: loc.action_prompt ?? data.action_prompt })}
+          </p>
+          {nextLessonId ? (
+            <>
+              <p className="mt-3 text-sm text-slate-500">{t('lesson.nextLessonIn', { n: countdown })}</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button type="button" onClick={() => navigate(`/lessons/${nextLessonId}`)} className="btn-primary">
+                  {t('lesson.nextLesson')}
+                </button>
+                <Link to={desktopSimulatorHref(desktopTaskId, data.id)} className="btn-secondary">
+                  {t('lesson.openDesktopSim')}
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link to="/courses/computer-basics" className="btn-primary">
+                {t('simulator.toCourse')}
+              </Link>
+              <Link to={desktopSimulatorHref(desktopTaskId, data.id)} className="btn-secondary">
+                {t('lesson.openDesktopSim')}
+              </Link>
+            </div>
+          )}
+        </GlassCard>
+      )}
+
+      {keyboardPractice && (
+        <div className="space-y-4 pb-8">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <LearnStatusBadge learned={learned} />
+          </div>
           <PracticeKeyboardGate courseQuery={data.course_slug ?? undefined}>
             <KeyboardTrainer
-            key={lessonId}
-            title={t('lesson.learnMode')}
-            mode="learn"
-            actionPrompt={loc.action_prompt ?? data.action_prompt}
-            keys={data.keys}
-            onResult={async (correct, ms) => {
-              if (!correct) return
-              setSucceeded(true)
-              if (token) {
-                try {
-                  const result = await api.submitTraining({
-                    lesson_id: data.id,
-                    correct,
-                    response_time_ms: ms,
-                  })
-                  await refreshUser()
-                  await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
-                  await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
-                  await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
-                  if (result.xp_gained > 0) toast.success(t('lesson.xpLearned', { n: result.xp_gained }))
-                } catch (err) {
-                  toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
+              key={lessonId}
+              headline={copy.headline || loc.title}
+              why={copy.why}
+              detail={copy.detail}
+              mode="learn"
+              actionPrompt={loc.action_prompt ?? data.action_prompt}
+              keys={data.keys}
+              onResult={async (correct, ms) => {
+                if (!correct) return
+                setSucceeded(true)
+                if (token) {
+                  try {
+                    const result = await api.submitTraining({
+                      lesson_id: data.id,
+                      correct,
+                      response_time_ms: ms,
+                    })
+                    await refreshUser()
+                    await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+                    await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+                    await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+                    if (result.xp_gained > 0) toast.success(t('lesson.xpLearned', { n: result.xp_gained }))
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
           </PracticeKeyboardGate>
 
           {succeeded && (
@@ -239,25 +349,12 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
               )}
             </GlassCard>
           )}
-
-          <button
-            type="button"
-            onClick={() => {
-              setPhase('theory')
-              setSucceeded(false)
-            }}
-            className="text-sm text-slate-500 hover:text-brand-600"
-          >
-            {t('lesson.backTheory')}
-          </button>
         </div>
       )}
 
-      {phase === 'theory' && (
-        <Link to="/courses" className="mt-6 inline-block text-sm text-brand-600">
-          {t('lesson.backCatalog')}
-        </Link>
-      )}
+      <Link to="/courses" className="mt-6 inline-block text-sm text-brand-600">
+        {t('lesson.backCatalog')}
+      </Link>
     </PageShell>
   )
 }

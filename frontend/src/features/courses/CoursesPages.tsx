@@ -9,6 +9,7 @@ import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
 import { getCourseStatus } from '@/shared/lib/courseStatus'
 import { formatShortcut } from '@/shared/lib/hotkeys'
+import { isTaskLesson } from '@/shared/lib/lessonKind'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { LearnProgressBar, LearnStatusBadge } from '@/shared/components/LearnStatus'
@@ -65,7 +66,7 @@ export function CoursesPage() {
       {!isLoading && !isError && (
       <div className="mt-2 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.map((course, i) => {
-          const isRequired = course.slug === 'programmer-basics'
+          const isRequired = course.slug === 'computer-basics' || course.slug === 'programmer-basics'
           const prog = progressBySlug.get(course.slug)
           const status = getCourseStatus({
             percent: prog?.percent,
@@ -213,7 +214,7 @@ export function CourseDetailPage({ slug }: { slug: string }) {
       <div className="mb-8 flex flex-wrap items-start gap-5">
         <CourseBrandIcon slug={data.slug} icon={data.icon} size={56} />
         <div className="min-w-0 flex-1">
-          {data.slug === 'programmer-basics' && (
+          {(data.slug === 'computer-basics' || data.slug === 'programmer-basics') && (
             <span className="status-chip mb-2 border-brand-700/30 bg-brand-700 text-white">
               {t('courses.requiredStart')}
             </span>
@@ -252,6 +253,7 @@ export function CourseDetailPage({ slug }: { slug: string }) {
               <div className="mt-3 grid gap-2.5 md:grid-cols-2">
                 {cat.lessons.map((lesson) => {
                   const learned = learnedMap.get(lesson.id) ?? false
+                  const taskLesson = isTaskLesson(data.slug, lesson.keys)
                   const lessonLoc = localizeLesson(data.slug, cat.slug, lesson.keys, {
                     title: lesson.title,
                   })
@@ -270,8 +272,8 @@ export function CourseDetailPage({ slug }: { slug: string }) {
                             <p className="font-semibold leading-snug tracking-tight text-ink dark:text-white">
                               {lessonLoc.title}
                             </p>
-                            <p className="mt-1 font-mono text-[13px] font-medium text-brand-800 dark:text-brand-300">
-                              {formatShortcut(lesson.keys)}
+                            <p className="mt-1 text-[13px] font-medium text-brand-800 dark:text-brand-300">
+                              {taskLesson ? t('courses.lessonTypeTask') : formatShortcut(lesson.keys)}
                             </p>
                           </div>
                           <div className="flex shrink-0 flex-col items-end gap-1.5">
@@ -294,12 +296,20 @@ export function CourseDetailPage({ slug }: { slug: string }) {
         <Link to="/path" className="btn-secondary">
           {t('courses.path')}
         </Link>
-        <Link to={`/training?course=${slug}`} className="btn-primary">
-          {t('courses.training')}
-        </Link>
-        <Link to={`/exam?course=${slug}`} className="btn-secondary">
-          {t('courses.exam')}
-        </Link>
+        {data.slug === 'computer-basics' ? (
+          <Link to="/simulator?mode=desktop" className="btn-primary">
+            {t('courses.openDesktopSim')}
+          </Link>
+        ) : (
+          <Link to={`/training?course=${slug}`} className="btn-primary">
+            {t('courses.training')}
+          </Link>
+        )}
+        {data.slug !== 'computer-basics' && (
+          <Link to={`/exam?course=${slug}`} className="btn-secondary">
+            {t('courses.exam')}
+          </Link>
+        )}
       </div>
     </PageShell>
   )

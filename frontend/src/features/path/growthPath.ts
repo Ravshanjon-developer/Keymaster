@@ -23,7 +23,7 @@ export type GrowthNodeDef = {
 export const UNLOCK_PERCENT = 60
 
 /**
- * Developer Growth Path spine + tool branches.
+ * Learning journey: first laptop → hotkeys → tools.
  * Any slug missing from API is simply skipped at render time.
  */
 export const GROWTH_PATH: GrowthNodeDef[] = [
@@ -37,6 +37,16 @@ export const GROWTH_PATH: GrowthNodeDef[] = [
     requires: [],
   },
   {
+    id: 'computer',
+    kind: 'course',
+    slug: 'computer-basics',
+    careerTitle: 'First Laptop',
+    difficulty: 1,
+    shape: 'wide',
+    lane: 'center',
+    requires: ['start'],
+  },
+  {
     id: 'basics',
     kind: 'course',
     slug: 'programmer-basics',
@@ -44,7 +54,7 @@ export const GROWTH_PATH: GrowthNodeDef[] = [
     difficulty: 1,
     shape: 'wide',
     lane: 'center',
-    requires: ['start'],
+    requires: ['computer'],
   },
   {
     id: 'windows',
@@ -154,7 +164,7 @@ export const GROWTH_PATH: GrowthNodeDef[] = [
     difficulty: 3,
     shape: 'rect',
     lane: 'left',
-    requires: ['basics'],
+    requires: ['computer'],
   },
   {
     id: 'linux',
@@ -164,7 +174,7 @@ export const GROWTH_PATH: GrowthNodeDef[] = [
     difficulty: 3,
     shape: 'rect',
     lane: 'right',
-    requires: ['basics'],
+    requires: ['computer'],
   },
   {
     id: 'github-desktop',

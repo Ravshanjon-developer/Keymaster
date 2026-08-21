@@ -35,6 +35,12 @@ export type Messages = {
     quizHint: string
     mobileTabBar: string
     mobileLearnGroup: string
+    typing: string
+    typingHint: string
+    simulator: string
+    simulatorHint: string
+    practiceHub: string
+    practiceHubHint: string
   }
   footer: {
     tagline: string
@@ -45,6 +51,7 @@ export type Messages = {
     ctaPath: string
     ctaStart: string
     ctaCourses: string
+    ctaPractice: string
     f1Title: string
     f1Text: string
     f2Title: string
@@ -73,6 +80,8 @@ export type Messages = {
     training: string
     exam: string
     learnedCount: string
+    lessonTypeTask: string
+    openDesktopSim: string
   }
   learn: {
     learned: string
@@ -214,6 +223,10 @@ export type Messages = {
     learn: string
     repeat: string
     selfCheckHint: string
+    pressToStartPractice: string
+    studyOnlyHint: string
+    openReview: string
+    markLearned: string
     learnMode: string
     doneTitle: string
     remember: string
@@ -227,9 +240,21 @@ export type Messages = {
     backTheory: string
     backCatalog: string
     inArsenal: string
+    browserPractice: string
     saveProgress: string
     xpLearned: string
     xpFail: string
+    taskMode: string
+    taskStepsTitle: string
+    openDesktopSim: string
+    taskComplete: string
+    taskDone: string
+    taskHonesty: string
+    taskSimOnly: string
+    backToLesson: string
+    taskStepsEyebrow: string
+    doneTaskTitle: string
+    rememberTaskLine: string
   }
   training: {
     title: string
@@ -238,11 +263,20 @@ export type Messages = {
     emptyDesc: string
     task: string
     sessionCorrect: string
+    streak: string
+    bestStreak: string
+    retryBadge: string
     correct: string
     next: string
     nextIn: string
     xpFail: string
     xpGain: string
+    skipped: string
+    doneTitle: string
+    doneSummary: string
+    doneWeak: string
+    doneAllGood: string
+    restart: string
   }
   exam: {
     setupEyebrow: string
@@ -293,6 +327,358 @@ export type Messages = {
     again: string
     start60: string
   }
+  practice: {
+    eyebrow: string
+    title: string
+    subtitle: string
+    typingTitle: string
+    typingText: string
+    simTitle: string
+    simText: string
+    desktopSimTitle: string
+    desktopSimText: string
+    hotkeysTitle: string
+    hotkeysText: string
+    speedTitle: string
+    speedText: string
+    tagBeginner: string
+    tagCore: string
+    tagFun: string
+    tagReinforce: string
+    skillsSection: string
+    skillsSectionDesc: string
+    reinforceSection: string
+    reinforceSectionDesc: string
+    reviewTitle: string
+    reviewText: string
+    quizTitle: string
+    quizText: string
+    examTitle: string
+    examText: string
+    journeyTitle: string
+    step1: string
+    step2: string
+    step3: string
+    step4: string
+    startCourse: string
+  }
+  practiceShell: {
+    hub: string
+    dashboard: string
+    typing: string
+    shortcuts: string
+    simulator: string
+    desktopSimulator: string
+    speed: string
+    leaderboard: string
+    levelLine: string
+    guest: string
+    navLabel: string
+    hint: string
+    exitSim: string
+  }
+  keyos: {
+    pressLabel: string
+    idleHint: string
+    correct: string
+    executed: string
+    wrong: string
+    wrongSurface: string
+    surfaceHint: string
+    browserSubstitute: string
+  }
+  simVscode: {
+    title: string
+    objective: string
+    skip: string
+    check: string
+    checkFail: string
+    newFile: string
+    newFolder: string
+    toolbarHint: string
+    editorHint: string
+    cantDeleteSrc: string
+    ctxNewFile: string
+    ctxNewFolder: string
+    ctxRename: string
+    ctxDelete: string
+    m1Detail: string
+    m2Detail: string
+    m3Detail: string
+    m4Detail: string
+    m5Detail: string
+  }
+  simDesktop: {
+    title: string
+    projectLabel: string
+    toolbarHint: string
+    missionKeysFolder: string
+    missionKeysFile: string
+    missionKeysRename: string
+    missionKeysDelete: string
+    missionKeysZip: string
+    mNewFolderStudy: string
+    appTitle: string
+    navExplorer: string
+    navMissions: string
+    iconProjects: string
+    iconTerminal: string
+    iconBrowser: string
+    iconLibrary: string
+    explorerWindowTitle: string
+    sidebarLabel: string
+    hintTitle: string
+    hintBody: string
+    missionProgress: string
+    startMenu: string
+    trayReady: string
+    tagline: string
+    addressDesktop: string
+    goUp: string
+    viewDesktop: string
+    viewFolder: string
+    m1Detail: string
+    closeFolder: string
+  }
+  typing: {
+    eyebrow: string
+    title: string
+    subtitle: string
+    backPractice: string
+    homeRow: string
+    topRow: string
+    fullKeys: string
+    words: string
+    sentences: string
+    wpm: string
+    accuracy: string
+    errors: string
+    time: string
+    focusHint: string
+    doneTitle: string
+    doneStats: string
+    again: string
+    toSimulator: string
+    viewTrain: string
+    keyboardGuide: string
+    space: string
+    bestWpm: string
+    pause: string
+    resume: string
+    restart: string
+    settings: string
+    progress: string
+    path: string
+    showKeyboard: string
+    hideKeyboard: string
+    fingerHints: string
+    fingerHintsOff: string
+    layoutRu: string
+    layoutEn: string
+    modePractice: string
+    modeTime: string
+    modeWords: string
+    modeSentences: string
+    modeNumbers: string
+    modeSymbols: string
+    modeCode: string
+    modeWeak: string
+    pausedTitle: string
+    pausedHint: string
+    tapToType: string
+    nextFinger: string
+    shiftHint: string
+    hotkeys: string
+    resultDelta: string
+    resultBest: string
+    resultCorrect: string
+    resultIncorrect: string
+    whatToImprove: string
+    practiceWeak: string
+    weakKeysTitle: string
+    noWeakKeys: string
+    newAchievement: string
+    pathTitle: string
+    pathSubtitle: string
+    pathStart: string
+    pathContinue: string
+    pathLocked: string
+    pathDone: string
+    pathHome: string
+    pathHomeDesc: string
+    pathLetters: string
+    pathLettersDesc: string
+    pathWords: string
+    pathWordsDesc: string
+    pathSentences: string
+    pathSentencesDesc: string
+    pathNumbers: string
+    pathNumbersDesc: string
+    pathSymbols: string
+    pathSymbolsDesc: string
+    pathSpeed: string
+    pathSpeedDesc: string
+    pathCode: string
+    pathCodeDesc: string
+    pathAdvanced: string
+    pathAdvancedDesc: string
+    progressTitle: string
+    weekWpm: string
+    sessions: string
+    practiceTime: string
+    streak: string
+    lessonsProgress: string
+    tipAccuracy: string
+    tipSpeed: string
+    tipWeakKey: string
+    tipShift: string
+    tipConsistency: string
+    achFirst: string
+    ach20: string
+    ach40: string
+    ach60: string
+    ach80: string
+    ach100: string
+    ach95: string
+    ach98: string
+    achBest: string
+    achStreak7: string
+    achStreak30: string
+    achCode: string
+    fingerLp: string
+    fingerLr: string
+    fingerLm: string
+    fingerLi: string
+    fingerTh: string
+    fingerRi: string
+    fingerRm: string
+    fingerRr: string
+    fingerRp: string
+  }
+  simulator: {
+    eyebrow: string
+    title: string
+    subtitle: string
+    reset: string
+    backPractice: string
+    explorerTitle: string
+    empty: string
+    shortcutBar: string
+    missionLabel: string
+    missionDone: string
+    mNewFolder: string
+    mRename: string
+    mNewFile: string
+    mCopyPaste: string
+    mDelete: string
+    mZipFile: string
+    useKeys: string
+    allDoneTitle: string
+    allDoneText: string
+    toCourse: string
+    toTyping: string
+    again: string
+    tipsTitle: string
+    tip1: string
+    tip2: string
+    tip3: string
+    copied: string
+    openFolderHint: string
+  }
+  codeLabTasks: {
+    title: string
+    currentTask: string
+    allTasks: string
+    taskCompleted: string
+    time: string
+    accuracy: string
+    mistakes: string
+    nextTask: string
+    progress: string
+    steps: string
+    shortcut: string
+    showHint: string
+    noMoreHints: string
+    hintN: string
+    skipTask: string
+    readyTitle: string
+    readyDesc: string
+    startFirst: string
+    notifyCompleted: string
+  }
+  desktopSimulator: {
+    tasksTitle: string
+    currentTaskLine: string
+    hint: string
+    hideHint: string
+    allCompleteTitle: string
+    allCompleteDesc: string
+    progress: string
+    xpEarned: string
+    taskCompletedToast: string
+    taskCompletedLocal: string
+    iconFiles: string
+    iconTrash: string
+    iconVsCode: string
+    windowFiles: string
+    windowTrash: string
+    fileNotFound: string
+    menuOpen: string
+    menuOpenWithCode: string
+    menuRename: string
+    menuCopy: string
+    menuCut: string
+    menuPaste: string
+    menuDelete: string
+    menuRestore: string
+    menuExtractHere: string
+    menuCompressZip: string
+    menuProperties: string
+    menuNewFile: string
+    menuNewFolder: string
+    menuRefresh: string
+    menuOpenFiles: string
+    promptFileName: string
+    promptFolderName: string
+    defaultNewFile: string
+    defaultNewFolder: string
+    duplicateFile: string
+    duplicateFolder: string
+    toolbarUp: string
+    toolbarNewFile: string
+    toolbarNewFolder: string
+    toolbarPaste: string
+    toolbarRefresh: string
+    propType: string
+    propLocation: string
+    propSize: string
+    propContents: string
+    propCreated: string
+    propModified: string
+    propClose: string
+    typeFolder: string
+    typeFile: string
+    contentsItems: string
+    sizeBytes: string
+    currentPath: string
+    tbFiles: string
+    tbTrash: string
+    tbSearch: string
+    tbKeyboard: string
+    tbTasks: string
+    tbTheme: string
+    start: string
+    pinned: string
+    openVscode: string
+    editorSave: string
+    editorUnsaved: string
+    editorStats: string
+    itemCount: string
+    emptyFolder: string
+    firstRunTitle: string
+    firstRunHint: string
+    firstRunOk: string
+  }
   social: {
     title: string
     eyebrow: string
@@ -324,10 +710,17 @@ export type Messages = {
     reviewEyebrow: string
     reviewTitle: string
     reviewSubtitle: string
+    reviewCourseLabel: string
+    reviewAllCourses: string
+    reviewDefaultCourse: string
     reviewEmptyTitle: string
     reviewEmptyDesc: string
     reviewNoExample: string
     swipeHint: string
+    flipHint: string
+    flipExplain: string
+    flipBack: string
+    cardBackLabel: string
     prevCard: string
     nextCard: string
     cardN: string
@@ -374,9 +767,38 @@ export type Messages = {
     badExam: string
     almost: string
     wrong: string
+    softFirst: string
+    hintStartWith: string
+    hintSteps: string
+    hintAfterOne: string
+    hintAfterTwo: string
+    tryRemember: string
+    learnHintShort: string
+    moreInfo: string
+    flipExplain: string
+    flipBack: string
+    cardBackLabel: string
+    hiddenAnswer: string
+    holdThenMain: string
+    tapOrderHint: string
+    mistakesSoft: string
+    hintSoon: string
+    showHint: string
+    showAnswer: string
+    dontRemember: string
+    skip: string
+    attempts: string
+    heldNow: string
+    pressShortcut: string
+    pressAsShown: string
+    hintUsedNote: string
+    clickToStart: string
+    browserNoteShort: string
     aria: string
     osCapture: string
     osCaptureHint: string
+    fnKeyHint: string
+    closeBlocked: string
     clickHint: string
     pressCombo: string
     inTrainer: string
@@ -412,6 +834,9 @@ export type Messages = {
     missing: string
     extra: string
     wrongMain: string
+    yNotU: string
+    wrongMods: string
+    wrongChord: string
     wrong: string
   }
   levels: {

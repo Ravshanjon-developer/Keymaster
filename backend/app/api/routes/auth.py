@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, touch_user_activity
 from app.core.passwords import validate_password_strength
+from app.core.config import settings
 from app.core.rate_limit import limit_auth
 from app.core.supabase_auth import supabase_configured
 from app.core.security import create_access_token, get_password_hash, verify_password
@@ -33,6 +34,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED"
 
 
+def _dev_relax_auth() -> bool:
+    return settings.dev_relax_auth and not settings.is_production
+
+
 class ResendVerificationBody(BaseModel):
     email: EmailStr
 
@@ -50,6 +55,8 @@ async def _assign_verification(user: User) -> None:
 
 
 def _require_verified(user: User) -> None:
+    if _dev_relax_auth():
+        return
     if user.is_admin or user.email_verified:
         return
     raise HTTPException(
@@ -76,22 +83,27 @@ async def register(body: UserRegister, request: Request, db: AsyncSession = Depe
         hashed_password=get_password_hash(body.password),
         display_name=body.display_name,
         is_admin=False,
-        email_verified=False,
+        email_verified=_dev_relax_auth(),
     )
     db.add(user)
     await db.flush()
     db.add(UserStats(user_id=user.id))
-    try:
-        await _assign_verification(user)
-    except Exception as exc:
-        await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Не удалось отправить письмо подтверждения. Попробуйте позже.",
-        ) from exc
+    if not _dev_relax_auth():
+        try:
+            await _assign_verification(user)
+        except Exception as exc:
+            await db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Не удалось отправить письмо подтверждения. Попробуйте позже.",
+            ) from exc
     await db.commit()
     return RegisterResponse(
-        message="На ваш email отправлена ссылка для подтверждения. Войти можно после подтверждения.",
+        message=(
+            "Аккаунт создан (режим dev). Можно сразу войти."
+            if _dev_relax_auth()
+            else "На ваш email отправлена ссылка для подтверждения. Войти можно после подтверждения."
+        ),
         email=user.email,
     )
 
@@ -180,12 +192,3 @@ async def login(
 @router.get("/me", response_model=UserPublic)
 async def me(user: User = Depends(get_current_user)):
     return user
-
-
-@router.post("/google")
-async def google_oauth_placeholder():
-    """Reserved for Google OAuth — configure GOOGLE_CLIENT_ID in settings."""
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Google OAuth will be enabled when credentials are configured",
-    )

@@ -1,6 +1,6 @@
 # Вход через Google (Supabase)
 
-KeyMaster использует **Supabase Auth** — отдельный `GOOGLE_CLIENT_ID` на Railway **не нужен** (старый endpoint `/api/auth/google` — заглушка).
+KeyMaster использует **Supabase Auth**. Отдельный `GOOGLE_CLIENT_ID` на Railway **не нужен** — вход Google идёт только через Supabase.
 
 После входа Google пользователь попадает на `/auth/callback`, профиль создаётся в Postgres через `/api/auth/me` (имя из Google `full_name`).
 

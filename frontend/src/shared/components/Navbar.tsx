@@ -1,9 +1,10 @@
-import { ChevronDown, Menu, Moon, Sun, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Menu, Moon, Sun, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { useAuthStore } from '@/features/auth/authStore'
 import { useLocaleStore, useT, type Locale } from '@/shared/i18n'
+import { isPracticeRoute } from '@/shared/lib/practiceRoutes'
 import { useThemeStore } from '@/shared/stores/themeStore'
 import { cn } from '@/shared/lib/utils'
 
@@ -58,8 +59,6 @@ export function Navbar() {
   const location = useLocation()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [practiceOpen, setPracticeOpen] = useState(false)
-  const practiceRef = useRef<HTMLDivElement>(null)
 
   const learnNav: { to: string; label: string; end?: boolean }[] = [
     { to: '/', label: t('nav.home'), end: true },
@@ -67,32 +66,19 @@ export function Navbar() {
     { to: '/path', label: t('nav.path') },
   ]
 
-  const practiceNav = [
-    { to: '/review', label: t('nav.review'), hint: t('nav.reviewHint') },
-    { to: '/quiz', label: t('nav.quiz'), hint: t('nav.quizHint') },
-    { to: '/training', label: t('nav.training'), hint: t('nav.trainingHint') },
-    { to: '/exam', label: t('nav.exam'), hint: t('nav.examHint') },
-    { to: '/speed', label: t('nav.speed'), hint: t('nav.speedHint') },
-  ]
-
-  const mobileLearnNav = [
-    { to: '/review', label: t('nav.review') },
-    { to: '/quiz', label: t('nav.quiz') },
-  ]
+  const practiceNav = [{ to: '/practice', label: t('nav.practiceHub'), end: true }]
 
   const communityNav = [{ to: '/leaderboard', label: t('nav.leaderboard') }]
 
   const mobileSections = [
     { title: t('nav.learnGroup'), items: learnNav },
-    { title: t('nav.mobileLearnGroup'), items: mobileLearnNav },
     { title: t('nav.practiceGroup'), items: practiceNav },
     { title: t('nav.communityGroup'), items: communityNav },
   ]
 
-  const practiceActive = practiceNav.some((item) => location.pathname.startsWith(item.to))
+  const practiceActive = isPracticeRoute(location.pathname)
 
   useEffect(() => {
-    setPracticeOpen(false)
     setOpen(false)
   }, [location.pathname])
 
@@ -103,14 +89,6 @@ export function Navbar() {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  useEffect(() => {
-    function onDoc(e: MouseEvent) {
-      if (!practiceRef.current?.contains(e.target as Node)) setPracticeOpen(false)
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
   }, [])
 
   return (
@@ -141,42 +119,12 @@ export function Navbar() {
 
           <div className="mx-1 h-5 w-px bg-ink/10 dark:bg-white/15" aria-hidden />
 
-          <div className="relative" ref={practiceRef}>
-            <button
-              type="button"
-              onClick={() => setPracticeOpen((v) => !v)}
-              className={cn(navLinkClass(practiceActive), 'inline-flex items-center gap-1')}
-              aria-expanded={practiceOpen}
-              aria-haspopup="menu"
-            >
-              {t('nav.practice')}
-              <ChevronDown className={cn('h-4 w-4 transition', practiceOpen && 'rotate-180')} />
-            </button>
-            {practiceOpen && (
-              <div
-                role="menu"
-                className="absolute left-0 top-[calc(100%+0.4rem)] z-[var(--z-dropdown)] min-w-[14.5rem] overflow-hidden rounded-[var(--radius-dropdown)] border border-[var(--border-default)] bg-[var(--bg-elevated)] py-1.5"
-                style={{ boxShadow: 'var(--shadow-float)' }}
-              >
-                {practiceNav.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    role="menuitem"
-                    className={cn(
-                      'block px-3.5 py-2.5 transition hover:bg-brand-50 dark:hover:bg-white/[0.05]',
-                      location.pathname.startsWith(item.to) && 'bg-brand-50 dark:bg-brand-500/10',
-                    )}
-                  >
-                    <span className="block text-[15px] font-semibold text-ink dark:text-white">{item.label}</span>
-                    <span className="mt-0.5 block text-[12px] font-medium text-ink-soft/80 dark:text-slate-400">
-                      {item.hint}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+          <NavLink
+            to="/practice"
+            className={() => navLinkClass(practiceActive)}
+          >
+            {t('nav.practice')}
+          </NavLink>
 
           <div className="mx-1 h-5 w-px bg-ink/10 dark:bg-white/15" aria-hidden />
 

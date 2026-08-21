@@ -28,6 +28,11 @@ async def lifespan(app: FastAPI):
     async with AsyncSessionLocal() as session:
         await ensure_admin_user(session)
 
+    if settings.dev_relax_auth and not settings.is_production:
+        logger.warning(
+            "DEV_RELAX_AUTH is ON — email verification skipped. Disable before production deploy."
+        )
+
     seed_task: asyncio.Task | None = None
     if settings.seed_on_startup:
         if os.environ.get("CI") == "true":

@@ -24,8 +24,6 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173,http://127.0.0.1:5174"
     )
     trusted_hosts: str = "localhost,127.0.0.1,testserver"
-    google_client_id: str | None = None
-    google_client_secret: str | None = None
 
     # Bootstrap first admin from env — never hardcode passwords in code
     admin_email: str | None = None
@@ -50,6 +48,9 @@ class Settings(BaseSettings):
     supabase_jwt_secret: str | None = None
     # Optional; used for JWKS URL if JWT uses ES256 signing keys
     supabase_url: str | None = None
+
+    # Local dev only: skip email verification + easier login (blocked in production)
+    dev_relax_auth: bool = False
 
     @field_validator("app_env")
     @classmethod
@@ -87,6 +88,8 @@ class Settings(BaseSettings):
             )
         if "*" in self.cors_origins:
             raise ValueError("CORS_ORIGINS must not contain '*' in production")
+        if self.dev_relax_auth:
+            raise ValueError("DEV_RELAX_AUTH must be false in production")
         return self
 
 

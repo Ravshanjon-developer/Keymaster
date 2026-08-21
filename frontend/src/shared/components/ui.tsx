@@ -200,20 +200,57 @@ export function KeyCombo({
   keys,
   activeKeys,
   learned,
+  mystery,
+  checkedKeys,
+  revealedKeys,
+  onKeyActivate,
+  size = 'md',
 }: {
   keys: string[]
   activeKeys?: string[]
   learned?: boolean
+  /** Hide real labels (show ?) until the learner earns a hint. */
+  mystery?: boolean
+  checkedKeys?: string[]
+  /** Keys uncovered by a hint while the rest stay hidden. */
+  revealedKeys?: string[]
+  onKeyActivate?: (key: string) => void
+  size?: 'md' | 'lg'
 }) {
   const active = new Set(activeKeys ?? [])
+  const checked = new Set(checkedKeys ?? [])
+  const revealed = new Set(revealedKeys ?? [])
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
-      {keys.map((k, i) => (
-        <span key={`${k}-${i}`} className="flex items-center gap-2">
-          {i > 0 && <span className="text-[var(--text-muted)]">+</span>}
-          <KeyCap label={displayKey(k)} active={active.has(k)} learned={learned} />
-        </span>
-      ))}
+      {keys.map((k, i) => {
+        const hidden = mystery && !checked.has(k) && !active.has(k) && !revealed.has(k)
+        const label = hidden ? '?' : displayKey(k)
+        const interactive = Boolean(onKeyActivate)
+        const cap = (
+          <KeyCap
+            label={checked.has(k) ? `${displayKey(k)} ✓` : label}
+            active={active.has(k) || checked.has(k)}
+            learned={learned || checked.has(k)}
+          />
+        )
+        return (
+          <span key={`${k}-${i}`} className={cn('flex items-center gap-2', size === 'lg' && 'scale-110')}>
+            {i > 0 && <span className="text-[var(--text-muted)]">+</span>}
+            {interactive ? (
+              <button
+                type="button"
+                className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={() => onKeyActivate?.(k)}
+                aria-label={displayKey(k)}
+              >
+                {cap}
+              </button>
+            ) : (
+              cap
+            )}
+          </span>
+        )
+      })}
     </div>
   )
 }

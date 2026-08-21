@@ -1,0 +1,459 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/**
+ * Bolt Code Lab — scoped tokens + utilities (Desktop/Bolt parity).
+ * Tailwind in KeyMaster does not define surface/ink/accent; utilities are scoped here.
+ */
+
+.bolt-simulator-root {
+  /* Classic VS Code Dark+ (not site cyan / not flat Dark Modern) */
+  --surface-0: 30 30 30;       /* editor #1E1E1E */
+  --surface-1: 37 37 38;       /* sidebar #252526 */
+  --surface-2: 42 45 46;       /* list hover #2A2D2E */
+  --surface-3: 60 60 60;       /* title bar / inputs #3C3C3C */
+  --surface-4: 77 77 77;
+  --activity: 51 51 51;        /* activity bar #333333 */
+  --tab-inactive: 45 45 45;    /* #2D2D2D */
+  --edge: 62 62 66;            /* #3E3E42 */
+  --edge-soft: 45 45 45;
+  --ink: 204 204 204;
+  --ink-soft: 187 187 187;
+  --ink-dim: 187 187 187;
+  --ink-faint: 133 133 133;
+  --accent: 0 122 204;         /* status #007ACC */
+  --accent-soft: 9 71 113;     /* list active #094771 */
+  --accent-dim: 0 127 212;
+  --success: 137 206 111;
+  --warning: 204 167 0;
+  --danger: 244 135 113;
+
+  /* Win against KeyMaster Tailwind tokens (--color-ink is navy, --color-accent is brand) */
+  --color-ink: #cccccc;
+  --color-ink-soft: #bbbbbb;
+  --color-accent: #007acc;
+
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  isolation: isolate;
+  color-scheme: dark;
+  font-family: 'Segoe UI', 'Segoe WPC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #252526;
+  color: #cccccc;
+}
+
+.bolt-simulator-root.bolt-theme-light {
+  --surface-0: 255 255 255;
+  --surface-1: 243 243 243;
+  --surface-2: 228 228 228;
+  --surface-3: 221 221 221;
+  --surface-4: 200 200 200;
+  --activity: 44 44 44;
+  --tab-inactive: 236 236 236;
+  --edge: 226 226 226;
+  --edge-soft: 243 243 243;
+  --ink: 58 58 58;
+  --ink-soft: 97 97 97;
+  --ink-dim: 97 97 97;
+  --ink-faint: 128 128 128;
+  --accent: 0 122 204;
+  --accent-soft: 0 96 192;
+  --accent-dim: 0 90 158;
+  --success: 56 142 60;
+  --warning: 191 144 0;
+  --danger: 232 17 35;
+  --color-ink: #3a3a3a;
+  --color-ink-soft: #616161;
+  --color-accent: #007acc;
+
+  color-scheme: light;
+  background-color: #f3f3f3;
+  color: #3a3a3a;
+}
+
+.bolt-simulator-root *,
+.bolt-simulator-root *::before,
+.bolt-simulator-root *::after {
+  border-color: rgb(var(--edge));
+}
+
+.bolt-simulator-root ::selection {
+  background: rgb(var(--accent) / 0.25);
+}
+
+.bolt-simulator-root :focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: -1px;
+}
+
+.bolt-simulator-root ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.bolt-simulator-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.bolt-simulator-root ::-webkit-scrollbar-thumb {
+  background: rgb(var(--surface-3));
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.bolt-simulator-root ::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--surface-4));
+  background-clip: content-box;
+}
+.bolt-simulator-root ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.bolt-simulator-root .no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bolt-simulator-root .tok-keyword {
+  color: #569cd6;
+  font-weight: 400;
+}
+.bolt-simulator-root .tok-string {
+  color: #ce9178;
+}
+.bolt-simulator-root .tok-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+.bolt-simulator-root .tok-number {
+  color: #b5cea8;
+}
+.bolt-simulator-root .tok-fn {
+  color: #dcdcaa;
+}
+.bolt-simulator-root .tok-tag {
+  color: #569cd6;
+}
+.bolt-simulator-root .tok-attr {
+  color: #9cdcfe;
+}
+.bolt-simulator-root .tok-punct {
+  color: #d4d4d4;
+}
+.bolt-simulator-root .tok-plain {
+  color: #d4d4d4;
+}
+
+.bolt-simulator-root.bolt-theme-light .tok-keyword {
+  color: #0000ff;
+}
+.bolt-simulator-root.bolt-theme-light .tok-string {
+  color: #a31515;
+}
+.bolt-simulator-root.bolt-theme-light .tok-comment {
+  color: #008000;
+}
+.bolt-simulator-root.bolt-theme-light .tok-number {
+  color: #098658;
+}
+.bolt-simulator-root.bolt-theme-light .tok-fn {
+  color: #795e26;
+}
+.bolt-simulator-root.bolt-theme-light .tok-tag {
+  color: #800000;
+}
+.bolt-simulator-root.bolt-theme-light .tok-attr {
+  color: #e50000;
+}
+.bolt-simulator-root.bolt-theme-light .tok-punct,
+.bolt-simulator-root.bolt-theme-light .tok-plain {
+  color: #000000;
+}
+
+.bolt-simulator-root .resizer-v {
+  cursor: col-resize;
+  position: relative;
+}
+.bolt-simulator-root .resizer-v::after {
+  content: '';
+  position: absolute;
+  inset: 0 -2px;
+}
+.bolt-simulator-root .resizer-h {
+  cursor: row-resize;
+  position: relative;
+}
+.bolt-simulator-root .resizer-h::after {
+  content: '';
+  position: absolute;
+  inset: -2px 0;
+}
+
+.bolt-simulator-root .scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--surface-3)) transparent;
+}
+
+/* —— Bolt Tailwind color utilities (scoped) —— */
+.bolt-simulator-root .bg-surface-0 {
+  background-color: rgb(var(--surface-0));
+}
+.bolt-simulator-root .bg-surface-1 {
+  background-color: rgb(var(--surface-1));
+}
+.bolt-simulator-root .bg-surface-2 {
+  background-color: rgb(var(--surface-2));
+}
+.bolt-simulator-root .bg-surface-3 {
+  background-color: rgb(var(--surface-3));
+}
+.bolt-simulator-root .bg-surface-4 {
+  background-color: rgb(var(--surface-4));
+}
+.bolt-simulator-root .bg-activity {
+  background-color: rgb(var(--activity));
+}
+.bolt-simulator-root .bg-titlebar {
+  background-color: rgb(var(--surface-3));
+}
+.bolt-simulator-root .bg-tab-inactive {
+  background-color: rgb(var(--tab-inactive));
+}
+.bolt-simulator-root .text-surface-0 {
+  color: rgb(var(--surface-0));
+}
+.bolt-simulator-root .bg-edge {
+  background-color: rgb(var(--edge));
+}
+.bolt-simulator-root .border-edge {
+  border-color: rgb(var(--edge));
+}
+.bolt-simulator-root .text-ink {
+  color: rgb(var(--ink));
+}
+.bolt-simulator-root .text-ink-soft {
+  color: rgb(var(--ink-soft));
+}
+.bolt-simulator-root .text-ink-dim {
+  color: rgb(var(--ink-dim));
+}
+.bolt-simulator-root .text-ink-faint {
+  color: rgb(var(--ink-faint));
+}
+.bolt-simulator-root .bg-accent {
+  background-color: rgb(var(--accent));
+}
+.bolt-simulator-root .text-accent {
+  color: rgb(var(--accent));
+}
+.bolt-simulator-root .border-accent {
+  border-color: rgb(var(--accent));
+}
+.bolt-simulator-root .caret-accent {
+  caret-color: rgb(var(--accent));
+}
+.bolt-simulator-root .bg-accent\/5 {
+  background-color: rgb(var(--accent) / 0.05);
+}
+.bolt-simulator-root .bg-accent\/10 {
+  background-color: rgb(var(--accent) / 0.1);
+}
+.bolt-simulator-root .bg-accent\/15 {
+  background-color: rgb(var(--accent) / 0.15);
+}
+.bolt-simulator-root .bg-accent\/20 {
+  background-color: rgb(var(--accent) / 0.2);
+}
+.bolt-simulator-root .bg-accent\/12 {
+  background-color: #094771;
+}
+.bolt-simulator-root .border-accent\/30 {
+  border-color: rgb(var(--accent) / 0.3);
+}
+.bolt-simulator-root .hover\:bg-accent\/10:hover {
+  background-color: rgb(var(--accent) / 0.1);
+}
+.bolt-simulator-root .hover\:bg-accent\/90:hover {
+  background-color: rgb(var(--accent) / 0.9);
+}
+.bolt-simulator-root .text-success {
+  color: rgb(var(--success));
+}
+.bolt-simulator-root .bg-success {
+  background-color: rgb(var(--success));
+}
+.bolt-simulator-root .bg-success\/5 {
+  background-color: rgb(var(--success) / 0.05);
+}
+.bolt-simulator-root .bg-success\/10 {
+  background-color: rgb(var(--success) / 0.1);
+}
+.bolt-simulator-root .bg-success\/15 {
+  background-color: rgb(var(--success) / 0.15);
+}
+.bolt-simulator-root .border-success\/30 {
+  border-color: rgb(var(--success) / 0.3);
+}
+.bolt-simulator-root .text-warning {
+  color: rgb(var(--warning));
+}
+.bolt-simulator-root .bg-warning\/10 {
+  background-color: rgb(var(--warning) / 0.1);
+}
+.bolt-simulator-root .bg-warning\/15 {
+  background-color: rgb(var(--warning) / 0.15);
+}
+.bolt-simulator-root .hover\:bg-warning\/15:hover {
+  background-color: rgb(var(--warning) / 0.15);
+}
+.bolt-simulator-root .text-danger {
+  color: rgb(var(--danger));
+}
+.bolt-simulator-root .bg-danger\/10 {
+  background-color: rgb(var(--danger) / 0.1);
+}
+.bolt-simulator-root .border-danger\/30 {
+  border-color: rgb(var(--danger) / 0.3);
+}
+.bolt-simulator-root .bg-warning {
+  background-color: rgb(var(--warning));
+}
+.bolt-simulator-root .bg-danger {
+  background-color: rgb(var(--danger));
+}
+.bolt-simulator-root .hover\:text-accent:hover {
+  color: rgb(var(--accent));
+}
+.bolt-simulator-root .placeholder\:text-ink-faint::placeholder {
+  color: rgb(var(--ink-faint));
+}
+.bolt-simulator-root .hover\:text-ink-faint:hover {
+  color: rgb(var(--ink-faint));
+}
+.bolt-simulator-root .hover\:bg-surface-2:hover {
+  background-color: rgb(var(--surface-2));
+}
+.bolt-simulator-root .hover\:bg-surface-3:hover {
+  background-color: rgb(var(--surface-3));
+}
+.bolt-simulator-root .hover\:bg-surface-4:hover {
+  background-color: rgb(var(--surface-4));
+}
+.bolt-simulator-root .hover\:text-ink:hover {
+  color: rgb(var(--ink));
+}
+.bolt-simulator-root .hover\:text-ink-soft:hover {
+  color: rgb(var(--ink-soft));
+}
+.bolt-simulator-root .hover\:bg-accent:hover {
+  background-color: rgb(var(--accent));
+}
+.bolt-simulator-root .focus\:border-accent:focus {
+  border-color: rgb(var(--accent));
+}
+.bolt-simulator-root .text-2xs {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+.bolt-simulator-root .font-mono {
+  font-family: Consolas, 'Courier New', 'Cascadia Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+.bolt-simulator-root .animate-fade-in {
+  animation: fade-in 150ms ease-out;
+}
+.bolt-simulator-root .animate-scale-in {
+  animation: scale-in 120ms ease-out;
+}
+.bolt-simulator-root .animate-slide-up {
+  animation: slide-up 200ms ease-out;
+}
+.bolt-simulator-root .animate-slide-down {
+  animation: slide-down 150ms ease-out;
+}
+
+.bolt-simulator-root .bolt-menubar-dropdown {
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.35),
+    0 4px 6px -4px rgb(0 0 0 / 0.35);
+}
+
+.bolt-simulator-root .shadow-2xl {
+  box-shadow:
+    0 25px 50px -12px rgb(0 0 0 / 0.45);
+}
+
+.bolt-simulator-root .text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes xp-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

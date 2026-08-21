@@ -1,27 +1,33 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, Brain } from 'lucide-react'
 
 import { KeyboardIllustration } from '@/features/mobile/KeyboardIllustration'
 import { usePhysicalKeyboard } from '@/shared/hooks/usePhysicalKeyboard'
 import { useT } from '@/shared/i18n'
+import { PageShell } from '@/shared/components/PageLayout'
 import { GlassCard } from '@/shared/components/ui'
+import { PRACTICE_ICON_STROKE, practiceIcons } from '@/shared/lib/practiceNavIcons'
 
 type Props = {
   children: React.ReactNode
   courseQuery?: string
+  /** When true, show the trainer even without a physical keyboard (tap on-screen keys). */
+  allowVirtualKeys?: boolean
 }
 
-export function PracticeKeyboardGate({ children, courseQuery }: Props) {
+export function PracticeKeyboardGate({ children, courseQuery, allowVirtualKeys }: Props) {
   const hasPhysical = usePhysicalKeyboard()
   const t = useT()
+  const ReviewIcon = practiceIcons.review
+  const QuizIcon = practiceIcons.quiz
 
-  if (hasPhysical) return <>{children}</>
+  if (hasPhysical || allowVirtualKeys) return <>{children}</>
 
   const reviewTo = courseQuery ? `/review?course=${encodeURIComponent(courseQuery)}` : '/review'
   const quizTo = courseQuery ? `/quiz?course=${encodeURIComponent(courseQuery)}` : '/quiz'
 
   return (
-    <GlassCard className="relative overflow-hidden p-6 sm:p-8">
+    <PageShell width="2xl">
+      <GlassCard className="relative overflow-hidden p-6 sm:p-8">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent-400/15 blur-3xl"
@@ -32,14 +38,15 @@ export function PracticeKeyboardGate({ children, courseQuery }: Props) {
       <p className="mt-4 text-center text-xs text-[var(--text-muted)]">{t('mobile.keyboardHint')}</p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link to={reviewTo} className="btn-primary min-h-11 flex-1 py-3.5 text-base sm:flex-initial sm:px-8">
-          <BookOpen className="h-5 w-5" aria-hidden />
+          <ReviewIcon className="h-5 w-5" strokeWidth={PRACTICE_ICON_STROKE} aria-hidden />
           {t('mobile.ctaReview')}
         </Link>
         <Link to={quizTo} className="btn-secondary min-h-11 flex-1 py-3.5 text-base sm:flex-initial sm:px-8">
-          <Brain className="h-5 w-5" aria-hidden />
+          <QuizIcon className="h-5 w-5" strokeWidth={PRACTICE_ICON_STROKE} aria-hidden />
           {t('mobile.ctaQuiz')}
         </Link>
       </div>
     </GlassCard>
+    </PageShell>
   )
 }

@@ -36,5 +36,17 @@ test.describe('KeyMaster smoke', () => {
     await expect(page).toHaveURL(/\/register/)
     await page.goto('/review')
     await expect(page).toHaveURL(/\/register/)
+    await page.goto('/simulator')
+    await expect(page).toHaveURL(/\/register/)
+    await page.goto('/simulator?mode=desktop')
+    await expect(page).toHaveURL(/\/register/)
+  })
+
+  test('starter computer-basics course is in catalog', async ({ page }) => {
+    await page.goto('/courses')
+    await expect(page.getByRole('heading', { name: /Каталог курсов/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Первый ноутбук/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
