@@ -81,23 +81,9 @@ function ruQuizAction(action: string, title?: string): string {
   return lowerRest(trimmed)
 }
 
-const TG_KUNED = /\s+кунед$/i
-const TG_KUSH = /\s+кушоед$/i
-
-function tgQuizAction(action: string): string {
-  const trimmed = action.trim()
-  if (TG_KUNED.test(trimmed)) {
-    return trimmed.replace(TG_KUNED, ' кардан').replace(/^\s*/, '').toLowerCase()
-  }
-  if (TG_KUSH.test(trimmed)) {
-    return trimmed.replace(TG_KUSH, ' кушодан').toLowerCase()
-  }
-  return lowerRest(trimmed)
-}
-
-export function quizActionPhrase(action: string, locale: string, title?: string): string {
+export function quizActionPhrase(action: string, _locale: string, title?: string): string {
   const trimmed = action.trim()
   if (!trimmed) return title?.toLowerCase() ?? ''
-  if (locale === 'tg') return tgQuizAction(trimmed)
+  // Quiz copy stays in Russian (редактор, терминал, рабочий стол…) even in TJ UI.
   return ruQuizAction(trimmed, title)
 }

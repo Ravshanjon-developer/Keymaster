@@ -61,7 +61,7 @@ export function QuizPage() {
   const course = params.get('course') ?? undefined
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['random', 'quiz', 'v3', course ?? 'default'],
+    queryKey: ['random', 'quiz', 'v4', 'programmer-basics'],
     queryFn: () => fetchQuizLessons(course),
   })
 
@@ -92,7 +92,7 @@ export function QuizPage() {
     : null
 
   const questionAction = current
-    ? quizActionPhrase(loc?.action_prompt ?? current.action_prompt, locale, loc?.title ?? current.title)
+    ? quizActionPhrase(current.action_prompt, locale, current.title)
     : ''
 
   const tip = useMemo(() => {
