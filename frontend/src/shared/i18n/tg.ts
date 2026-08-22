@@ -744,7 +744,7 @@ export const tg: Messages = {
     quizEmptyTitle: 'Савол нест',
     quizEmptyDesc: 'Аввал комбинатсияҳои асосӣ, баъд браузер. Санҷед, ки дарсҳо дар курсҳо ҳастанд.',
     quizQuestion: 'Савол',
-    quizPrompt: 'Кадом комбинатсия дар {context} барои «{action}»?',
+    quizPrompt: 'Кадом комбинатсия, то {action}?',
     quizContextProgrammerBasics: 'барномаҳо',
     quizContextChrome: 'Google Chrome',
     quizContextEdge: 'Microsoft Edge',

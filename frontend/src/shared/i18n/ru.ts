@@ -743,7 +743,7 @@ export const ru: Messages = {
     quizEmptyTitle: 'Нет вопросов',
     quizEmptyDesc: 'Сначала основные сочетания, затем браузер. Проверьте, что уроки загружены в курсах.',
     quizQuestion: 'Вопрос',
-    quizPrompt: 'Какая комбинация в {context} для «{action}»?',
+    quizPrompt: 'Какая комбинация, чтобы {action}?',
     quizContextProgrammerBasics: 'программах',
     quizContextChrome: 'Google Chrome',
     quizContextEdge: 'Microsoft Edge',

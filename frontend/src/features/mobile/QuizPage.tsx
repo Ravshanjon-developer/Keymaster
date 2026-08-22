@@ -13,6 +13,7 @@ import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 import { explainShortcut } from '@/shared/lib/shortcutExplain'
 import { parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
 import { fetchQuizLessons, quizContextKey } from '@/shared/lib/quizSession'
+import { quizActionPhrase } from '@/shared/lib/quizActionPhrase'
 import { cn } from '@/shared/lib/utils'
 
 function shuffle<T>(arr: T[]): T[] {
@@ -89,6 +90,10 @@ export function QuizPage() {
         description: current.description ?? undefined,
       })
     : null
+
+  const questionAction = current
+    ? quizActionPhrase(loc?.action_prompt ?? current.action_prompt, locale, loc?.title ?? current.title)
+    : ''
 
   const tip = useMemo(() => {
     if (!current) return ''
@@ -292,10 +297,7 @@ export function QuizPage() {
                 ) : null}
               </div>
               <p className="mt-2 text-lg font-semibold leading-snug text-[var(--text-primary)]">
-                {t('mobile.quizPrompt', {
-                  context: t(`mobile.${quizContextKey(current.course_slug)}`),
-                  action: loc?.action_prompt ?? current.action_prompt,
-                })}
+                {t('mobile.quizPrompt', { action: questionAction })}
               </p>
 
               <ul className="mt-6 space-y-3">
