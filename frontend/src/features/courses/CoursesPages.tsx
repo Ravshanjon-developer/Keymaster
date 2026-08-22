@@ -119,11 +119,9 @@ export function CoursesPage() {
                     {loc.title}
                   </h2>
                   {loc.description ? (
-                  {loc.description ? (
                     <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-ink-soft/80 dark:text-slate-400">
                       {loc.description}
                     </p>
-                  ) : null}
                   ) : null}
 
                   <div className="mt-auto pt-4">
