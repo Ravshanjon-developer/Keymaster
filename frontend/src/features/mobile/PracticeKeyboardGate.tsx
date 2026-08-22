@@ -23,7 +23,10 @@ export function PracticeKeyboardGate({ children, courseQuery, allowVirtualKeys }
   if (hasPhysical || allowVirtualKeys) return <>{children}</>
 
   const reviewTo = courseQuery ? `/review?course=${encodeURIComponent(courseQuery)}` : '/review'
-  const quizTo = courseQuery ? `/quiz?course=${encodeURIComponent(courseQuery)}` : '/quiz'
+  const quizTo =
+    courseQuery && courseQuery !== 'computer-basics'
+      ? `/quiz?course=${encodeURIComponent(courseQuery)}`
+      : '/quiz'
 
   return (
     <PageShell width="2xl">

@@ -96,12 +96,14 @@ export const api = {
     limit?: number
     browser_safe?: boolean
     ordered?: boolean
+    hotkeys_only?: boolean
   }) => {
     const q = new URLSearchParams()
     if (params?.course_slug) q.set('course_slug', params.course_slug)
     if (params?.limit) q.set('limit', String(params.limit))
     if (params?.browser_safe === false) q.set('browser_safe', 'false')
     if (params?.ordered) q.set('ordered', 'true')
+    if (params?.hotkeys_only) q.set('hotkeys_only', 'true')
     return request<RandomLessonDto[]>(`/training/random?${q}`)
   },
   achievements: () => request<AchievementDto[]>('/achievements'),

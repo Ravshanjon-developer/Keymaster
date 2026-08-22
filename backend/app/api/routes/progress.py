@@ -408,6 +408,7 @@ async def random_lessons(
     limit: int = 30,
     browser_safe: bool = True,
     ordered: bool = False,
+    hotkeys_only: bool = False,
     db: AsyncSession = Depends(get_db),
 ):
     """browser_safe=True keeps only chords that work reliably in a browser trainer."""
@@ -426,6 +427,8 @@ async def random_lessons(
         q = q.where(Course.slug == course_slug)
     rows = list((await db.execute(q)).all())
     rows = [row for row in rows if row[0].keys and not _is_filler_lesson(row[0])]
+    if hotkeys_only:
+        rows = [row for row in rows if not _is_desktop_task_keys(row[0].keys or [])]
     if browser_safe:
         rows = [row for row in rows if not _is_browser_hostile_keys(row[0].keys or [])]
     if not rows:
@@ -434,6 +437,8 @@ async def random_lessons(
             for row in list((await db.execute(q)).all())
             if row[0].keys and not _is_filler_lesson(row[0])
         ]
+        if hotkeys_only:
+            rows = [row for row in rows if not _is_desktop_task_keys(row[0].keys or [])]
         if browser_safe:
             rows = [row for row in rows if not _is_browser_hostile_keys(row[0].keys or [])]
     if not rows:
@@ -481,6 +486,11 @@ def _is_filler_lesson(lesson: Lesson) -> bool:
     if title.startswith("Chrome Ctrl+Alt+"):
         return True
     return False
+
+
+def _is_desktop_task_keys(keys: list) -> bool:
+    raw = keys[0] if keys else ""
+    return str(raw).startswith("desktop:")
 
 
 def _is_browser_hostile_keys(keys: list) -> bool:

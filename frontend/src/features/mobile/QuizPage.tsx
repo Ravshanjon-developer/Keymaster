@@ -61,7 +61,7 @@ export function QuizPage() {
   const course = params.get('course') ?? undefined
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['random', 'quiz', 'v2', course ?? 'default'],
+    queryKey: ['random', 'quiz', 'v3', course ?? 'default'],
     queryFn: () => fetchQuizLessons(course),
   })
 

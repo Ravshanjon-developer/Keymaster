@@ -1,4 +1,8 @@
 import { api, type RandomLessonDto } from '@/shared/lib/api'
+import { isHotkeyLesson } from '@/shared/lib/lessonKind'
+
+/** Simulator tasks belong on «Рабочий стол», not in the hotkey quiz. */
+const QUIZ_BLOCKED_COURSES = new Set(['computer-basics'])
 
 /** Default quiz flow: universal hotkeys first, then browser. */
 const QUIZ_PHASES = [
@@ -6,13 +10,22 @@ const QUIZ_PHASES = [
   { course_slug: 'chrome', limit: 15, ordered: true, browser_safe: false },
 ] as const
 
+function filterQuizLessons(lessons: RandomLessonDto[]): RandomLessonDto[] {
+  return lessons.filter((l) => isHotkeyLesson(l.keys))
+}
+
 export async function fetchQuizLessons(courseSlug?: string): Promise<RandomLessonDto[]> {
-  if (courseSlug) {
-    return api.randomLessons({
-      course_slug: courseSlug,
+  const slug =
+    courseSlug && !QUIZ_BLOCKED_COURSES.has(courseSlug) ? courseSlug : undefined
+
+  if (slug) {
+    const rows = await api.randomLessons({
+      course_slug: slug,
       limit: 35,
       ordered: true,
+      hotkeys_only: true,
     })
+    return filterQuizLessons(rows)
   }
 
   const parts = await Promise.all(
@@ -22,6 +35,7 @@ export async function fetchQuizLessons(courseSlug?: string): Promise<RandomLesso
         limit: phase.limit,
         ordered: phase.ordered,
         browser_safe: phase.browser_safe,
+        hotkeys_only: true,
       }),
     ),
   )
@@ -29,7 +43,7 @@ export async function fetchQuizLessons(courseSlug?: string): Promise<RandomLesso
   const seen = new Set<string>()
   const merged: RandomLessonDto[] = []
   for (const part of parts) {
-    for (const lesson of part) {
+    for (const lesson of filterQuizLessons(part)) {
       if (seen.has(lesson.id)) continue
       seen.add(lesson.id)
       merged.push(lesson)
