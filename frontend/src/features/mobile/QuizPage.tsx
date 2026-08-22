@@ -12,7 +12,7 @@ import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 import { explainShortcut } from '@/shared/lib/shortcutExplain'
 import { parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
-import { fetchQuizLessons, quizContextKey } from '@/shared/lib/quizSession'
+import { fetchQuizLessons, formatQuizQuestion, QUIZ_CONTEXT_LABEL } from '@/shared/lib/quizSession'
 import { quizActionPhrase } from '@/shared/lib/quizActionPhrase'
 import { cn } from '@/shared/lib/utils'
 
@@ -61,7 +61,7 @@ export function QuizPage() {
   const course = params.get('course') ?? undefined
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['random', 'quiz', 'v4', 'programmer-basics'],
+    queryKey: ['quiz', 'curated', 'programmer-basics-v1'],
     queryFn: () => fetchQuizLessons(course),
   })
 
@@ -290,14 +290,12 @@ export function QuizPage() {
             <GlassCard className="mt-4 p-5 sm:p-6 lg:mt-6">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-sm font-medium text-[var(--text-muted)]">{t('mobile.quizQuestion')}</p>
-                {current.course_slug ? (
-                  <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-800 dark:text-brand-300">
-                    {t(`mobile.${quizContextKey(current.course_slug)}`)}
-                  </span>
-                ) : null}
+                <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-800 dark:text-brand-300">
+                  {QUIZ_CONTEXT_LABEL}
+                </span>
               </div>
               <p className="mt-2 text-lg font-semibold leading-snug text-[var(--text-primary)]">
-                {t('mobile.quizPrompt', { action: questionAction })}
+                {formatQuizQuestion(questionAction)}
               </p>
 
               <ul className="mt-6 space-y-3">
