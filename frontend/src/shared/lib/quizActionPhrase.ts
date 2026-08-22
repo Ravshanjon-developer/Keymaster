@@ -1,5 +1,20 @@
 /** Turn lesson action_prompt into a natural quiz phrase (infinitive, no «действие»). */
 
+/** IT terms stay in Russian/English in TJ quiz copy (per product copy rules). */
+const LOANWORD_FIXES: Array<[RegExp, string]> = [
+  [/муҳаррир/gi, 'редактор'],
+  [/мизи кор/gi, 'рабочий стол'],
+  [/мизи корӣ/gi, 'рабочий стол'],
+]
+
+export function preserveQuizLoanwords(text: string): string {
+  let out = text
+  for (const [re, replacement] of LOANWORD_FIXES) {
+    out = out.replace(re, replacement)
+  }
+  return out
+}
+
 const RU_PHRASE: Record<string, string> = {
   скопируйте: 'скопировать',
   вставьте: 'вставить',
@@ -14,48 +29,19 @@ const RU_PHRASE: Record<string, string> = {
   'в конец строки': 'перейти в конец строки',
   'к предыдущему слову': 'перейти к предыдущему слову',
   'к следующему слову': 'перейти к следующему слову',
-  'переключение окон': 'переключить окно',
-  'закрытие программы': 'закрыть программу',
-  'показать рабочий стол': 'показать рабочий стол',
-  'открыть проводник': 'открыть проводник',
-  'снимок экрана': 'сделать снимок экрана',
-  'снимок области': 'сделать снимок области',
-  'откройте новую вкладку': 'открыть новую вкладку',
-  'закройте вкладку': 'закрыть вкладку',
-  'восстановите закрытую вкладку': 'восстановить закрытую вкладку',
-  'фокус на адресной строке': 'перейти в адресную строку',
-  'обновите страницу': 'обновить страницу',
-  'обновите без кэша': 'обновить страницу без кэша',
-  'откройте историю': 'открыть историю',
-  'откройте загрузки': 'открыть загрузки',
-  'откройте инструменты разработчика': 'открыть инструменты разработчика',
-  'откройте консоль': 'открыть консоль',
   'откройте терминал': 'открыть терминал',
   'откройте встроенный терминал': 'открыть терминал',
-  'создайте новый терминал': 'создать новый терминал',
-  'очистите вывод терминала': 'очистить терминал',
 }
 
 const RU_PREFIX_RULES: Array<[RegExp, (rest: string) => string]> = [
   [/^откройте\s+/i, (r) => `открыть ${lowerRest(r)}`],
   [/^закройте\s+/i, (r) => `закрыть ${lowerRest(r)}`],
-  [/^создайте\s+/i, (r) => `создать ${lowerRest(r)}`],
   [/^сохраните\s+/i, (r) => `сохранить ${lowerRest(r)}`],
-  [/^обновите\s+/i, (r) => `обновить ${lowerRest(r)}`],
-  [/^восстановите\s+/i, (r) => `восстановить ${lowerRest(r)}`],
-  [/^очистите\s+/i, (r) => `очистить ${lowerRest(r)}`],
-  [/^перейдите\s+/i, (r) => `перейти ${lowerRest(r)}`],
-  [/^дублируйте\s+/i, (r) => `дублировать ${lowerRest(r)}`],
   [/^отмените\s+/i, (r) => `отменить ${lowerRest(r)}`],
   [/^выделите\s+/i, (r) => `выделить ${lowerRest(r)}`],
   [/^скопируйте\s+/i, (r) => `скопировать ${lowerRest(r)}`],
   [/^вставьте\s+/i, (r) => `вставить ${lowerRest(r)}`],
   [/^вырежьте\s+/i, (r) => `вырезать ${lowerRest(r)}`],
-  [/^сделайте\s+/i, (r) => `сделать ${lowerRest(r)}`],
-  [/^переключите\s+/i, (r) => `переключить ${lowerRest(r)}`],
-  [/^сверните\s+/i, (r) => `свернуть ${lowerRest(r)}`],
-  [/^заблокируйте\s+/i, (r) => `заблокировать ${lowerRest(r)}`],
-  [/^фокус на\s+/i, (r) => `перейти в ${lowerRest(r)}`],
 ]
 
 function lowerRest(text: string): string {
@@ -81,9 +67,14 @@ function ruQuizAction(action: string, title?: string): string {
   return lowerRest(trimmed)
 }
 
-export function quizActionPhrase(action: string, _locale: string, title?: string): string {
+function tgQuizAction(action: string): string {
+  return lowerRest(action.trim())
+}
+
+export function quizActionPhrase(action: string, locale: string, title?: string): string {
   const trimmed = action.trim()
-  if (!trimmed) return title?.toLowerCase() ?? ''
-  // Quiz copy stays in Russian (редактор, терминал, рабочий стол…) even in TJ UI.
-  return ruQuizAction(trimmed, title)
+  if (!trimmed) return title ? lowerRest(title) : ''
+  const phrase =
+    locale === 'tg' ? tgQuizAction(trimmed) : ruQuizAction(trimmed, title)
+  return preserveQuizLoanwords(phrase)
 }

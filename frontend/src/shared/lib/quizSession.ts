@@ -3,13 +3,6 @@ import { isHotkeyLesson } from '@/shared/lib/lessonKind'
 
 export const QUIZ_COURSE = 'programmer-basics'
 export const QUIZ_CATEGORY = 'basics'
-export const QUIZ_CONTEXT_LABEL = 'основные hotkeys'
-
-/** Always Russian — even when site UI is TJ. */
-export function formatQuizQuestion(action: string): string {
-  const phrase = action.trim()
-  return phrase ? `Какая комбинация, чтобы ${phrase}?` : 'Какая комбинация?'
-}
 
 function isQuizBasicsLesson(categorySlug: string, keys: string[] | undefined): boolean {
   if (categorySlug !== QUIZ_CATEGORY) return false

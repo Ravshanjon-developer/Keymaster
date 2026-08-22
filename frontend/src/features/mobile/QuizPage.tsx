@@ -12,7 +12,7 @@ import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 import { explainShortcut } from '@/shared/lib/shortcutExplain'
 import { parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
-import { fetchQuizLessons, formatQuizQuestion, QUIZ_CONTEXT_LABEL } from '@/shared/lib/quizSession'
+import { fetchQuizLessons } from '@/shared/lib/quizSession'
 import { quizActionPhrase } from '@/shared/lib/quizActionPhrase'
 import { cn } from '@/shared/lib/utils'
 
@@ -61,7 +61,7 @@ export function QuizPage() {
   const course = params.get('course') ?? undefined
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['quiz', 'curated', 'programmer-basics-v1'],
+    queryKey: ['quiz', 'curated', 'programmer-basics-v2'],
     queryFn: () => fetchQuizLessons(course),
   })
 
@@ -92,7 +92,7 @@ export function QuizPage() {
     : null
 
   const questionAction = current
-    ? quizActionPhrase(current.action_prompt, locale, current.title)
+    ? quizActionPhrase(loc?.action_prompt ?? current.action_prompt, locale, loc?.title ?? current.title)
     : ''
 
   const tip = useMemo(() => {
@@ -291,11 +291,11 @@ export function QuizPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-sm font-medium text-[var(--text-muted)]">{t('mobile.quizQuestion')}</p>
                 <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-800 dark:text-brand-300">
-                  {QUIZ_CONTEXT_LABEL}
+                  {t('mobile.quizContextProgrammerBasics')}
                 </span>
               </div>
               <p className="mt-2 text-lg font-semibold leading-snug text-[var(--text-primary)]">
-                {formatQuizQuestion(questionAction)}
+                {t('mobile.quizPrompt', { action: questionAction })}
               </p>
 
               <ul className="mt-6 space-y-3">
