@@ -15,7 +15,8 @@ export const contentTg: ContentCatalogTg = {
   courses: {
     'computer-basics': {
       title: 'Ноутбуки аввал: файлҳо ва папкаҳо',
-      description: '',
+      description:
+        'Эҷоди папкаҳо ва файлҳо, проводник, сабад ва ZIP. Вазифаҳоро дар «Рабочий стол» иҷро кунед.',
     },
     'programmer-basics': {
       title: 'Клавишаҳои асосии барномасоз',

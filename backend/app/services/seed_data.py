@@ -283,7 +283,10 @@ COURSES: list[CourseSeed] = [
     {
         "slug": "computer-basics",
         "title": "Первый ноутбук: файлы и папки",
-        "description": "",
+        "description": (
+            "Создание папок и файлов, проводник, корзина и ZIP. "
+            "Выполняйте задания в симуляторе «Рабочий стол»."
+        ),
         "icon": "folder",
         "categories": COMPUTER_BASICS_CATEGORIES,
     },
