@@ -118,9 +118,13 @@ export function CoursesPage() {
                   <h2 className="line-clamp-2 text-[16px] font-semibold leading-snug tracking-tight text-ink dark:text-white">
                     {loc.title}
                   </h2>
-                  <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-ink-soft/80 dark:text-slate-400">
-                    {loc.description}
-                  </p>
+                  {loc.description ? (
+                  {loc.description ? (
+                    <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-ink-soft/80 dark:text-slate-400">
+                      {loc.description}
+                    </p>
+                  ) : null}
+                  ) : null}
 
                   <div className="mt-auto pt-4">
                     {prog ? (
@@ -220,7 +224,9 @@ export function CourseDetailPage({ slug }: { slug: string }) {
             </span>
           )}
           <h1 className="text-page-title mt-1">{courseLoc.title}</h1>
-          <p className="text-muted mt-2 max-w-2xl">{courseLoc.description}</p>
+          {courseLoc.description ? (
+            <p className="text-muted mt-2 max-w-2xl">{courseLoc.description}</p>
+          ) : null}
           {user ? (
             <div className="mt-5 max-w-md">
               <LearnProgressBar done={doneLessons} total={totalLessons} />
@@ -272,9 +278,11 @@ export function CourseDetailPage({ slug }: { slug: string }) {
                             <p className="font-semibold leading-snug tracking-tight text-ink dark:text-white">
                               {lessonLoc.title}
                             </p>
-                            <p className="mt-1 text-[13px] font-medium text-brand-800 dark:text-brand-300">
-                              {taskLesson ? t('courses.lessonTypeTask') : formatShortcut(lesson.keys)}
-                            </p>
+                            {!(taskLesson && data.slug === 'computer-basics') && (
+                              <p className="mt-1 text-[13px] font-medium text-brand-800 dark:text-brand-300">
+                                {taskLesson ? t('courses.lessonTypeTask') : formatShortcut(lesson.keys)}
+                              </p>
+                            )}
                           </div>
                           <div className="flex shrink-0 flex-col items-end gap-1.5">
                             {user && <LearnStatusBadge learned={learned} size="sm" />}

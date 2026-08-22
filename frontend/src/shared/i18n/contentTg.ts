@@ -15,8 +15,7 @@ export const contentTg: ContentCatalogTg = {
   courses: {
     'computer-basics': {
       title: 'Ноутбуки аввал: файлҳо ва папкаҳо',
-      description:
-        'Бе азбаркунии hotkeys: файл ва папка, проводник, сабад, ZIP ва сохтори сайт. Машқ дар симулятори мизи кор санҷида мешавад.',
+      description: '',
     },
     'programmer-basics': {
       title: 'Клавишаҳои асосии барномасоз',

@@ -283,10 +283,7 @@ COURSES: list[CourseSeed] = [
     {
         "slug": "computer-basics",
         "title": "Первый ноутбук: файлы и папки",
-        "description": (
-            "Без зубрёжки hotkeys: файлы и папки, проводник, корзина, ZIP и структура сайта. "
-            "Практика проверяется в симуляторе рабочего стола — XP начисляется автоматически."
-        ),
+        "description": "",
         "icon": "folder",
         "categories": COMPUTER_BASICS_CATEGORIES,
     },
