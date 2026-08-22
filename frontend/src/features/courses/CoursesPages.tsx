@@ -298,7 +298,7 @@ export function CourseDetailPage({ slug }: { slug: string }) {
         </Link>
         {data.slug === 'computer-basics' ? (
           <Link to="/simulator?mode=desktop" className="btn-primary">
-            {t('courses.openDesktopSim')}
+            {t('practiceShell.desktopSimulator')}
           </Link>
         ) : (
           <Link to={`/training?course=${slug}`} className="btn-primary">
