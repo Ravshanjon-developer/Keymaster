@@ -407,11 +407,18 @@ async def random_lessons(
     course_slug: str | None = None,
     limit: int = 30,
     browser_safe: bool = True,
+    ordered: bool = False,
     db: AsyncSession = Depends(get_db),
 ):
     """browser_safe=True keeps only chords that work reliably in a browser trainer."""
     q = (
-        select(Lesson, Category.slug, Course.slug)
+        select(
+            Lesson,
+            Category.slug,
+            Course.slug,
+            Category.sort_order,
+            Lesson.sort_order,
+        )
         .join(Category, Lesson.category_id == Category.id)
         .join(Course, Category.course_id == Course.id)
     )
@@ -431,7 +438,12 @@ async def random_lessons(
             rows = [row for row in rows if not _is_browser_hostile_keys(row[0].keys or [])]
     if not rows:
         return []
-    sample = random.sample(rows, min(limit, len(rows)))
+    cap = min(limit, len(rows))
+    if ordered:
+        rows.sort(key=lambda row: (row[3], row[4], (row[0].title or "")))
+        chosen = rows[:cap]
+    else:
+        chosen = random.sample(rows, cap)
     return [
         {
             "id": str(lesson.id),
@@ -443,7 +455,7 @@ async def random_lessons(
             "course_slug": c_slug,
             "category_slug": cat_slug,
         }
-        for lesson, cat_slug, c_slug in sample
+        for lesson, cat_slug, c_slug, _cat_order, _lesson_order in chosen
     ]
 
 

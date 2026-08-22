@@ -4,7 +4,7 @@ import { CheckCircle2, XCircle } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-import { api, type RandomLessonDto } from '@/shared/lib/api'
+import { type RandomLessonDto } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useLocaleStore, useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
@@ -12,6 +12,7 @@ import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, ProgressBar } from '@/shared/components/ui'
 import { explainShortcut } from '@/shared/lib/shortcutExplain'
 import { parseDesktopTaskId } from '@/shared/lib/simulatorProgress'
+import { fetchQuizLessons, quizContextKey } from '@/shared/lib/quizSession'
 import { cn } from '@/shared/lib/utils'
 
 function shuffle<T>(arr: T[]): T[] {
@@ -31,8 +32,15 @@ function lessonChoiceLabel(lesson: RandomLessonDto): string {
   return formatShortcut(lesson.keys)
 }
 
-function buildOptions(correct: string, pool: RandomLessonDto[], lessonId: string): string[] {
-  const wrong = pool
+function buildOptions(
+  correct: string,
+  pool: RandomLessonDto[],
+  lessonId: string,
+  courseSlug?: string | null,
+): string[] {
+  const scoped = courseSlug ? pool.filter((l) => l.course_slug === courseSlug) : pool
+  const source = scoped.length >= 4 ? scoped : pool
+  const wrong = source
     .filter((l) => l.id !== lessonId)
     .map((l) => lessonChoiceLabel(l))
     .filter((s) => s && s !== correct)
@@ -52,8 +60,8 @@ export function QuizPage() {
   const course = params.get('course') ?? undefined
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['random', 'quiz', course],
-    queryFn: () => api.randomLessons({ course_slug: course, limit: 35 }),
+    queryKey: ['random', 'quiz', 'v2', course ?? 'default'],
+    queryFn: () => fetchQuizLessons(course),
   })
 
   const [index, setIndex] = useState(0)
@@ -70,7 +78,7 @@ export function QuizPage() {
 
   const options = useMemo(() => {
     if (!current || !data) return []
-    return buildOptions(correctLabel, data, current.id)
+    return buildOptions(correctLabel, data, current.id, current.course_slug)
   }, [current, data, correctLabel])
 
   const loc = current
@@ -275,9 +283,19 @@ export function QuizPage() {
             transition={{ duration: 0.22 }}
           >
             <GlassCard className="mt-4 p-5 sm:p-6 lg:mt-6">
-              <p className="text-sm font-medium text-[var(--text-muted)]">{t('mobile.quizQuestion')}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-medium text-[var(--text-muted)]">{t('mobile.quizQuestion')}</p>
+                {current.course_slug ? (
+                  <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-800 dark:text-brand-300">
+                    {t(`mobile.${quizContextKey(current.course_slug)}`)}
+                  </span>
+                ) : null}
+              </div>
               <p className="mt-2 text-lg font-semibold leading-snug text-[var(--text-primary)]">
-                {t('mobile.quizPrompt', { action: loc?.action_prompt ?? current.action_prompt })}
+                {t('mobile.quizPrompt', {
+                  context: t(`mobile.${quizContextKey(current.course_slug)}`),
+                  action: loc?.action_prompt ?? current.action_prompt,
+                })}
               </p>
 
               <ul className="mt-6 space-y-3">

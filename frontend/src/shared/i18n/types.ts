@@ -730,6 +730,12 @@ export type Messages = {
     quizEmptyDesc: string
     quizQuestion: string
     quizPrompt: string
+    quizContextProgrammerBasics: string
+    quizContextChrome: string
+    quizContextEdge: string
+    quizContextVscode: string
+    quizContextWindows: string
+    quizContextDefault: string
     quizProgress: string
     quizCorrect: string
     quizStreak: string
