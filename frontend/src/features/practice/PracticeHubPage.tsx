@@ -78,7 +78,7 @@ export function PracticeHubPage() {
     {
       to: '/typing',
       icon: practiceIcons.typing,
-      title: t('practice.typingTitle'),
+      title: t('practiceShell.typing'),
       text: t('practice.typingText'),
       tag: t('practice.tagBeginner'),
       tagTone: 'neutral',
@@ -86,7 +86,7 @@ export function PracticeHubPage() {
     {
       to: '/simulator?mode=desktop',
       icon: practiceIcons.desktop,
-      title: t('practice.desktopSimTitle'),
+      title: t('practiceShell.desktopSimulator'),
       text: t('practice.desktopSimText'),
       tag: t('practice.tagBeginner'),
       tagTone: 'neutral',
@@ -94,7 +94,7 @@ export function PracticeHubPage() {
     {
       to: '/simulator',
       icon: practiceIcons.simulator,
-      title: t('practice.simTitle'),
+      title: t('practiceShell.simulator'),
       text: t('practice.simText'),
       tag: t('practice.tagCore'),
       tagTone: 'brand',
@@ -102,7 +102,7 @@ export function PracticeHubPage() {
     {
       to: '/training?course=programmer-basics',
       icon: practiceIcons.hotkeys,
-      title: t('practice.hotkeysTitle'),
+      title: t('practiceShell.shortcuts'),
       text: t('practice.hotkeysText'),
       tag: t('practice.tagCore'),
       tagTone: 'brand',
@@ -110,7 +110,7 @@ export function PracticeHubPage() {
     {
       to: '/speed',
       icon: practiceIcons.speed,
-      title: t('practice.speedTitle'),
+      title: t('practiceShell.speed'),
       text: t('practice.speedText'),
       tag: t('practice.tagFun'),
       tagTone: 'success',
