@@ -726,10 +726,16 @@ export type Messages = {
     cardN: string
     quizEyebrow: string
     quizTitle: string
+    quizSubtitle: string
     quizEmptyTitle: string
     quizEmptyDesc: string
     quizQuestion: string
     quizPrompt: string
+    quizLevelBasic: string
+    quizLevelPractical: string
+    quizXp: string
+    quizXpGain: string
+    quizTotalXp: string
     quizContextProgrammerBasics: string
     quizContextChrome: string
     quizContextEdge: string
