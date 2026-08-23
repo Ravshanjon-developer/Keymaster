@@ -159,6 +159,28 @@ html.dark {
 }
 
 @layer utilities {
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 100;
+    transform: translateY(-160%);
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgb(37 99 235 / 0.28);
+  }
+
+  .skip-link:focus {
+    transform: none;
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+
   .font-display {
     font-family: var(--font-display);
     font-optical-sizing: auto;

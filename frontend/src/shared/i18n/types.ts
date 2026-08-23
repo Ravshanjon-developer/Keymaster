@@ -29,6 +29,7 @@ export type Messages = {
     language: string
     langRu: string
     langTg: string
+    skipToContent: string
     review: string
     reviewHint: string
     quiz: string
@@ -67,7 +68,23 @@ export type Messages = {
     apiDownTitle: string
     apiDownDesc: string
     lessons: string
+    lessonsOne: string
+    lessonsFew: string
+    lessonsMany: string
     categories: string
+    categoriesOne: string
+    categoriesFew: string
+    categoriesMany: string
+    searchLabel: string
+    searchPlaceholder: string
+    filterAll: string
+    filterStart: string
+    filterOs: string
+    filterEditors: string
+    filterBrowsers: string
+    filterOffice: string
+    filterVcs: string
+    noMatches: string
     startHere: string
     statusStart: string
     statusDone: string

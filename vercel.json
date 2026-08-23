@@ -20,7 +20,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!robots\\.txt$|sitemap\\.xml$|llms\\.txt$).*)",
+      "source": "/((?!robots\\.txt$|sitemap\\.xml$|llms\\.txt$|og-image\\.png$).*)",
       "destination": "/index.html"
     }
   ]

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, CheckCircle2, Library } from 'lucide-react'
-import { useMemo } from 'react'
+import { ArrowUpRight, CheckCircle2, Library, Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
@@ -17,10 +17,46 @@ import { PageHeader, PageShell, SkeletonCardGrid } from '@/shared/components/Pag
 import { EmptyState, GlassCard, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
 
+type CourseGroup = 'all' | 'start' | 'os' | 'editors' | 'browsers' | 'office' | 'vcs'
+
+const COURSE_GROUPS: Record<Exclude<CourseGroup, 'all'>, string[]> = {
+  start: ['computer-basics', 'programmer-basics'],
+  os: ['windows', 'linux', 'macos', 'terminal'],
+  editors: ['vscode', 'cursor', 'visual-studio', 'intellij', 'pycharm'],
+  browsers: ['chrome', 'edge'],
+  office: ['word', 'excel', 'powerpoint', 'photoshop', 'figma'],
+  vcs: ['git', 'github-desktop'],
+}
+
+const FILTERS: { id: CourseGroup; label: 'courses.filterAll' | 'courses.filterStart' | 'courses.filterOs' | 'courses.filterEditors' | 'courses.filterBrowsers' | 'courses.filterOffice' | 'courses.filterVcs' }[] = [
+  { id: 'all', label: 'courses.filterAll' },
+  { id: 'start', label: 'courses.filterStart' },
+  { id: 'os', label: 'courses.filterOs' },
+  { id: 'editors', label: 'courses.filterEditors' },
+  { id: 'browsers', label: 'courses.filterBrowsers' },
+  { id: 'office', label: 'courses.filterOffice' },
+  { id: 'vcs', label: 'courses.filterVcs' },
+]
+
+function countWord(n: number, one: string, few: string, many: string) {
+  const n10 = n % 10
+  const n100 = n % 100
+  if (n10 === 1 && n100 !== 11) return one
+  if (n10 >= 2 && n10 <= 4 && n100 !== 12 && n100 !== 13 && n100 !== 14) return few
+  return many
+}
+
+function matchesGroup(slug: string, group: CourseGroup) {
+  if (group === 'all') return true
+  return COURSE_GROUPS[group].includes(slug)
+}
+
 export function CoursesPage() {
   const t = useT()
   const { localizeCourse } = useLocalizedContent()
   const user = useAuthStore((s) => s.user)
+  const [query, setQuery] = useState('')
+  const [group, setGroup] = useState<CourseGroup>('all')
   const { data, isLoading, isError } = useQuery({ queryKey: ['courses'], queryFn: api.courses })
   const courseProgress = useQuery({
     queryKey: ['course-progress'],
@@ -39,6 +75,16 @@ export function CoursesPage() {
     )
     return map
   }, [courseProgress.data])
+
+  const visible = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    return (data ?? []).filter((course) => {
+      if (!matchesGroup(course.slug, group)) return false
+      if (!needle) return true
+      const loc = localizeCourse(course.slug, course.title, course.description)
+      return `${loc.title} ${loc.description} ${course.slug}`.toLowerCase().includes(needle)
+    })
+  }, [data, group, query, localizeCourse])
 
   return (
     <PageShell>
@@ -64,8 +110,46 @@ export function CoursesPage() {
       )}
 
       {!isLoading && !isError && (
+      <>
+      <div className="mb-5 space-y-3">
+        <label className="block">
+          <span className="sr-only">{t('courses.searchLabel')}</span>
+          <span className="relative block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" aria-hidden />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('courses.searchPlaceholder')}
+              className="input-field mt-0 pl-10"
+            />
+          </span>
+        </label>
+        <div className="flex flex-wrap gap-2" role="group" aria-label={t('courses.searchLabel')}>
+          {FILTERS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setGroup(item.id)}
+              className={cn(
+                'min-h-11 rounded-full px-3.5 text-[13px] font-semibold transition',
+                group === item.id
+                  ? 'bg-brand-700 text-white dark:bg-brand-500 dark:text-ink'
+                  : 'border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]',
+              )}
+              aria-pressed={group === item.id}
+            >
+              {t(item.label)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {visible.length === 0 ? (
+        <EmptyState title={t('courses.noMatches')} description="" />
+      ) : (
       <div className="mt-2 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data?.map((course, i) => {
+        {visible.map((course, i) => {
           const isRequired = course.slug === 'computer-basics' || course.slug === 'programmer-basics'
           const prog = progressBySlug.get(course.slug)
           const status = getCourseStatus({
@@ -141,9 +225,10 @@ export function CoursesPage() {
                         <span className="tabular-nums text-brand-800 dark:text-brand-300">
                           {course.lesson_count}
                         </span>{' '}
-                        {t('courses.lessons')}
+                        {countWord(course.lesson_count, t('courses.lessonsOne'), t('courses.lessonsFew'), t('courses.lessonsMany'))}
                         <span className="mx-1.5 text-[var(--text-disabled)]">·</span>
-                        {course.category_count} {t('courses.categories')}
+                        {course.category_count}{' '}
+                        {countWord(course.category_count, t('courses.categoriesOne'), t('courses.categoriesFew'), t('courses.categoriesMany'))}
                       </span>
                       <span
                         className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent-muted)] px-2.5 py-1 text-[11px] font-semibold text-brand-800 transition group-hover:bg-[var(--color-accent)] group-hover:text-white dark:text-brand-200 dark:group-hover:text-[var(--bg-primary)]"
@@ -160,6 +245,8 @@ export function CoursesPage() {
           )
         })}
       </div>
+      )}
+      </>
       )}
 
       {!isLoading && !isError && data?.length === 0 && (

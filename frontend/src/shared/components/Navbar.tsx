@@ -37,7 +37,7 @@ function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
           type="button"
           onClick={() => setLocale(opt.id)}
           className={cn(
-            'rounded-md px-2.5 py-1 text-[12px] font-bold tracking-wide transition',
+            'min-h-11 min-w-11 rounded-md px-3 text-[13px] font-bold tracking-wide transition',
             compact && 'flex-1',
             locale === opt.id
               ? 'bg-brand-700 text-white dark:bg-brand-500 dark:text-ink'

@@ -35,8 +35,15 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-hidden">
+      <a href="#main-content" className="skip-link">
+        {t('nav.skipToContent')}
+      </a>
       <Navbar />
-      <main className="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0"
+      >
         <Outlet />
       </main>
       <footer className="hidden border-t border-black/[0.06] py-9 pb-12 text-center text-[13px] text-slate-600 sm:block dark:border-white/[0.06] dark:text-slate-400">
