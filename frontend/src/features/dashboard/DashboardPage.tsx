@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Award, Target } from 'lucide-react'
 
 import { useAuthStore, useLevelInfo } from '@/features/auth/authStore'
-import { NextStepCard } from '@/features/path/LearningPathPage'
+import { NextStepCard, PathStageStrip } from '@/features/path/LearningPathPage'
 import { api } from '@/shared/lib/api'
 import { useT } from '@/shared/i18n'
 import { PageHeader, PageShell, SkeletonBlock, StatTile } from '@/shared/components/PageLayout'
@@ -15,12 +15,7 @@ export function DashboardPage() {
   const level = useLevelInfo()
 
   const daily = useQuery({ queryKey: ['daily'], queryFn: api.daily, enabled: !!user })
-  const stats = useQuery({ queryKey: ['stats'], queryFn: api.stats, enabled: !!user })
   const achievements = useQuery({ queryKey: ['achievements'], queryFn: api.achievements, enabled: !!user })
-
-  const completion = stats.data
-    ? Math.min(100, Math.round((stats.data.combinations_learned / 300) * 100))
-    : 0
 
   const unlockedAchievements = achievements.data?.filter((a) => a.unlocked) ?? []
 
@@ -30,14 +25,9 @@ export function DashboardPage() {
         title={t('dashboard.hello', { name: user?.display_name ?? t('dashboard.student') })}
         subtitle={t('dashboard.subtitle')}
         actions={
-          <>
-            <Link to="/path" className="btn-secondary">
-              {t('dashboard.pathBtn')}
-            </Link>
-            <Link to="/training" className="btn-primary">
-              {t('dashboard.continueBtn')}
-            </Link>
-          </>
+          <Link to="/path" className="btn-secondary">
+            {t('dashboard.pathBtn')}
+          </Link>
         }
       />
 
@@ -45,14 +35,17 @@ export function DashboardPage() {
         <NextStepCard />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8">
+        <PathStageStrip />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
         <GlassCard className="!p-4 md:!p-5">
           <p className="text-caption font-semibold uppercase tracking-wider">{t('dashboard.level')}</p>
           <p className="font-display mt-2 text-xl font-bold text-[var(--text-primary)]">{level.title}</p>
           <ProgressBar value={level.progress} className="mt-3" />
         </GlassCard>
         <StatTile label={t('dashboard.xp')} value={user?.xp ?? 0} />
-        <StatTile label={t('dashboard.completion')} value={`${completion}%`} />
         <StatTile
           label={t('dashboard.streak')}
           value={

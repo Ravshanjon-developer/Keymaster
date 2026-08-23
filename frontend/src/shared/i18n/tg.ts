@@ -124,6 +124,9 @@ export const tg: Messages = {
     dailyEmptyDesc: 'Вазифаҳои имрӯз пас аз фаъолият нав мешаванд.',
     achievementsEmptyDesc: 'Омӯзед ва машқ кунед — нишонҳо худкор кушода мешаванд.',
     allAchievements: 'Ҳамаи дастовардҳо',
+    today: 'Имрӯз',
+    stagesTitle: 'Марҳилаҳои наздик',
+    continueLesson: 'Оғоз кардан',
   },
   path: {
     eyebrow: 'Роҳи рушди ман',
@@ -407,6 +410,9 @@ export const tg: Messages = {
     step3: 'Курси «Ноутбуки аввал»',
     step4: 'Hotkeys ва роҳи барномасоз',
     startCourse: 'Курсро кушоед',
+    todayRecommend: 'Имрӯз аз куҷо оғоз',
+    todayRecommendText: 'Аввал чоп ва файлҳо, баъд курс. Суръат — вақте асос ҳаст.',
+    startChallenge: 'Оғози санҷиш',
   },
   practiceShell: {
     hub: 'Практика',

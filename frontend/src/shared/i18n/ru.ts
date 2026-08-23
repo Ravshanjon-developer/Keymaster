@@ -123,6 +123,9 @@ export const ru: Messages = {
     dailyEmptyDesc: 'Задания на сегодня появятся после следующей активности.',
     achievementsEmptyDesc: 'Учитесь и тренируйтесь — бейджи откроются автоматически.',
     allAchievements: 'Все достижения',
+    today: 'Сегодня',
+    stagesTitle: 'Ближайшие этапы',
+    continueLesson: 'Приступить',
   },
   path: {
     eyebrow: 'Мой путь развития',
@@ -405,6 +408,9 @@ export const ru: Messages = {
     step3: 'Курс «Первый ноутбук» — закрепить знания',
     step4: 'Hotkeys и путь разработчика — дальше по карте',
     startCourse: 'Открыть «Первый ноутбук»',
+    todayRecommend: 'С чего начать сегодня',
+    todayRecommendText: 'Сначала печать и файлы, потом курс. Скорость — когда база уже есть.',
+    startChallenge: 'Начать испытание',
   },
   practiceShell: {
     hub: 'Тренировочный зал',

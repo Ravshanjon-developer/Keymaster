@@ -67,6 +67,7 @@ function SectionIntro({ title, description, id }: { title: string; description: 
 export function PracticeHubPage() {
   const t = useT()
   const location = useLocation()
+  const SpeedIcon = practiceIcons.speed
 
   useEffect(() => {
     if (location.hash !== '#reinforce') return
@@ -107,14 +108,6 @@ export function PracticeHubPage() {
       tag: t('practice.tagCore'),
       tagTone: 'brand',
     },
-    {
-      to: '/speed',
-      icon: practiceIcons.speed,
-      title: t('practiceShell.speed'),
-      text: t('practice.speedText'),
-      tag: t('practice.tagFun'),
-      tagTone: 'success',
-    },
   ]
 
   const reinforce: ModeCard[] = [
@@ -152,35 +145,13 @@ export function PracticeHubPage() {
         subtitle={t('practice.subtitle')}
       />
 
-      <section className="mt-2" aria-labelledby="practice-skills-heading">
-        <SectionIntro
-          id="practice-skills-heading"
-          title={t('practice.skillsSection')}
-          description={t('practice.skillsSectionDesc')}
-        />
-        <div className="grid gap-4 sm:grid-cols-2">
-          {skills.map((card, i) => (
-            <ModeCardLink key={card.to} card={card} index={i} />
-          ))}
-        </div>
-      </section>
-
-      <section id="reinforce" className="mt-12 scroll-mt-24" aria-labelledby="practice-reinforce-heading">
-        <SectionIntro
-          id="practice-reinforce-heading"
-          title={t('practice.reinforceSection')}
-          description={t('practice.reinforceSectionDesc')}
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {reinforce.map((card, i) => (
-            <ModeCardLink key={card.to} card={card} index={i + skills.length} />
-          ))}
-        </div>
-      </section>
-
-      <GlassCard className="mt-12 !p-6 sm:!p-8">
-        <p className="font-semibold text-[var(--text-primary)]">{t('practice.journeyTitle')}</p>
-        <ol className="mt-4 space-y-3 text-sm text-[var(--text-muted)]">
+      <GlassCard className="border-brand-600/25 !p-5 sm:!p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
+          {t('practice.todayRecommend')}
+        </p>
+        <h2 className="font-display mt-2 text-xl font-semibold">{t('practice.journeyTitle')}</h2>
+        <p className="mt-1.5 text-sm text-[var(--text-muted)]">{t('practice.todayRecommendText')}</p>
+        <ol className="mt-4 space-y-2.5 text-sm text-[var(--text-secondary)]">
           {[t('practice.step1'), t('practice.step2'), t('practice.step3'), t('practice.step4')].map(
             (step, i) => (
               <li key={step} className="flex gap-3">
@@ -197,10 +168,54 @@ export function PracticeHubPage() {
             ),
           )}
         </ol>
-        <Link to="/courses/computer-basics" className="btn-primary mt-6 inline-flex">
+        <Link to="/courses/computer-basics" className="btn-primary mt-5 inline-flex">
           {t('practice.startCourse')}
         </Link>
       </GlassCard>
+
+      <section className="mt-10" aria-labelledby="practice-skills-heading">
+        <SectionIntro
+          id="practice-skills-heading"
+          title={t('practice.skillsSection')}
+          description={t('practice.skillsSectionDesc')}
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {skills.map((card, i) => (
+            <ModeCardLink key={card.to} card={card} index={i} />
+          ))}
+        </div>
+      </section>
+
+      <Link
+        to="/speed"
+        className="mt-6 flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-elevated)] px-5 py-4 transition hover:border-brand-600/35 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <span className="flex items-start gap-3">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-800 dark:bg-brand-950/50 dark:text-brand-300">
+            <SpeedIcon className="h-5 w-5" strokeWidth={PRACTICE_ICON_STROKE} aria-hidden />
+          </span>
+          <span>
+            <span className="block text-sm font-semibold text-[var(--text-primary)]">
+              {t('practiceShell.speed')}
+            </span>
+            <span className="mt-0.5 block text-sm text-[var(--text-muted)]">{t('practice.speedText')}</span>
+          </span>
+        </span>
+        <span className="btn-secondary shrink-0 self-start sm:self-center">{t('practice.startChallenge')}</span>
+      </Link>
+
+      <section id="reinforce" className="mt-12 scroll-mt-24" aria-labelledby="practice-reinforce-heading">
+        <SectionIntro
+          id="practice-reinforce-heading"
+          title={t('practice.reinforceSection')}
+          description={t('practice.reinforceSectionDesc')}
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {reinforce.map((card, i) => (
+            <ModeCardLink key={card.to} card={card} index={i + skills.length} />
+          ))}
+        </div>
+      </section>
     </PageShell>
   )
 }

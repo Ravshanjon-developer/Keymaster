@@ -311,12 +311,13 @@ export function LearningPathPage() {
 
 export function NextStepCard() {
   const t = useT()
+  const { localizeCourse } = useLocalizedContent()
   const { next, rank, completedCourses, totalCourses, xp, user } = useGrowthPath()
 
   if (!user) {
     return (
       <GlassCard className="border-brand-600/25 p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700">{t('path.nextStepEyebrow')}</p>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700">{t('dashboard.today')}</p>
         <h2 className="font-display mt-1 text-xl font-semibold">{t('path.guestTitle')}</h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t('path.guestText')}</p>
         <div className="mt-4 flex gap-2">
@@ -331,26 +332,98 @@ export function NextStepCard() {
     )
   }
 
+  const nextTitle = next?.course
+    ? localizeCourse(next.course.slug, next.course.title, next.course.description).title
+    : next?.careerTitle
+  const href = next?.course ? `/courses/${next.course.slug}` : '/path'
+
   return (
-    <GlassCard className="border-brand-600/25 bg-gradient-to-br from-brand-50/80 to-white p-5 dark:from-brand-950/40 dark:to-slate-900">
+    <GlassCard className="border-brand-600/25 bg-gradient-to-br from-brand-50/80 to-white p-5 md:p-6 dark:from-brand-950/40 dark:to-slate-900">
       <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
-        {t('path.nextStepEyebrow')}
+        {t('dashboard.today')}
       </p>
-      <h2 className="font-display mt-1 text-xl font-semibold">{rank}</h2>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+      <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight">
+        {nextTitle ?? t('path.masterFallback')}
+      </h2>
+      <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
         {t('path.summary', { xp, done: completedCourses, total: totalCourses })}
         {next ? t('path.summaryNext', { next: next.careerTitle }) : ''}
       </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {next?.course ? (
-          <Link to={`/courses/${next.course.slug}`} className="btn-primary">
-            {t('path.continue')}
-          </Link>
-        ) : null}
+      {next && next.percent > 0 && next.percent < 100 ? (
+        <div className="mt-4 max-w-md">
+          <ProgressBar value={next.percent} />
+        </div>
+      ) : null}
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link to={href} className="btn-primary">
+          {t('dashboard.continueLesson')}
+        </Link>
         <Link to="/path" className="btn-secondary">
           {t('path.myPath')}
         </Link>
       </div>
+      <p className="mt-3 text-xs text-[var(--text-muted)]">{rank}</p>
     </GlassCard>
+  )
+}
+
+export function PathStageStrip() {
+  const t = useT()
+  const { localizeCourse } = useLocalizedContent()
+  const { nodes, coursesLoading } = useGrowthPath()
+  const stages = nodes.filter((n) => n.kind === 'course').slice(0, 4)
+
+  if (coursesLoading) {
+    return (
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    )
+  }
+
+  if (stages.length === 0) return null
+
+  return (
+    <section aria-labelledby="dashboard-stages">
+      <h2 id="dashboard-stages" className="text-h2 mb-3">
+        {t('dashboard.stagesTitle')}
+      </h2>
+      <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {stages.map((node, i) => {
+          const title = node.course
+            ? localizeCourse(node.course.slug, node.course.title, node.course.description).title
+            : node.careerTitle
+          const current = node.status === 'progress' || node.status === 'start'
+          const href = node.unlocked && node.slug ? `/courses/${node.slug}` : '/path'
+          return (
+            <li key={node.id}>
+              <Link
+                to={href}
+                className={cn(
+                  'flex h-full flex-col rounded-[var(--radius-lg)] border px-3.5 py-3 transition',
+                  current
+                    ? 'border-brand-600/40 bg-brand-50/80 ring-1 ring-brand-600/15 dark:bg-brand-950/30'
+                    : node.status === 'done'
+                      ? 'border-brand-600/20 bg-[var(--bg-elevated)]'
+                      : 'border-[var(--border-default)] bg-[var(--bg-elevated)] opacity-75',
+                )}
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold tabular-nums text-[var(--text-muted)]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <StatusPill status={node.status} />
+                </span>
+                <span className="mt-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
+                  {title}
+                </span>
+              </Link>
+            </li>
+          )
+        })}
+      </ol>
+    </section>
   )
 }

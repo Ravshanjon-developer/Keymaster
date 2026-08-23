@@ -122,6 +122,9 @@ export type Messages = {
     dailyEmptyDesc: string
     achievementsEmptyDesc: string
     allAchievements: string
+    today: string
+    stagesTitle: string
+    continueLesson: string
   }
   path: {
     eyebrow: string
@@ -396,6 +399,9 @@ export type Messages = {
     step3: string
     step4: string
     startCourse: string
+    todayRecommend: string
+    todayRecommendText: string
+    startChallenge: string
   }
   practiceShell: {
     hub: string
