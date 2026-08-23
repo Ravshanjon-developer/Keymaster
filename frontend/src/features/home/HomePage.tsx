@@ -28,29 +28,21 @@ export function HomePage() {
         />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-7 flex justify-center"
-          >
+          {/* Brand block paints on first frame — it is the LCP element, so no opacity gate. */}
+          <div className="mb-7 flex justify-center">
             <img
               src="/logo-mark.png"
               alt=""
               width={72}
               height={72}
+              fetchPriority="high"
               className="h-[4.5rem] w-[4.5rem] rounded-2xl object-contain shadow-[0_20px_50px_-24px_rgb(13_148_136_/_0.75)]"
             />
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-5xl font-semibold tracking-tight text-ink dark:text-white md:text-7xl"
-          >
+          <p className="font-display text-5xl font-semibold tracking-tight text-ink dark:text-white md:text-7xl">
             KeyMaster
-          </motion.p>
+          </p>
 
           <motion.h1
             initial={{ opacity: 0, y: 16 }}

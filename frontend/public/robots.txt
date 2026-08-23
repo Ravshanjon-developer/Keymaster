@@ -1,0 +1,29 @@
+# KeyMaster — https://www.keymaster.pp.ua/
+
+User-agent: *
+Allow: /
+
+# Личные разделы: доступны только после входа, в поиске бесполезны
+Disallow: /dashboard
+Disallow: /stats
+Disallow: /admin
+Disallow: /achievements
+Disallow: /path
+
+# Тренажёры: интерактив без индексируемого содержимого
+Disallow: /practice
+Disallow: /typing
+Disallow: /simulator
+Disallow: /training
+Disallow: /speed
+Disallow: /review
+Disallow: /quiz
+Disallow: /exam
+
+# Служебные страницы авторизации
+Disallow: /login
+Disallow: /register
+Disallow: /verify-email
+Disallow: /auth/
+
+Sitemap: https://www.keymaster.pp.ua/sitemap.xml

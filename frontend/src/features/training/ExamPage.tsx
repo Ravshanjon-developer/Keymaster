@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { AlertTriangle, Award, CheckCircle2, Gauge, Info, ListChecks, Timer, XCircle } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -6,7 +7,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
 import { useAuthStore } from '@/features/auth/authStore'
 import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
-import { GlassCard, KeyCombo, Skeleton } from '@/shared/components/ui'
+import { Button, GlassCard, KeyCombo, ProgressBar, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { api } from '@/shared/lib/api'
 import { formatShortcut } from '@/shared/lib/hotkeys'
 import { useT } from '@/shared/i18n'
@@ -16,6 +17,11 @@ import { cn, formatDuration } from '@/shared/lib/utils'
 const FEEDBACK_MS = 2800
 const QUESTION_OPTIONS = [10, 20, 30, 50] as const
 const MINUTE_OPTIONS = [5, 10, 15, 20] as const
+
+/** Below this many seconds per question the session feels rushed. */
+const PACE_FAST_SEC = 15
+/** Above this the session is generous enough to think between answers. */
+const PACE_RELAXED_SEC = 45
 
 type Phase = 'setup' | 'run' | 'done'
 
@@ -42,6 +48,8 @@ export function ExamPage() {
     questions: 20,
     minutes: 10,
   })
+  /** Bumped on every start so a repeat session pulls a fresh question set. */
+  const [sessionId, setSessionId] = useState(0)
 
   const [index, setIndex] = useState(0)
   const [wrong, setWrong] = useState(0)
@@ -57,17 +65,35 @@ export function ExamPage() {
   const [countdown, setCountdown] = useState(0)
   const [timedOut, setTimedOut] = useState(false)
 
+  const selectedCourse = courses.data?.find((c) => c.slug === config.courseSlug)
+  const courseLabel = selectedCourse
+    ? localizeCourse(selectedCourse.slug, selectedCourse.title, selectedCourse.description).title
+    : t('exam.mixed')
+
+  /** A course can hold fewer lessons than the requested question count. */
+  const availableQuestions = selectedCourse?.lesson_count ?? null
+  const askedQuestions = availableQuestions
+    ? Math.min(config.questions, availableQuestions)
+    : config.questions
+  const isCapped = askedQuestions < config.questions
+  /** Greying out sizes only helps while at least one of them is still reachable. */
+  const canDisableSizes = Boolean(availableQuestions && availableQuestions >= QUESTION_OPTIONS[0])
+
   const examQuery = useQuery({
-    queryKey: ['exam', config.courseSlug, config.questions, phase === 'run' || phase === 'done'],
+    queryKey: ['exam', sessionId, config.courseSlug, askedQuestions],
     queryFn: () =>
       api.randomLessons({
         course_slug: config.courseSlug,
-        limit: config.questions,
+        limit: askedQuestions,
+        // Desktop simulator tasks cannot be answered on a keyboard trainer.
+        hotkeys_only: true,
       }),
-    enabled: phase === 'run' || phase === 'done',
+    enabled: sessionId > 0 && (phase === 'run' || phase === 'done'),
+    staleTime: 0,
+    gcTime: 0,
   })
 
-  const total = examQuery.data?.length ?? config.questions
+  const total = examQuery.data?.length ?? askedQuestions
   const current = examQuery.data?.[index]
   const currentLoc = current
     ? localizeLesson(
@@ -79,8 +105,8 @@ export function ExamPage() {
     : null
 
   const secPerQuestion = useMemo(
-    () => Math.round((config.minutes * 60) / config.questions),
-    [config.minutes, config.questions],
+    () => Math.max(1, Math.round((config.minutes * 60) / askedQuestions)),
+    [config.minutes, askedQuestions],
   )
 
   const finish = useCallback((byTimeout = false) => {
@@ -167,112 +193,139 @@ export function ExamPage() {
     setStartedAt(now)
     setEndsAt(now + config.minutes * 60 * 1000)
     setTimeLeft(config.minutes * 60)
+    setSessionId((id) => id + 1)
     setPhase('run')
   }
 
   if (phase === 'setup') {
+    const paceTone = secPerQuestion < PACE_FAST_SEC ? 'warning' : 'info'
+    const paceText =
+      secPerQuestion < PACE_FAST_SEC
+        ? t('exam.paceFast', { n: secPerQuestion })
+        : secPerQuestion > PACE_RELAXED_SEC
+          ? t('exam.paceRelaxed', { n: secPerQuestion })
+          : t('exam.paceBalanced')
+
     return (
-      <div className="page-mesh mx-auto max-w-xl px-4 py-12">
+      <div className="page-mesh mx-auto max-w-xl px-4 py-12 pb-28 lg:pb-12">
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
           {t('exam.setupEyebrow')}
         </p>
         <h1 className="font-display mt-2 text-4xl font-bold text-ink dark:text-white">{t('exam.setupTitle')}</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">{t('exam.setupSub')}</p>
+        <p className="text-muted mt-2">{t('exam.setupSub')}</p>
 
         <GlassCard className="mt-8 space-y-6 p-6">
           <fieldset>
             <legend className="text-sm font-semibold text-ink dark:text-white">{t('exam.course')}</legend>
             {courses.isLoading ? (
-              <Skeleton className="mt-2 h-11 w-full" />
+              <Skeleton className="mt-2 h-11 w-full rounded-xl" />
             ) : (
-              <select
-                className="input-field"
-                value={config.courseSlug ?? ''}
-                onChange={(e) =>
-                  setConfig((c) => ({
-                    ...c,
-                    courseSlug: e.target.value || undefined,
-                  }))
-                }
-              >
-                <option value="">{t('exam.allCourses')}</option>
-                {courses.data?.map((c) => (
-                  <option key={c.id} value={c.slug}>
-                    {localizeCourse(c.slug, c.title, c.description).title}
-                  </option>
-                ))}
-              </select>
+              <>
+                <select
+                  className="input-field mt-2"
+                  value={config.courseSlug ?? ''}
+                  onChange={(e) =>
+                    setConfig((c) => ({
+                      ...c,
+                      courseSlug: e.target.value || undefined,
+                    }))
+                  }
+                >
+                  <option value="">{t('exam.allCourses')}</option>
+                  {courses.data?.map((c) => (
+                    <option key={c.id} value={c.slug}>
+                      {localizeCourse(c.slug, c.title, c.description).title}
+                    </option>
+                  ))}
+                </select>
+                {availableQuestions ? (
+                  <p className="text-muted mt-2 text-xs">
+                    {t('exam.availableCount', { n: availableQuestions })}
+                  </p>
+                ) : null}
+              </>
             )}
           </fieldset>
 
-          <fieldset>
-            <legend className="mb-2 text-sm font-semibold">{t('exam.questions')}</legend>
-            <div className="flex flex-wrap gap-2">
-              {QUESTION_OPTIONS.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setConfig((c) => ({ ...c, questions: n }))}
-                  className={cn(
-                    'rounded-xl border px-4 py-2 text-sm font-semibold transition',
-                    config.questions === n
-                      ? 'border-brand-600 bg-brand-600 text-white'
-                      : 'border-ink/12 bg-white hover:border-brand-600/40 dark:border-white/15 dark:bg-slate-900',
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
+          <OptionGroup label={t('exam.questions')}>
+            {QUESTION_OPTIONS.map((n) => (
+              <OptionChip
+                key={n}
+                selected={config.questions === n}
+                disabled={canDisableSizes && n > (availableQuestions ?? n)}
+                onClick={() => setConfig((c) => ({ ...c, questions: n }))}
+              >
+                {n}
+              </OptionChip>
+            ))}
+          </OptionGroup>
+
+          <OptionGroup label={t('exam.timeLimit')}>
+            {MINUTE_OPTIONS.map((m) => (
+              <OptionChip
+                key={m}
+                selected={config.minutes === m}
+                onClick={() => setConfig((c) => ({ ...c, minutes: m }))}
+              >
+                {t('exam.minutes', { n: m })}
+              </OptionChip>
+            ))}
+          </OptionGroup>
+
+          <section
+            aria-label={t('exam.summaryTitle')}
+            className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-soft)] p-4"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+              {t('exam.summaryTitle')}
+            </p>
+
+            <dl className="mt-3 grid grid-cols-3 gap-3">
+              <SummaryMetric
+                icon={ListChecks}
+                label={t('exam.questions')}
+                value={String(askedQuestions)}
+              />
+              <SummaryMetric
+                icon={Timer}
+                label={t('exam.timeLimit')}
+                value={t('exam.minutes', { n: config.minutes })}
+              />
+              <SummaryMetric
+                icon={Gauge}
+                label={t('exam.pace')}
+                value={t('exam.paceValue', { n: secPerQuestion })}
+              />
+            </dl>
+
+            <div className="mt-4">
+              <StatusBadge tone={config.courseSlug ? 'brand' : 'neutral'}>{courseLabel}</StatusBadge>
             </div>
-          </fieldset>
 
-          <fieldset>
-            <legend className="mb-2 text-sm font-semibold">{t('exam.timeLimit')}</legend>
-            <div className="flex flex-wrap gap-2">
-              {MINUTE_OPTIONS.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setConfig((c) => ({ ...c, minutes: m }))}
-                  className={cn(
-                    'rounded-xl border px-4 py-2 text-sm font-semibold transition',
-                    config.minutes === m
-                      ? 'border-brand-600 bg-brand-600 text-white'
-                      : 'border-ink/12 bg-white hover:border-brand-600/40 dark:border-white/15 dark:bg-slate-900',
-                  )}
-                >
-                  {t('exam.minutes', { n: m })}
-                </button>
-              ))}
+            <div className="mt-3 space-y-1.5">
+              {isCapped ? (
+                <SetupHint tone="warning">{t('exam.cappedNotice', { n: askedQuestions })}</SetupHint>
+              ) : null}
+              <SetupHint tone={paceTone}>{paceText}</SetupHint>
             </div>
-          </fieldset>
+          </section>
 
-          <div className="rounded-xl border border-ink/8 bg-paper/80 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-300">
-            {t('exam.perQuestion', {
-              sec: secPerQuestion,
-              questions: config.questions,
-              minutes: config.minutes,
-            })}
-            {config.courseSlug
-              ? ` · ${(() => {
-                  const c = courses.data?.find((x) => x.slug === config.courseSlug)
-                  return c
-                    ? localizeCourse(c.slug, c.title, c.description).title
-                    : config.courseSlug
-                })()}`
-              : ` · ${t('exam.mixed')}`}
-          </div>
-
-          <button type="button" onClick={startExam} className="btn-primary w-full py-3 text-base">
+          <Button size="lg" className="w-full" onClick={startExam} disabled={courses.isLoading}>
             {t('exam.start')}
-          </button>
+          </Button>
         </GlassCard>
       </div>
     )
   }
 
   if (phase === 'run' && examQuery.isLoading) {
-    return <Skeleton className="mx-auto mt-16 h-64 max-w-2xl" />
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-10">
+        <Skeleton className="h-6 w-40 rounded-lg" />
+        <Skeleton className="mt-4 h-2 w-full rounded-full" />
+        <Skeleton className="mt-6 h-64 w-full rounded-[var(--radius-card)]" />
+      </div>
+    )
   }
 
   if (phase === 'run' && !examQuery.data?.length) {
@@ -280,10 +333,10 @@ export function ExamPage() {
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <GlassCard>
           <h2 className="text-xl font-bold">{t('exam.noQuestions')}</h2>
-          <p className="mt-2 text-sm text-slate-500">{t('exam.noQuestionsHint')}</p>
-          <button type="button" className="btn-primary mt-6" onClick={() => setPhase('setup')}>
+          <p className="text-muted mt-2 text-sm">{t('exam.noQuestionsHint')}</p>
+          <Button className="mt-6" onClick={() => setPhase('setup')}>
             {t('exam.backSetup')}
-          </button>
+          </Button>
         </GlassCard>
       </div>
     )
@@ -291,11 +344,24 @@ export function ExamPage() {
 
   if (phase === 'done') {
     const answered = right + wrong
-    const percent = answered ? Math.round((right / answered) * 100) : 0
+    const unanswered = Math.max(0, total - answered)
+    // Score counts every question of the session — skipped ones included.
+    const percent = total ? Math.round((right / total) * 100) : 0
+    const accuracy = answered ? Math.round((right / answered) * 100) : 0
     const duration = Math.round((Date.now() - startedAt) / 1000)
     const grade = percent >= 90 ? 'A' : percent >= 75 ? 'B' : percent >= 60 ? 'C' : 'D'
+    const gradeText =
+      grade === 'A'
+        ? t('exam.gradeExcellent')
+        : grade === 'B'
+          ? t('exam.gradeGood')
+          : grade === 'C'
+            ? t('exam.gradeOk')
+            : t('exam.gradeWeak')
+    const gradeTone = grade === 'A' || grade === 'B' ? 'success' : grade === 'C' ? 'warning' : 'neutral'
+
     return (
-      <div className="mx-auto max-w-lg px-4 py-16">
+      <div className="mx-auto max-w-lg px-4 py-16 pb-28 lg:pb-16">
         <GlassCard>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
             {t('exam.results')}
@@ -303,34 +369,51 @@ export function ExamPage() {
           <h2 className="font-display mt-2 text-3xl font-bold">
             {timedOut ? t('exam.timedOut') : t('exam.finished')}
           </h2>
-          <ul className="mt-6 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-            <li>
-              {t('exam.result')}: <strong className="text-ink dark:text-white">{percent}%</strong>
-            </li>
-            <li>
-              {t('exam.summaryLine', {
-                right: t('exam.right'),
-                ok: right,
-                wrong: t('exam.wrong'),
-                bad: wrong,
-                answered: t('exam.answered'),
-                done: answered,
-                total,
-              })}
-            </li>
-            <li>
-              {t('exam.time')}: {formatDuration(duration)} / {t('exam.minutes', { n: config.minutes })}
-            </li>
-            <li>
-              {t('exam.grade')}: {grade}
-            </li>
-          </ul>
+
+          <div className="mt-6 flex items-center gap-4">
+            <div
+              className={cn(
+                'flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--radius-lg)] border-2 text-2xl font-bold',
+                gradeTone === 'success' && 'border-success-500 text-success-700 dark:text-success-400',
+                gradeTone === 'warning' && 'border-amber-500 text-amber-700 dark:text-amber-300',
+                gradeTone === 'neutral' && 'border-[var(--border-default)] text-[var(--text-secondary)]',
+              )}
+              aria-hidden
+            >
+              {grade}
+            </div>
+            <div className="min-w-0">
+              <p className="text-3xl font-bold tabular-nums text-ink dark:text-white">{percent}%</p>
+              <p className="text-muted text-sm">{gradeText}</p>
+            </div>
+          </div>
+
+          <ProgressBar
+            value={percent}
+            className="mt-4"
+            barClassName={gradeTone === 'success' ? 'bg-success-500' : undefined}
+          />
+
+          <dl className="mt-6 grid grid-cols-2 gap-3">
+            <ResultStat icon={CheckCircle2} label={t('exam.right')} value={String(right)} tone="success" />
+            <ResultStat icon={XCircle} label={t('exam.wrong')} value={String(wrong)} tone="danger" />
+            <ResultStat icon={Gauge} label={t('exam.accuracy')} value={`${accuracy}%`} />
+            <ResultStat
+              icon={ListChecks}
+              label={t('exam.completion')}
+              value={`${answered}/${total}`}
+            />
+            {unanswered > 0 ? (
+              <ResultStat icon={AlertTriangle} label={t('exam.unanswered')} value={String(unanswered)} tone="warning" />
+            ) : null}
+            <ResultStat icon={Timer} label={t('exam.time')} value={formatDuration(duration)} />
+          </dl>
+
           {percent >= 90 && <CertificateCard name="KeyMaster" percent={percent} />}
+
           <div className="mt-6 flex flex-wrap gap-2">
-            <button type="button" className="btn-primary" onClick={() => setPhase('setup')}>
-              {t('exam.newExam')}
-            </button>
-            <Link to="/path" className="btn-secondary">
+            <Button onClick={() => setPhase('setup')}>{t('exam.newExam')}</Button>
+            <Link to="/path" className="btn-secondary text-button">
               {t('exam.toPath')}
             </Link>
           </div>
@@ -339,59 +422,91 @@ export function ExamPage() {
     )
   }
 
+  const totalSeconds = config.minutes * 60
+  const timePct = totalSeconds ? (timeLeft / totalSeconds) * 100 : 0
   const urgent = timeLeft <= 60
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 pb-28 lg:pb-10">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">
-          {t('exam.runningLabel', { n: index + 1, total })}
-          {config.courseSlug ? ` · ${config.courseSlug}` : ''}
-        </p>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-muted text-sm font-medium">{t('exam.runningLabel', { n: index + 1, total })}</p>
+          <StatusBadge tone="neutral">{courseLabel}</StatusBadge>
+        </div>
         <div
           className={cn(
-            'rounded-xl px-3 py-1.5 font-mono text-sm font-bold tabular-nums',
-            urgent
-              ? 'bg-signal/15 text-signal'
-              : 'bg-ink/5 text-ink dark:bg-white/10 dark:text-slate-100',
+            'flex items-center gap-1.5 rounded-xl px-3 py-1.5 font-mono text-sm font-bold tabular-nums transition-colors',
+            urgent ? 'bg-signal/15 text-signal' : 'bg-[var(--bg-muted)] text-[var(--text-primary)]',
           )}
+          role="timer"
+          aria-live={urgent ? 'assertive' : 'off'}
+          aria-label={t('exam.timeLeft')}
         >
+          <Timer className="h-3.5 w-3.5" aria-hidden />
           {formatDuration(timeLeft)}
         </div>
       </div>
 
-      <div className="mb-6 h-1.5 overflow-hidden rounded-full bg-ink/8 dark:bg-white/10">
-        <div
-          className="h-full rounded-full bg-brand-600 transition-all duration-300"
-          style={{ width: `${((index + (feedback ? 1 : 0)) / total) * 100}%` }}
-        />
+      <ProgressBar
+        value={timePct}
+        className="mb-2 h-1"
+        barClassName={urgent ? 'bg-signal' : undefined}
+      />
+      <ProgressBar value={((index + (feedback ? 1 : 0)) / total) * 100} className="mb-4" />
+
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 text-sm font-semibold tabular-nums">
+          <span className="flex items-center gap-1.5 text-success-700 dark:text-success-400">
+            <CheckCircle2 className="h-4 w-4" aria-hidden />
+            {right}
+          </span>
+          <span className="flex items-center gap-1.5 text-signal">
+            <XCircle className="h-4 w-4" aria-hidden />
+            {wrong}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            if (window.confirm(t('exam.exitConfirm'))) finish(false)
+          }}
+        >
+          {t('exam.exit')}
+        </Button>
       </div>
 
       {feedback ? (
         <div
           className={cn(
-            'rounded-3xl border p-8 text-center',
-            feedback.ok
-              ? 'border-emerald-500/40 bg-emerald-500/10'
-              : 'border-signal/40 bg-signal/10',
+            'rounded-[var(--radius-card)] border p-8 text-center',
+            feedback.ok ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-signal/40 bg-signal/10',
           )}
+          role="status"
+          aria-live="polite"
         >
-          <p className={cn('text-2xl font-bold', feedback.ok ? 'text-emerald-700 dark:text-emerald-300' : 'text-signal')}>
+          <p
+            className={cn(
+              'text-2xl font-bold',
+              feedback.ok ? 'text-emerald-700 dark:text-emerald-300' : 'text-signal',
+            )}
+          >
             {feedback.ok ? t('exam.ok') : t('exam.bad')}
           </p>
-          <p className="mt-3 text-slate-600 dark:text-slate-300">{feedback.prompt}</p>
-          <p className="mt-6 text-sm font-medium text-slate-500">{t('exam.correctCombo')}</p>
+          <p className="text-muted mt-3">{feedback.prompt}</p>
+          <p className="text-muted mt-6 text-sm font-medium">{t('exam.correctCombo')}</p>
           <div className="mt-3">
             <KeyCombo keys={feedback.keys} />
           </div>
           <p className="mt-4 font-mono text-lg font-semibold">{formatShortcut(feedback.keys)}</p>
-          <p className="mt-6 text-sm text-slate-500">{t('exam.nextIn', { n: countdown || 1 })}</p>
-          <button type="button" onClick={goNext} className="mt-4 text-sm font-semibold text-brand-700 hover:underline">
+          <p className="text-muted mt-6 text-sm">{t('exam.nextIn', { n: countdown || 1 })}</p>
+          <button type="button" onClick={goNext} className="mt-4 text-sm font-semibold text-brand-700 hover:underline dark:text-brand-300">
             {t('exam.skipWait')}
           </button>
         </div>
       ) : (
-        current && currentLoc && (
+        current &&
+        currentLoc && (
           <PracticeKeyboardGate courseQuery={config.courseSlug}>
             <KeyboardTrainer
               key={current.id}
@@ -408,13 +523,123 @@ export function ExamPage() {
   )
 }
 
+function OptionGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-sm font-semibold text-ink dark:text-white">{label}</legend>
+      <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
+        {children}
+      </div>
+    </fieldset>
+  )
+}
+
+function OptionChip({
+  children,
+  selected,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode
+  selected: boolean
+  disabled?: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-pressed={selected}
+      className={cn(
+        'min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold transition duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]',
+        'disabled:cursor-not-allowed disabled:opacity-40',
+        selected
+          ? 'border-brand-600 bg-brand-600 text-white'
+          : 'border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-brand-500/50',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function SetupHint({ children, tone }: { children: React.ReactNode; tone: 'warning' | 'info' }) {
+  const Icon = tone === 'warning' ? AlertTriangle : Info
+  return (
+    <p
+      className={cn(
+        'flex items-start gap-2 text-xs leading-relaxed',
+        tone === 'warning' ? 'text-amber-700 dark:text-amber-300' : 'text-[var(--text-secondary)]',
+      )}
+    >
+      <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+      {children}
+    </p>
+  )
+}
+
+function SummaryMetric({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Timer
+  label: string
+  value: string
+}) {
+  return (
+    <div className="min-w-0">
+      <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <span className="truncate">{label}</span>
+      </dt>
+      <dd className="mt-1 truncate text-base font-bold tabular-nums text-ink dark:text-white">{value}</dd>
+    </div>
+  )
+}
+
+function ResultStat({
+  icon: Icon,
+  label,
+  value,
+  tone = 'neutral',
+}: {
+  icon: typeof Timer
+  label: string
+  value: string
+  tone?: 'neutral' | 'success' | 'danger' | 'warning'
+}) {
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-soft)] p-3">
+      <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+        <Icon
+          className={cn(
+            'h-3.5 w-3.5 shrink-0',
+            tone === 'success' && 'text-success-600 dark:text-success-400',
+            tone === 'danger' && 'text-signal',
+            tone === 'warning' && 'text-amber-600 dark:text-amber-400',
+          )}
+          aria-hidden
+        />
+        <span className="truncate">{label}</span>
+      </dt>
+      <dd className="mt-1 text-xl font-bold tabular-nums text-ink dark:text-white">{value}</dd>
+    </div>
+  )
+}
+
 function CertificateCard({ name, percent }: { name: string; percent: number }) {
   const t = useT()
   return (
-    <div className="mt-8 rounded-2xl border border-brand-600/30 bg-gradient-to-br from-brand-50 to-white p-6 text-center dark:from-brand-950/50 dark:to-slate-900">
-      <p className="text-sm uppercase tracking-widest text-brand-700 dark:text-brand-300">{t('exam.certificate')}</p>
+    <div className="mt-8 rounded-[var(--radius-lg)] border border-brand-600/30 bg-gradient-to-br from-brand-50 to-white p-6 text-center dark:from-brand-950/50 dark:to-slate-900">
+      <Award className="mx-auto h-8 w-8 text-brand-700 dark:text-brand-300" aria-hidden />
+      <p className="mt-2 text-sm uppercase tracking-widest text-brand-700 dark:text-brand-300">
+        {t('exam.certificate')}
+      </p>
       <p className="font-display mt-2 text-lg font-bold">{name}</p>
-      <p className="text-sm text-slate-600 dark:text-slate-300">{t('exam.certificateText', { percent })}</p>
+      <p className="text-muted text-sm">{t('exam.certificateText', { percent })}</p>
     </div>
   )
 }

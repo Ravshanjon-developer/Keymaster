@@ -290,6 +290,14 @@ export type Messages = {
     perQuestion: string
     mixed: string
     start: string
+    summaryTitle: string
+    pace: string
+    paceValue: string
+    paceFast: string
+    paceBalanced: string
+    paceRelaxed: string
+    availableCount: string
+    cappedNotice: string
     noQuestions: string
     noQuestionsHint: string
     backSetup: string
@@ -315,6 +323,16 @@ export type Messages = {
     runningLabel: string
     summaryLine: string
     xpGain: string
+    timeLeft: string
+    exit: string
+    exitConfirm: string
+    accuracy: string
+    completion: string
+    unanswered: string
+    gradeExcellent: string
+    gradeGood: string
+    gradeOk: string
+    gradeWeak: string
   }
   speed: {
     title: string

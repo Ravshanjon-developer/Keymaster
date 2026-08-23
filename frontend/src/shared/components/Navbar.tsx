@@ -97,7 +97,7 @@ export function Navbar() {
         <Link to="/" className="flex min-w-0 shrink items-center gap-2 tracking-tight text-ink dark:text-white sm:gap-2.5">
           <img
             src="/logo-mark.png"
-            alt="KeyMaster"
+            alt=""
             width={36}
             height={36}
             className="h-8 w-8 shrink-0 rounded-[10px] object-contain sm:h-9 sm:w-9"

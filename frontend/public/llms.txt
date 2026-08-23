@@ -1,0 +1,54 @@
+# KeyMaster — тренажёр горячих клавиш
+
+> Бесплатный онлайн-тренажёр горячих клавиш и базовых компьютерных навыков. Ведёт от первого знакомства с файлами и папками до уверенного владения сочетаниями клавиш в Windows, браузерах, офисных программах и редакторах кода. Интерфейс доступен на русском и таджикском языках.
+
+Обучение построено как путь: теория в коротких уроках, затем отработка на интерактивном тренажёре с подсветкой клавиш, симулятор рабочего стола для безопасной практики с файлами, слепая печать, режим повторения и итоговый экзамен. Прогресс сохраняется, за выполнение начисляется опыт.
+
+## Основные разделы
+
+- [Главная](https://www.keymaster.pp.ua/): описание платформы и точки входа в обучение.
+- [Каталог курсов](https://www.keymaster.pp.ua/courses): все программы обучения, сгруппированные по инструментам.
+- [Рейтинг](https://www.keymaster.pp.ua/leaderboard): таблица лидеров по набранному опыту.
+
+## Курсы для начинающих
+
+- [Первый ноутбук: файлы и папки](https://www.keymaster.pp.ua/courses/computer-basics): проводник, файлы, папки, копирование, архивы ZIP.
+- [Основные горячие клавиши программиста](https://www.keymaster.pp.ua/courses/programmer-basics): универсальные сочетания, которые работают почти везде.
+
+## Операционные системы
+
+- [Windows](https://www.keymaster.pp.ua/courses/windows)
+- [Linux](https://www.keymaster.pp.ua/courses/linux)
+- [macOS](https://www.keymaster.pp.ua/courses/macos)
+- [Terminal](https://www.keymaster.pp.ua/courses/terminal)
+
+## Редакторы кода и IDE
+
+- [VS Code](https://www.keymaster.pp.ua/courses/vscode)
+- [Cursor](https://www.keymaster.pp.ua/courses/cursor)
+- [Visual Studio](https://www.keymaster.pp.ua/courses/visual-studio)
+- [IntelliJ IDEA](https://www.keymaster.pp.ua/courses/intellij)
+- [PyCharm](https://www.keymaster.pp.ua/courses/pycharm)
+
+## Браузеры
+
+- [Google Chrome](https://www.keymaster.pp.ua/courses/chrome)
+- [Microsoft Edge](https://www.keymaster.pp.ua/courses/edge)
+
+## Работа с кодом и версиями
+
+- [Git](https://www.keymaster.pp.ua/courses/git)
+- [GitHub Desktop](https://www.keymaster.pp.ua/courses/github-desktop)
+
+## Офис и дизайн
+
+- [Microsoft Word](https://www.keymaster.pp.ua/courses/word)
+- [Microsoft Excel](https://www.keymaster.pp.ua/courses/excel)
+- [PowerPoint](https://www.keymaster.pp.ua/courses/powerpoint)
+- [Photoshop](https://www.keymaster.pp.ua/courses/photoshop)
+- [Figma](https://www.keymaster.pp.ua/courses/figma)
+
+## Optional
+
+- [Карта сайта](https://www.keymaster.pp.ua/sitemap.xml): полный список публичных страниц.
+- Разделы тренажёров, личного прогресса и экзамена требуют входа в аккаунт и закрыты от индексации в robots.txt.
