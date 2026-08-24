@@ -3370,8 +3370,13 @@ async function buildUniqueScreens() {
   );
   const registerOtp = authScreen(
     'Код из письма',
-    'Код отправлен на anna@example.com.',
-    [otpRow(), instPrimary('Подтвердить код'), instSecondary('Отправить снова')],
+    'Мы отправили ссылку на anna@example.com. Перейдите по ней, затем войдите в аккаунт.',
+    [
+      txt('Письмо не пришло? Подождите 2–5 минут и проверьте папку «Спам».', outfit('Regular'), 11, MUTED, 352),
+      otpRow(),
+      instPrimary('Подтвердить код'),
+      instSecondary('Отправить снова'),
+    ],
     'Уже есть аккаунт? Войти',
   );
 
@@ -3685,13 +3690,37 @@ async function buildUniqueScreens() {
   }
   examCard.appendChild(mRow);
   const summary = al('VERTICAL', 'Ваша сессия');
-  summary.itemSpacing = 8;
+  summary.itemSpacing = 12;
   summary.paddingTop = summary.paddingBottom = 16;
   summary.paddingLeft = summary.paddingRight = 16;
   summary.cornerRadius = 16;
   summary.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
-  summary.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 10, MUTED));
-  summary.appendChild(txt('20 вопросов · 10 мин · ~30 сек. · Все курсы', outfit('Regular'), 13, INK, 600));
+  summary.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 11, MUTED));
+  const summaryMetrics = al('HORIZONTAL', 'session metrics');
+  summaryMetrics.itemSpacing = 8;
+  for (const [k, v] of [
+    ['Число вопросов', '20'],
+    ['Лимит времени', '10 мин'],
+    ['Темп', '~30 сек.'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 4;
+    m.paddingTop = m.paddingBottom = 8;
+    m.paddingLeft = m.paddingRight = 8;
+    m.cornerRadius = 12;
+    m.fills = [solid(WHITE)];
+    m.resize(196, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    m.appendChild(txt(v, outfit('SemiBold'), 16, INK));
+    summaryMetrics.appendChild(m);
+  }
+  summary.appendChild(summaryMetrics);
+  summary.appendChild(pill('Все курсы', { r: 0.941, g: 0.945, b: 0.953 }, MUTED));
+  summary.appendChild(
+    txt('Сбалансированный темп: успеете вспомнить сочетание и нажать его.', outfit('Regular'), 12, MUTED, 600),
+  );
   examCard.appendChild(summary);
   examCard.appendChild(instPrimary('Начать экзамен'));
   exam.appendChild(examCard);
@@ -3943,20 +3972,47 @@ async function buildUniqueScreens() {
   const mnav = al('HORIZONTAL', 'Mobile header');
   mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   mnav.counterAxisAlignItems = 'CENTER';
-  mnav.paddingLeft = mnav.paddingRight = 16;
+  mnav.paddingLeft = mnav.paddingRight = 12;
   mnav.resize(390, 56);
   mnav.layoutSizingHorizontal = 'FIXED';
   mnav.layoutSizingVertical = 'FIXED';
   mnav.fills = [solid(WHITE)];
   mnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
-  mnav.appendChild(txt('☰', outfit('Bold'), 16, INK));
+  const mnavRight = al('HORIZONTAL', 'mobile home actions');
+  mnavRight.itemSpacing = 6;
+  mnavRight.counterAxisAlignItems = 'CENTER';
+  mnavRight.appendChild(themeToggle(false));
+  mnavRight.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+  mnavRight.appendChild(primaryBtn('Регистрация', true));
+  mnavRight.appendChild(txt('☰', outfit('Bold'), 16, INK));
+  mnav.appendChild(mnavRight);
   const mbody = al('VERTICAL', 'body');
   mbody.paddingTop = mbody.paddingBottom = 24;
   mbody.paddingLeft = mbody.paddingRight = 16;
   mbody.itemSpacing = 10;
+  mbody.primaryAxisAlignItems = 'CENTER';
+  const mlogo = figma.createRectangle();
+  mlogo.resize(56, 56);
+  mlogo.cornerRadius = 16;
+  mlogo.fills = [solid(BRAND)];
+  mbody.appendChild(mlogo);
   mbody.appendChild(txt('KeyMaster', fraunces('Bold'), 32, INK));
   mbody.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Regular'), 13, MUTED, 358));
-  mbody.appendChild(instPrimary('Начать бесплатно'));
+  mbody.appendChild(
+    txt(
+      'Файлы и папки, слепая печать, горячие клавиши и симулятор рабочего стола — понятный путь без скуки, с нуля.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      358,
+    ),
+  );
+  const mctas = al('VERTICAL', 'mobile home CTAs');
+  mctas.itemSpacing = 8;
+  mctas.counterAxisAlignItems = 'CENTER';
+  mctas.appendChild(instPrimary('Начать бесплатно'));
+  mctas.appendChild(secondaryBtn('Каталог курсов'));
+  mbody.appendChild(mctas);
   const bnav = al('HORIZONTAL', 'BottomNav');
   bnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   bnav.paddingLeft = bnav.paddingRight = 8;
@@ -4716,29 +4772,40 @@ async function buildUniqueScreens() {
   const gbody = al('VERTICAL', 'gate body');
   gbody.paddingTop = gbody.paddingBottom = 24;
   gbody.paddingLeft = gbody.paddingRight = 16;
-  gbody.itemSpacing = 10;
+  gbody.itemSpacing = 12;
   gbody.primaryAxisAlignItems = 'CENTER';
-  gbody.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 18, INK, 350));
-  gbody.appendChild(
+  const gcard = al('VERTICAL', 'Keyboard gate card');
+  gcard.itemSpacing = 10;
+  gcard.primaryAxisAlignItems = 'CENTER';
+  gcard.paddingTop = gcard.paddingBottom = 24;
+  gcard.paddingLeft = gcard.paddingRight = 16;
+  gcard.cornerRadius = 24;
+  gcard.fills = [solid(WHITE)];
+  gcard.resize(358, 10);
+  gcard.layoutSizingHorizontal = 'FIXED';
+  gcard.layoutSizingVertical = 'HUG';
+  gcard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 18, INK, 326));
+  gcard.appendChild(
     txt(
       'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
       outfit('Regular'),
       13,
       MUTED,
-      350,
+      326,
     ),
   );
-  gbody.appendChild(
+  gcard.appendChild(
     txt(
       'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
       outfit('Regular'),
       11,
       MUTED,
-      350,
+      326,
     ),
   );
-  gbody.appendChild(instPrimary('Изучить комбинации'));
-  gbody.appendChild(secondaryBtn('Основы hotkeys'));
+  gcard.appendChild(instPrimary('Изучить комбинации'));
+  gcard.appendChild(secondaryBtn('Основы hotkeys'));
+  gbody.appendChild(gcard);
   const gbnav = al('HORIZONTAL', 'BottomNav');
   gbnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   gbnav.paddingLeft = gbnav.paddingRight = 8;
@@ -4781,29 +4848,58 @@ async function buildUniqueScreens() {
   mobileLogin.layoutSizingHorizontal = 'FIXED';
   mobileLogin.layoutSizingVertical = 'HUG';
   const mlnav = al('HORIZONTAL', 'header');
-  mlnav.paddingLeft = mlnav.paddingRight = 16;
+  mlnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   mlnav.counterAxisAlignItems = 'CENTER';
+  mlnav.paddingLeft = mlnav.paddingRight = 12;
   mlnav.resize(390, 56);
   mlnav.layoutSizingHorizontal = 'FIXED';
   mlnav.layoutSizingVertical = 'FIXED';
   mlnav.fills = [solid(WHITE)];
   mlnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
+  const mlright = al('HORIZONTAL', 'mobile login actions');
+  mlright.itemSpacing = 6;
+  mlright.counterAxisAlignItems = 'CENTER';
+  mlright.appendChild(themeToggle(false));
+  mlright.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+  mlright.appendChild(primaryBtn('Регистрация', true));
+  mlright.appendChild(txt('☰', outfit('Bold'), 16, INK));
+  mlnav.appendChild(mlright);
   const mlbody = al('VERTICAL', 'login');
   mlbody.paddingTop = mlbody.paddingBottom = 24;
   mlbody.paddingLeft = mlbody.paddingRight = 16;
   mlbody.itemSpacing = 10;
   const mlcard = al('VERTICAL', 'AuthCard');
-  mlcard.itemSpacing = 10;
-  mlcard.paddingTop = mlcard.paddingBottom = 20;
-  mlcard.paddingLeft = mlcard.paddingRight = 16;
+  mlcard.itemSpacing = 0;
   mlcard.cornerRadius = 24;
   mlcard.fills = [solid(WHITE)];
-  mlcard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
-  mlcard.appendChild(floatOrInst('State=Default', 'Email', { width: 326 }));
-  mlcard.appendChild(floatOrInst('State=Password', 'Пароль', { password: true, width: 326 }));
-  mlcard.appendChild(instPrimary('Войти'));
+  mlcard.resize(358, 10);
+  mlcard.layoutSizingHorizontal = 'FIXED';
+  mlcard.layoutSizingVertical = 'HUG';
+  const mlhead = al('VERTICAL', 'header');
+  mlhead.itemSpacing = 6;
+  mlhead.paddingTop = mlhead.paddingBottom = 16;
+  mlhead.paddingLeft = mlhead.paddingRight = 16;
+  mlhead.fills = [solid(BRAND50)];
+  mlhead.appendChild(txt('KEYMASTER', outfit('Bold'), 10, BRAND800));
+  mlhead.appendChild(txt('Вход', fraunces('Bold'), 22, INK));
+  mlhead.appendChild(txt('Добро пожаловать в KeyMaster', outfit('Regular'), 13, MUTED, 326));
+  mlcard.appendChild(mlhead);
+  const mlform = al('VERTICAL', 'form');
+  mlform.itemSpacing = 10;
+  mlform.paddingTop = mlform.paddingBottom = 16;
+  mlform.paddingLeft = mlform.paddingRight = 16;
+  mlform.appendChild(floatOrInst('State=Default', 'Email', { width: 326 }));
+  mlform.appendChild(floatOrInst('State=Password', 'Пароль', { password: true, width: 326 }));
+  mlform.appendChild(instPrimary('Войти'));
+  mlcard.appendChild(mlform);
+  const mlfoot = al('HORIZONTAL', 'footer');
+  mlfoot.primaryAxisAlignItems = 'CENTER';
+  mlfoot.paddingTop = mlfoot.paddingBottom = 12;
+  mlfoot.paddingLeft = mlfoot.paddingRight = 16;
+  mlfoot.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  mlfoot.appendChild(txt('Нет аккаунта? Регистрация', outfit('Regular'), 13, MUTED));
+  mlcard.appendChild(mlfoot);
   mlbody.appendChild(mlcard);
-  mlbody.appendChild(txt('BottomNav hidden on /login /register', outfit('Regular'), 11, MUTED, 358));
   mobileLogin.appendChild(mlnav);
   mobileLogin.appendChild(mlbody);
 
@@ -5070,7 +5166,7 @@ async function buildUniqueScreens() {
       marketingPage('Register /register', '', true, [registerCard]),
       marketingPage('Register password /register', '', true, [registerPassword]),
       marketingPage('Register OTP /register', '', true, [registerOtp]),
-      marketingPage('Verify email /verify-email', '', true, [verifyCard]),
+      marketingPage('Verify email /verify-email', '', false, [verifyCard]),
       marketingPage('Auth callback /auth/callback', '', true, [callbackCard]),
     ]),
   );

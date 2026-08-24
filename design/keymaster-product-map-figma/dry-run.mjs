@@ -405,6 +405,16 @@ if (!names.includes('Dark Daily')) fail.push('no dark dashboard daily-tasks uniq
 if (!names.includes('Dark First Laptop node')) fail.push('no dark path First Laptop unique screen');
 if (!names.includes('Dark PathStageStrip')) fail.push('no dark dashboard stage strip unique screen');
 if (!names.includes('quiz stats compact')) fail.push('no compact mobile quiz stats unique screen');
+if (!names.includes('Сбалансированный темп: успеете вспомнить сочетание и нажать его.')) {
+  fail.push('no live exam session pace unique screen');
+}
+if (!names.includes('Keyboard gate card')) fail.push('no keyboard-gate GlassCard unique screen');
+if (!names.includes('Мы отправили ссылку на anna@example.com. Перейдите по ней, затем войдите в аккаунт.')) {
+  fail.push('no live register OTP check-email unique screen');
+}
+if (!names.some((n) => String(n).includes('понятный путь без скуки, с нуля.'))) {
+  fail.push('no live mobile home body unique screen');
+}
 
 function findByName(root, name) {
   if (root.name === name) return root;
@@ -426,15 +436,28 @@ function namesUnder(root) {
 }
 let quizUnique = null;
 let reviewUnique = null;
+let mobileHome = null;
+let mobileLogin = null;
 for (const p of pages) {
   quizUnique = quizUnique || findByName(p, 'Quiz /quiz');
   reviewUnique = reviewUnique || findByName(p, 'Review front /review');
+  mobileHome = mobileHome || findByName(p, 'Mobile Home 390');
+  mobileLogin = mobileLogin || findByName(p, 'Mobile Login — BottomNav hidden');
 }
 if (!quizUnique || !namesUnder(quizUnique).includes('Какая комбинация клавиш используется для копирования текста или файла?')) {
   fail.push('desktop quiz unique screen lost question (appendChild steal)');
 }
 if (!reviewUnique || !namesUnder(reviewUnique).includes('Вырезать')) {
   fail.push('desktop review unique screen lost Вырезать (appendChild steal)');
+}
+if (!mobileHome || !namesUnder(mobileHome).includes('Каталог курсов')) {
+  fail.push('mobile home unique screen missing catalog CTA');
+}
+if (!mobileLogin || !namesUnder(mobileLogin).includes('Добро пожаловать в KeyMaster')) {
+  fail.push('mobile login unique screen missing AuthCard subtitle');
+}
+if (mobileLogin && namesUnder(mobileLogin).includes('BottomNav')) {
+  fail.push('mobile login unique screen still has BottomNav');
 }
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
