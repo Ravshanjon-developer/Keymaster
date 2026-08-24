@@ -31,8 +31,19 @@ function node(type, extra = {}) {
       return null;
     },
     appendChild(child) {
+      if (child.parent && Array.isArray(child.parent.children)) {
+        const i = child.parent.children.indexOf(child);
+        if (i >= 0) child.parent.children.splice(i, 1);
+      }
       n.children.push(child);
       child.parent = n;
+    },
+    remove() {
+      if (n.parent && Array.isArray(n.parent.children)) {
+        const i = n.parent.children.indexOf(n);
+        if (i >= 0) n.parent.children.splice(i, 1);
+      }
+      n.parent = null;
     },
     clone() {
       const c = node(n.type, { name: n.name });
@@ -318,6 +329,15 @@ if (!names.includes('EyeOff')) fail.push('no password EyeOff on FloatingLabelInp
 if (!names.includes('Button instance')) fail.push('no Button instances on unique screens');
 if (!names.includes('KeyCap instance')) fail.push('no KeyCap instances on unique screens');
 if (!names.includes('OtpDigit instance')) fail.push('no OTP instances on unique screens');
+if (!names.includes('FloatingLabelInput instance')) fail.push('no FloatingLabelInput instances on unique screens');
+if (!names.includes('CourseCard instance')) fail.push('no CourseCard instances on unique screens');
+if (!names.includes('PracticeRailItem instance')) fail.push('no PracticeRailItem instances on unique screens');
+if (!names.includes('BottomNavItem instance')) fail.push('no BottomNavItem instances on unique screens');
+if (!names.includes('NavLink instance')) fail.push('no NavLink instances on unique screens');
+if (!names.includes('LanguageSwitcher instance')) fail.push('no LanguageSwitcher instances on unique screens');
+if (!names.includes('PathNode instance')) fail.push('no PathNode instances on unique screens');
+if (!names.includes('Achievement instance')) fail.push('no Achievement instances on unique screens');
+if (!names.includes('LearnStatus instance')) fail.push('no LearnStatus instances on unique screens');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));

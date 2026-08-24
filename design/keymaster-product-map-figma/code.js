@@ -1760,6 +1760,111 @@ function instOtpDigit(filling) {
   return n;
 }
 
+function instFloat(state, label, width) {
+  const n = inst('FloatingLabelInput', state);
+  if (!n) return null;
+  n.name = 'FloatingLabelInput instance';
+  n.resize(width || 352, 48);
+  n.layoutSizingHorizontal = 'FIXED';
+  n.layoutSizingVertical = 'FIXED';
+  if (label) {
+    const texts = findAll(n, (x) => x.type === 'TEXT');
+    if (texts[0]) texts[0].characters = label;
+  }
+  return n;
+}
+
+function floatOrInst(state, label, opts) {
+  opts = opts || {};
+  if (!opts.dark) {
+    const n = instFloat(state, label, opts.width);
+    if (n) return n;
+  }
+  return floatingField(label, opts.value != null ? opts.value : '', opts);
+}
+
+function instCourse(status) {
+  const n = inst('CourseCard', status);
+  if (!n) return null;
+  n.name = 'CourseCard instance';
+  return n;
+}
+
+function instPath(status) {
+  const n = inst('PathNode', status);
+  if (!n) return null;
+  n.name = 'PathNode instance';
+  return n;
+}
+
+function instAchievement(locked, label) {
+  const n = inst('Achievement', locked ? 'State=Locked' : 'State=Unlocked');
+  if (!n) return null;
+  n.name = 'Achievement instance';
+  const texts = findAll(n, (x) => x.type === 'TEXT');
+  if (texts[0] && label) texts[0].characters = label;
+  return n;
+}
+
+function instLearn(learned) {
+  const n = inst('LearnStatus', learned ? 'Learned=True' : 'Learned=False');
+  if (!n) return null;
+  n.name = 'LearnStatus instance';
+  return n;
+}
+
+function instRailItem(active, label) {
+  const n = inst('PracticeRailItem', active ? 'State=Active' : 'State=Default');
+  if (!n) return null;
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'PracticeRailItem instance';
+  n.resize(216, 40);
+  n.layoutSizingHorizontal = 'FIXED';
+  n.layoutSizingVertical = 'HUG';
+  return n;
+}
+
+function instBottomNav(active, label) {
+  const n = inst('BottomNavItem', active ? 'State=Active' : 'State=Default');
+  if (!n) return null;
+  const texts = findAll(n, (x) => x.type === 'TEXT');
+  const labelN = texts.find((t) => t.characters && t.characters !== '•');
+  if (labelN) labelN.characters = label;
+  n.name = 'BottomNavItem instance';
+  return n;
+}
+
+function instNavLink(active, label) {
+  const n = inst('NavLink', active ? 'State=Active' : 'State=Default');
+  if (!n) return null;
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'NavLink instance';
+  return n;
+}
+
+function componentFromFrame(frame, name) {
+  const c = figma.createComponent();
+  c.name = name;
+  c.layoutMode = frame.layoutMode || 'HORIZONTAL';
+  c.primaryAxisAlignItems = frame.primaryAxisAlignItems;
+  c.counterAxisAlignItems = frame.counterAxisAlignItems;
+  c.paddingLeft = frame.paddingLeft || 0;
+  c.paddingRight = frame.paddingRight || 0;
+  c.paddingTop = frame.paddingTop || 0;
+  c.paddingBottom = frame.paddingBottom || 0;
+  c.itemSpacing = frame.itemSpacing || 0;
+  c.fills = frame.fills;
+  c.strokes = frame.strokes;
+  c.resize(960, 65);
+  c.layoutSizingHorizontal = 'FIXED';
+  c.layoutSizingVertical = 'FIXED';
+  while (frame.children.length) c.appendChild(frame.children[0]);
+  if (typeof frame.remove === 'function') frame.remove();
+  return c;
+}
+
 function ghostBtn(label) {
   const b = al('HORIZONTAL', 'Button ghost');
   b.primaryAxisAlignItems = 'CENTER';
@@ -1890,6 +1995,13 @@ function makeNavbar(active, guest, dark) {
     if (gi > 0) links.appendChild(navDivider());
     for (const item of group) {
       const on = item === active;
+      if (!dark) {
+        const linkInst = instNavLink(on, item);
+        if (linkInst) {
+          links.appendChild(linkInst);
+          continue;
+        }
+      }
       const l = al('VERTICAL', item);
       l.itemSpacing = 0;
       l.paddingLeft = l.paddingRight = 12;
@@ -1915,25 +2027,31 @@ function makeNavbar(active, guest, dark) {
   const actions = al('HORIZONTAL', 'Actions');
   actions.itemSpacing = 6;
   actions.counterAxisAlignItems = 'CENTER';
-  const lang = al('HORIZONTAL', 'LanguageSwitcher');
-  lang.paddingLeft = lang.paddingRight = lang.paddingTop = lang.paddingBottom = 2;
-  lang.cornerRadius = 8;
-  lang.strokes = [solid(dark ? WHITE : INK, 0.1)];
-  const ru = al('HORIZONTAL', 'RU');
-  ru.paddingLeft = ru.paddingRight = 10;
-  ru.paddingTop = ru.paddingBottom = 4;
-  ru.cornerRadius = 6;
-  ru.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 })];
-  ru.appendChild(txt('RU', outfit('Bold'), 12, WHITE));
-  const tj = al('HORIZONTAL', 'TJ');
-  tj.paddingLeft = tj.paddingRight = 10;
-  tj.paddingTop = tj.paddingBottom = 4;
-  tj.cornerRadius = 6;
-  tj.fills = [TRANSPARENT];
-  tj.appendChild(txt('TJ', outfit('Bold'), 12, dark ? DARK_TEXT : INK));
-  lang.appendChild(ru);
-  lang.appendChild(tj);
-  actions.appendChild(lang);
+  const langInst = !dark ? inst('LanguageSwitcher', 'Selected=RU') : null;
+  if (langInst) {
+    langInst.name = 'LanguageSwitcher instance';
+    actions.appendChild(langInst);
+  } else {
+    const lang = al('HORIZONTAL', 'LanguageSwitcher');
+    lang.paddingLeft = lang.paddingRight = lang.paddingTop = lang.paddingBottom = 2;
+    lang.cornerRadius = 8;
+    lang.strokes = [solid(dark ? WHITE : INK, 0.1)];
+    const ru = al('HORIZONTAL', 'RU');
+    ru.paddingLeft = ru.paddingRight = 10;
+    ru.paddingTop = ru.paddingBottom = 4;
+    ru.cornerRadius = 6;
+    ru.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 })];
+    ru.appendChild(txt('RU', outfit('Bold'), 12, WHITE));
+    const tj = al('HORIZONTAL', 'TJ');
+    tj.paddingLeft = tj.paddingRight = 10;
+    tj.paddingTop = tj.paddingBottom = 4;
+    tj.cornerRadius = 6;
+    tj.fills = [TRANSPARENT];
+    tj.appendChild(txt('TJ', outfit('Bold'), 12, dark ? DARK_TEXT : INK));
+    lang.appendChild(ru);
+    lang.appendChild(tj);
+    actions.appendChild(lang);
+  }
   actions.appendChild(themeToggle(dark));
   if (guest) {
     const login = al('HORIZONTAL', 'Вход');
@@ -1956,7 +2074,7 @@ function makeNavbar(active, guest, dark) {
     xp.paddingTop = xp.paddingBottom = 2;
     xp.cornerRadius = 6;
     xp.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 }, dark ? 0.22 : 0.12)];
-    xp.appendChild(txt('120 XP', outfit('Bold'), 12, dark ? BRAND500 : BRAND800));
+    xp.appendChild(txt('0 XP', outfit('Bold'), 12, dark ? BRAND500 : BRAND800));
     user.appendChild(xp);
     actions.appendChild(user);
     const logout = al('HORIZONTAL', 'Выйти');
@@ -2068,6 +2186,11 @@ function practicePage(name, active, body, dark) {
   const reinforce = ['Повторение', 'Основы hotkeys', 'Экзамен'];
   function railLink(item) {
     const on = item === active;
+    const insted = instRailItem(on, item);
+    if (insted) {
+      nav.appendChild(insted);
+      return;
+    }
     const it = al('HORIZONTAL', item);
     it.itemSpacing = 12;
     it.paddingLeft = it.paddingRight = 12;
@@ -2334,6 +2457,7 @@ async function buildProductComponents(page) {
     float('State=Success', 'Email', 'ok@example.com', SUCCESS, { r: 0.086, g: 0.639, b: 0.29, a: 0.25 }),
     float('State=Disabled', 'Email', 'locked', { r: 0.059, g: 0.09, b: 0.165 }, null, 0.6),
     float('State=Password', 'Пароль', '', { r: 0.059, g: 0.09, b: 0.165 }, null, 1, true),
+    float('State=PasswordFilled', 'Пароль', '••••••••', { r: 0.059, g: 0.09, b: 0.165 }, null, 1, true),
   ];
   const floatSet = figma.combineAsVariants(floats, page);
   floatSet.name = 'FloatingLabelInput';
@@ -2395,59 +2519,49 @@ async function buildProductComponents(page) {
   examSet.description = 'ExamPage phases setup | run | done — frontend/src/features/training/ExamPage.tsx';
 
   function navbarVariant(name, scrolled, mobile, authed) {
+    if (!mobile) {
+      const c = componentFromFrame(makeNavbar(authed ? 'Кабинет' : 'Главная', !authed, false), name);
+      c.strokes = [solid(INK, scrolled ? 0.1 : 0.06)];
+      if (scrolled) {
+        c.effects = [
+          { type: 'DROP_SHADOW', color: { ...INK, a: 0.11 }, offset: { x: 0, y: 4 }, radius: 18, spread: -4, visible: true, blendMode: 'NORMAL' },
+        ];
+      }
+      return c;
+    }
     const c = figma.createComponent();
     c.name = name;
     c.layoutMode = 'VERTICAL';
     c.itemSpacing = 0;
-    c.resize(720, mobile ? 280 : 65);
+    c.resize(960, 280);
     c.layoutSizingHorizontal = 'FIXED';
     c.layoutSizingVertical = 'FIXED';
     c.fills = [solid(WHITE, 0.78)];
-    c.strokes = [solid(INK, scrolled ? 0.1 : 0.06)];
-    if (scrolled) {
-      c.effects = [
-        { type: 'DROP_SHADOW', color: { ...INK, a: 0.11 }, offset: { x: 0, y: 4 }, radius: 18, spread: -4, visible: true, blendMode: 'NORMAL' },
-      ];
-    }
+    c.strokes = [solid(INK, 0.06)];
     const bar = al('HORIZONTAL', 'bar');
     bar.primaryAxisAlignItems = 'SPACE_BETWEEN';
     bar.counterAxisAlignItems = 'CENTER';
     bar.paddingLeft = bar.paddingRight = 16;
-    bar.resize(720, 65);
+    bar.resize(960, 65);
     bar.layoutSizingHorizontal = 'FIXED';
     bar.layoutSizingVertical = 'FIXED';
     bar.fills = [TRANSPARENT];
-    bar.appendChild(txt('KeyMaster', fraunces('SemiBold'), 18, INK));
-    if (!mobile) {
-      const links = al('HORIZONTAL', 'links');
-      links.itemSpacing = 8;
-      links.appendChild(txt('Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('SemiBold'), 15, INK));
-      bar.appendChild(links);
-      const right = al('HORIZONTAL', 'actions');
-      right.itemSpacing = 8;
-      right.counterAxisAlignItems = 'CENTER';
-      right.appendChild(themeToggle(false));
-      right.appendChild(txt(authed ? 'Анна  120 XP' : 'Вход  Регистрация', outfit('SemiBold'), 14, INK));
-      bar.appendChild(right);
-    } else {
-      bar.appendChild(txt('☰', outfit('Bold'), 18, INK));
-    }
+    bar.appendChild(txt('KeyMaster', fraunces('SemiBold'), 22, INK));
+    bar.appendChild(txt('☰', outfit('Bold'), 18, INK));
     c.appendChild(bar);
-    if (mobile) {
-      const menu = al('VERTICAL', 'km-mobile-nav');
-      menu.itemSpacing = 8;
-      menu.paddingTop = menu.paddingBottom = 16;
-      menu.paddingLeft = menu.paddingRight = 16;
-      menu.fills = [solid(WHITE)];
-      menu.resize(720, 216);
-      menu.layoutSizingHorizontal = 'FIXED';
-      menu.layoutSizingVertical = 'FIXED';
-      for (const group of ['Обучение', 'Практика', 'Сообщество']) {
-        menu.appendChild(txt(group, outfit('Bold'), 11, MUTED));
-        menu.appendChild(txt(group === 'Обучение' ? 'Главная · Курсы · Мой путь' : group === 'Практика' ? 'Тренировочный зал' : 'Рейтинг', outfit('SemiBold'), 14, INK));
-      }
-      c.appendChild(menu);
+    const menu = al('VERTICAL', 'km-mobile-nav');
+    menu.itemSpacing = 8;
+    menu.paddingTop = menu.paddingBottom = 16;
+    menu.paddingLeft = menu.paddingRight = 16;
+    menu.fills = [solid(WHITE)];
+    menu.resize(960, 216);
+    menu.layoutSizingHorizontal = 'FIXED';
+    menu.layoutSizingVertical = 'FIXED';
+    for (const group of ['Обучение', 'Практика', 'Сообщество']) {
+      menu.appendChild(txt(group, outfit('Bold'), 11, MUTED));
+      menu.appendChild(txt(group === 'Обучение' ? 'Главная · Курсы · Мой путь' : group === 'Практика' ? 'Тренировочный зал' : 'Рейтинг', outfit('SemiBold'), 14, INK));
     }
+    c.appendChild(menu);
     return c;
   }
   const navBarSet = figma.combineAsVariants(
@@ -2573,9 +2687,9 @@ async function buildUniqueScreens() {
 
   const coursesRow = al('HORIZONTAL', 'Course cards');
   coursesRow.itemSpacing = 12;
-  coursesRow.appendChild(courseCard('Первый ноутбук', 'Старт', 'brand', true));
-  coursesRow.appendChild(courseCard('VS Code', 'В процессе', 'neutral', false));
-  coursesRow.appendChild(courseCard('Git', 'Готово', 'success', false));
+  coursesRow.appendChild(instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true));
+  coursesRow.appendChild(instCourse('Status=InProgress') || courseCard('VS Code', 'В процессе', 'neutral', false));
+  coursesRow.appendChild(instCourse('Status=Completed') || courseCard('Git', 'Готово', 'success', false));
   const filterRow = al('HORIZONTAL', 'Filters');
   filterRow.itemSpacing = 8;
   for (const [label, on] of [
@@ -2682,9 +2796,9 @@ async function buildUniqueScreens() {
 
   const pathRow = al('HORIZONTAL', 'Path nodes');
   pathRow.itemSpacing = 12;
-  pathRow.appendChild(pathNode('Start', 'Начать', false));
-  pathRow.appendChild(pathNode('Первый ноутбук', 'Продолжается', false));
-  pathRow.appendChild(pathNode('Shortcut Legend', 'Заблокировано', true));
+  pathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
+  pathRow.appendChild(instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false));
+  pathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
   const dash = al('VERTICAL', 'Dashboard body');
   dash.itemSpacing = 12;
@@ -2697,7 +2811,7 @@ async function buildUniqueScreens() {
   tiles.itemSpacing = 12;
   for (const [k, v] of [
     ['Уровень', 'Novice Operator'],
-    ['XP', '120'],
+    ['XP', '0'],
     ['Ежедневная серия', '4 дн.'],
   ]) {
     const t = al('VERTICAL', k);
@@ -2827,15 +2941,15 @@ async function buildUniqueScreens() {
   const loginCard = authScreen(
     'Вход',
     'Добро пожаловать в KeyMaster',
-    [floatingField('Email', ''), floatingField('Пароль', '', { password: true }), instPrimary('Войти')],
+    [floatOrInst('State=Default', 'Email'), floatOrInst('State=Password', 'Пароль', { password: true }), instPrimary('Войти')],
     'Нет аккаунта? Регистрация',
   );
   const loginError = authScreen(
     'Вход',
     'Добро пожаловать в KeyMaster',
     [
-      floatingField('Email', 'learner@example.com'),
-      floatingField('Пароль', '••••••••', { password: true }),
+      floatOrInst('State=Floated', 'Email', { value: 'learner@example.com' }),
+      floatOrInst('State=PasswordFilled', 'Пароль', { password: true, value: '••••••••' }),
       (() => {
         const alert = al('HORIZONTAL', 'error');
         alert.paddingLeft = alert.paddingRight = 12;
@@ -2866,10 +2980,10 @@ async function buildUniqueScreens() {
     'Регистрация',
     'Добро пожаловать в KeyMaster',
     [
-      floatingField('Имя', '', { width: 360 }),
-      floatingField('username', '', { width: 360 }),
-      floatingField('Email', '', { width: 360 }),
-      floatingField('Пароль', '', { password: true, width: 360 }),
+      floatOrInst('State=Default', 'Имя', { width: 360 }),
+      floatOrInst('State=Default', 'username', { width: 360 }),
+      floatOrInst('State=Default', 'Email', { width: 360 }),
+      floatOrInst('State=Password', 'Пароль', { password: true, width: 360 }),
       instPrimary('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
@@ -3258,6 +3372,11 @@ async function buildUniqueScreens() {
     ['Серия 3 дня', false],
     ['Shortcut Legend', true],
   ]) {
+    const insted = instAchievement(locked, label);
+    if (insted) {
+      achRow.appendChild(insted);
+      continue;
+    }
     const a = al('VERTICAL', label);
     a.itemSpacing = 8;
     a.primaryAxisAlignItems = 'CENTER';
@@ -3500,10 +3619,10 @@ async function buildUniqueScreens() {
   speedStats.itemSpacing = 16;
   speedStats.layoutWrap = 'WRAP';
   for (const [k, v] of [
-    ['Очки', '120'],
-    ['Комбо (макс.)', '4'],
-    ['Точность', '80%'],
-    ['Правильно', '8/10'],
+    ['Очки', '0'],
+    ['Комбо (макс.)', '0'],
+    ['Точность', '0%'],
+    ['Правильно', '0/0'],
   ]) {
     const m = al('VERTICAL', k);
     m.itemSpacing = 4;
@@ -3807,8 +3926,8 @@ async function buildUniqueScreens() {
   mlcard.cornerRadius = 24;
   mlcard.fills = [solid(WHITE)];
   mlcard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
-  mlcard.appendChild(floatingField('Email', '', { width: 326 }));
-  mlcard.appendChild(floatingField('Пароль', '', { password: true, width: 326 }));
+  mlcard.appendChild(floatOrInst('State=Default', 'Email', { width: 326 }));
+  mlcard.appendChild(floatOrInst('State=Password', 'Пароль', { password: true, width: 326 }));
   mlcard.appendChild(instPrimary('Войти'));
   mlbody.appendChild(mlcard);
   mlbody.appendChild(txt('BottomNav hidden on /login /register', outfit('Regular'), 11, MUTED, 358));
@@ -3831,8 +3950,22 @@ async function buildUniqueScreens() {
         pill('Обязательный старт', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
         txt('Первый ноутбук: файлы и папки', outfit('SemiBold'), 28, INK),
         txt('1 layout × 20 slugs. Не дублировать каталог.', outfit('Regular'), 13, MUTED, 720),
-        txt('Урок 1 · Горячие клавиши     Изучено', outfit('Regular'), 14, INK),
-        txt('Урок 2 · Задание · симулятор  Не изучено', outfit('Regular'), 14, INK),
+        (() => {
+          const row = al('HORIZONTAL', 'Lesson 1 status');
+          row.itemSpacing = 8;
+          row.counterAxisAlignItems = 'CENTER';
+          row.appendChild(txt('Урок 1 · Горячие клавиши', outfit('Regular'), 14, INK));
+          row.appendChild(instLearn(true) || txt('Изучено', outfit('Bold'), 10, SUCCESS));
+          return row;
+        })(),
+        (() => {
+          const row = al('HORIZONTAL', 'Lesson 2 status');
+          row.itemSpacing = 8;
+          row.counterAxisAlignItems = 'CENTER';
+          row.appendChild(txt('Урок 2 · Задание · симулятор', outfit('Regular'), 14, INK));
+          row.appendChild(instLearn(false) || txt('Не изучено', outfit('Bold'), 10, MUTED));
+          return row;
+        })(),
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
@@ -4106,6 +4239,11 @@ async function buildUniqueScreens() {
       ['Рейтинг', 'Рейтинг'],
     ]) {
       const on = key === active;
+      const insted = instBottomNav(on, label);
+      if (insted) {
+        bnav.appendChild(insted);
+        continue;
+      }
       const it = al('VERTICAL', label);
       it.primaryAxisAlignItems = 'CENTER';
       it.itemSpacing = 2;
@@ -4189,7 +4327,7 @@ async function buildUniqueScreens() {
       txt('Каталог курсов', outfit('SemiBold'), 22, INK, 358),
       field('Поиск', 'Название курса или инструмента', INK),
       txt('Все · Старт · ОС · Редакторы', outfit('Regular'), 12, MUTED, 358),
-      courseCard('Первый ноутбук', 'Старт', 'brand', true),
+      instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true),
     ],
     'Курсы',
   );
@@ -4207,8 +4345,9 @@ async function buildUniqueScreens() {
     'Mobile Path 390',
     [
       txt('Developer Growth Path', outfit('SemiBold'), 20, INK, 358),
-      pathNode('Start', 'Начать', false),
-      pathNode('Первый ноутбук', 'Продолжается', false),
+      instPath('Status=Start') || pathNode('Start', 'Начать', false),
+      instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false),
+      instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false),
     ],
     'Мой путь',
   );
