@@ -471,8 +471,17 @@ if (!names.includes('Courses loading /courses')) fail.push('no catalog loading u
 if (!names.includes('Courses API error /courses')) fail.push('no catalog API-error unique screen');
 if (!names.includes('Course detail authed /courses/:slug')) fail.push('no authed course-detail unique screen');
 if (!names.includes('Course detail authed computer-basics /courses/:slug')) fail.push('no authed computer-basics course-detail unique screen');
+if (!names.includes('Course detail guest vscode /courses/:slug')) fail.push('no guest vscode course-detail unique screen');
+if (!names.includes('Course detail guest programmer-basics /courses/:slug')) fail.push('no guest programmer-basics course-detail unique screen');
+if (!names.includes('Course detail authed programmer-basics /courses/:slug')) fail.push('no authed programmer-basics course-detail unique screen');
 if (!names.includes('Learner / Course detail (computer-basics)')) fail.push('no authed computer-basics course-detail capture');
+if (!names.includes('Guest / Course detail (vscode)')) fail.push('no guest vscode course-detail capture');
+if (!names.includes('Guest / Course detail (programmer-basics)')) fail.push('no guest programmer-basics course-detail capture');
+if (!names.includes('Learner / Course detail (programmer-basics)')) fail.push('no authed programmer-basics course-detail capture');
 if (!names.includes('0/3 изучено')) fail.push('no live computer-basics category learned-count unique screen');
+if (!names.includes('0/19 сочетаний')) fail.push('no live programmer-basics 0/19 progress unique screen');
+if (!names.includes('0/13 изучено')) fail.push('no live programmer-basics Основы learned-count unique screen');
+if (!names.includes('Система (изучение)')) fail.push('no live programmer-basics system category unique screen');
 if (!names.includes('Course not found /courses/:slug')) fail.push('no course-not-found unique screen');
 if (!names.includes('Auth callback error /auth/callback')) fail.push('no auth-callback error unique screen');
 if (!names.includes('SkeletonCardGrid')) fail.push('no SkeletonCardGrid unique screen');
@@ -637,6 +646,45 @@ if (!courseDetailBasicsAuthed || !namesUnder(courseDetailBasicsAuthed).includes(
 }
 if (courseDetailBasicsAuthed && namesUnder(courseDetailBasicsAuthed).includes('Ctrl + P')) {
   fail.push('authed computer-basics course-detail unique should not show vscode shortcut lines');
+}
+let courseDetailGuestVscode = null;
+let courseDetailGuestProg = null;
+let courseDetailAuthedProg = null;
+for (const p of pages) {
+  courseDetailGuestVscode = courseDetailGuestVscode || findByName(p, 'Course detail guest vscode /courses/:slug');
+  courseDetailGuestProg = courseDetailGuestProg || findByName(p, 'Course detail guest programmer-basics /courses/:slug');
+  courseDetailAuthedProg = courseDetailAuthedProg || findByName(p, 'Course detail authed programmer-basics /courses/:slug');
+}
+if (
+  !courseDetailGuestVscode ||
+  namesUnder(courseDetailGuestVscode).includes('ОБЯЗАТЕЛЬНЫЙ СТАРТ') ||
+  !namesUnder(courseDetailGuestVscode).includes('Тренировка') ||
+  !namesUnder(courseDetailGuestVscode).includes('Экзамен') ||
+  !namesUnder(courseDetailGuestVscode).includes('Зарегистрируйтесь') ||
+  !namesUnder(courseDetailGuestVscode).includes('Ctrl + P')
+) {
+  fail.push('guest vscode course-detail unique should be Training/Exam + register CTA without start badge');
+}
+if (
+  !courseDetailGuestProg ||
+  !namesUnder(courseDetailGuestProg).includes('ОБЯЗАТЕЛЬНЫЙ СТАРТ') ||
+  !namesUnder(courseDetailGuestProg).includes('Тренировка') ||
+  !namesUnder(courseDetailGuestProg).includes('Экзамен') ||
+  !namesUnder(courseDetailGuestProg).includes('Зарегистрируйтесь') ||
+  namesUnder(courseDetailGuestProg).includes('0/19 сочетаний')
+) {
+  fail.push('guest programmer-basics course-detail unique should be start badge + Training/Exam without authed 0/19');
+}
+if (
+  !courseDetailAuthedProg ||
+  !namesUnder(courseDetailAuthedProg).includes('ОБЯЗАТЕЛЬНЫЙ СТАРТ') ||
+  !namesUnder(courseDetailAuthedProg).includes('0/19 сочетаний') ||
+  !namesUnder(courseDetailAuthedProg).includes('Тренировка') ||
+  !namesUnder(courseDetailAuthedProg).includes('Экзамен') ||
+  !namesUnder(courseDetailAuthedProg).includes('LearnStatus instance') ||
+  namesUnder(courseDetailAuthedProg).includes('Зарегистрируйтесь')
+) {
+  fail.push('authed programmer-basics course-detail unique should be start badge + 0/19 + Training/Exam without guest CTA');
 }
 let courseNotFoundUnique = null;
 for (const p of pages) courseNotFoundUnique = courseNotFoundUnique || findByName(p, 'Course not found /courses/:slug');

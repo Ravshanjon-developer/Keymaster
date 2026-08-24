@@ -1239,7 +1239,8 @@ async function buildVisualFlows() {
       ['desktop-learner-09-path.jpg', 'Path full scroll'],
       ['desktop-learner-courses.jpg', 'Authed catalog'],
       ['desktop-learner-course-vscode.jpg', 'Authed vscode'],
-      ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
+      ['desktop-learner-course-programmer-basics.jpg', 'Authed programmer-basics'],
+      ['desktop-learner-course-computer-basics.jpg', 'Authed computer-basics'],
       ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
       ['desktop-guest-course-not-found.jpg', 'Not found'],
     ]],
@@ -1368,7 +1369,7 @@ async function buildSitemap() {
   board.appendChild(txt('Information architecture (current product)', fraunces('Bold'), 28, INK, 1720));
   board.appendChild(
     txt(
-      'One node per unique page. /courses/:slug is two authed layouts (vscode Training/Exam vs computer-basics Desktop) × 20 slugs. /lessons/:id is four kinds, not N lessons.',
+      'One node per unique page. /courses/:slug is six unique layouts (guest/authed × computer-basics Desktop vs programmer-basics start+Training vs vscode Training) plus not-found. /lessons/:id is four kinds, not N lessons.',
       outfit('Regular'),
       13,
       MUTED,
@@ -1383,7 +1384,7 @@ async function buildSitemap() {
       [
         ['/', 'Home', 'Guest + learner'],
         ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty · filter start'],
-        ['/courses/:slug', 'Course detail', 'guest CTA · authed vscode Training/Exam · authed computer-basics Desktop · not found'],
+        ['/courses/:slug', 'Course detail', 'guest/authed × Desktop vs start+Training vs vscode Training · not found'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study | desktop-task'],
         ['/path', 'Learning path', 'protected'],
         ['/leaderboard', 'Leaderboard', 'public · authed Вы'],
@@ -1857,6 +1858,60 @@ function instLearn(learned) {
   if (!n) return null;
   n.name = 'LearnStatus instance';
   return n;
+}
+
+function chordLessonCard(title, chord, xp, learned) {
+  const c = al('VERTICAL', title);
+  c.itemSpacing = 6;
+  c.paddingTop = c.paddingBottom = 16;
+  c.paddingLeft = c.paddingRight = 16;
+  c.cornerRadius = 16;
+  c.fills = [solid(WHITE)];
+  c.strokes = [solid(INK, 0.1)];
+  c.resize(280, 10);
+  c.layoutSizingHorizontal = 'FIXED';
+  c.layoutSizingVertical = 'HUG';
+  const top = al('HORIZONTAL', 'lesson top');
+  top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  top.counterAxisAlignItems = 'MIN';
+  const left = al('VERTICAL', 'lesson copy');
+  left.itemSpacing = 4;
+  left.appendChild(txt(title, outfit('SemiBold'), 14, INK, 180));
+  left.appendChild(txt(chord, outfit('Medium'), 13, BRAND800));
+  top.appendChild(left);
+  const right = al('VERTICAL', 'lesson meta');
+  right.itemSpacing = 6;
+  right.primaryAxisAlignItems = 'MAX';
+  if (learned != null) {
+    right.appendChild(instLearn(learned) || txt(learned ? 'ИЗУЧЕНО' : 'НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+  }
+  right.appendChild(txt(xp, outfit('Regular'), 11, MUTED));
+  top.appendChild(right);
+  c.appendChild(top);
+  top.layoutSizingHorizontal = 'FILL';
+  return c;
+}
+
+function guestRegisterLine() {
+  const line = al('HORIZONTAL', 'guest course CTA');
+  line.itemSpacing = 0;
+  line.layoutWrap = 'WRAP';
+  line.appendChild(txt('Зарегистрируйтесь', outfit('SemiBold'), 14, BRAND800));
+  line.appendChild(txt(', чтобы открыть тренажёр и сохранять прогресс.', outfit('Regular'), 14, MUTED, 520));
+  return line;
+}
+
+function courseDetailCtas(kind) {
+  const row = al('HORIZONTAL', 'course ctas');
+  row.itemSpacing = 8;
+  row.appendChild(secondaryBtn('Мой путь'));
+  if (kind === 'desktop') {
+    row.appendChild(instPrimary('Рабочий стол'));
+  } else {
+    row.appendChild(instPrimary('Тренировка'));
+    row.appendChild(secondaryBtn('Экзамен'));
+  }
+  return row;
 }
 
 function instRailItem(active, label) {
@@ -5518,6 +5573,55 @@ async function buildUniqueScreens() {
           return row;
         })(),
       ]),
+      marketingPage('Course detail guest vscode /courses/:slug', 'Курсы', true, [
+        txt('VS Code', fraunces('Bold'), 32, INK, 800),
+        txt('Visual Studio Code — редактор кода от Microsoft.', outfit('Regular'), 14, MUTED, 720),
+        guestRegisterLine(),
+        txt('Навигация', outfit('SemiBold'), 18, INK),
+        (() => {
+          const row = al('HORIZONTAL', 'Guest vscode lesson cards');
+          row.itemSpacing = 12;
+          for (const [title, chord] of [
+            ['Быстрое открытие файла', 'Ctrl + P'],
+            ['Перейти к строке', 'Ctrl + G'],
+            ['Перейти к символу', 'Ctrl + Shift + O'],
+          ]) {
+            row.appendChild(chordLessonCard(title, chord, '+10 XP', null));
+          }
+          return row;
+        })(),
+        txt('Guest vscode — no start badge, register CTA, Training/Exam, +10 XP chords.', outfit('Regular'), 12, MUTED, 860),
+        courseDetailCtas('training'),
+      ]),
+      marketingPage('Course detail guest programmer-basics /courses/:slug', 'Курсы', true, [
+        pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+        txt('Основные горячие клавиши программиста', fraunces('Bold'), 32, INK, 800),
+        txt(
+          'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний. Системные клавиши (Alt+Tab, Win, F) — в разделе изучения и в режиме «Повторение».',
+          outfit('Regular'),
+          14,
+          MUTED,
+          720,
+        ),
+        guestRegisterLine(),
+        txt('Основы', outfit('SemiBold'), 18, INK),
+        (() => {
+          const row = al('HORIZONTAL', 'Guest programmer-basics lesson cards');
+          row.itemSpacing = 12;
+          for (const [title, chord] of [
+            ['Копировать', 'Ctrl + C'],
+            ['Вставить', 'Ctrl + V'],
+            ['Вырезать', 'Ctrl + X'],
+          ]) {
+            row.appendChild(chordLessonCard(title, chord, '+15 XP', null));
+          }
+          return row;
+        })(),
+        txt('Система (изучение)', outfit('SemiBold'), 18, INK),
+        chordLessonCard('Окна', 'Alt + Tab', '+15 XP', null),
+        txt('Guest programmer-basics — start badge + Training/Exam +15 XP (not Desktop CTA).', outfit('Regular'), 12, MUTED, 860),
+        courseDetailCtas('training'),
+      ]),
       marketingPage('Course detail authed /courses/:slug', 'Курсы', false, [
         (() => {
           const head = al('HORIZONTAL', 'vscode detail head');
@@ -5702,6 +5806,68 @@ async function buildUniqueScreens() {
           row.appendChild(instPrimary('Рабочий стол'));
           return row;
         })(),
+      ]),
+      marketingPage('Course detail authed programmer-basics /courses/:slug', 'Курсы', false, [
+        pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+        txt('Основные горячие клавиши программиста', fraunces('Bold'), 32, INK, 800),
+        txt(
+          'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний. Системные клавиши (Alt+Tab, Win, F) — в разделе изучения и в режиме «Повторение».',
+          outfit('Regular'),
+          14,
+          MUTED,
+          720,
+        ),
+        (() => {
+          const prog = al('VERTICAL', 'programmer-basics progress');
+          prog.itemSpacing = 6;
+          const meta = al('HORIZONTAL', 'progress meta programmer-basics');
+          meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          meta.resize(400, 10);
+          meta.layoutSizingHorizontal = 'FIXED';
+          meta.layoutSizingVertical = 'HUG';
+          meta.appendChild(txt('0/19 сочетаний', outfit('Regular'), 13, MUTED));
+          meta.appendChild(txt('0%', outfit('SemiBold'), 13, BRAND800));
+          prog.appendChild(meta);
+          prog.appendChild(instProgress('Value=Empty') || progressBar(400, 0, BRAND, 10));
+          return prog;
+        })(),
+        (() => {
+          const sec = al('HORIZONTAL', 'Основы head');
+          sec.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          sec.counterAxisAlignItems = 'MAX';
+          sec.resize(880, 10);
+          sec.layoutSizingHorizontal = 'FIXED';
+          sec.layoutSizingVertical = 'HUG';
+          sec.appendChild(txt('Основы', outfit('SemiBold'), 18, INK));
+          sec.appendChild(txt('0/13 изучено', outfit('Medium'), 12, MUTED));
+          return sec;
+        })(),
+        (() => {
+          const row = al('HORIZONTAL', 'Authed programmer-basics lesson cards');
+          row.itemSpacing = 12;
+          for (const [title, chord] of [
+            ['Копировать', 'Ctrl + C'],
+            ['Вставить', 'Ctrl + V'],
+            ['Вырезать', 'Ctrl + X'],
+          ]) {
+            row.appendChild(chordLessonCard(title, chord, '+15 XP', false));
+          }
+          return row;
+        })(),
+        (() => {
+          const sec = al('HORIZONTAL', 'Система (изучение) head');
+          sec.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          sec.counterAxisAlignItems = 'MAX';
+          sec.resize(880, 10);
+          sec.layoutSizingHorizontal = 'FIXED';
+          sec.layoutSizingVertical = 'HUG';
+          sec.appendChild(txt('Система (изучение)', outfit('SemiBold'), 18, INK));
+          sec.appendChild(txt('0/6 изучено', outfit('Medium'), 12, MUTED));
+          return sec;
+        })(),
+        chordLessonCard('Окна', 'Alt + Tab', '+15 XP', false),
+        txt('Authed programmer-basics — start badge + LearnStatus + Training/Exam +15 XP (not Desktop CTA).', outfit('Regular'), 12, MUTED, 860),
+        courseDetailCtas('training'),
       ]),
       marketingPage('Course not found /courses/:slug', 'Курсы', true, [
         instEmpty('Курс не найден', '') || txt('Курс не найден', fraunces('Bold'), 32, INK, 640),
