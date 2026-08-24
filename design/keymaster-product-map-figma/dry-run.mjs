@@ -390,6 +390,13 @@ if (!names.includes('Mobile Training 390')) fail.push('no mobile training unique
 if (!names.includes('Отменить')) fail.push('no live mobile training prompt unique screen');
 if (!names.includes('МОЙ ПУТЬ РАЗВИТИЯ')) fail.push('no live mobile path eyebrow unique screen');
 if (!names.some((n) => String(n).includes('siteadmin'))) fail.push('no live admin users unique screen');
+if (!names.some((n) => String(n).includes('16 Уроки · 4 Категории'))) {
+  fail.push('no live admin courses computer-basics unique screen');
+}
+if (!names.some((n) => String(n).includes('42 Уроки · 7 Категории'))) {
+  fail.push('no live admin courses vscode unique screen');
+}
+if (!names.includes('+ Создать')) fail.push('no live admin create CTA unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));

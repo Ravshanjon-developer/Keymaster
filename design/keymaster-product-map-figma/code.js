@@ -4925,13 +4925,50 @@ async function buildUniqueScreens() {
       ], false, true),
       marketingPage('Admin courses /admin', '', false, [
         txt('Админ-панель', fraunces('Bold'), 32, INK),
-        txt('Курсы, уроки, пользователи и достижения · вкладка Курсы, тот же layout.', outfit('Regular'), 13, MUTED, 800),
+        txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Курсы'),
-        field('Поиск…', 'computer-basics', INK),
-        txt('Slug                  Название                         Уроки', outfit('Regular'), 12, MUTED, 800),
-        txt('computer-basics       Первый ноутбук: файлы и папки    12', outfit('Regular'), 13, INK, 800),
-        txt('programmer-basics     Основы программиста              18', outfit('Regular'), 13, INK, 800),
-        instPrimary('Создать'),
+        (() => {
+          const row = al('HORIZONTAL', 'search row');
+          row.itemSpacing = 8;
+          row.counterAxisAlignItems = 'CENTER';
+          row.appendChild(field('Поиск…', 'Поиск…', INK));
+          row.appendChild(instPrimary('+ Создать'));
+          return row;
+        })(),
+        (() => {
+          const list = al('VERTICAL', 'Course CRUD');
+          list.itemSpacing = 8;
+          for (const [title, meta] of [
+            ['Первый ноутбук: файлы и папки', 'computer-basics · 16 Уроки · 4 Категории'],
+            ['Основные горячие клавиши программиста', 'programmer-basics · 19 Уроки · 2 Категории'],
+            ['VS Code', 'vscode · 42 Уроки · 7 Категории'],
+          ]) {
+            const card = al('HORIZONTAL', title);
+            card.primaryAxisAlignItems = 'SPACE_BETWEEN';
+            card.counterAxisAlignItems = 'CENTER';
+            card.paddingTop = card.paddingBottom = 16;
+            card.paddingLeft = card.paddingRight = 16;
+            card.cornerRadius = 16;
+            card.fills = [solid(WHITE)];
+            card.strokes = [solid(INK, 0.08)];
+            card.resize(860, 10);
+            card.layoutSizingHorizontal = 'FIXED';
+            card.layoutSizingVertical = 'HUG';
+            const copy = al('VERTICAL', 'copy');
+            copy.itemSpacing = 4;
+            copy.appendChild(txt(title, outfit('SemiBold'), 15, INK, 560));
+            copy.appendChild(txt(meta, outfit('Regular'), 12, MUTED, 560));
+            card.appendChild(copy);
+            const actions = al('HORIZONTAL', 'actions');
+            actions.itemSpacing = 8;
+            actions.appendChild(instSecondary('Открыть'));
+            actions.appendChild(txt('⌫', outfit('Bold'), 14, SIGNAL));
+            card.appendChild(actions);
+            list.appendChild(card);
+          }
+          list.appendChild(txt('Не дублировать все 20 курсов — 3 строки покрывают CRUD layout.', outfit('Regular'), 12, MUTED, 800));
+          return list;
+        })(),
       ], false, true),
       marketingPage('Admin users /admin', '', false, [
         txt('Админ-панель', fraunces('Bold'), 32, INK),
@@ -5408,11 +5445,25 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
-      marketingPage('Dark Login / html.dark', '', true, [darkLoginCard], true),
+      marketingPage('Dark Login / html.dark', '', false, [darkLoginCard], true),
       marketingPage('Dark Register / html.dark', '', true, [darkRegisterCard], true),
-      marketingPage('Dark Courses / html.dark', 'Курсы', true, [
-        txt('Каталог курсов', outfit('SemiBold'), 28, DARK_TEXT),
-        txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, DARK_MUTED, 860),
+      marketingPage('Dark Courses / html.dark', 'Курсы', false, [
+        (() => {
+          const head = al('HORIZONTAL', 'catalog head');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'MAX';
+          head.resize(880, 10);
+          head.layoutSizingHorizontal = 'FIXED';
+          head.layoutSizingVertical = 'HUG';
+          const titles = al('VERTICAL', 'titles');
+          titles.itemSpacing = 6;
+          titles.appendChild(txt('КАТАЛОГ', outfit('Bold'), 11, BRAND500));
+          titles.appendChild(txt('Каталог курсов', fraunces('Bold'), 32, DARK_TEXT));
+          titles.appendChild(txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, DARK_MUTED, 640));
+          head.appendChild(titles);
+          head.appendChild(secondaryBtn('Путь обучения', 'dark'));
+          return head;
+        })(),
         field('Поиск', 'Название курса или инструмента', null, null, 'dark'),
         darkFilterRow,
         darkCoursesRow,
@@ -5422,7 +5473,7 @@ async function buildUniqueScreens() {
         'Тренировочный зал',
         [
           txt('Практика', outfit('Bold'), 11, BRAND500),
-          txt('Тренировочный зал', outfit('SemiBold'), 24, DARK_TEXT),
+          txt('Тренировочный зал', fraunces('Bold'), 32, DARK_TEXT),
           txt('Rail stays #141820. Outlet uses --bg-primary #020617.', outfit('Regular'), 13, DARK_MUTED, 680),
           modeCard('Слепая печать', 'Старт', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.', 328, true),
           modeCard('VS Code симулятор', 'Ядро', 'brand', 'Explorer, миссии и проверка шагов — папки и файлы как в настоящем редакторе.', 328, true),
