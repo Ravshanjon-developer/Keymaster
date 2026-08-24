@@ -308,6 +308,10 @@ if (!names.includes('Mobile Leaderboard 390')) fail.push('no guest mobile leader
 if (!names.includes('Mobile Leaderboard authed 390')) fail.push('no authed mobile leaderboard unique screen');
 if (!names.includes('Mobile / Leaderboard')) fail.push('no guest mobile leaderboard capture');
 if (!names.includes('Mobile / Leaderboard authed')) fail.push('no authed mobile leaderboard capture');
+if (!names.includes('Mobile Register — BottomNav hidden')) fail.push('no mobile register unique screen');
+if (!names.includes('Mobile Courses authed 390')) fail.push('no authed mobile catalog unique screen');
+if (!names.includes('Mobile / Register')) fail.push('no mobile register capture');
+if (!names.includes('Mobile / Courses authed')) fail.push('no authed mobile catalog capture');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
@@ -541,6 +545,21 @@ if (!mobileLogin || !namesUnder(mobileLogin).includes('Добро пожалов
 }
 if (mobileLogin && namesUnder(mobileLogin).includes('BottomNav')) {
   fail.push('mobile login unique screen still has BottomNav');
+}
+let mobileRegisterUnique = null;
+let mobileCoursesAuthedUnique = null;
+for (const p of pages) {
+  mobileRegisterUnique = mobileRegisterUnique || findByName(p, 'Mobile Register — BottomNav hidden');
+  mobileCoursesAuthedUnique = mobileCoursesAuthedUnique || findByName(p, 'Mobile Courses authed 390');
+}
+if (!mobileRegisterUnique || !namesUnder(mobileRegisterUnique).includes('Создать аккаунт') || namesUnder(mobileRegisterUnique).includes('BottomNav')) {
+  fail.push('mobile register unique should show Создать аккаунт without BottomNav');
+}
+if (!mobileRegisterUnique || !namesUnder(mobileRegisterUnique).includes('Уже есть аккаунт?')) {
+  fail.push('mobile register unique missing live footer question');
+}
+if (!mobileCoursesAuthedUnique || !namesUnder(mobileCoursesAuthedUnique).includes('Выйти') || !namesUnder(mobileCoursesAuthedUnique).includes('0/16 сочетаний') || namesUnder(mobileCoursesAuthedUnique).includes('Регистрация')) {
+  fail.push('authed mobile catalog unique should show Выйти + 0/16 without guest Регистрация');
 }
 let studyUnique = null;
 for (const p of pages) studyUnique = studyUnique || findByName(p, 'Lesson study-only /lessons/:id');

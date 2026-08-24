@@ -6342,7 +6342,99 @@ async function buildUniqueScreens() {
     ],
     'Курсы',
   );
-
+  const mobileCoursesAuthed = mobileFrame(
+    'Mobile Courses authed 390',
+    [
+      txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+      txt('Каталог курсов', fraunces('Bold'), 28, INK, 358),
+      txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 358),
+      secondaryBtn('Путь обучения'),
+      searchField(358),
+      (() => {
+        const chips = al('HORIZONTAL', 'Filters authed 390');
+        chips.itemSpacing = 8;
+        chips.layoutWrap = 'WRAP';
+        for (const [label, on] of [
+          ['Все', true],
+          ['Старт', false],
+          ['ОС', false],
+          ['Редакторы', false],
+          ['Браузеры', false],
+          ['Офис', false],
+          ['Git', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 14;
+          chip.paddingTop = chip.paddingBottom = 10;
+          chip.minHeight = 44;
+          chip.cornerRadius = 99;
+          chip.fills = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : WHITE)];
+          chip.strokes = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : INK, on ? 1 : 0.12)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+          chips.appendChild(chip);
+        }
+        return chips;
+      })(),
+      catalogCard({
+        title: 'Первый ноутбук: файлы и папки',
+        desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+        meta: '16 уроков · 4 категории',
+        start: true,
+        width: 358,
+        progress: '0/16 сочетаний',
+        percent: '0%',
+        iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+      }),
+    ],
+    'Курсы',
+    { authed: true },
+  );
+  const mobileRegister = mobileFrame(
+    'Mobile Register — BottomNav hidden',
+    [
+      (() => {
+        const card = al('VERTICAL', 'AuthCard compact 390');
+        card.itemSpacing = 0;
+        card.cornerRadius = 24;
+        card.fills = [solid(WHITE)];
+        card.resize(358, 10);
+        card.layoutSizingHorizontal = 'FIXED';
+        card.layoutSizingVertical = 'HUG';
+        const head = al('VERTICAL', 'header');
+        head.itemSpacing = 6;
+        head.paddingTop = head.paddingBottom = 16;
+        head.paddingLeft = head.paddingRight = 16;
+        head.fills = [solid(BRAND50)];
+        head.appendChild(txt('KEYMASTER', outfit('Bold'), 10, BRAND800));
+        head.appendChild(txt('Регистрация', fraunces('Bold'), 22, INK));
+        head.appendChild(txt('Добро пожаловать в KeyMaster', outfit('Regular'), 13, MUTED, 326));
+        card.appendChild(head);
+        const form = al('VERTICAL', 'form');
+        form.itemSpacing = 10;
+        form.paddingTop = form.paddingBottom = 16;
+        form.paddingLeft = form.paddingRight = 16;
+        form.appendChild(floatOrInst('State=Default', 'Имя', { width: 326 }));
+        form.appendChild(floatOrInst('State=Default', 'username', { width: 326 }));
+        form.appendChild(floatOrInst('State=Default', 'Email', { width: 326 }));
+        form.appendChild(floatOrInst('State=Password', 'Пароль', { password: true, width: 326 }));
+        form.appendChild(instPrimary('Создать аккаунт'));
+        card.appendChild(form);
+        const foot = al('HORIZONTAL', 'footer');
+        foot.itemSpacing = 4;
+        foot.primaryAxisAlignItems = 'CENTER';
+        foot.paddingTop = foot.paddingBottom = 12;
+        foot.paddingLeft = foot.paddingRight = 16;
+        foot.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+        foot.appendChild(txt('Уже есть аккаунт?', outfit('Regular'), 13, MUTED));
+        foot.appendChild(txt('Войти', outfit('SemiBold'), 13, BRAND800));
+        card.appendChild(foot);
+        return card;
+      })(),
+      txt('Guest /path and /practice redirect here (ProtectedRoute → /register). BottomNav hidden.', outfit('Regular'), 11, MUTED, 358),
+    ],
+    '',
+    { hideNav: true },
+  );
   const mobileHomeAuthed = mobileFrame(
     'Mobile Home authed 390',
     [
@@ -7095,7 +7187,9 @@ async function buildUniqueScreens() {
       mobileLeaderboard,
       mobileLeaderboardAuthed,
       mobileCourses,
+      mobileCoursesAuthed,
       mobileLogin,
+      mobileRegister,
       mobilePractice,
       mobileNavGuest,
       mobileNavAuthed,
