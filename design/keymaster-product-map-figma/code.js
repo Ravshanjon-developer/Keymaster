@@ -1082,7 +1082,7 @@ async function placeImage(msg) {
   if (msg.page === '07 — Mobile Screens' && fw > 390) {
     const scale = 390 / fw;
     fw = 390;
-    fh = Math.round(h * scale);
+    fh = Math.round(fh * scale);
   }
   const group = msg.group || 'Other';
   if (!groupCursors[msg.page]) groupCursors[msg.page] = { groups: [], x: 80, y: 160 };
