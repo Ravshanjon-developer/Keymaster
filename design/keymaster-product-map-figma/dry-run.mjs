@@ -1031,6 +1031,58 @@ if (!adminAchCreateUnique || !namesUnder(adminAchCreateUnique).includes('trophy'
   fail.push('admin achievement-create unique missing live trophy / correct_answers defaults');
 }
 
+if (!names.includes('Этот компьютер')) fail.push('no live desktop Этот компьютер unique screen');
+if (!names.includes('Desktop context menu /simulator?mode=desktop')) fail.push('no desktop context-menu unique screen');
+if (!names.includes('Desktop explorer /simulator?mode=desktop')) fail.push('no desktop explorer unique screen');
+if (!names.includes('Desktop recycle-bin /simulator?mode=desktop')) fail.push('no desktop recycle-bin unique screen');
+if (!names.includes('Code Lab command palette /simulator')) fail.push('no code-lab command-palette unique screen');
+if (!names.includes('Admin add lesson /admin')) fail.push('no admin add-lesson unique screen');
+if (!names.includes('Открыть проводник')) fail.push('no live desktop wallpaper context-menu unique screen');
+if (!names.includes('Эта папка пуста')) fail.push('no live recycle-bin empty unique screen');
+if (!names.includes('Type a command...')) fail.push('no live command-palette placeholder unique screen');
+if (!names.includes('File: New File')) fail.push('no live command-palette File: New File unique screen');
+if (!names.includes('Через + , например Control+Shift+P')) fail.push('no live admin keysHint unique screen');
+if (!names.includes('ТЕКУЩАЯ · 1/12')) fail.push('no live desktop currentTaskLine unique screen');
+if (!names.includes('Заработано 0 XP')) fail.push('no live desktop xpEarned unique screen');
+if (!names.includes('Learner / Desktop context menu')) fail.push('no desktop context-menu capture');
+if (!names.includes('Learner / Desktop explorer')) fail.push('no desktop explorer capture');
+if (!names.includes('Learner / Desktop recycle-bin')) fail.push('no desktop recycle-bin capture');
+if (!names.includes('Learner / Code Lab command palette')) fail.push('no code-lab palette capture');
+if (!names.includes('Admin / Add lesson')) fail.push('no admin add-lesson capture');
+
+let deskUnique = null;
+let deskMenuUnique = null;
+let deskExplUnique = null;
+let deskTrashUnique = null;
+let palUnique = null;
+let addLessonUnique = null;
+for (const p of pages) {
+  deskUnique = deskUnique || findByName(p, 'Desktop');
+  deskMenuUnique = deskMenuUnique || findByName(p, 'Desktop context menu /simulator?mode=desktop');
+  deskExplUnique = deskExplUnique || findByName(p, 'Desktop explorer /simulator?mode=desktop');
+  deskTrashUnique = deskTrashUnique || findByName(p, 'Desktop recycle-bin /simulator?mode=desktop');
+  palUnique = palUnique || findByName(p, 'Code Lab command palette /simulator');
+  addLessonUnique = addLessonUnique || findByName(p, 'Admin add lesson /admin');
+}
+if (!deskUnique || !namesUnder(deskUnique).includes('Этот компьютер') || !namesUnder(deskUnique).includes('С чего начать')) {
+  fail.push('desktop unique missing live Этот компьютер icon + first-run hint');
+}
+if (!deskMenuUnique || !namesUnder(deskMenuUnique).includes('Новый файл') || !namesUnder(deskMenuUnique).includes('Открыть проводник') || namesUnder(deskMenuUnique).includes('С чего начать')) {
+  fail.push('desktop context-menu unique should show wallpaper menu without first-run');
+}
+if (!deskExplUnique || !namesUnder(deskExplUnique).includes('/Рабочий стол') || !namesUnder(deskExplUnique).includes('1 объектов')) {
+  fail.push('desktop explorer unique missing live Проводник path + item count');
+}
+if (!deskTrashUnique || !namesUnder(deskTrashUnique).includes('Эта папка пуста') || !namesUnder(deskTrashUnique).includes('/Корзина')) {
+  fail.push('desktop recycle-bin unique missing live empty trash');
+}
+if (!palUnique || !namesUnder(palUnique).includes('Type a command...') || !namesUnder(palUnique).includes('Ctrl+N')) {
+  fail.push('code lab palette unique missing live command overlay');
+}
+if (!addLessonUnique || !namesUnder(addLessonUnique).includes('Через + , например Control+Shift+P') || !namesUnder(addLessonUnique).includes('Control+C') || namesUnder(addLessonUnique).includes('Папка Practice')) {
+  fail.push('admin add-lesson unique missing live keysHint defaults or duplicates later lessons');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));
