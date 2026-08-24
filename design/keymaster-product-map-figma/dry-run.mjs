@@ -1194,6 +1194,9 @@ if (!deskFileMenuUnique || !namesUnder(deskFileMenuUnique).includes('Откры�
 
 if (!names.includes('Code Lab file menu /simulator')) fail.push('no code-lab file-menu unique screen');
 if (!names.includes('Code Lab current task /simulator')) fail.push('no code-lab current-task unique screen');
+if (!names.includes('Code Lab task in progress /simulator')) fail.push('no code-lab in-progress task unique screen');
+if (!names.includes('Задача выполнена!')) fail.push('no live Code Lab task-completed unique screen');
+if (!names.includes('Следующая задача')) fail.push('no live Code Lab next-task unique screen');
 if (!names.includes('Code Lab all tasks /simulator')) fail.push('no code-lab all-tasks unique screen');
 if (!names.includes('Code Lab preview /simulator')) fail.push('no code-lab preview unique screen');
 if (!names.includes('Code Lab keyboard /simulator')) fail.push('no code-lab keyboard unique screen');
@@ -1204,18 +1207,21 @@ if (!names.includes('PREVIEW — INDEX.HTML')) fail.push('no live Code Lab previ
 if (!names.includes('KEYBOARD VISUALIZER')) fail.push('no live Code Lab keyboard visualizer unique screen');
 if (!names.includes('Learner / Code Lab file menu')) fail.push('no code-lab file-menu capture');
 if (!names.includes('Learner / Code Lab current task')) fail.push('no code-lab current-task capture');
+if (!names.includes('Learner / Code Lab task in progress')) fail.push('no code-lab in-progress task capture');
 if (!names.includes('Learner / Code Lab all tasks')) fail.push('no code-lab all-tasks capture');
 if (!names.includes('Learner / Code Lab preview')) fail.push('no code-lab preview capture');
 if (!names.includes('Learner / Code Lab keyboard')) fail.push('no code-lab keyboard capture');
 
 let simFileMenuUnique = null;
 let simTaskUnique = null;
+let simTaskRunUnique = null;
 let simTaskListUnique = null;
 let simPreviewUnique = null;
 let simKbVizUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simTaskUnique = simTaskUnique || findByName(p, 'Code Lab current task /simulator');
+  simTaskRunUnique = simTaskRunUnique || findByName(p, 'Code Lab task in progress /simulator');
   simTaskListUnique = simTaskListUnique || findByName(p, 'Code Lab all tasks /simulator');
   simPreviewUnique = simPreviewUnique || findByName(p, 'Code Lab preview /simulator');
   simKbVizUnique = simKbVizUnique || findByName(p, 'Code Lab keyboard /simulator');
@@ -1223,8 +1229,11 @@ for (const p of pages) {
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
 }
-if (!simTaskUnique || !namesUnder(simTaskUnique).includes('Создать новый файл') || !namesUnder(simTaskUnique).includes('Подсказка (0/3)') || namesUnder(simTaskUnique).includes('Готовы к практике?')) {
-  fail.push('code lab current-task unique missing live first task without empty ready state');
+if (!simTaskUnique || !namesUnder(simTaskUnique).includes('Задача выполнена!') || !namesUnder(simTaskUnique).includes('Следующая задача') || namesUnder(simTaskUnique).includes('Готовы к практике?')) {
+  fail.push('code lab current-task unique missing live auto-complete result');
+}
+if (!simTaskRunUnique || !namesUnder(simTaskRunUnique).includes('Создать папку') || !namesUnder(simTaskRunUnique).includes('В корне есть папка «assets»') || namesUnder(simTaskRunUnique).includes('Задача выполнена!')) {
+  fail.push('code lab in-progress unique missing live Create Folder task at 0%');
 }
 if (!simTaskListUnique || !namesUnder(simTaskListUnique).includes('Все задачи') || !namesUnder(simTaskListUnique).includes('Создать папку') || namesUnder(simTaskListUnique).includes('Готовы к практике?')) {
   fail.push('code lab all-tasks unique missing live task list chrome');

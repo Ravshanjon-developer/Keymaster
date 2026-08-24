@@ -318,6 +318,18 @@ await run('code-lab-task', desk, async (page) => {
   return { file: 'desktop-learner-simulator-code-task.jpg', w, h };
 });
 
+await run('code-lab-taskrun', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-taskrun.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Начать первую задачу' }).click();
+  await page.getByRole('button', { name: 'Следующая задача' }).click();
+  await page.getByText('Создайте в корне проекта папку с именем «assets».', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-taskrun.jpg', w, h };
+});
+
 await run('code-lab-tasklist', desk, async (page) => {
   const dest = path.join(shotsDir, 'desktop-learner-simulator-code-tasklist.jpg');
   await openCodeLab(page);

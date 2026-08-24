@@ -494,5 +494,29 @@
   "desktop-learner-simulator-code-extensions.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-simulator-code-filemenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-task.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-tasklist.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-preview.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-keyboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-taskrun.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

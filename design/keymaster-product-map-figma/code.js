@@ -1276,7 +1276,8 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-run.jpg', 'Run and Debug'],
       ['desktop-learner-simulator-code-extensions.jpg', 'Extensions'],
       ['desktop-learner-simulator-code-filemenu.jpg', 'File menu'],
-      ['desktop-learner-simulator-code-task.jpg', 'Current task'],
+      ['desktop-learner-simulator-code-task.jpg', 'Current task done'],
+      ['desktop-learner-simulator-code-taskrun.jpg', 'Task in progress'],
       ['desktop-learner-simulator-code-tasklist.jpg', 'All tasks'],
       ['desktop-learner-simulator-code-preview.jpg', 'Preview'],
       ['desktop-learner-simulator-code-keyboard.jpg', 'Keyboard visualizer'],
@@ -4894,9 +4895,12 @@ async function buildUniqueScreens() {
     tasks.resize(280, 10);
     tasks.layoutSizingHorizontal = 'FIXED';
     tasks.layoutSizingVertical = 'HUG';
-    tasks.appendChild(txt('ЗАДАЧИ · 0 XP', outfit('Bold'), 11, WHITE));
+    tasks.appendChild(txt(overlay === 'task' || overlay === 'taskrun' ? 'ЗАДАЧИ · 15 XP' : 'ЗАДАЧИ · 0 XP', outfit('Bold'), 11, WHITE));
     if (overlay === 'task') {
       tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      tasks.appendChild(txt('Задача выполнена!', outfit('SemiBold'), 14, { r: 0.086, g: 0.639, b: 0.29 }));
+      tasks.appendChild(txt('+15 XP', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      tasks.appendChild(txt('Следующая задача', outfit('SemiBold'), 13, WHITE));
       tasks.appendChild(txt('НАЧАЛЬНЫЙ', outfit('Bold'), 10, { r: 0.086, g: 0.639, b: 0.29 }));
       tasks.appendChild(txt('проводник', outfit('Regular'), 11, VSCODE_MUTED));
       tasks.appendChild(txt('Создать новый файл', outfit('SemiBold'), 14, WHITE, 248));
@@ -4904,11 +4908,23 @@ async function buildUniqueScreens() {
         txt('Создайте новый файл в проекте — через сочетание клавиш или контекстное меню.', outfit('Regular'), 11, VSCODE_MUTED, 248),
       );
       tasks.appendChild(txt('Прогресс', outfit('Regular'), 11, VSCODE_MUTED));
-      tasks.appendChild(txt('0%', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('100%', outfit('Regular'), 11, VSCODE_MUTED));
       tasks.appendChild(txt('ШАГИ', outfit('Bold'), 10, VSCODE_MUTED));
       tasks.appendChild(txt('В проекте появился новый файл', outfit('Regular'), 12, WHITE, 248));
       tasks.appendChild(txt('Сочетание', outfit('Regular'), 11, VSCODE_MUTED));
       tasks.appendChild(txt('Ctrl+N', outfit('Regular'), 12, WHITE));
+      tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, WHITE));
+      tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, VSCODE_MUTED));
+    } else if (overlay === 'taskrun') {
+      tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      tasks.appendChild(txt('НАЧАЛЬНЫЙ', outfit('Bold'), 10, { r: 0.086, g: 0.639, b: 0.29 }));
+      tasks.appendChild(txt('проводник', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('Создать папку', outfit('SemiBold'), 14, WHITE, 248));
+      tasks.appendChild(txt('Создайте в корне проекта папку с именем «assets».', outfit('Regular'), 11, VSCODE_MUTED, 248));
+      tasks.appendChild(txt('Прогресс', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('0%', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('ШАГИ', outfit('Bold'), 10, VSCODE_MUTED));
+      tasks.appendChild(txt('В корне есть папка «assets»', outfit('Regular'), 12, WHITE, 248));
       tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, WHITE));
       tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, VSCODE_MUTED));
     } else if (overlay === 'tasklist') {
@@ -5332,6 +5348,7 @@ async function buildUniqueScreens() {
   const simExt = makeCodeLab('Code Lab extensions /simulator', 'extensions');
   const simFileMenu = makeCodeLab('Code Lab file menu /simulator', 'menufile');
   const simTask = makeCodeLab('Code Lab current task /simulator', 'task');
+  const simTaskRun = makeCodeLab('Code Lab task in progress /simulator', 'taskrun');
   const simTaskList = makeCodeLab('Code Lab all tasks /simulator', 'tasklist');
   const simPreview = makeCodeLab('Code Lab preview /simulator', 'preview');
   const simKbViz = makeCodeLab('Code Lab keyboard /simulator', 'kbviz');
@@ -9018,7 +9035,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simTask, simTaskList, simPreview, simKbViz, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
