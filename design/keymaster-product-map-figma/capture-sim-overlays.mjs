@@ -469,6 +469,63 @@ await run('desktop-light', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-light.jpg', w, h };
 });
 
+await run('code-lab-toast', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-toast.jpg');
+  await openCodeLab(page);
+  await page.getByText('README.md', { exact: true }).click();
+  await page.getByText('# Keymaster Project', { exact: true }).waitFor({ timeout: 8000 });
+  await page.keyboard.press('Control+KeyS');
+  await page.getByText('File saved', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-toast.jpg', w, h };
+});
+
+await run('desktop-toast', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-toast.jpg');
+  await openDesktop(page);
+  const root = page.locator('.bolt-desktop-root');
+  await root.waitFor({ timeout: 10000 });
+  const box = await root.boundingBox();
+  await page.mouse.click(box.x + box.width * 0.42, box.y + box.height * 0.38, { button: 'right' });
+  await page.getByText('Новая папка', { exact: true }).click();
+  const rename = page.locator('.bolt-desktop-root input');
+  await rename.waitFor({ timeout: 8000 });
+  await rename.fill('Practice');
+  await rename.press('Enter');
+  await page.getByText(/Задача выполнена/).first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.getByText(/Задача выполнена/).first().innerText();
+  return { file: 'desktop-learner-simulator-desktop-toast.jpg', w, h, snippet };
+});
+
+await run('desktop-done', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-done.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'km_desktop_tasks_v1',
+      JSON.stringify({
+        completed: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        xp: 160,
+      }),
+    );
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 20000 });
+  const ok = page.getByRole('button', { name: 'Понятно' });
+  if (await ok.isVisible().catch(() => false)) await ok.click();
+  await page.getByText('Все задачи выполнены!', { exact: true }).waitFor({ timeout: 12000 });
+  await page.getByText('Вы заработали 160 XP. Отличная работа!', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-done.jpg', w, h };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

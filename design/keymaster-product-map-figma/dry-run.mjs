@@ -1202,6 +1202,12 @@ if (!names.includes('Code Lab help menu /simulator')) fail.push('no code-lab hel
 if (!names.includes('Code Lab manage /simulator')) fail.push('no code-lab manage unique screen');
 if (!names.includes('Code Lab light /simulator')) fail.push('no code-lab light unique screen');
 if (!names.includes('Desktop light /simulator?mode=desktop')) fail.push('no desktop light unique screen');
+if (!names.includes('Code Lab toast /simulator')) fail.push('no code-lab toast unique screen');
+if (!names.includes('Desktop toast /simulator?mode=desktop')) fail.push('no desktop toast unique screen');
+if (!names.includes('Desktop all complete /simulator?mode=desktop')) fail.push('no desktop all-complete unique screen');
+if (!names.includes('File saved')) fail.push('no live Code Lab File saved toast unique screen');
+if (!names.includes('Все задачи выполнены!')) fail.push('no live desktop all-complete unique screen');
+if (!names.includes('Вы заработали 160 XP. Отличная работа!')) fail.push('no live desktop all-complete XP copy');
 if (!names.includes('Code Lab current task /simulator')) fail.push('no code-lab current-task unique screen');
 if (!names.includes('Code Lab task in progress /simulator')) fail.push('no code-lab in-progress task unique screen');
 if (!names.includes('Задача выполнена!')) fail.push('no live Code Lab task-completed unique screen');
@@ -1230,6 +1236,9 @@ if (!names.includes('Learner / Code Lab terminal menu')) fail.push('no code-lab 
 if (!names.includes('Learner / Code Lab help menu')) fail.push('no code-lab help-menu capture');
 if (!names.includes('Learner / Code Lab light')) fail.push('no code-lab light capture');
 if (!names.includes('Learner / Desktop light')) fail.push('no desktop light capture');
+if (!names.includes('Learner / Code Lab toast')) fail.push('no code-lab toast capture');
+if (!names.includes('Learner / Desktop toast')) fail.push('no desktop toast capture');
+if (!names.includes('Learner / Desktop all complete')) fail.push('no desktop all-complete capture');
 if (!names.includes('Learner / Code Lab current task')) fail.push('no code-lab current-task capture');
 if (!names.includes('Learner / Code Lab task in progress')) fail.push('no code-lab in-progress task capture');
 if (!names.includes('Learner / Code Lab all tasks')) fail.push('no code-lab all-tasks capture');
@@ -1252,6 +1261,9 @@ let simTermMenuUnique = null;
 let simHelpMenuUnique = null;
 let simLightUnique = null;
 let deskLightUnique = null;
+let simToastUnique = null;
+let deskTaskToastUnique = null;
+let deskAllCompleteUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1268,6 +1280,9 @@ for (const p of pages) {
   simHelpMenuUnique = simHelpMenuUnique || findByName(p, 'Code Lab help menu /simulator');
   simLightUnique = simLightUnique || findByName(p, 'Code Lab light /simulator');
   deskLightUnique = deskLightUnique || findByName(p, 'Desktop light /simulator?mode=desktop');
+  simToastUnique = simToastUnique || findByName(p, 'Code Lab toast /simulator');
+  deskTaskToastUnique = deskTaskToastUnique || findByName(p, 'Desktop toast /simulator?mode=desktop');
+  deskAllCompleteUnique = deskAllCompleteUnique || findByName(p, 'Desktop all complete /simulator?mode=desktop');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1313,6 +1328,15 @@ if (!simLightUnique || !namesUnder(simLightUnique).includes('Готовы к п�
 }
 if (!deskLightUnique || !namesUnder(deskLightUnique).includes('Этот компьютер') || namesUnder(deskLightUnique).includes('С чего начать') || namesUnder(deskLightUnique).includes('Закреплено')) {
   fail.push('desktop light unique should be light wallpaper without first-run tip or start menu');
+}
+if (!simToastUnique || !namesUnder(simToastUnique).includes('File saved') || !namesUnder(simToastUnique).includes('Готовы к практике?') || namesUnder(simToastUnique).includes('Color Theme')) {
+  fail.push('code lab toast unique missing live File saved notification on idle workbench');
+}
+if (!deskTaskToastUnique || !namesUnder(deskTaskToastUnique).includes('Задача выполнена! +65 XP на счёт') || !namesUnder(deskTaskToastUnique).includes('ТЕКУЩАЯ · 1/12') || namesUnder(deskTaskToastUnique).includes('С чего начать') || namesUnder(deskTaskToastUnique).includes('Все задачи выполнены!')) {
+  fail.push('desktop toast unique missing live task-complete pill on first-task chrome');
+}
+if (!deskAllCompleteUnique || !namesUnder(deskAllCompleteUnique).includes('Все задачи выполнены!') || !namesUnder(deskAllCompleteUnique).includes('Вы заработали 160 XP. Отличная работа!') || !namesUnder(deskAllCompleteUnique).includes('12/12') || namesUnder(deskAllCompleteUnique).includes('ТЕКУЩАЯ · 1/12') || namesUnder(deskAllCompleteUnique).includes('С чего начать')) {
+  fail.push('desktop all-complete unique missing live 12/12 panel copy');
 }
 
 console.log(JSON.stringify(report, null, 2));
