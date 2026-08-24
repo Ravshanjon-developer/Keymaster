@@ -1076,9 +1076,9 @@ async function placeImage(msg) {
   await figma.setCurrentPageAsync(page);
   const bytes = figma.base64Decode(msg.b64);
   const image = figma.createImage(bytes);
-  const { w, h } = jpegSizeFromBytes(bytes);
-  let fw = w;
-  let fh = h;
+  const parsed = jpegSizeFromBytes(bytes);
+  let fw = msg.w || parsed.w;
+  let fh = msg.h || parsed.h;
   if (msg.page === '07 — Mobile Screens' && fw > 390) {
     const scale = 390 / fw;
     fw = 390;

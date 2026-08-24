@@ -7,6 +7,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 1. Open [Figma Desktop](https://www.figma.com/downloads/).
 2. **Plugins → Development → Import plugin from manifest…**
 3. Select `manifest.json` in this folder (`design/keymaster-product-map-figma/`).
+   GitHub: clone this PR branch, or download the folder from the PR Files tab.
 4. **File → New design file**, rename it **KeyMaster — Product Map (Current UI)**.
 5. Run the plugin **KeyMaster — Product Map (Current UI)** and wait until it closes.
 

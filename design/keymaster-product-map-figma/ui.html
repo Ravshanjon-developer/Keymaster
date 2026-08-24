@@ -6,77 +6,84 @@
       body { font: 13px/1.45 ui-sans-serif, system-ui, sans-serif; margin: 16px; color: #0f172a; }
       #status { color: #64748b; }
       progress { width: 100%; }
+      #preload { position: absolute; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; }
     </style>
   </head>
   <body>
     <p><strong>KeyMaster — Product Map</strong></p>
     <p id="status">Building pages, tokens, and components…</p>
     <progress id="bar" value="0" max="1"></progress>
+    <div id="preload">
+      <img id="shot-0" src="shots/desktop-guest-01-home.jpg" alt="" width="1" height="1" />
+      <img id="shot-1" src="shots/desktop-guest-02-login.jpg" alt="" width="1" height="1" />
+      <img id="shot-2" src="shots/desktop-guest-03-register.jpg" alt="" width="1" height="1" />
+      <img id="shot-3" src="shots/desktop-guest-verify-email-error.jpg" alt="" width="1" height="1" />
+      <img id="shot-4" src="shots/desktop-guest-04-courses.jpg" alt="" width="1" height="1" />
+      <img id="shot-5" src="shots/desktop-guest-05-course-computer-basics.jpg" alt="" width="1" height="1" />
+      <img id="shot-6" src="shots/desktop-guest-06-course-vscode.jpg" alt="" width="1" height="1" />
+      <img id="shot-7" src="shots/desktop-guest-07-leaderboard.jpg" alt="" width="1" height="1" />
+      <img id="shot-8" src="shots/desktop-learner-08-dashboard.jpg" alt="" width="1" height="1" />
+      <img id="shot-9" src="shots/desktop-learner-09-path-viewport.jpg" alt="" width="1" height="1" />
+      <img id="shot-10" src="shots/desktop-learner-10-practice.jpg" alt="" width="1" height="1" />
+      <img id="shot-11" src="shots/desktop-learner-11-typing.jpg" alt="" width="1" height="1" />
+      <img id="shot-12" src="shots/desktop-learner-typing-path.jpg" alt="" width="1" height="1" />
+      <img id="shot-13" src="shots/desktop-learner-typing-progress.jpg" alt="" width="1" height="1" />
+      <img id="shot-14" src="shots/desktop-learner-12-training.jpg" alt="" width="1" height="1" />
+      <img id="shot-15" src="shots/desktop-learner-13-speed.jpg" alt="" width="1" height="1" />
+      <img id="shot-16" src="shots/desktop-learner-14-review.jpg" alt="" width="1" height="1" />
+      <img id="shot-17" src="shots/desktop-learner-review-flipped.jpg" alt="" width="1" height="1" />
+      <img id="shot-18" src="shots/desktop-learner-15-quiz.jpg" alt="" width="1" height="1" />
+      <img id="shot-19" src="shots/desktop-learner-quiz-picked.jpg" alt="" width="1" height="1" />
+      <img id="shot-20" src="shots/desktop-learner-quiz-done.jpg" alt="" width="1" height="1" />
+      <img id="shot-21" src="shots/desktop-learner-16-exam.jpg" alt="" width="1" height="1" />
+      <img id="shot-22" src="shots/desktop-learner-exam-run.jpg" alt="" width="1" height="1" />
+      <img id="shot-23" src="shots/desktop-learner-exam-done.jpg" alt="" width="1" height="1" />
+      <img id="shot-24" src="shots/desktop-learner-17-lesson-hotkey.jpg" alt="" width="1" height="1" />
+      <img id="shot-25" src="shots/desktop-learner-18-lesson-task.jpg" alt="" width="1" height="1" />
+      <img id="shot-26" src="shots/desktop-learner-19-achievements.jpg" alt="" width="1" height="1" />
+      <img id="shot-27" src="shots/desktop-learner-20-stats.jpg" alt="" width="1" height="1" />
+      <img id="shot-28" src="shots/desktop-learner-21-admin-forbidden.jpg" alt="" width="1" height="1" />
+      <img id="shot-29" src="shots/desktop-learner-22-simulator-code.jpg" alt="" width="1" height="1" />
+      <img id="shot-30" src="shots/desktop-learner-23-simulator-desktop.jpg" alt="" width="1" height="1" />
+      <img id="shot-31" src="shots/desktop-admin-24-admin.jpg" alt="" width="1" height="1" />
+      <img id="shot-32" src="shots/desktop-admin-courses.jpg" alt="" width="1" height="1" />
+      <img id="shot-33" src="shots/desktop-admin-users.jpg" alt="" width="1" height="1" />
+      <img id="shot-34" src="shots/desktop-admin-achievements.jpg" alt="" width="1" height="1" />
+      <img id="shot-35" src="shots/dark-01-home.jpg" alt="" width="1" height="1" />
+      <img id="shot-36" src="shots/dark-02-login.jpg" alt="" width="1" height="1" />
+      <img id="shot-37" src="shots/dark-03-courses.jpg" alt="" width="1" height="1" />
+      <img id="shot-38" src="shots/dark-04-path.jpg" alt="" width="1" height="1" />
+      <img id="shot-39" src="shots/dark-05-practice.jpg" alt="" width="1" height="1" />
+      <img id="shot-40" src="shots/dark-06-dashboard.jpg" alt="" width="1" height="1" />
+      <img id="shot-41" src="shots/dark-07-register.jpg" alt="" width="1" height="1" />
+      <img id="shot-42" src="shots/state-btn-primary-hover.jpg" alt="" width="1" height="1" />
+      <img id="shot-43" src="shots/state-btn-disabled.jpg" alt="" width="1" height="1" />
+      <img id="shot-44" src="shots/state-input-focus.jpg" alt="" width="1" height="1" />
+      <img id="shot-45" src="shots/mobile-guest-01-home.jpg" alt="" width="1" height="1" />
+      <img id="shot-46" src="shots/mobile-guest-02-courses.jpg" alt="" width="1" height="1" />
+      <img id="shot-47" src="shots/mobile-guest-03-login.jpg" alt="" width="1" height="1" />
+      <img id="shot-48" src="shots/mobile-authed-04-practice.jpg" alt="" width="1" height="1" />
+      <img id="shot-49" src="shots/mobile-authed-05-review.jpg" alt="" width="1" height="1" />
+      <img id="shot-50" src="shots/mobile-authed-06-quiz.jpg" alt="" width="1" height="1" />
+      <img id="shot-51" src="shots/mobile-authed-07-path.jpg" alt="" width="1" height="1" />
+      <img id="shot-52" src="shots/mobile-authed-08-training-gate.jpg" alt="" width="1" height="1" />
+    </div>
     <script>
-      const SHOTS = [
-  {"file":"desktop-guest-01-home.jpg","page":"03 — Existing Screens","name":"Guest / Home","layout":"MarketingShell","group":"Guest"},
-  {"file":"desktop-guest-02-login.jpg","page":"03 — Existing Screens","name":"Guest / Login","layout":"AuthCard","group":"Guest"},
-  {"file":"desktop-guest-03-register.jpg","page":"03 — Existing Screens","name":"Guest / Register","layout":"AuthCard","group":"Guest"},
-  {"file":"desktop-guest-verify-email-error.jpg","page":"03 — Existing Screens","name":"Guest / Verify email","layout":"AuthCard","group":"Guest"},
-  {"file":"desktop-guest-04-courses.jpg","page":"03 — Existing Screens","name":"Guest / Courses","layout":"MarketingShell","group":"Guest"},
-  {"file":"desktop-guest-05-course-computer-basics.jpg","page":"03 — Existing Screens","name":"Guest / Course detail (computer-basics)","layout":"MarketingShell — 1 layout × 20 slugs","group":"Guest"},
-  {"file":"desktop-guest-06-course-vscode.jpg","page":"03 — Existing Screens","name":"Guest / Course layout reused ×20 (vscode)","layout":"Same Course Detail layout","group":"Guest"},
-  {"file":"desktop-guest-07-leaderboard.jpg","page":"03 — Existing Screens","name":"Guest / Leaderboard","layout":"MarketingShell","group":"Guest"},
-  {"file":"desktop-learner-08-dashboard.jpg","page":"03 — Existing Screens","name":"Learner / Dashboard","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-09-path-viewport.jpg","page":"03 — Existing Screens","name":"Learner / Path","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-10-practice.jpg","page":"03 — Existing Screens","name":"Learner / Practice hub","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-11-typing.jpg","page":"03 — Existing Screens","name":"Learner / Typing train","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-typing-path.jpg","page":"03 — Existing Screens","name":"Learner / Typing path","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-typing-progress.jpg","page":"03 — Existing Screens","name":"Learner / Typing progress","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-12-training.jpg","page":"03 — Existing Screens","name":"Learner / Training","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-13-speed.jpg","page":"03 — Existing Screens","name":"Learner / Speed","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-14-review.jpg","page":"03 — Existing Screens","name":"Learner / Review front","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-review-flipped.jpg","page":"03 — Existing Screens","name":"Learner / Review flipped","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-15-quiz.jpg","page":"03 — Existing Screens","name":"Learner / Quiz","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-quiz-picked.jpg","page":"03 — Existing Screens","name":"Learner / Quiz picked","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-quiz-done.jpg","page":"03 — Existing Screens","name":"Learner / Quiz correct","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-16-exam.jpg","page":"03 — Existing Screens","name":"Learner / Exam setup","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-exam-run.jpg","page":"03 — Existing Screens","name":"Learner / Exam run","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-exam-done.jpg","page":"03 — Existing Screens","name":"Learner / Exam done","layout":"PracticeShell","group":"Learner"},
-  {"file":"desktop-learner-17-lesson-hotkey.jpg","page":"03 — Existing Screens","name":"Learner / Lesson hotkey","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-18-lesson-task.jpg","page":"03 — Existing Screens","name":"Learner / Lesson task","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-19-achievements.jpg","page":"03 — Existing Screens","name":"Learner / Achievements","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-20-stats.jpg","page":"03 — Existing Screens","name":"Learner / Stats","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-21-admin-forbidden.jpg","page":"03 — Existing Screens","name":"Learner / Admin forbidden","layout":"MarketingShell","group":"Learner"},
-  {"file":"desktop-learner-22-simulator-code.jpg","page":"03 — Existing Screens","name":"Learner / Code Lab","layout":"ImmersiveSimulator","group":"Learner"},
-  {"file":"desktop-learner-23-simulator-desktop.jpg","page":"03 — Existing Screens","name":"Learner / Desktop sim","layout":"ImmersiveSimulator","group":"Learner"},
-  {"file":"desktop-admin-24-admin.jpg","page":"03 — Existing Screens","name":"Admin / Overview","layout":"MarketingShell","group":"Admin"},
-  {"file":"desktop-admin-courses.jpg","page":"03 — Existing Screens","name":"Admin / Courses","layout":"MarketingShell","group":"Admin"},
-  {"file":"desktop-admin-users.jpg","page":"03 — Existing Screens","name":"Admin / Users","layout":"MarketingShell","group":"Admin"},
-  {"file":"desktop-admin-achievements.jpg","page":"03 — Existing Screens","name":"Admin / Achievements","layout":"MarketingShell","group":"Admin"},
-  {"file":"dark-01-home.jpg","page":"03 — Existing Screens","name":"Dark / Home","layout":"html.dark","group":"Dark"},
-  {"file":"dark-02-login.jpg","page":"03 — Existing Screens","name":"Dark / Login","layout":"html.dark","group":"Dark"},
-  {"file":"dark-03-courses.jpg","page":"03 — Existing Screens","name":"Dark / Courses","layout":"html.dark","group":"Dark"},
-  {"file":"dark-04-path.jpg","page":"03 — Existing Screens","name":"Dark / Path (full scroll, scaled)","layout":"html.dark","group":"Dark"},
-  {"file":"dark-05-practice.jpg","page":"03 — Existing Screens","name":"Dark / Practice","layout":"html.dark","group":"Dark"},
-  {"file":"dark-06-dashboard.jpg","page":"03 — Existing Screens","name":"Dark / Dashboard","layout":"html.dark","group":"Dark"},
-  {"file":"dark-07-register.jpg","page":"03 — Existing Screens","name":"Dark / Register","layout":"html.dark","group":"Dark"},
-  {"file":"state-btn-primary-hover.jpg","page":"03 — Existing Screens","name":"State / Button primary hover","layout":"AuthCard","group":"States"},
-  {"file":"state-btn-disabled.jpg","page":"03 — Existing Screens","name":"State / Button disabled","layout":"AuthCard","group":"States"},
-  {"file":"state-input-focus.jpg","page":"03 — Existing Screens","name":"State / Input focus","layout":"AuthCard","group":"States"},
-  {"file":"mobile-guest-01-home.jpg","page":"07 — Mobile Screens","name":"Mobile / Home","layout":"BottomNav visible","group":"Mobile 390"},
-  {"file":"mobile-guest-02-courses.jpg","page":"07 — Mobile Screens","name":"Mobile / Courses","layout":"catalog + BottomNav","group":"Mobile 390"},
-  {"file":"mobile-guest-03-login.jpg","page":"07 — Mobile Screens","name":"Mobile / Login","layout":"BottomNav hidden","group":"Mobile 390"},
-  {"file":"mobile-authed-04-practice.jpg","page":"07 — Mobile Screens","name":"Mobile / Practice hub","layout":"compact chips + BottomNav","group":"Mobile 390"},
-  {"file":"mobile-authed-05-review.jpg","page":"07 — Mobile Screens","name":"Mobile / Review","layout":"swipe cards","group":"Mobile 390"},
-  {"file":"mobile-authed-06-quiz.jpg","page":"07 — Mobile Screens","name":"Mobile / Quiz","layout":"question","group":"Mobile 390"},
-  {"file":"mobile-authed-07-path.jpg","page":"07 — Mobile Screens","name":"Mobile / Path","layout":"nodes","group":"Mobile 390"},
-  {"file":"mobile-authed-08-training-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Training gate","layout":"PracticeKeyboardGate","group":"Mobile 390"}
-]
-;
-      function toB64(buf) {
-        const bytes = new Uint8Array(buf);
-        const chunk = 0x8000;
-        let s = '';
-        for (let i = 0; i < bytes.length; i += chunk) {
-          s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-        }
-        return btoa(s);
+      const SHOTS = [{"file":"desktop-guest-01-home.jpg","page":"03 — Existing Screens","name":"Guest / Home","layout":"MarketingShell","group":"Guest"},{"file":"desktop-guest-02-login.jpg","page":"03 — Existing Screens","name":"Guest / Login","layout":"AuthCard","group":"Guest"},{"file":"desktop-guest-03-register.jpg","page":"03 — Existing Screens","name":"Guest / Register","layout":"AuthCard","group":"Guest"},{"file":"desktop-guest-verify-email-error.jpg","page":"03 — Existing Screens","name":"Guest / Verify email","layout":"AuthCard","group":"Guest"},{"file":"desktop-guest-04-courses.jpg","page":"03 — Existing Screens","name":"Guest / Courses","layout":"MarketingShell","group":"Guest"},{"file":"desktop-guest-05-course-computer-basics.jpg","page":"03 — Existing Screens","name":"Guest / Course detail (computer-basics)","layout":"MarketingShell — 1 layout × 20 slugs","group":"Guest"},{"file":"desktop-guest-06-course-vscode.jpg","page":"03 — Existing Screens","name":"Guest / Course layout reused ×20 (vscode)","layout":"Same Course Detail layout","group":"Guest"},{"file":"desktop-guest-07-leaderboard.jpg","page":"03 — Existing Screens","name":"Guest / Leaderboard","layout":"MarketingShell","group":"Guest"},{"file":"desktop-learner-08-dashboard.jpg","page":"03 — Existing Screens","name":"Learner / Dashboard","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-09-path-viewport.jpg","page":"03 — Existing Screens","name":"Learner / Path","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-10-practice.jpg","page":"03 — Existing Screens","name":"Learner / Practice hub","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-11-typing.jpg","page":"03 — Existing Screens","name":"Learner / Typing train","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-typing-path.jpg","page":"03 — Existing Screens","name":"Learner / Typing path","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-typing-progress.jpg","page":"03 — Existing Screens","name":"Learner / Typing progress","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-12-training.jpg","page":"03 — Existing Screens","name":"Learner / Training","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-13-speed.jpg","page":"03 — Existing Screens","name":"Learner / Speed","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-14-review.jpg","page":"03 — Existing Screens","name":"Learner / Review front","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-review-flipped.jpg","page":"03 — Existing Screens","name":"Learner / Review flipped","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-15-quiz.jpg","page":"03 — Existing Screens","name":"Learner / Quiz","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-quiz-picked.jpg","page":"03 — Existing Screens","name":"Learner / Quiz picked","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-quiz-done.jpg","page":"03 — Existing Screens","name":"Learner / Quiz correct","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-16-exam.jpg","page":"03 — Existing Screens","name":"Learner / Exam setup","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-exam-run.jpg","page":"03 — Existing Screens","name":"Learner / Exam run","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-exam-done.jpg","page":"03 — Existing Screens","name":"Learner / Exam done","layout":"PracticeShell","group":"Learner"},{"file":"desktop-learner-17-lesson-hotkey.jpg","page":"03 — Existing Screens","name":"Learner / Lesson hotkey","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-18-lesson-task.jpg","page":"03 — Existing Screens","name":"Learner / Lesson task","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-19-achievements.jpg","page":"03 — Existing Screens","name":"Learner / Achievements","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-20-stats.jpg","page":"03 — Existing Screens","name":"Learner / Stats","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-21-admin-forbidden.jpg","page":"03 — Existing Screens","name":"Learner / Admin forbidden","layout":"MarketingShell","group":"Learner"},{"file":"desktop-learner-22-simulator-code.jpg","page":"03 — Existing Screens","name":"Learner / Code Lab","layout":"ImmersiveSimulator","group":"Learner"},{"file":"desktop-learner-23-simulator-desktop.jpg","page":"03 — Existing Screens","name":"Learner / Desktop sim","layout":"ImmersiveSimulator","group":"Learner"},{"file":"desktop-admin-24-admin.jpg","page":"03 — Existing Screens","name":"Admin / Overview","layout":"MarketingShell","group":"Admin"},{"file":"desktop-admin-courses.jpg","page":"03 — Existing Screens","name":"Admin / Courses","layout":"MarketingShell","group":"Admin"},{"file":"desktop-admin-users.jpg","page":"03 — Existing Screens","name":"Admin / Users","layout":"MarketingShell","group":"Admin"},{"file":"desktop-admin-achievements.jpg","page":"03 — Existing Screens","name":"Admin / Achievements","layout":"MarketingShell","group":"Admin"},{"file":"dark-01-home.jpg","page":"03 — Existing Screens","name":"Dark / Home","layout":"html.dark","group":"Dark"},{"file":"dark-02-login.jpg","page":"03 — Existing Screens","name":"Dark / Login","layout":"html.dark","group":"Dark"},{"file":"dark-03-courses.jpg","page":"03 — Existing Screens","name":"Dark / Courses","layout":"html.dark","group":"Dark"},{"file":"dark-04-path.jpg","page":"03 — Existing Screens","name":"Dark / Path (full scroll, scaled)","layout":"html.dark","group":"Dark"},{"file":"dark-05-practice.jpg","page":"03 — Existing Screens","name":"Dark / Practice","layout":"html.dark","group":"Dark"},{"file":"dark-06-dashboard.jpg","page":"03 — Existing Screens","name":"Dark / Dashboard","layout":"html.dark","group":"Dark"},{"file":"dark-07-register.jpg","page":"03 — Existing Screens","name":"Dark / Register","layout":"html.dark","group":"Dark"},{"file":"state-btn-primary-hover.jpg","page":"03 — Existing Screens","name":"State / Button primary hover","layout":"AuthCard","group":"States"},{"file":"state-btn-disabled.jpg","page":"03 — Existing Screens","name":"State / Button disabled","layout":"AuthCard","group":"States"},{"file":"state-input-focus.jpg","page":"03 — Existing Screens","name":"State / Input focus","layout":"AuthCard","group":"States"},{"file":"mobile-guest-01-home.jpg","page":"07 — Mobile Screens","name":"Mobile / Home","layout":"BottomNav visible","group":"Mobile 390"},{"file":"mobile-guest-02-courses.jpg","page":"07 — Mobile Screens","name":"Mobile / Courses","layout":"catalog + BottomNav","group":"Mobile 390"},{"file":"mobile-guest-03-login.jpg","page":"07 — Mobile Screens","name":"Mobile / Login","layout":"BottomNav hidden","group":"Mobile 390"},{"file":"mobile-authed-04-practice.jpg","page":"07 — Mobile Screens","name":"Mobile / Practice hub","layout":"compact chips + BottomNav","group":"Mobile 390"},{"file":"mobile-authed-05-review.jpg","page":"07 — Mobile Screens","name":"Mobile / Review","layout":"swipe cards","group":"Mobile 390"},{"file":"mobile-authed-06-quiz.jpg","page":"07 — Mobile Screens","name":"Mobile / Quiz","layout":"question","group":"Mobile 390"},{"file":"mobile-authed-07-path.jpg","page":"07 — Mobile Screens","name":"Mobile / Path","layout":"nodes","group":"Mobile 390"},{"file":"mobile-authed-08-training-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Training gate","layout":"PracticeKeyboardGate","group":"Mobile 390"}];
+      function dataUrlToB64(url) {
+        const i = url.indexOf(',');
+        return i >= 0 ? url.slice(i + 1) : url;
+      }
+      function imgToB64(img) {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return dataUrlToB64(canvas.toDataURL('image/jpeg', 0.82));
+      }
+      async function waitDecoded(img) {
+        if (img.complete && img.naturalWidth) return;
+        await img.decode();
       }
       let waiting = null;
       window.onmessage = (e) => {
@@ -100,22 +107,23 @@
           status.textContent = 'Placing ' + (i + 1) + '/' + SHOTS.length + ' — ' + item.name;
           bar.value = i;
           try {
-          const buf = await fetch('shots/' + item.file).then((r) => {
-            if (!r.ok) throw new Error(r.status + ' ' + item.file);
-            return r.arrayBuffer();
-          });
-          parent.postMessage({
-            pluginMessage: {
-              type: 'image',
-              file: item.file,
-              name: item.name,
-              page: item.page,
-              layout: item.layout,
-              group: item.group,
-              b64: toB64(buf),
-            },
-          }, '*');
-          await ack();
+            const img = document.getElementById('shot-' + i);
+            await waitDecoded(img);
+            const b64 = imgToB64(img);
+            parent.postMessage({
+              pluginMessage: {
+                type: 'image',
+                file: item.file,
+                name: item.name,
+                page: item.page,
+                layout: item.layout,
+                group: item.group,
+                w: img.naturalWidth,
+                h: img.naturalHeight,
+                b64: b64,
+              },
+            }, '*');
+            await ack();
           } catch (err) {
             parent.postMessage({ pluginMessage: { type: 'skip', file: item.file } }, '*');
             await ack();
