@@ -1253,6 +1253,8 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-menu.jpg', 'Desktop context menu'],
       ['desktop-learner-simulator-desktop-explorer.jpg', 'Explorer'],
       ['desktop-learner-simulator-desktop-trash.jpg', 'Recycle bin'],
+      ['desktop-learner-simulator-desktop-start.jpg', 'Start menu'],
+      ['desktop-learner-simulator-desktop-editor.jpg', 'Welcome.txt'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
     ['F6 Hotkey learn', [
@@ -1263,6 +1265,7 @@ async function buildVisualFlows() {
       ['desktop-learner-11-typing.jpg', 'Typing'],
       ['desktop-learner-22-simulator-code.jpg', 'Code Lab'],
       ['desktop-learner-simulator-code-palette.jpg', 'Command palette'],
+      ['desktop-learner-simulator-code-quickopen.jpg', 'Quick Open'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1441,8 +1444,8 @@ async function buildSitemap() {
     [
       'ImmersiveSimulator',
       [
-        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · command palette'],
-        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · context menu · explorer · recycle-bin'],
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · command palette · quick open'],
+        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · context menu · explorer · recycle-bin · Пуск · Welcome.txt'],
       ],
     ],
   ];
@@ -4684,6 +4687,60 @@ async function buildUniqueScreens() {
       }
       palette.appendChild(list);
       sim.appendChild(palette);
+    } else if (overlay === 'quickopen') {
+      const palette = al('VERTICAL', 'Quick Open');
+      palette.itemSpacing = 0;
+      palette.paddingTop = 12;
+      palette.paddingLeft = palette.paddingRight = 180;
+      palette.resize(960, 10);
+      palette.layoutSizingHorizontal = 'FIXED';
+      palette.layoutSizingVertical = 'HUG';
+      const search = al('HORIZONTAL', 'quickopen search');
+      search.counterAxisAlignItems = 'CENTER';
+      search.itemSpacing = 8;
+      search.paddingLeft = search.paddingRight = 12;
+      search.paddingTop = search.paddingBottom = 10;
+      search.fills = [solid(VSCODE_BG)];
+      search.strokes = [solid(WHITE, 0.12)];
+      search.resize(600, 10);
+      search.layoutSizingHorizontal = 'FIXED';
+      search.layoutSizingVertical = 'HUG';
+      search.appendChild(txt('Search files by name...', outfit('Regular'), 13, VSCODE_MUTED, 480));
+      const esc = al('HORIZONTAL', 'Esc');
+      esc.paddingLeft = esc.paddingRight = 6;
+      esc.paddingTop = esc.paddingBottom = 2;
+      esc.cornerRadius = 4;
+      esc.fills = [solid(VSCODE_SIDE)];
+      esc.appendChild(txt('Esc', outfit('Regular'), 10, VSCODE_MUTED));
+      search.appendChild(esc);
+      palette.appendChild(search);
+      const list = al('VERTICAL', 'quickopen list');
+      list.itemSpacing = 0;
+      list.fills = [solid(VSCODE_SIDE)];
+      list.strokes = [solid(WHITE, 0.12)];
+      list.resize(600, 10);
+      list.layoutSizingHorizontal = 'FIXED';
+      list.layoutSizingVertical = 'HUG';
+      const files = [
+        ['README.md', true],
+        ['package.json', false],
+        ['index.html', false],
+      ];
+      for (const [label, on] of files) {
+        const row = al('HORIZONTAL', label);
+        row.counterAxisAlignItems = 'CENTER';
+        row.itemSpacing = 8;
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 8;
+        row.fills = [solid(on ? PALETTE_SEL : VSCODE_SIDE)];
+        row.resize(598, 10);
+        row.layoutSizingHorizontal = 'FIXED';
+        row.layoutSizingVertical = 'HUG';
+        row.appendChild(txt(label, outfit('Regular'), 13, on ? WHITE : { r: 0.8, g: 0.8, b: 0.82 }, 520));
+        list.appendChild(row);
+      }
+      palette.appendChild(list);
+      sim.appendChild(palette);
     }
     const simBody = al('HORIZONTAL', 'panes');
     simBody.itemSpacing = 0;
@@ -4897,6 +4954,78 @@ async function buildUniqueScreens() {
       deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов', false));
     } else if (overlay === 'trash') {
       deskWork.appendChild(deskWin('Корзина', '/Корзина', '0 объектов', true));
+    } else if (overlay === 'start') {
+      const start = al('VERTICAL', 'Start menu');
+      start.itemSpacing = 10;
+      start.paddingTop = start.paddingBottom = 16;
+      start.paddingLeft = start.paddingRight = 16;
+      start.cornerRadius = 16;
+      start.fills = [solid({ r: 0.125, g: 0.125, b: 0.125 }, 0.94)];
+      start.strokes = [solid(WHITE, 0.16)];
+      start.resize(360, 10);
+      start.layoutSizingHorizontal = 'FIXED';
+      start.layoutSizingVertical = 'HUG';
+      start.appendChild(txt('Закреплено', outfit('SemiBold'), 13, VSCODE_MUTED));
+      const pins = al('HORIZONTAL', 'pinned');
+      pins.itemSpacing = 12;
+      for (const label of ['Проводник', 'Корзина', 'VS Code', 'Клавиатура']) {
+        const pin = al('VERTICAL', label);
+        pin.itemSpacing = 6;
+        pin.primaryAxisAlignItems = 'CENTER';
+        pin.appendChild(txt(label, outfit('Medium'), 12, WHITE, 80));
+        pins.appendChild(pin);
+      }
+      start.appendChild(pins);
+      const foot = al('HORIZONTAL', 'start footer');
+      foot.primaryAxisAlignItems = 'SPACE_BETWEEN';
+      foot.resize(328, 10);
+      foot.layoutSizingHorizontal = 'FIXED';
+      foot.layoutSizingVertical = 'HUG';
+      foot.appendChild(txt('Тема', outfit('Regular'), 12, WHITE));
+      foot.appendChild(txt('К практике', outfit('Regular'), 12, WHITE));
+      start.appendChild(foot);
+      deskWork.appendChild(start);
+    } else if (overlay === 'editor') {
+      const win = al('VERTICAL', 'Welcome.txt window');
+      win.itemSpacing = 0;
+      win.cornerRadius = 8;
+      win.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
+      win.strokes = [solid(WHITE, 0.18)];
+      win.resize(560, 10);
+      win.layoutSizingHorizontal = 'FIXED';
+      win.layoutSizingVertical = 'HUG';
+      const bar = al('HORIZONTAL', 'Welcome.txt');
+      bar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+      bar.counterAxisAlignItems = 'CENTER';
+      bar.paddingLeft = 12;
+      bar.paddingRight = 8;
+      bar.paddingTop = bar.paddingBottom = 6;
+      bar.fills = [solid({ r: 0.16, g: 0.17, b: 0.2 })];
+      bar.resize(558, 32);
+      bar.layoutSizingHorizontal = 'FIXED';
+      bar.layoutSizingVertical = 'FIXED';
+      bar.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
+      bar.appendChild(txt('−  □  ×', outfit('Regular'), 12, WHITE));
+      win.appendChild(bar);
+      const tool = al('HORIZONTAL', 'editor toolbar');
+      tool.counterAxisAlignItems = 'CENTER';
+      tool.itemSpacing = 8;
+      tool.paddingLeft = tool.paddingRight = 10;
+      tool.paddingTop = tool.paddingBottom = 6;
+      tool.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 })];
+      tool.resize(558, 10);
+      tool.layoutSizingHorizontal = 'FIXED';
+      tool.layoutSizingVertical = 'HUG';
+      tool.appendChild(txt('Сохранить', outfit('SemiBold'), 12, WHITE));
+      tool.appendChild(txt('Welcome.txt', outfit('Regular'), 12, VSCODE_MUTED));
+      tool.appendChild(txt('184 симв. · 5 строк', outfit('Regular'), 11, VSCODE_MUTED));
+      win.appendChild(tool);
+      const body = al('VERTICAL', 'editor body');
+      body.paddingTop = body.paddingBottom = 12;
+      body.paddingLeft = body.paddingRight = 12;
+      body.appendChild(txt('Welcome to Keymaster Desktop Simulator!', outfit('Regular'), 13, WHITE, 520));
+      win.appendChild(body);
+      deskWork.appendChild(win);
     }
     const deskTasks = al('VERTICAL', 'desktop tasks');
     deskTasks.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
@@ -4943,10 +5072,13 @@ async function buildUniqueScreens() {
 
   const sim = makeCodeLab('Code Lab');
   const simPalette = makeCodeLab('Code Lab command palette /simulator', 'palette');
+  const simQuick = makeCodeLab('Code Lab quick open /simulator', 'quickopen');
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
   const deskTrash = makeDesktopSim('Desktop recycle-bin /simulator?mode=desktop', 'trash');
+  const deskStart = makeDesktopSim('Desktop start menu /simulator?mode=desktop', 'start');
+  const deskEditor = makeDesktopSim('Desktop editor /simulator?mode=desktop', 'editor');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -8621,7 +8753,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, desk, deskMenu, deskExplorer, deskTrash]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

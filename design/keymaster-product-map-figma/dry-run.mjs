@@ -1083,6 +1083,35 @@ if (!addLessonUnique || !namesUnder(addLessonUnique).includes('Через + , н
   fail.push('admin add-lesson unique missing live keysHint defaults or duplicates later lessons');
 }
 
+if (!names.includes('Code Lab quick open /simulator')) fail.push('no code-lab quick-open unique screen');
+if (!names.includes('Desktop start menu /simulator?mode=desktop')) fail.push('no desktop start-menu unique screen');
+if (!names.includes('Desktop editor /simulator?mode=desktop')) fail.push('no desktop editor unique screen');
+if (!names.includes('Search files by name...')) fail.push('no live quick-open placeholder unique screen');
+if (!names.includes('Закреплено')) fail.push('no live desktop Start pinned unique screen');
+if (!names.includes('Welcome to Keymaster Desktop Simulator!')) fail.push('no live Welcome.txt editor unique screen');
+if (!names.includes('184 симв. · 5 строк')) fail.push('no live editorStats unique screen');
+if (!names.includes('Learner / Code Lab quick open')) fail.push('no code-lab quick-open capture');
+if (!names.includes('Learner / Desktop start menu')) fail.push('no desktop start-menu capture');
+if (!names.includes('Learner / Desktop editor')) fail.push('no desktop editor capture');
+
+let simQuickUnique = null;
+let deskStartUnique = null;
+let deskEditorUnique = null;
+for (const p of pages) {
+  simQuickUnique = simQuickUnique || findByName(p, 'Code Lab quick open /simulator');
+  deskStartUnique = deskStartUnique || findByName(p, 'Desktop start menu /simulator?mode=desktop');
+  deskEditorUnique = deskEditorUnique || findByName(p, 'Desktop editor /simulator?mode=desktop');
+}
+if (!simQuickUnique || !namesUnder(simQuickUnique).includes('Search files by name...') || namesUnder(simQuickUnique).includes('File: New File')) {
+  fail.push('code lab quick-open unique should list files, not command palette rows');
+}
+if (!deskStartUnique || !namesUnder(deskStartUnique).includes('Закреплено') || !namesUnder(deskStartUnique).includes('Клавиатура') || namesUnder(deskStartUnique).includes('С чего начать')) {
+  fail.push('desktop start-menu unique missing live pinned apps without first-run');
+}
+if (!deskEditorUnique || !namesUnder(deskEditorUnique).includes('Сохранить') || !namesUnder(deskEditorUnique).includes('184 симв. · 5 строк')) {
+  fail.push('desktop editor unique missing live Welcome.txt save + editorStats');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));
