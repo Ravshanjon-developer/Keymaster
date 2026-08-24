@@ -1506,6 +1506,94 @@ await run('guest-hotkey-gate', desk, async (page) => {
   return { file: 'desktop-guest-lesson-hotkey.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
+await run('guest-login-verified', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-guest-login-verified.jpg');
+  await page.goto(BASE + '/login?verified=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Email подтверждён. Можно войти.', { exact: true }).waitFor({ timeout: 15000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  return { file: 'desktop-guest-login-verified.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('guest-task-lesson', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-guest-lesson-task.jpg');
+  await page.goto(BASE + '/courses/computer-basics', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  const lessonId = await page.evaluate(async () => {
+    const res = await fetch('/api/courses/computer-basics');
+    const data = await res.json();
+    for (const cat of data.categories || []) {
+      for (const les of cat.lessons || []) {
+        if (les.title === 'Файл и папка') return les.id;
+      }
+    }
+    return (data.categories?.[0]?.lessons?.[0]?.id) || '';
+  });
+  if (!lessonId) throw new Error('no public task lesson id');
+  await page.goto(BASE + '/lessons/' + lessonId, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Создайте бесплатный аккаунт', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByText('Файл и папка', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  if (String(snippet).includes('ЗАДАНИЕ')) throw new Error('guest task showed ЗАДАНИЕ panel');
+  return { file: 'desktop-guest-lesson-task.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('typing-code', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-typing-code.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/typing', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Тренажёр печати', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Код' }).click();
+  await page.getByText('javascript', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  if (!String(snippet).includes('javascript')) throw new Error('code lang chips missing');
+  return { file: 'desktop-learner-typing-code.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('exam-capped', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-exam-capped.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/exam', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByRole('button', { name: 'Начать экзамен' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: '50' }).click();
+  await page.locator('select').selectOption('computer-basics');
+  await page.getByText('В курсе меньше вопросов, чем выбрано. Будет задано: 16', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  return { file: 'desktop-learner-exam-capped.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('admin-edit-lesson', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-admin-edit-lesson.jpg');
+  await login(page, 'admin@example.com', 'KeyMasterAdmin1!');
+  await page.goto(BASE + '/admin', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.getByRole('button', { name: 'Курсы' }).click();
+  await page.getByRole('button', { name: 'Открыть' }).first().click();
+  await page.getByText('Назад к курсам').waitFor({ timeout: 15000 });
+  await page.getByText('Файл и папка', { exact: true }).waitFor({ timeout: 8000 });
+  await page.locator('li').filter({ hasText: 'Файл и папка' }).locator('button').first().click();
+  await page.locator('input').filter({ hasText: '' }).first().waitFor({ timeout: 8000 }).catch(() => {});
+  await page.waitForFunction(() => {
+    const inputs = [...document.querySelectorAll('input')];
+    return inputs.some((el) => el.value === 'Файл и папка');
+  }, { timeout: 8000 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72, fullPage: true });
+  const main = await page.locator('#main-content').innerText();
+  if (!String(main).includes('Отмена')) throw new Error('edit lesson missing Отмена');
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-admin-edit-lesson.jpg', w, h, snippet: main.slice(0, 1400) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

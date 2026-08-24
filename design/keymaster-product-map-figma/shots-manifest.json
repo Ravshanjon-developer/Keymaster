@@ -178,5 +178,10 @@
   {"file":"mobile-authed-21-speed.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed idle","layout":"PracticeShell chips + Старт 60 сек","group":"Mobile 390"},
   {"file":"mobile-authed-22-exam-setup.jpg","page":"07 — Mobile Screens","name":"Mobile / Exam setup","layout":"PracticeShell chips + Настройка сессии","group":"Mobile 390"},
   {"file":"desktop-learner-simulator-desktop-iconmenu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop icon menu","layout":"ImmersiveSimulator — Этот компьютер ПКМ Открыть","group":"Learner"},
-  {"file":"desktop-guest-lesson-hotkey.jpg","page":"03 — Existing Screens","name":"Guest / Lesson hotkey","layout":"MarketingShell — PracticeRegisterGate + KeyCombo","group":"Guest"}
+  {"file":"desktop-guest-lesson-hotkey.jpg","page":"03 — Existing Screens","name":"Guest / Lesson hotkey","layout":"MarketingShell — PracticeRegisterGate + KeyCombo","group":"Guest"},
+  {"file":"desktop-guest-login-verified.jpg","page":"03 — Existing Screens","name":"Guest / Login verified","layout":"AuthCard — ?verified=1 banner","group":"Guest"},
+  {"file":"desktop-guest-lesson-task.jpg","page":"03 — Existing Screens","name":"Guest / Lesson task","layout":"MarketingShell — PracticeRegisterGate, no ЗАДАНИЕ","group":"Guest"},
+  {"file":"desktop-learner-typing-code.jpg","page":"03 — Existing Screens","name":"Learner / Typing code","layout":"PracticeShell — Код + javascript langs","group":"Learner"},
+  {"file":"desktop-learner-exam-capped.jpg","page":"03 — Existing Screens","name":"Learner / Exam capped","layout":"PracticeShell — computer-basics 16 vs 50","group":"Learner"},
+  {"file":"desktop-admin-edit-lesson.jpg","page":"03 — Existing Screens","name":"Admin / Edit lesson","layout":"MarketingShell — CourseEditor inline edit","group":"Admin"}
 ]

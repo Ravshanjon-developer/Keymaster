@@ -391,6 +391,11 @@ if (!names.includes('Mobile Speed idle 390')) fail.push('no mobile speed-idle un
 if (!names.includes('Mobile Exam setup 390')) fail.push('no mobile exam-setup unique screen');
 if (!names.includes('Desktop icon menu /simulator?mode=desktop')) fail.push('no desktop icon-menu unique screen');
 if (!names.includes('Lesson hotkey guest /lessons/:id')) fail.push('no guest hotkey lesson unique screen');
+if (!names.includes('Lesson task guest /lessons/:id')) fail.push('no guest task lesson unique screen');
+if (!names.includes('Login verified /login?verified=1')) fail.push('no login-verified unique screen');
+if (!names.includes('Typing code /typing')) fail.push('no typing-code unique screen');
+if (!names.includes('Exam capped /exam')) fail.push('no exam-capped unique screen');
+if (!names.includes('Admin edit lesson /admin')) fail.push('no admin edit-lesson unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -432,6 +437,11 @@ if (!names.includes('Mobile / Speed idle')) fail.push('no mobile speed-idle capt
 if (!names.includes('Mobile / Exam setup')) fail.push('no mobile exam-setup capture');
 if (!names.includes('Learner / Desktop icon menu')) fail.push('no desktop icon-menu capture');
 if (!names.includes('Guest / Lesson hotkey')) fail.push('no guest hotkey lesson capture');
+if (!names.includes('Guest / Lesson task')) fail.push('no guest task lesson capture');
+if (!names.includes('Guest / Login verified')) fail.push('no login-verified capture');
+if (!names.includes('Learner / Typing code')) fail.push('no typing-code capture');
+if (!names.includes('Learner / Exam capped')) fail.push('no exam-capped capture');
+if (!names.includes('Admin / Edit lesson')) fail.push('no admin edit-lesson capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1108,6 +1118,7 @@ if (!names.includes('Desktop explorer /simulator?mode=desktop')) fail.push('no d
 if (!names.includes('Desktop recycle-bin /simulator?mode=desktop')) fail.push('no desktop recycle-bin unique screen');
 if (!names.includes('Code Lab command palette /simulator')) fail.push('no code-lab command-palette unique screen');
 if (!names.includes('Admin add lesson /admin')) fail.push('no admin add-lesson unique screen');
+if (!names.includes('Admin edit lesson /admin')) fail.push('no admin edit-lesson unique screen');
 if (!names.includes('Открыть проводник')) fail.push('no live desktop wallpaper context-menu unique screen');
 if (!names.includes('Эта папка пуста')) fail.push('no live recycle-bin empty unique screen');
 if (!names.includes('Type a command...')) fail.push('no live command-palette placeholder unique screen');
@@ -1120,6 +1131,7 @@ if (!names.includes('Learner / Desktop explorer')) fail.push('no desktop explore
 if (!names.includes('Learner / Desktop recycle-bin')) fail.push('no desktop recycle-bin capture');
 if (!names.includes('Learner / Code Lab command palette')) fail.push('no code-lab palette capture');
 if (!names.includes('Admin / Add lesson')) fail.push('no admin add-lesson capture');
+if (!names.includes('Admin / Edit lesson')) fail.push('no admin edit-lesson capture');
 
 let deskUnique = null;
 let deskMenuUnique = null;
@@ -1366,6 +1378,11 @@ let mobileSpeedIdleUnique = null;
 let mobileExamSetupUnique = null;
 let deskIconMenuUnique = null;
 let lessonHotkeyGuestUnique = null;
+let lessonTaskGuestUnique = null;
+let loginVerifiedUnique = null;
+let typingCodeUnique = null;
+let examCappedUnique = null;
+let adminEditLessonUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1423,6 +1440,11 @@ for (const p of pages) {
   mobileExamSetupUnique = mobileExamSetupUnique || findByName(p, 'Mobile Exam setup 390');
   deskIconMenuUnique = deskIconMenuUnique || findByName(p, 'Desktop icon menu /simulator?mode=desktop');
   lessonHotkeyGuestUnique = lessonHotkeyGuestUnique || findByName(p, 'Lesson hotkey guest /lessons/:id');
+  lessonTaskGuestUnique = lessonTaskGuestUnique || findByName(p, 'Lesson task guest /lessons/:id');
+  loginVerifiedUnique = loginVerifiedUnique || findByName(p, 'Login verified /login?verified=1');
+  typingCodeUnique = typingCodeUnique || findByName(p, 'Typing code /typing');
+  examCappedUnique = examCappedUnique || findByName(p, 'Exam capped /exam');
+  adminEditLessonUnique = adminEditLessonUnique || findByName(p, 'Admin edit lesson /admin');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1559,6 +1581,24 @@ if (!deskIconMenuUnique || !namesUnder(deskIconMenuUnique).includes('Откры�
 }
 if (!lessonHotkeyGuestUnique || !namesUnder(lessonHotkeyGuestUnique).includes('Регистрация для практики') || !namesUnder(lessonHotkeyGuestUnique).includes('Копировать') || !namesUnder(lessonHotkeyGuestUnique).includes('Создайте бесплатный аккаунт') || namesUnder(lessonHotkeyGuestUnique).includes('Учебное поле') || namesUnder(lessonHotkeyGuestUnique).includes('Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».')) {
   fail.push('guest hotkey unique missing PracticeRegisterGate + KeyCombo without trainer or study-only hint');
+}
+if (!lessonTaskGuestUnique || !namesUnder(lessonTaskGuestUnique).includes('Файл и папка') || !namesUnder(lessonTaskGuestUnique).includes('Поймите разницу между файлом и папкой') || !namesUnder(lessonTaskGuestUnique).includes('Создайте бесплатный аккаунт') || namesUnder(lessonTaskGuestUnique).includes('ЗАДАНИЕ') || namesUnder(lessonTaskGuestUnique).includes('Копировать')) {
+  fail.push('guest task unique missing PracticeRegisterGate without ЗАДАНИЕ panel or KeyCombo');
+}
+if (!loginVerifiedUnique || !namesUnder(loginVerifiedUnique).includes('Email подтверждён. Можно войти.') || !namesUnder(loginVerifiedUnique).includes('Войти') || namesUnder(loginVerifiedUnique).includes('Неверный email или пароль')) {
+  fail.push('login-verified unique missing green verifySuccess banner without error toast');
+}
+if (!typingCodeUnique || !namesUnder(typingCodeUnique).includes('javascript') || !namesUnder(typingCodeUnique).includes('Код') || !namesUnder(typingCodeUnique).some((n) => /function init\(config\)|const user = \{ id: 1|const total = items.reduce/.test(String(n))) || namesUnder(typingCodeUnique).includes('фыва олдж фыва олдж ваол джфы аовы лджф')) {
+  fail.push('typing-code unique missing Код + javascript sample without home-row prompt');
+}
+if (!examCappedUnique || !namesUnder(examCappedUnique).includes('В курсе меньше вопросов, чем выбрано. Будет задано: 16') || !namesUnder(examCappedUnique).includes('Первый ноутбук: файлы и папки') || !namesUnder(examCappedUnique).includes('Вопросов в курсе: 16') || namesUnder(examCappedUnique).includes('Число вопросов') === false) {
+  fail.push('exam-capped unique missing computer-basics cap notice and 16-question session');
+}
+if (examCappedUnique && namesUnder(examCappedUnique).filter((n) => n === 'Все курсы').length && !namesUnder(examCappedUnique).includes('Первый ноутбук: файлы и папки')) {
+  fail.push('exam-capped unique should select computer-basics, not only Все курсы');
+}
+if (!adminEditLessonUnique || !namesUnder(adminEditLessonUnique).includes('Файл и папка') || !namesUnder(adminEditLessonUnique).includes('Отмена') || !namesUnder(adminEditLessonUnique).includes('Поймите разницу между файлом и папкой') || !namesUnder(adminEditLessonUnique).includes('Расширение файла') || namesUnder(adminEditLessonUnique).includes('Через + , например Control+Shift+P') || namesUnder(adminEditLessonUnique).includes('Control+C') || namesUnder(adminEditLessonUnique).includes('Папка Practice')) {
+  fail.push('admin edit-lesson unique missing filled inline form without add-lesson keysHint defaults');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');

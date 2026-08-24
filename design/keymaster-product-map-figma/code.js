@@ -391,7 +391,7 @@ async function buildProductMap() {
   pagesRow.name = 'Unique pages';
   pagesRow.itemSpacing = 16;
   const cols = [
-    ['Public', '/  /login  /register  /verify-email  /auth/callback\n/courses  /courses/:slug (×20, 1 layout)\n/lessons/:id (hotkey | task | study-only | desktop-task)\n/leaderboard'],
+    ['Public', '/  /login  /register  /verify-email  /auth/callback\n/courses  /courses/:slug (×20, 1 layout)\n/lessons/:id (hotkey | task guest/authed | study-only | desktop-task)\n/leaderboard'],
     ['Protected', '/path  /practice  /typing  /training  /speed\n/review  /quiz  /exam\n/simulator  /simulator?mode=desktop\n/achievements  /dashboard  /stats  /admin'],
     ['Mobile-only', 'BottomNav: Courses / Path / Practice / Leaderboard\nHidden on login/register\nPracticeKeyboardGate when no physical keyboard'],
   ];
@@ -1233,6 +1233,7 @@ async function buildVisualFlows() {
     ]],
     ['F3 Sign in', [
       ['desktop-guest-02-login.jpg', 'Login'],
+      ['desktop-guest-login-verified.jpg', 'Login verified'],
       ['desktop-guest-login-error.jpg', 'Login error'],
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
     ]],
@@ -1275,13 +1276,16 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-iconmenu.jpg', 'Icon menu'],
       ['desktop-learner-simulator-desktop-tasks-closed.jpg', 'Tasks closed'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
+      ['desktop-guest-lesson-task.jpg', 'Guest task lesson'],
     ]],
     ['F6 Hotkey learn', [
       ['desktop-learner-17-lesson-hotkey.jpg', 'KeyboardTrainer'],
+      ['desktop-guest-lesson-hotkey.jpg', 'Guest hotkey gate'],
     ]],
     ['F7 Practice hub', [
       ['desktop-learner-10-practice.jpg', 'Hub'],
       ['desktop-learner-11-typing.jpg', 'Typing'],
+      ['desktop-learner-typing-code.jpg', 'Typing code'],
       ['desktop-learner-typing-busy.jpg', 'Typing busy'],
       ['desktop-learner-typing-paused.jpg', 'Typing paused'],
       ['desktop-learner-typing-result.jpg', 'Typing result'],
@@ -1328,6 +1332,7 @@ async function buildVisualFlows() {
       ['desktop-learner-15-quiz.jpg', 'Quiz'],
       ['desktop-learner-quiz-finished.jpg', 'Quiz finished'],
       ['desktop-learner-16-exam.jpg', 'Exam setup'],
+      ['desktop-learner-exam-capped.jpg', 'Exam capped'],
       ['desktop-learner-exam-loading.jpg', 'Exam loading'],
       ['desktop-learner-exam-run.jpg', 'Exam run'],
       ['desktop-learner-exam-feedback.jpg', 'Exam feedback'],
@@ -1362,6 +1367,7 @@ async function buildVisualFlows() {
       ['desktop-admin-course-create.jpg', 'Create course'],
       ['desktop-admin-course-editor.jpg', 'Course editor'],
       ['desktop-admin-add-lesson.jpg', 'Add lesson'],
+      ['desktop-admin-edit-lesson.jpg', 'Edit lesson'],
       ['desktop-admin-users.jpg', 'Users'],
       ['desktop-admin-achievements.jpg', 'Achievements'],
       ['desktop-admin-achievement-create.jpg', 'Create achievement'],
@@ -1479,7 +1485,7 @@ async function buildSitemap() {
     [
       'AuthCard',
       [
-        ['/login', 'Login', 'OTP if unverified'],
+        ['/login', 'Login', 'OTP if unverified · ?verified=1 banner'],
         ['/register', 'Register', 'OTP nested'],
         ['/verify-email', 'Verify email', 'loading · error · ok'],
         ['/auth/callback', 'OAuth callback', 'skeleton · error'],
@@ -1489,12 +1495,12 @@ async function buildSitemap() {
       'PracticeShell',
       [
         ['/practice', 'Practice hub', 'skills + reinforce'],
-        ['/typing', 'Typing', 'train | path | progress'],
+        ['/typing', 'Typing', 'train | code | path | progress'],
         ['/training', 'Hotkeys', 'run | empty | done | loading'],
         ['/speed', 'Speed', '60s | done | loading'],
         ['/review', 'Review', 'front / flipped / empty / loading'],
         ['/quiz', 'Quiz', 'play + done'],
-        ['/exam', 'Exam', 'setup | loading | run | feedback | done | empty'],
+        ['/exam', 'Exam', 'setup | capped | loading | run | feedback | done | empty'],
       ],
     ],
     [
@@ -3460,6 +3466,61 @@ async function buildUniqueScreens() {
   lessonHotkeyGuest.appendChild(guestHotkeyCard);
   lessonHotkeyGuest.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
+  const lessonTaskGuest = al('VERTICAL', 'Guest task lesson');
+  lessonTaskGuest.itemSpacing = 16;
+  const guestTaskCard = al('VERTICAL', 'guest task card');
+  guestTaskCard.itemSpacing = 12;
+  guestTaskCard.paddingTop = guestTaskCard.paddingBottom = 28;
+  guestTaskCard.paddingLeft = guestTaskCard.paddingRight = 28;
+  guestTaskCard.cornerRadius = 24;
+  guestTaskCard.fills = [solid(WHITE)];
+  guestTaskCard.resize(720, 10);
+  guestTaskCard.layoutSizingHorizontal = 'FIXED';
+  guestTaskCard.layoutSizingVertical = 'HUG';
+  guestTaskCard.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
+  guestTaskCard.appendChild(txt('Файл и папка', fraunces('Bold'), 28, INK));
+  guestTaskCard.appendChild(
+    txt(
+      'Папки помогают не искать всё на рабочем столе. У файла есть имя и расширение: report.docx, photo.jpg.',
+      outfit('Regular'),
+      14,
+      MUTED,
+      664,
+    ),
+  );
+  const guestTaskHint = al('VERTICAL', 'guest task prompt');
+  guestTaskHint.paddingTop = guestTaskHint.paddingBottom = 14;
+  guestTaskHint.paddingLeft = guestTaskHint.paddingRight = 16;
+  guestTaskHint.cornerRadius = 16;
+  guestTaskHint.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  guestTaskHint.appendChild(txt('Поймите разницу между файлом и папкой', outfit('SemiBold'), 14, BRAND800, 640));
+  guestTaskCard.appendChild(guestTaskHint);
+  const guestTaskGate = al('VERTICAL', 'task PracticeRegisterGate');
+  guestTaskGate.itemSpacing = 8;
+  guestTaskGate.paddingTop = guestTaskGate.paddingBottom = 16;
+  guestTaskGate.paddingLeft = guestTaskGate.paddingRight = 16;
+  guestTaskGate.cornerRadius = 16;
+  guestTaskGate.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  guestTaskGate.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
+  guestTaskGate.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
+  guestTaskGate.appendChild(
+    txt(
+      'Тренажёр клавиш, XP и путь обучения доступны после регистрации. Каталог и теория уроков — без аккаунта.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      560,
+    ),
+  );
+  const guestTaskBtns = al('HORIZONTAL', 'guest task ctas');
+  guestTaskBtns.itemSpacing = 8;
+  guestTaskBtns.appendChild(instPrimary('Регистрация'));
+  guestTaskBtns.appendChild(instSecondary('Уже есть аккаунт'));
+  guestTaskGate.appendChild(guestTaskBtns);
+  guestTaskCard.appendChild(guestTaskGate);
+  lessonTaskGuest.appendChild(guestTaskCard);
+  lessonTaskGuest.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+
   const lessonTask = al('VERTICAL', 'Task lesson');
   lessonTask.itemSpacing = 12;
   const taskNotLearned = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
@@ -4193,6 +4254,26 @@ async function buildUniqueScreens() {
     ],
     'Нет аккаунта? Регистрация',
   );
+  const loginVerified = authScreen(
+    'Вход',
+    'Добро пожаловать в KeyMaster',
+    [
+      (() => {
+        const banner = al('HORIZONTAL', 'verified banner');
+        banner.paddingLeft = banner.paddingRight = 12;
+        banner.paddingTop = banner.paddingBottom = 8;
+        banner.cornerRadius = 12;
+        banner.fills = [solid(SUCCESS, 0.1)];
+        banner.strokes = [solid(SUCCESS, 0.3)];
+        banner.appendChild(txt('Email подтверждён. Можно войти.', outfit('Medium'), 13, { r: 0.082, g: 0.502, b: 0.239 }, 296));
+        return banner;
+      })(),
+      floatOrInst('State=Default', 'Email'),
+      floatOrInst('State=Password', 'Пароль', { password: true }),
+      instPrimary('Войти'),
+    ],
+    'Нет аккаунта? Регистрация',
+  );
   const loginOtp = authScreen(
     'Вход',
     'Введите код из письма.',
@@ -4615,6 +4696,100 @@ async function buildUniqueScreens() {
   examCard.appendChild(summary);
   examCard.appendChild(instPrimary('Начать экзамен'));
   exam.appendChild(examCard);
+
+  const examCapped = al('VERTICAL', 'Exam capped');
+  examCapped.itemSpacing = 12;
+  examCapped.appendChild(txt('ЭКЗАМЕН', outfit('Bold'), 11, BRAND800));
+  examCapped.appendChild(txt('Настройка сессии', fraunces('Bold'), 32, INK));
+  examCapped.appendChild(
+    txt(
+      'Выберите курс, объём и лимит времени. По истечении минут экзамен завершится автоматически.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      680,
+    ),
+  );
+  const examCappedCard = al('VERTICAL', 'GlassCard capped');
+  examCappedCard.itemSpacing = 16;
+  examCappedCard.paddingTop = examCappedCard.paddingBottom = 24;
+  examCappedCard.paddingLeft = examCappedCard.paddingRight = 24;
+  examCappedCard.cornerRadius = 24;
+  examCappedCard.fills = [solid(WHITE)];
+  examCappedCard.appendChild(txt('Курс', outfit('SemiBold'), 13, INK));
+  examCappedCard.appendChild(field('Курс', 'Первый ноутбук: файлы и папки', INK));
+  examCappedCard.appendChild(txt('Вопросов в курсе: 16', outfit('Regular'), 12, MUTED, 600));
+  examCappedCard.appendChild(txt('Число вопросов', outfit('SemiBold'), 13, INK));
+  const qCappedRow = al('HORIZONTAL', 'questions capped');
+  qCappedRow.itemSpacing = 8;
+  for (const n of [10, 20, 30, 50]) {
+    const on = n === 50;
+    const muted = n > 16;
+    const chip = al('HORIZONTAL', String(n));
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 12;
+    chip.opacity = muted && !on ? 0.45 : 1;
+    chip.fills = [solid(on ? BRAND : WHITE)];
+    chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(String(n), outfit('SemiBold'), 13, on ? WHITE : INK));
+    qCappedRow.appendChild(chip);
+  }
+  examCappedCard.appendChild(qCappedRow);
+  examCappedCard.appendChild(txt('Лимит времени', outfit('SemiBold'), 13, INK));
+  const mCappedRow = al('HORIZONTAL', 'minutes capped');
+  mCappedRow.itemSpacing = 8;
+  for (const n of [5, 10, 15, 20]) {
+    const chip = al('HORIZONTAL', String(n));
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 12;
+    chip.fills = [solid(n === 10 ? BRAND : WHITE)];
+    chip.strokes = [solid(n === 10 ? BRAND : INK, n === 10 ? 1 : 0.12)];
+    chip.appendChild(txt(n + ' мин', outfit('SemiBold'), 13, n === 10 ? WHITE : INK));
+    mCappedRow.appendChild(chip);
+  }
+  examCappedCard.appendChild(mCappedRow);
+  const cappedSummary = al('VERTICAL', 'Ваша сессия capped');
+  cappedSummary.itemSpacing = 12;
+  cappedSummary.paddingTop = cappedSummary.paddingBottom = 16;
+  cappedSummary.paddingLeft = cappedSummary.paddingRight = 16;
+  cappedSummary.cornerRadius = 16;
+  cappedSummary.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  cappedSummary.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 11, MUTED));
+  const cappedMetrics = al('HORIZONTAL', 'session metrics capped');
+  cappedMetrics.itemSpacing = 8;
+  for (const [k, v] of [
+    ['Число вопросов', '16'],
+    ['Лимит времени', '10 мин'],
+    ['Темп', '~38 сек.'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 4;
+    m.paddingTop = m.paddingBottom = 8;
+    m.paddingLeft = m.paddingRight = 8;
+    m.cornerRadius = 12;
+    m.fills = [solid(WHITE)];
+    m.resize(196, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    m.appendChild(txt(v, outfit('SemiBold'), 16, INK));
+    cappedMetrics.appendChild(m);
+  }
+  cappedSummary.appendChild(cappedMetrics);
+  cappedSummary.appendChild(pill('Первый ноутбук: файлы и папки', { r: 0.859, g: 0.914, b: 0.996 }, BRAND800));
+  cappedSummary.appendChild(
+    txt('В курсе меньше вопросов, чем выбрано. Будет задано: 16', outfit('Regular'), 12, { r: 0.706, g: 0.325, b: 0.035 }, 600),
+  );
+  cappedSummary.appendChild(
+    txt('Сбалансированный темп: успеете вспомнить сочетание и нажать его.', outfit('Regular'), 12, MUTED, 600),
+  );
+  examCappedCard.appendChild(cappedSummary);
+  examCappedCard.appendChild(instPrimary('Начать экзамен'));
+  examCapped.appendChild(examCappedCard);
 
   const examEmpty = al('VERTICAL', 'Exam empty');
   examEmpty.itemSpacing = 16;
@@ -6416,6 +6591,69 @@ async function buildUniqueScreens() {
   typingBody.appendChild(typeCtl);
   typingBody.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
 
+  const typingCode = al('VERTICAL', 'Typing code');
+  typingCode.itemSpacing = 12;
+  typingCode.appendChild(typingHead('Тренировка'));
+  const codeModeRow = al('HORIZONTAL', 'code modes');
+  codeModeRow.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Домашний ряд', false],
+    ['Все буквы', false],
+    ['Слова', false],
+    ['Фразы', false],
+    ['Код', true],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 8;
+    chip.cornerRadius = 99;
+    chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+    chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+    codeModeRow.appendChild(chip);
+  }
+  typingCode.appendChild(codeModeRow);
+  const langRow = al('HORIZONTAL', 'code langs');
+  langRow.itemSpacing = 4;
+  for (const [label, on] of [
+    ['python', false],
+    ['javascript', true],
+    ['html', false],
+    ['css', false],
+    ['sql', false],
+    ['git', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 10;
+    chip.paddingTop = chip.paddingBottom = 6;
+    chip.cornerRadius = 8;
+    chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+    chip.appendChild(txt(label, outfit('SemiBold'), 12, on ? WHITE : MUTED));
+    langRow.appendChild(chip);
+  }
+  typingCode.appendChild(langRow);
+  typingCode.appendChild(typingLiveStats('—'));
+  const codeBox = al('VERTICAL', 'code prompt');
+  codeBox.itemSpacing = 8;
+  codeBox.paddingTop = codeBox.paddingBottom = 20;
+  codeBox.paddingLeft = codeBox.paddingRight = 20;
+  codeBox.cornerRadius = 24;
+  codeBox.fills = [solid(WHITE)];
+  codeBox.appendChild(txt('function init(config) {', outfit('Regular'), 16, INK, 640));
+  codeBox.appendChild(txt('  if (!config.isValid) return false;', outfit('Regular'), 16, INK, 640));
+  codeBox.appendChild(txt('  return system.boot(config);', outfit('Regular'), 16, INK, 640));
+  codeBox.appendChild(txt('}', outfit('Regular'), 16, INK, 640));
+  typingCode.appendChild(codeBox);
+  const codeCtl = al('HORIZONTAL', 'code typing controls');
+  codeCtl.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  codeCtl.resize(680, 10);
+  codeCtl.layoutSizingHorizontal = 'FIXED';
+  codeCtl.layoutSizingVertical = 'HUG';
+  codeCtl.appendChild(instSecondary('Ещё раз'));
+  codeCtl.appendChild(txt('Скрыть клавиатуру', outfit('SemiBold'), 13, BRAND800));
+  typingCode.appendChild(codeCtl);
+  typingCode.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
+
   const typingPath = al('VERTICAL', 'Typing path');
   typingPath.itemSpacing = 12;
   typingPath.appendChild(typingHead('Путь'));
@@ -8206,6 +8444,7 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson hotkey guest /lessons/:id', 'Курсы', true, [lessonHotkeyGuest]),
+      marketingPage('Lesson task guest /lessons/:id', 'Курсы', true, [lessonTaskGuest]),
       marketingPage('Lesson hotkey done /lessons/:id', 'Курсы', false, [lessonHotkeyDone]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson task done /lessons/:id', 'Курсы', false, [lessonTaskDone]),
@@ -8964,6 +9203,93 @@ async function buildUniqueScreens() {
           return cat;
         })(),
       ], false, true),
+      marketingPage('Admin edit lesson /admin', '', false, [
+        ...adminHeader('Курсы'),
+        (() => {
+          const back = al('HORIZONTAL', 'back edit lesson');
+          back.itemSpacing = 8;
+          back.counterAxisAlignItems = 'CENTER';
+          back.appendChild(txt('←', outfit('SemiBold'), 13, BRAND800));
+          back.appendChild(txt('Назад к курсам', outfit('SemiBold'), 13, BRAND800));
+          return back;
+        })(),
+        txt('Категории', outfit('SemiBold'), 18, INK),
+        (() => {
+          const cat = al('VERTICAL', 'Edit lesson category');
+          cat.itemSpacing = 10;
+          cat.paddingTop = cat.paddingBottom = 16;
+          cat.paddingLeft = cat.paddingRight = 16;
+          cat.cornerRadius = 16;
+          cat.fills = [solid(WHITE)];
+          cat.strokes = [solid(INK, 0.08)];
+          cat.resize(860, 10);
+          cat.layoutSizingHorizontal = 'FIXED';
+          cat.layoutSizingVertical = 'HUG';
+          const head = al('HORIZONTAL', 'edit lesson cat head');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'CENTER';
+          const copy = al('VERTICAL', 'edit lesson cat copy');
+          copy.itemSpacing = 4;
+          copy.appendChild(txt('Файлы и папки', outfit('SemiBold'), 15, INK));
+          copy.appendChild(txt('basics · 3 Уроки', outfit('Regular'), 12, MUTED));
+          head.appendChild(copy);
+          head.appendChild(instSecondary('Урок'));
+          cat.appendChild(head);
+          head.layoutSizingHorizontal = 'FILL';
+          const form = al('VERTICAL', 'Edit lesson form');
+          form.itemSpacing = 8;
+          form.paddingTop = form.paddingBottom = 12;
+          form.paddingLeft = form.paddingRight = 12;
+          form.cornerRadius = 12;
+          form.strokes = [solid(INK, 0.08)];
+          const grid = al('HORIZONTAL', 'edit lesson grid');
+          grid.itemSpacing = 12;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(800, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          grid.appendChild(field('Название', 'Файл и папка', INK));
+          grid.appendChild(field('Клавиши', '', INK));
+          grid.appendChild(field('Задание', 'Поймите разницу между файлом и папкой', INK));
+          grid.appendChild(field('XP за урок', '15', INK));
+          form.appendChild(grid);
+          form.appendChild(
+            field(
+              'Описание',
+              'Папки помогают не искать всё на рабочем столе. У файла есть имя и расширение: report.docx, photo.jpg.',
+              INK,
+            ),
+          );
+          form.appendChild(
+            field('Зачем нужно', 'Папка — «конверт»; файл — одна заметка, фото или программа', INK),
+          );
+          const actions = al('HORIZONTAL', 'edit lesson actions');
+          actions.itemSpacing = 8;
+          actions.appendChild(instPrimary('Сохранить'));
+          actions.appendChild(instSecondary('Отмена'));
+          form.appendChild(actions);
+          cat.appendChild(form);
+          const nextLesson = al('VERTICAL', 'Расширение файла edit-lesson');
+          nextLesson.itemSpacing = 2;
+          nextLesson.paddingTop = nextLesson.paddingBottom = 8;
+          nextLesson.paddingLeft = nextLesson.paddingRight = 12;
+          nextLesson.cornerRadius = 8;
+          nextLesson.strokes = [solid(INK, 0.08)];
+          nextLesson.appendChild(txt('Расширение файла', outfit('Medium'), 14, INK));
+          nextLesson.appendChild(txt('· +15 XP', outfit('Regular'), 11, BRAND800));
+          cat.appendChild(nextLesson);
+          cat.appendChild(
+            txt(
+              'Инлайн-редактирование урока (не пустая форма Урок). Не дублировать остальные 15 уроков.',
+              outfit('Regular'),
+              12,
+              MUTED,
+              800,
+            ),
+          );
+          return cat;
+        })(),
+      ], false, true),
       marketingPage('Admin course create /admin', '', false, [
         ...adminHeader('Курсы'),
         (() => {
@@ -9032,6 +9358,7 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('AuthCard', [
       marketingPage('Login /login', '', true, [loginCard]),
+      marketingPage('Login verified /login?verified=1', '', true, [loginVerified]),
       marketingPage('Login error /login', '', true, [
         (() => {
           const toast = al('HORIZONTAL', 'toast');
@@ -9073,6 +9400,7 @@ async function buildUniqueScreens() {
         reinforceCards,
       ]),
       practicePage('Typing /typing', 'Слепая печать', [typingBody]),
+      practicePage('Typing code /typing', 'Слепая печать', [typingCode]),
       practicePage('Typing path /typing', 'Слепая печать', [typingPath]),
       practicePage('Typing progress /typing', 'Слепая печать', [typingProgress]),
       practicePage('Typing busy /typing', 'Слепая печать', [typingBusy]),
@@ -9106,6 +9434,7 @@ async function buildUniqueScreens() {
       practicePage('Quiz done /quiz', 'Основы hotkeys', [quizDone]),
       practicePage('Quiz finished /quiz', 'Основы hotkeys', [quizFinished]),
       practicePage('Exam setup /exam', 'Экзамен', [exam]),
+      practicePage('Exam capped /exam', 'Экзамен', [examCapped]),
       practicePage('Exam empty /exam', 'Экзамен', [examEmpty]),
       practicePage('Exam loading /exam', 'Экзамен', [
         skelBlock(160, 24, 'Kind=Line'),
