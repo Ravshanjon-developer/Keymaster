@@ -1276,6 +1276,8 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-run.jpg', 'Run and Debug'],
       ['desktop-learner-simulator-code-extensions.jpg', 'Extensions'],
       ['desktop-learner-simulator-code-filemenu.jpg', 'File menu'],
+      ['desktop-learner-simulator-code-viewmenu.jpg', 'View menu'],
+      ['desktop-learner-simulator-code-manage.jpg', 'Manage'],
       ['desktop-learner-simulator-code-task.jpg', 'Current task done'],
       ['desktop-learner-simulator-code-taskrun.jpg', 'Task in progress'],
       ['desktop-learner-simulator-code-tasklist.jpg', 'All tasks'],
@@ -1459,7 +1461,7 @@ async function buildSitemap() {
     [
       'ImmersiveSimulator',
       [
-        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · palette · File menu · find · search · SCM · run · extensions · preview · current/all tasks · keyboard'],
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · palette · File/View menus · Manage · find · search · SCM · run · extensions · preview · current/all tasks · keyboard'],
         ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · wallpaper menu · file menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties'],
       ],
     ],
@@ -4788,6 +4790,54 @@ async function buildUniqueScreens() {
         menu.appendChild(row);
       }
       sim.appendChild(menu);
+    } else if (overlay === 'menuview') {
+      const menu = al('VERTICAL', 'View menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 4;
+      menu.paddingLeft = 12;
+      menu.fills = [solid(VSCODE_SIDE)];
+      menu.strokes = [solid(WHITE, 0.12)];
+      menu.resize(280, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const [label, chord] of [
+        ['Toggle Primary Side Bar', 'Ctrl+B'],
+        ['Toggle Panel', 'Ctrl+`'],
+        ['Toggle Keyboard Visualizer', ''],
+        ['Command Palette', 'Ctrl+Shift+P'],
+        ['Toggle Task Panel', ''],
+      ]) {
+        const row = al('HORIZONTAL', label);
+        row.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        row.counterAxisAlignItems = 'CENTER';
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 6;
+        row.resize(276, 10);
+        row.layoutSizingHorizontal = 'FIXED';
+        row.layoutSizingVertical = 'HUG';
+        row.appendChild(txt(label, outfit('Regular'), 13, WHITE, 180));
+        if (chord) row.appendChild(txt(chord, outfit('Regular'), 11, VSCODE_MUTED));
+        menu.appendChild(row);
+      }
+      sim.appendChild(menu);
+    } else if (overlay === 'manage') {
+      const menu = al('VERTICAL', 'Manage menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 4;
+      menu.paddingLeft = 12;
+      menu.fills = [solid(VSCODE_SIDE)];
+      menu.strokes = [solid(WHITE, 0.12)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of ['Color Theme', 'Keyboard Visualizer', 'Extensions']) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 6;
+        row.appendChild(txt(label, outfit('Regular'), 13, WHITE));
+        menu.appendChild(row);
+      }
+      sim.appendChild(menu);
     }
     const simBody = al('HORIZONTAL', 'panes');
     simBody.itemSpacing = 0;
@@ -4915,6 +4965,7 @@ async function buildUniqueScreens() {
       tasks.appendChild(txt('Ctrl+N', outfit('Regular'), 12, WHITE));
       tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, WHITE));
       tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, VSCODE_MUTED));
+      tasks.appendChild(txt('Задача выполнена: Создать новый файл', outfit('Regular'), 12, WHITE, 248));
     } else if (overlay === 'taskrun') {
       tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
       tasks.appendChild(txt('НАЧАЛЬНЫЙ', outfit('Bold'), 10, { r: 0.086, g: 0.639, b: 0.29 }));
@@ -5347,6 +5398,8 @@ async function buildUniqueScreens() {
   const simRun = makeCodeLab('Code Lab run /simulator', 'run');
   const simExt = makeCodeLab('Code Lab extensions /simulator', 'extensions');
   const simFileMenu = makeCodeLab('Code Lab file menu /simulator', 'menufile');
+  const simViewMenu = makeCodeLab('Code Lab view menu /simulator', 'menuview');
+  const simManage = makeCodeLab('Code Lab manage /simulator', 'manage');
   const simTask = makeCodeLab('Code Lab current task /simulator', 'task');
   const simTaskRun = makeCodeLab('Code Lab task in progress /simulator', 'taskrun');
   const simTaskList = makeCodeLab('Code Lab all tasks /simulator', 'tasklist');
@@ -9035,7 +9088,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

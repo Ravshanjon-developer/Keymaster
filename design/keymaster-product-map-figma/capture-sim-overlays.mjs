@@ -306,6 +306,18 @@ await run('code-lab-filemenu', desk, async (page) => {
   return { file: 'desktop-learner-simulator-code-filemenu.jpg', w, h };
 });
 
+await run('code-lab-viewmenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-viewmenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'View', exact: true }).click();
+  await page.getByText('Toggle Task Panel', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Toggle Keyboard Visualizer', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-viewmenu.jpg', w, h };
+});
+
 await run('code-lab-task', desk, async (page) => {
   const dest = path.join(shotsDir, 'desktop-learner-simulator-code-task.jpg');
   await openCodeLab(page);
@@ -362,6 +374,18 @@ await run('code-lab-keyboard', desk, async (page) => {
   await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
   const { w, h } = jpegSize(fs.readFileSync(dest));
   return { file: 'desktop-learner-simulator-code-keyboard.jpg', w, h };
+});
+
+await run('code-lab-manage', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-manage.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Manage').click();
+  await page.getByText('Color Theme', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Keyboard Visualizer', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-manage.jpg', w, h };
 });
 
 await browser.close();

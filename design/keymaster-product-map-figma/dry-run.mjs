@@ -1193,6 +1193,8 @@ if (!deskFileMenuUnique || !namesUnder(deskFileMenuUnique).includes('Откры�
 }
 
 if (!names.includes('Code Lab file menu /simulator')) fail.push('no code-lab file-menu unique screen');
+if (!names.includes('Code Lab view menu /simulator')) fail.push('no code-lab view-menu unique screen');
+if (!names.includes('Code Lab manage /simulator')) fail.push('no code-lab manage unique screen');
 if (!names.includes('Code Lab current task /simulator')) fail.push('no code-lab current-task unique screen');
 if (!names.includes('Code Lab task in progress /simulator')) fail.push('no code-lab in-progress task unique screen');
 if (!names.includes('Задача выполнена!')) fail.push('no live Code Lab task-completed unique screen');
@@ -1205,29 +1207,40 @@ if (!names.includes('Создать новый файл')) fail.push('no live fi
 if (!names.includes('Подсказка (0/3)')) fail.push('no live Code Lab hint counter unique screen');
 if (!names.includes('PREVIEW — INDEX.HTML')) fail.push('no live Code Lab preview header unique screen');
 if (!names.includes('KEYBOARD VISUALIZER')) fail.push('no live Code Lab keyboard visualizer unique screen');
+if (!names.includes('Toggle Primary Side Bar')) fail.push('no live Code Lab View menu unique screen');
+if (!names.includes('Color Theme')) fail.push('no live Code Lab Manage menu unique screen');
 if (!names.includes('Learner / Code Lab file menu')) fail.push('no code-lab file-menu capture');
+if (!names.includes('Learner / Code Lab view menu')) fail.push('no code-lab view-menu capture');
 if (!names.includes('Learner / Code Lab current task')) fail.push('no code-lab current-task capture');
 if (!names.includes('Learner / Code Lab task in progress')) fail.push('no code-lab in-progress task capture');
 if (!names.includes('Learner / Code Lab all tasks')) fail.push('no code-lab all-tasks capture');
 if (!names.includes('Learner / Code Lab preview')) fail.push('no code-lab preview capture');
 if (!names.includes('Learner / Code Lab keyboard')) fail.push('no code-lab keyboard capture');
+if (!names.includes('Learner / Code Lab manage')) fail.push('no code-lab manage capture');
 
 let simFileMenuUnique = null;
+let simViewMenuUnique = null;
 let simTaskUnique = null;
 let simTaskRunUnique = null;
 let simTaskListUnique = null;
 let simPreviewUnique = null;
 let simKbVizUnique = null;
+let simManageUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
+  simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
   simTaskUnique = simTaskUnique || findByName(p, 'Code Lab current task /simulator');
   simTaskRunUnique = simTaskRunUnique || findByName(p, 'Code Lab task in progress /simulator');
   simTaskListUnique = simTaskListUnique || findByName(p, 'Code Lab all tasks /simulator');
   simPreviewUnique = simPreviewUnique || findByName(p, 'Code Lab preview /simulator');
   simKbVizUnique = simKbVizUnique || findByName(p, 'Code Lab keyboard /simulator');
+  simManageUnique = simManageUnique || findByName(p, 'Code Lab manage /simulator');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
+}
+if (!simViewMenuUnique || !namesUnder(simViewMenuUnique).includes('Toggle Primary Side Bar') || !namesUnder(simViewMenuUnique).includes('Toggle Task Panel') || namesUnder(simViewMenuUnique).includes('Open Folder from Computer…')) {
+  fail.push('code lab view-menu unique missing live View dropdown');
 }
 if (!simTaskUnique || !namesUnder(simTaskUnique).includes('Задача выполнена!') || !namesUnder(simTaskUnique).includes('Следующая задача') || namesUnder(simTaskUnique).includes('Готовы к практике?')) {
   fail.push('code lab current-task unique missing live auto-complete result');
@@ -1243,6 +1256,9 @@ if (!simPreviewUnique || !namesUnder(simPreviewUnique).includes('PREVIEW — IND
 }
 if (!simKbVizUnique || !namesUnder(simKbVizUnique).includes('KEYBOARD VISUALIZER') || !namesUnder(simKbVizUnique).includes('Bksp  Tab  Caps  Enter  Win  Space') || namesUnder(simKbVizUnique).includes('С чего начать')) {
   fail.push('code lab keyboard unique missing live Keyboard Visualizer chrome');
+}
+if (!simManageUnique || !namesUnder(simManageUnique).includes('Color Theme') || !namesUnder(simManageUnique).includes('Keyboard Visualizer') || !namesUnder(simManageUnique).includes('Extensions') || namesUnder(simManageUnique).includes('EXTENSIONS & LAB')) {
+  fail.push('code lab manage unique missing live Manage menu copy');
 }
 
 console.log(JSON.stringify(report, null, 2));
