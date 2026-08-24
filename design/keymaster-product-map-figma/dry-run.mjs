@@ -295,6 +295,11 @@ if (!names.includes('Mobile Practice 390')) fail.push('no mobile practice unique
 if (!names.includes('Mobile Courses 390')) fail.push('no mobile courses unique screen');
 if (!names.includes('Exam feedback /exam')) fail.push('no exam feedback unique screen');
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
+if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen');
+if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
+if (!names.includes('Dark Register / html.dark')) fail.push('no dark register unique screen');
+if (!names.includes('Dark Practice / html.dark')) fail.push('no dark practice unique screen');
+if (!names.includes('Period filter')) fail.push('no leaderboard period filter');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {

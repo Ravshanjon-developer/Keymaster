@@ -1689,15 +1689,15 @@ function marketingPage(name, active, guest, body, dark) {
   return page;
 }
 
-function practicePage(name, active, body) {
+function practicePage(name, active, body, dark) {
   const page = al('VERTICAL', name);
   page.itemSpacing = 0;
-  page.fills = [solid(PAPER)];
-  page.strokes = [solid(INK, 0.08)];
+  page.fills = [solid(dark ? DARK_BG : PAPER)];
+  page.strokes = [solid(dark ? WHITE : INK, 0.08)];
   page.resize(960, 10);
   page.layoutSizingHorizontal = 'FIXED';
   page.layoutSizingVertical = 'HUG';
-  page.appendChild(makeNavbar('Практика', false));
+  page.appendChild(makeNavbar('Практика', false, dark));
   const row = al('HORIZONTAL', 'PracticeShell');
   row.itemSpacing = 0;
   row.fills = [solid(SHELL_BG)];
@@ -1770,7 +1770,7 @@ function practicePage(name, active, body) {
   outlet.itemSpacing = 12;
   outlet.paddingTop = outlet.paddingBottom = 24;
   outlet.paddingLeft = outlet.paddingRight = 24;
-  outlet.fills = [solid(PAPER)];
+  outlet.fills = [solid(dark ? DARK_BG : PAPER)];
   outlet.resize(720, 10);
   outlet.layoutSizingHorizontal = 'FIXED';
   outlet.layoutSizingVertical = 'HUG';
@@ -1778,7 +1778,7 @@ function practicePage(name, active, body) {
   row.appendChild(rail);
   row.appendChild(outlet);
   page.appendChild(row);
-  page.appendChild(makeFooter());
+  page.appendChild(makeFooter(dark));
   return page;
 }
 
@@ -2340,8 +2340,49 @@ async function buildUniqueScreens() {
     tiles.appendChild(t);
   }
   dash.appendChild(tiles);
-  dash.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
-  dash.appendChild(txt('Последние достижения', outfit('SemiBold'), 16, INK));
+  const dailyCard = al('VERTICAL', 'Daily');
+  dailyCard.itemSpacing = 8;
+  dailyCard.paddingTop = dailyCard.paddingBottom = 16;
+  dailyCard.paddingLeft = dailyCard.paddingRight = 16;
+  dailyCard.cornerRadius = 24;
+  dailyCard.fills = [solid(WHITE)];
+  dailyCard.resize(420, 10);
+  dailyCard.layoutSizingHorizontal = 'FIXED';
+  dailyCard.layoutSizingVertical = 'HUG';
+  dailyCard.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
+  for (const [title, prog] of [
+    ['Пройти урок', '1/1'],
+    ['Тренировка печати', '0/1'],
+  ]) {
+    const row = al('HORIZONTAL', title);
+    row.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    row.paddingTop = row.paddingBottom = 10;
+    row.paddingLeft = row.paddingRight = 12;
+    row.cornerRadius = 12;
+    row.strokes = [solid(INK, 0.1)];
+    row.resize(388, 10);
+    row.layoutSizingHorizontal = 'FIXED';
+    row.layoutSizingVertical = 'HUG';
+    row.appendChild(txt(title, outfit('Regular'), 13, MUTED));
+    row.appendChild(txt(prog, outfit('SemiBold'), 13, BRAND800));
+    dailyCard.appendChild(row);
+  }
+  const achCard = al('VERTICAL', 'Recent achievements');
+  achCard.itemSpacing = 8;
+  achCard.paddingTop = achCard.paddingBottom = 16;
+  achCard.paddingLeft = achCard.paddingRight = 16;
+  achCard.cornerRadius = 24;
+  achCard.fills = [solid(WHITE)];
+  achCard.resize(420, 10);
+  achCard.layoutSizingHorizontal = 'FIXED';
+  achCard.layoutSizingVertical = 'HUG';
+  achCard.appendChild(txt('Последние достижения', outfit('SemiBold'), 16, INK));
+  achCard.appendChild(txt('Первый урок', outfit('Regular'), 13, INK));
+  const dashCols = al('HORIZONTAL', 'dash cols');
+  dashCols.itemSpacing = 12;
+  dashCols.appendChild(dailyCard);
+  dashCols.appendChild(achCard);
+  dash.appendChild(dashCols);
 
   function authScreen(title, subtitle, bodyNodes, footerText, opts) {
     const compact = !!(opts && opts.compact);
@@ -2517,6 +2558,29 @@ async function buildUniqueScreens() {
   journey.appendChild(txt('С чего начать сегодня', outfit('Bold'), 11, BRAND800));
   journey.appendChild(txt('Рекомендуемый маршрут', fraunces('SemiBold'), 20, INK));
   journey.appendChild(txt('Сначала печать и файлы, потом курс. Скорость — когда база уже есть.', outfit('Regular'), 13, MUTED, 680));
+  for (const [n, step] of [
+    ['1', 'Слепая печать — уверенность в пальцах'],
+    ['2', 'Симулятор — папки и файлы без страха'],
+    ['3', 'Курс «Первый ноутбук» — закрепить знания'],
+    ['4', 'Hotkeys и путь разработчика — дальше по карте'],
+  ]) {
+    const row = al('HORIZONTAL', step);
+    row.itemSpacing = 12;
+    row.counterAxisAlignItems = 'CENTER';
+    const num = al('HORIZONTAL', n);
+    num.primaryAxisAlignItems = 'CENTER';
+    num.counterAxisAlignItems = 'CENTER';
+    num.resize(24, 24);
+    num.layoutSizingHorizontal = 'FIXED';
+    num.layoutSizingVertical = 'FIXED';
+    num.cornerRadius = 99;
+    num.fills = [solid(BRAND50)];
+    num.appendChild(txt(n, outfit('Bold'), 11, BRAND800));
+    row.appendChild(num);
+    row.appendChild(txt(step, outfit('Regular'), 13, MUTED, 600));
+    journey.appendChild(row);
+  }
+  journey.appendChild(primaryBtn('Открыть «Первый ноутбук»'));
 
   const quiz = al('VERTICAL', 'Quiz');
   quiz.itemSpacing = 10;
@@ -2999,6 +3063,38 @@ async function buildUniqueScreens() {
   speedBody.appendChild(speedRow);
   speedBody.appendChild(primaryBtn('Старт 60 сек'));
 
+  const speedDone = al('VERTICAL', 'Speed done');
+  speedDone.itemSpacing = 12;
+  speedDone.paddingTop = speedDone.paddingBottom = 24;
+  speedDone.paddingLeft = speedDone.paddingRight = 24;
+  speedDone.cornerRadius = 24;
+  speedDone.fills = [solid(WHITE)];
+  speedDone.primaryAxisAlignItems = 'CENTER';
+  speedDone.resize(400, 10);
+  speedDone.layoutSizingHorizontal = 'FIXED';
+  speedDone.layoutSizingVertical = 'HUG';
+  speedDone.appendChild(txt('Время вышло!', outfit('Bold'), 22, INK));
+  const speedStats = al('HORIZONTAL', 'speed stats');
+  speedStats.itemSpacing = 16;
+  speedStats.layoutWrap = 'WRAP';
+  for (const [k, v] of [
+    ['Очки', '120'],
+    ['Комбо (макс.)', '4'],
+    ['Точность', '80%'],
+    ['Правильно', '8/10'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 4;
+    m.resize(160, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Regular'), 11, MUTED));
+    m.appendChild(txt(v, outfit('Bold'), 20, INK));
+    speedStats.appendChild(m);
+  }
+  speedDone.appendChild(speedStats);
+  speedDone.appendChild(primaryBtn('Ещё раз'));
+
   const examRun = al('VERTICAL', 'Exam run');
   examRun.itemSpacing = 12;
   const examRunHead = al('HORIZONTAL', 'run head');
@@ -3281,14 +3377,39 @@ async function buildUniqueScreens() {
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', false, [lessonStudy]),
       marketingPage('Path /path', 'Мой путь', false, [
+        txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
         txt('Developer Growth Path', outfit('SemiBold'), 24, INK),
-        txt('Не дублировать каждый узел курса — 5 статусов покрывают карту.', outfit('Regular'), 13, MUTED, 800),
+        txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.', outfit('Regular'), 13, MUTED, 800),
+        txt('Не дублировать каждый узел курса — 5 статусов покрывают карту.', outfit('Regular'), 12, MUTED, 800),
         pathRow,
       ]),
       marketingPage('Dashboard /dashboard', 'Главная', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
-        txt('Рейтинг', outfit('SemiBold'), 28, INK),
-        txt('Топ учеников KeyMaster по XP. Периоды: всё время / неделя / месяц.', outfit('Regular'), 13, MUTED, 800),
+        txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800),
+        txt('Рейтинг', fraunces('Bold'), 32, INK),
+        txt('Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.', outfit('Regular'), 13, MUTED, 800),
+        (() => {
+          const periods = al('HORIZONTAL', 'Period filter');
+          periods.itemSpacing = 4;
+          periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
+          periods.cornerRadius = 12;
+          periods.fills = [solid(WHITE)];
+          periods.strokes = [solid(INK, 0.1)];
+          for (const [label, on] of [
+            ['Всё время', true],
+            ['Неделя', false],
+            ['Месяц', false],
+          ]) {
+            const chip = al('HORIZONTAL', label);
+            chip.paddingLeft = chip.paddingRight = 14;
+            chip.paddingTop = chip.paddingBottom = 6;
+            chip.cornerRadius = 8;
+            chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+            periods.appendChild(chip);
+          }
+          return periods;
+        })(),
         podium,
       ]),
       marketingPage('Achievements /achievements', 'Главная', false, [
@@ -3302,8 +3423,66 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Admin /admin', 'Главная', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
-        txt('Курсы, уроки, пользователи и достижения · 4 вкладки, не 4 разных layout.', outfit('Regular'), 13, MUTED, 800),
+        txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
         adminTabs,
+        (() => {
+          const grid = al('HORIZONTAL', 'Overview tiles');
+          grid.itemSpacing = 12;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(860, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          for (const [k, v] of [
+            ['Пользователи', '12'],
+            ['Курсы', '20'],
+            ['Уроки', '180'],
+            ['Достижения', '14'],
+            ['Уроков пройдено', '42'],
+            ['Админы', '1'],
+          ]) {
+            const t = al('VERTICAL', k);
+            t.itemSpacing = 4;
+            t.paddingTop = t.paddingBottom = 20;
+            t.paddingLeft = t.paddingRight = 16;
+            t.cornerRadius = 24;
+            t.fills = [solid(WHITE)];
+            t.resize(270, 10);
+            t.layoutSizingHorizontal = 'FIXED';
+            t.layoutSizingVertical = 'HUG';
+            t.appendChild(txt(k, outfit('Regular'), 13, MUTED));
+            t.appendChild(txt(v, outfit('Bold'), 28, INK));
+            grid.appendChild(t);
+          }
+          return grid;
+        })(),
+      ]),
+      marketingPage('Admin courses /admin', 'Главная', false, [
+        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Курсы, уроки, пользователи и достижения · вкладка Курсы, тот же layout.', outfit('Regular'), 13, MUTED, 800),
+        (() => {
+          const tabs = al('HORIZONTAL', 'Admin tabs courses');
+          tabs.itemSpacing = 8;
+          for (const [label, on] of [
+            ['Обзор', false],
+            ['Курсы', true],
+            ['Пользователи', false],
+            ['Достижения', false],
+          ]) {
+            const tab = al('HORIZONTAL', label);
+            tab.paddingLeft = tab.paddingRight = 14;
+            tab.paddingTop = tab.paddingBottom = 8;
+            tab.cornerRadius = 8;
+            tab.fills = on ? [solid({ r: 0.114, g: 0.306, b: 0.847 })] : [solid(INK, 0.05)];
+            tab.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+            tabs.appendChild(tab);
+          }
+          return tabs;
+        })(),
+        field('Поиск…', 'computer-basics', INK),
+        txt('Slug                  Название                         Уроки', outfit('Regular'), 12, MUTED, 800),
+        txt('computer-basics       Первый ноутбук: файлы и папки    12', outfit('Regular'), 13, INK, 800),
+        txt('programmer-basics     Основы программиста              18', outfit('Regular'), 13, INK, 800),
+        primaryBtn('Создать'),
       ]),
       marketingPage('Admin forbidden', 'Главная', false, [
         txt('Доступ только для администраторов', outfit('SemiBold'), 22, INK, 800),
@@ -3326,7 +3505,7 @@ async function buildUniqueScreens() {
       practicePage('Practice hub /practice', 'Тренировочный зал', [
         txt('Практика', outfit('Bold'), 11, BRAND800),
         txt('Тренировочный зал', outfit('SemiBold'), 24, INK),
-        txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов.', outfit('Regular'), 13, MUTED, 680),
+        txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов. Идите по рекомендуемому маршруту.', outfit('Regular'), 13, MUTED, 680),
         journey,
         txt('Навыки', outfit('SemiBold'), 18, INK),
         skillCards,
@@ -3338,6 +3517,7 @@ async function buildUniqueScreens() {
       practicePage('Typing progress /typing', 'Слепая печать', [typingProgress]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Speed /speed', 'Скорость', [speedBody]),
+      practicePage('Speed done /speed', 'Скорость', [speedDone]),
       practicePage('Quiz /quiz', 'Основы hotkeys', [quiz]),
       practicePage('Quiz picked /quiz', 'Основы hotkeys', [quizPicked]),
       practicePage('Quiz done /quiz', 'Основы hotkeys', [quizDone]),
@@ -3556,11 +3736,26 @@ async function buildUniqueScreens() {
     { chips: 'Основы hotkeys' },
   );
 
+  const darkRegisterCard = authScreen(
+    'Регистрация',
+    'Добро пожаловать в KeyMaster',
+    [
+      field('Имя', 'Анна', null, null, 'dark'),
+      field('username', 'anna', null, null, 'dark'),
+      field('Email', 'anna@example.com', null, null, 'dark'),
+      field('Пароль', '••••••••', null, null, 'dark'),
+      primaryBtn('Создать аккаунт'),
+    ],
+    'Уже есть аккаунт? Войти',
+    { compact: true, dark: true },
+  );
+
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', true, [darkHero], true),
       marketingPage('Dark Login / html.dark', 'Главная', true, [darkLoginCard], true),
+      marketingPage('Dark Register / html.dark', 'Главная', true, [darkRegisterCard], true),
       marketingPage('Dark Courses / html.dark', 'Курсы', true, [
         txt('Каталог курсов', outfit('SemiBold'), 28, DARK_TEXT),
         txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, DARK_MUTED, 860),
@@ -3568,6 +3763,16 @@ async function buildUniqueScreens() {
         darkFilterRow,
         darkCoursesRow,
       ], true),
+      practicePage(
+        'Dark Practice / html.dark',
+        'Тренировочный зал',
+        [
+          txt('Практика', outfit('Bold'), 11, BRAND500),
+          txt('Тренировочный зал', outfit('SemiBold'), 24, DARK_TEXT),
+          txt('Rail stays #141820. Outlet uses --bg-primary #020617.', outfit('Regular'), 13, DARK_MUTED, 680),
+        ],
+        true,
+      ),
     ]),
   );
   board.appendChild(
