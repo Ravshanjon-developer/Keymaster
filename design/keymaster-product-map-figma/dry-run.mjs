@@ -377,6 +377,10 @@ if (!names.includes('Typing result /typing')) fail.push('no typing-result unique
 if (!names.includes('Learner / Typing busy')) fail.push('no typing-busy capture');
 if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capture');
 if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
+if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
+if (!names.includes('Training explain /training')) fail.push('no training-explain unique screen');
+if (!names.includes('Learner / Desktop new folder')) fail.push('no desktop new-folder capture');
+if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
 if (!names.includes('Admin users /admin')) fail.push('no admin users unique screen');
 if (!names.includes('Admin achievements /admin')) fail.push('no admin achievements unique screen');
@@ -1293,6 +1297,8 @@ let speedRunUnique = null;
 let typingBusyUnique = null;
 let typingPausedUnique = null;
 let typingResultUnique = null;
+let deskNewFolderUnique = null;
+let trainExplainUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1320,6 +1326,8 @@ for (const p of pages) {
   typingBusyUnique = typingBusyUnique || findByName(p, 'Typing busy /typing');
   typingPausedUnique = typingPausedUnique || findByName(p, 'Typing paused /typing');
   typingResultUnique = typingResultUnique || findByName(p, 'Typing result /typing');
+  deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
+  trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1398,6 +1406,12 @@ if (!typingPausedUnique || !namesUnder(typingPausedUnique).includes('Пауза'
 }
 if (!typingResultUnique || !namesUnder(typingResultUnique).includes('ПОДХОД ЗАВЕРШЁН') || !namesUnder(typingResultUnique).includes('личный рекорд') || !namesUnder(typingResultUnique).includes('Новое достижение: Первая тренировка') || !namesUnder(typingResultUnique).includes('Точность уже хорошая — добавьте чуть темпа.') || !namesUnder(typingResultUnique).includes('Тренажёр печати') || namesUnder(typingResultUnique).includes('Пауза') || namesUnder(typingResultUnique).includes('Esc — продолжить')) {
   fail.push('typing-result unique missing live ResultCard copy');
+}
+if (!deskNewFolderUnique || !namesUnder(deskNewFolderUnique).includes('Новая папка') || !namesUnder(deskNewFolderUnique).includes('rename input') || namesUnder(deskNewFolderUnique).includes('С чего начать') || namesUnder(deskNewFolderUnique).includes('Открыть проводник')) {
+  fail.push('desktop new-folder unique missing live inline rename without context menu or first-run');
+}
+if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
+  fail.push('training-explain unique missing live KeyboardTrainer back face');
 }
 
 console.log(JSON.stringify(report, null, 2));

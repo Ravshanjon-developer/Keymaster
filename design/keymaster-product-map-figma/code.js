@@ -1263,6 +1263,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-toast.jpg', 'Task toast'],
       ['desktop-learner-simulator-desktop-done.jpg', 'All complete'],
       ['desktop-learner-simulator-desktop-fromlesson.jpg', 'From lesson'],
+      ['desktop-learner-simulator-desktop-newfolder.jpg', 'New folder rename'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
     ['F6 Hotkey learn', [
@@ -1301,6 +1302,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-newfile.jpg', 'New file'],
       ['desktop-learner-simulator-code-hint.jpg', 'Create folder hint'],
       ['desktop-learner-12-training.jpg', 'Training'],
+      ['desktop-learner-training-explain.jpg', 'Training explain'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-run.jpg', 'Speed run'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -5240,6 +5242,25 @@ async function buildUniqueScreens() {
       ic.appendChild(txt(label, outfit('Regular'), 11, deskInk, 120));
       icons.appendChild(ic);
     }
+    if (overlay === 'newfolder') {
+      const ic = al('VERTICAL', 'Новая папка');
+      ic.itemSpacing = 6;
+      ic.primaryAxisAlignItems = 'CENTER';
+      const box = figma.createRectangle();
+      box.resize(36, 36);
+      box.cornerRadius = 8;
+      box.fills = [solid({ r: 0.96, g: 0.78, b: 0.25 })];
+      ic.appendChild(box);
+      const inp = al('HORIZONTAL', 'rename input');
+      inp.paddingLeft = inp.paddingRight = 6;
+      inp.paddingTop = inp.paddingBottom = 2;
+      inp.cornerRadius = 4;
+      inp.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
+      inp.strokes = [solid(BRAND)];
+      inp.appendChild(txt('Новая папка', outfit('Regular'), 11, WHITE));
+      ic.appendChild(inp);
+      icons.appendChild(ic);
+    }
     if (overlay === 'fromlesson') {
       const back = al('HORIZONTAL', '← К уроку');
       back.paddingTop = back.paddingBottom = 6;
@@ -5573,6 +5594,7 @@ async function buildUniqueScreens() {
   const deskToast = makeDesktopSim('Desktop toast /simulator?mode=desktop', 'toast');
   const deskFromLesson = makeDesktopSim('Desktop from lesson /simulator?mode=desktop', 'fromlesson');
   const deskHint = makeDesktopSim('Desktop hint /simulator?mode=desktop', 'deskhint');
+  const deskNewFolder = makeDesktopSim('Desktop new folder /simulator?mode=desktop', 'newfolder');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -6303,6 +6325,69 @@ async function buildUniqueScreens() {
   trainBtns.appendChild(ghostBtn('Пропустить'));
   trainCard.appendChild(trainBtns);
   trainBody.appendChild(trainCard);
+
+  const trainExplain = al('VERTICAL', 'Training explain');
+  trainExplain.itemSpacing = 12;
+  trainExplain.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const explainMeta = al('HORIZONTAL', 'explain meta');
+  explainMeta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  explainMeta.counterAxisAlignItems = 'CENTER';
+  explainMeta.resize(640, 10);
+  explainMeta.layoutSizingHorizontal = 'FIXED';
+  explainMeta.layoutSizingVertical = 'HUG';
+  const explainProg = al('VERTICAL', 'explain progress');
+  explainProg.itemSpacing = 6;
+  explainProg.appendChild(txt('Задание 1 из 13', outfit('Regular'), 13, MUTED));
+  explainProg.appendChild(instProgress('Value=Partial') || progressBar(220, 0.08, BRAND, 6));
+  explainMeta.appendChild(explainProg);
+  const explainStats = al('HORIZONTAL', 'explain stats');
+  explainStats.itemSpacing = 16;
+  explainStats.appendChild(txt('Серия: 0', outfit('SemiBold'), 13, MUTED));
+  explainStats.appendChild(txt('✓ Верно: 0', outfit('SemiBold'), 13, MUTED));
+  explainMeta.appendChild(explainStats);
+  trainExplain.appendChild(explainMeta);
+  const explainCard = al('VERTICAL', 'trainer back');
+  explainCard.itemSpacing = 12;
+  explainCard.paddingTop = explainCard.paddingBottom = 24;
+  explainCard.paddingLeft = explainCard.paddingRight = 24;
+  explainCard.cornerRadius = 24;
+  explainCard.fills = [solid(WHITE)];
+  explainCard.strokes = [solid(BRAND, 0.18)];
+  explainCard.resize(640, 10);
+  explainCard.layoutSizingHorizontal = 'FIXED';
+  explainCard.layoutSizingVertical = 'HUG';
+  explainCard.appendChild(txt('ЧТО ДЕЛАЕТ', outfit('Bold'), 11, BRAND800));
+  explainCard.appendChild(txt('Замена', outfit('Bold'), 24, INK));
+  const explainKeys = al('HORIZONTAL', 'explain KeyCombo');
+  explainKeys.itemSpacing = 8;
+  explainKeys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Ctrl', 'H']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      explainKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    explainKeys.appendChild(box);
+  }
+  explainCard.appendChild(explainKeys);
+  explainCard.appendChild(
+    txt(
+      'Открывает «найти и заменить»: ищете одно слово и меняете его на другое сразу во всём тексте.',
+      outfit('Regular'),
+      14,
+      MUTED,
+      592,
+    ),
+  );
+  explainCard.appendChild(instSecondary('К упражнению'));
+  trainExplain.appendChild(explainCard);
 
   const speedBody = al('VERTICAL', 'Speed');
   speedBody.itemSpacing = 16;
@@ -8222,6 +8307,7 @@ async function buildUniqueScreens() {
       practicePage('Typing paused /typing', 'Слепая печать', [typingPaused]),
       practicePage('Typing result /typing', 'Слепая печать', [typingResult]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
+      practicePage('Training explain /training', 'Hotkeys', [trainExplain]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
       practicePage('Training done /training', 'Hotkeys', [trainDone]),
       practicePage('Training loading /training', 'Hotkeys', [
@@ -9467,7 +9553,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

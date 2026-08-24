@@ -697,6 +697,63 @@ await run('typing-result', desk, async (page) => {
   return { file: 'desktop-learner-typing-result.jpg', w, h, snippet: String(snippet).slice(0, 900), typedLen: typed.length };
 });
 
+await run('desktop-newfolder', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-newfolder.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.route('**/progress/lessons**', async (route) => {
+    const res = await route.fetch();
+    let json = [];
+    try {
+      json = await res.json();
+    } catch {
+      json = [];
+    }
+    const body = (Array.isArray(json) ? json : []).map((row) => {
+      const key = Array.isArray(row.keys) ? row.keys[0] : '';
+      if (typeof key === 'string' && key.startsWith('desktop:')) {
+        return { ...row, completed: false };
+      }
+      return row;
+    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  await page.evaluate(() => {
+    localStorage.setItem('km_desktop_tasks_v1', JSON.stringify({ completed: [], xp: 0 }));
+    localStorage.removeItem('km-desktop-vfs-v1');
+    localStorage.setItem('km-desktop-firstrun-v1', '1');
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 20000 });
+  const ok = page.getByRole('button', { name: 'Понятно' });
+  if (await ok.isVisible().catch(() => false)) await ok.click();
+  const root = page.locator('.bolt-desktop-root');
+  await root.waitFor({ timeout: 10000 });
+  const box = await root.boundingBox();
+  await page.mouse.click(box.x + box.width * 0.42, box.y + box.height * 0.38, { button: 'right' });
+  await page.getByText('Новая папка', { exact: true }).click();
+  const rename = page.locator('.bolt-desktop-root input');
+  await rename.waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const value = await rename.inputValue();
+  return { file: 'desktop-learner-simulator-desktop-newfolder.jpg', w, h, snippet: value };
+});
+
+await run('training-explain', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-explain.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Объяснение' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Объяснение' }).click();
+  await page.getByText('К упражнению', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-training-explain.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');
