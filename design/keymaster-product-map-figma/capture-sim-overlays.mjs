@@ -1416,6 +1416,96 @@ await run(
   { touch: true, noKeyboard: true },
 );
 
+await run(
+  'mobile-typing',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-20-typing.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/typing', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByText('Тренажёр печати', { exact: true }).waitFor({ timeout: 15000 });
+    await page.getByText('Показать клавиатуру', { exact: true }).waitFor({ timeout: 8000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-20-typing.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true },
+);
+
+await run(
+  'mobile-speed-idle',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-21-speed.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/speed', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByRole('button', { name: 'Старт 60 сек' }).waitFor({ timeout: 15000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-21-speed.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true },
+);
+
+await run(
+  'mobile-exam-setup',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-22-exam-setup.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/exam', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByRole('button', { name: 'Начать экзамен' }).waitFor({ timeout: 15000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-22-exam-setup.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true },
+);
+
+await run('desktop-icon-menu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-iconmenu.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Этот компьютер', { exact: true }).first().click({ button: 'right' });
+  await page.getByText('Открыть', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  if (String(snippet).includes('Открыть проводник')) throw new Error('wallpaper menu, not icon menu');
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-iconmenu.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('guest-hotkey-gate', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-guest-lesson-hotkey.jpg');
+  await page.goto(BASE + '/courses/programmer-basics', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  const lessonId = await page.evaluate(async () => {
+    const res = await fetch('/api/courses/programmer-basics');
+    const data = await res.json();
+    for (const cat of data.categories || []) {
+      for (const les of cat.lessons || []) {
+        const key = Array.isArray(les.keys) ? les.keys[0] : '';
+        if (key && !String(key).startsWith('desktop:')) return les.id;
+      }
+    }
+    return '';
+  });
+  if (!lessonId) throw new Error('no public hotkey lesson id');
+  await page.goto(BASE + '/lessons/' + lessonId, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Создайте бесплатный аккаунт', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByText('Регистрация для практики', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  return { file: 'desktop-guest-lesson-hotkey.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

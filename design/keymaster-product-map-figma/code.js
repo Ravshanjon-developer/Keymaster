@@ -1272,6 +1272,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-fromlesson.jpg', 'From lesson'],
       ['desktop-learner-simulator-desktop-newfolder.jpg', 'New folder rename'],
       ['desktop-learner-simulator-desktop-newfile.jpg', 'New file rename'],
+      ['desktop-learner-simulator-desktop-iconmenu.jpg', 'Icon menu'],
       ['desktop-learner-simulator-desktop-tasks-closed.jpg', 'Tasks closed'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
@@ -3419,6 +3420,46 @@ async function buildUniqueScreens() {
   lessonHotkey.appendChild(trainerCard);
   lessonHotkey.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
+  const lessonHotkeyGuest = al('VERTICAL', 'Guest hotkey lesson');
+  lessonHotkeyGuest.itemSpacing = 16;
+  const guestHotkeyCard = al('VERTICAL', 'guest hotkey card');
+  guestHotkeyCard.itemSpacing = 12;
+  guestHotkeyCard.paddingTop = guestHotkeyCard.paddingBottom = 28;
+  guestHotkeyCard.paddingLeft = guestHotkeyCard.paddingRight = 28;
+  guestHotkeyCard.cornerRadius = 24;
+  guestHotkeyCard.fills = [solid(WHITE)];
+  guestHotkeyCard.resize(720, 10);
+  guestHotkeyCard.layoutSizingHorizontal = 'FIXED';
+  guestHotkeyCard.layoutSizingVertical = 'HUG';
+  guestHotkeyCard.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
+  guestHotkeyCard.appendChild(txt('Копировать', fraunces('Bold'), 28, INK));
+  guestHotkeyCard.appendChild(comboKeys(['Ctrl', 'C']));
+  const guestHotkeyGate = al('VERTICAL', 'PracticeRegisterGate');
+  guestHotkeyGate.itemSpacing = 8;
+  guestHotkeyGate.paddingTop = guestHotkeyGate.paddingBottom = 16;
+  guestHotkeyGate.paddingLeft = guestHotkeyGate.paddingRight = 16;
+  guestHotkeyGate.cornerRadius = 16;
+  guestHotkeyGate.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  guestHotkeyGate.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
+  guestHotkeyGate.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
+  guestHotkeyGate.appendChild(
+    txt(
+      'Тренажёр клавиш, XP и путь обучения доступны после регистрации. Каталог и теория уроков — без аккаунта.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      560,
+    ),
+  );
+  const guestHotkeyBtns = al('HORIZONTAL', 'guest hotkey ctas');
+  guestHotkeyBtns.itemSpacing = 8;
+  guestHotkeyBtns.appendChild(instPrimary('Регистрация'));
+  guestHotkeyBtns.appendChild(instSecondary('Уже есть аккаунт'));
+  guestHotkeyGate.appendChild(guestHotkeyBtns);
+  guestHotkeyCard.appendChild(guestHotkeyGate);
+  lessonHotkeyGuest.appendChild(guestHotkeyCard);
+  lessonHotkeyGuest.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+
   const lessonTask = al('VERTICAL', 'Task lesson');
   lessonTask.itemSpacing = 12;
   const taskNotLearned = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
@@ -5417,8 +5458,8 @@ async function buildUniqueScreens() {
       );
       tip.appendChild(instPrimary('Понятно'));
       deskWork.appendChild(tip);
-    } else if (overlay === 'menu' || overlay === 'menupaste') {
-      const menu = al('VERTICAL', overlay === 'menupaste' ? 'Desktop paste menu' : 'Desktop context menu');
+    } else if (overlay === 'menu' || overlay === 'menupaste' || overlay === 'iconmenu') {
+      const menu = al('VERTICAL', overlay === 'menupaste' ? 'Desktop paste menu' : overlay === 'iconmenu' ? 'Desktop icon menu' : 'Desktop context menu');
       menu.itemSpacing = 0;
       menu.paddingTop = menu.paddingBottom = 6;
       menu.paddingLeft = menu.paddingRight = 6;
@@ -5429,9 +5470,11 @@ async function buildUniqueScreens() {
       menu.layoutSizingHorizontal = 'FIXED';
       menu.layoutSizingVertical = 'HUG';
       const wallpaperItems =
-        overlay === 'menupaste'
-          ? ['Новый файл', 'Новая папка', 'Открыть проводник', 'Вставить']
-          : ['Новый файл', 'Новая папка', 'Открыть проводник'];
+        overlay === 'iconmenu'
+          ? ['Открыть']
+          : overlay === 'menupaste'
+            ? ['Новый файл', 'Новая папка', 'Открыть проводник', 'Вставить']
+            : ['Новый файл', 'Новая папка', 'Открыть проводник'];
       for (const label of wallpaperItems) {
         const row = al('HORIZONTAL', label);
         row.paddingLeft = row.paddingRight = 12;
@@ -5876,6 +5919,7 @@ async function buildUniqueScreens() {
   const deskNewFolder = makeDesktopSim('Desktop new folder /simulator?mode=desktop', 'newfolder');
   const deskNewFile = makeDesktopSim('Desktop new file /simulator?mode=desktop', 'desknewfile');
   const deskTasksClosed = makeDesktopSim('Desktop tasks closed /simulator?mode=desktop', 'notasks');
+  const deskIconMenu = makeDesktopSim('Desktop icon menu /simulator?mode=desktop', 'iconmenu');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -8161,6 +8205,7 @@ async function buildUniqueScreens() {
         txt('Course detail loading — PageShell Skeleton h-10 + h-64, not catalog SkeletonCardGrid.', outfit('Regular'), 12, MUTED, 860),
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
+      marketingPage('Lesson hotkey guest /lessons/:id', 'Курсы', true, [lessonHotkeyGuest]),
       marketingPage('Lesson hotkey done /lessons/:id', 'Курсы', false, [lessonHotkeyDone]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson task done /lessons/:id', 'Курсы', false, [lessonTaskDone]),
@@ -9709,6 +9754,153 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Тренировочный зал', authed: true },
   );
+  const mobileTyping = mobileFrame(
+    'Mobile Typing 390',
+    [
+      txt('СЛЕПАЯ ПЕЧАТЬ', outfit('Bold'), 11, BRAND800),
+      txt('Тренажёр печати', fraunces('Bold'), 28, INK, 358),
+      txt('Смотрите на экран. Печатайте. После подхода увидите, что улучшить.', outfit('Regular'), 13, MUTED, 358),
+      (() => {
+        const segs = al('HORIZONTAL', 'typing seg 390');
+        segs.itemSpacing = 6;
+        for (const [label, on] of [
+          ['Тренировка', true],
+          ['Путь', false],
+          ['Прогресс', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 10;
+          chip.paddingTop = chip.paddingBottom = 6;
+          chip.cornerRadius = 8;
+          chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? WHITE : MUTED));
+          segs.appendChild(chip);
+        }
+        return segs;
+      })(),
+      (() => {
+        const modes = al('HORIZONTAL', 'typing modes 390');
+        modes.itemSpacing = 6;
+        modes.layoutWrap = 'WRAP';
+        for (const [label, on] of [
+          ['Домашний ряд', true],
+          ['Все буквы', false],
+          ['Слова', false],
+          ['Фразы', false],
+          ['Код', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 10;
+          chip.paddingTop = chip.paddingBottom = 6;
+          chip.cornerRadius = 99;
+          chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+          chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? WHITE : INK));
+          modes.appendChild(chip);
+        }
+        return modes;
+      })(),
+      (() => {
+        const metrics = al('HORIZONTAL', 'typing metrics 390');
+        metrics.itemSpacing = 8;
+        for (const [k, v] of [
+          ['WPM', '0'],
+          ['ТОЧНОСТЬ', '100%'],
+        ]) {
+          const m = al('VERTICAL', k);
+          m.itemSpacing = 4;
+          m.paddingTop = m.paddingBottom = 12;
+          m.paddingLeft = m.paddingRight = 12;
+          m.cornerRadius = 16;
+          m.fills = [solid(WHITE)];
+          m.resize(167, 10);
+          m.layoutSizingHorizontal = 'FIXED';
+          m.layoutSizingVertical = 'HUG';
+          m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+          m.appendChild(txt(v, outfit('SemiBold'), 18, INK));
+          metrics.appendChild(m);
+        }
+        return metrics;
+      })(),
+      txt('фыва олдж фыва олдж ваол джфы аовы лджф', outfit('Regular'), 16, INK, 358),
+      txt('Показать клавиатуру', outfit('SemiBold'), 13, BRAND800),
+    ],
+    'Практика',
+    { chips: 'Слепая печать', authed: true },
+  );
+  const mobileSpeedIdle = mobileFrame(
+    'Mobile Speed idle 390',
+    [
+      (() => {
+        const head = al('HORIZONTAL', 'speed idle head 390');
+        head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        head.counterAxisAlignItems = 'CENTER';
+        head.resize(358, 10);
+        head.layoutSizingHorizontal = 'FIXED';
+        head.layoutSizingVertical = 'HUG';
+        head.appendChild(txt('Режим скорости', outfit('Bold'), 24, INK, 180));
+        head.appendChild(instPrimary('Старт 60 сек'));
+        return head;
+      })(),
+    ],
+    'Практика',
+    { chips: 'Скорость', authed: true },
+  );
+  const mobileExamSetup = mobileFrame(
+    'Mobile Exam setup 390',
+    [
+      txt('ЭКЗАМЕН', outfit('Bold'), 11, BRAND800),
+      txt('Настройка сессии', fraunces('Bold'), 28, INK, 358),
+      txt('Выберите курс, объём и лимит времени. По истечении минут экзамен завершится автоматически.', outfit('Regular'), 13, MUTED, 358),
+      (() => {
+        const card = al('VERTICAL', 'exam setup card 390');
+        card.itemSpacing = 12;
+        card.paddingTop = card.paddingBottom = 16;
+        card.paddingLeft = card.paddingRight = 16;
+        card.cornerRadius = 24;
+        card.fills = [solid(WHITE)];
+        card.resize(358, 10);
+        card.layoutSizingHorizontal = 'FIXED';
+        card.layoutSizingVertical = 'HUG';
+        card.appendChild(txt('Курс', outfit('SemiBold'), 13, INK));
+        card.appendChild(field('Курс', 'Все курсы', INK));
+        card.appendChild(txt('Число вопросов', outfit('SemiBold'), 13, INK));
+        const qRow = al('HORIZONTAL', 'questions 390');
+        qRow.itemSpacing = 6;
+        for (const n of [10, 20, 30, 50]) {
+          const chip = al('HORIZONTAL', String(n));
+          chip.paddingLeft = chip.paddingRight = 12;
+          chip.paddingTop = chip.paddingBottom = 8;
+          chip.cornerRadius = 12;
+          chip.fills = [solid(n === 20 ? BRAND : WHITE)];
+          chip.strokes = [solid(n === 20 ? BRAND : INK, n === 20 ? 1 : 0.12)];
+          chip.appendChild(txt(String(n), outfit('SemiBold'), 12, n === 20 ? WHITE : INK));
+          qRow.appendChild(chip);
+        }
+        card.appendChild(qRow);
+        card.appendChild(txt('Лимит времени', outfit('SemiBold'), 13, INK));
+        const mRow = al('HORIZONTAL', 'minutes 390');
+        mRow.itemSpacing = 6;
+        for (const n of [5, 10, 15, 20]) {
+          const chip = al('HORIZONTAL', String(n));
+          chip.paddingLeft = chip.paddingRight = 10;
+          chip.paddingTop = chip.paddingBottom = 8;
+          chip.cornerRadius = 12;
+          chip.fills = [solid(n === 10 ? BRAND : WHITE)];
+          chip.strokes = [solid(n === 10 ? BRAND : INK, n === 10 ? 1 : 0.12)];
+          chip.appendChild(txt(n + ' мин', outfit('SemiBold'), 11, n === 10 ? WHITE : INK));
+          mRow.appendChild(chip);
+        }
+        card.appendChild(mRow);
+        card.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 11, MUTED));
+        card.appendChild(txt('ВСЕ КУРСЫ', outfit('Bold'), 10, INK));
+        card.appendChild(instPrimary('Начать экзамен'));
+        return card;
+      })(),
+    ],
+    'Практика',
+    { chips: 'Экзамен', authed: true },
+  );
   function makeMobileDesktop390(name, tasksOpen) {
     const frame = al('VERTICAL', name);
     frame.itemSpacing = 0;
@@ -10566,7 +10758,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskMenuPaste, deskExplorer, deskExplorerMenu, deskFolderMenu, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder, deskNewFile, deskTasksClosed]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskMenuPaste, deskIconMenu, deskExplorer, deskExplorerMenu, deskFolderMenu, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder, deskNewFile, deskTasksClosed]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
@@ -10656,6 +10848,9 @@ async function buildUniqueScreens() {
       mobileLogin,
       mobileRegister,
       mobilePractice,
+      mobileTyping,
+      mobileSpeedIdle,
+      mobileExamSetup,
       mobileDesktop,
       mobileDesktopTasks,
       mobileCodeGate,

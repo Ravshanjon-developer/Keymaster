@@ -173,5 +173,10 @@
   {"file":"mobile-authed-16-simulator-desktop-tasks.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop tasks","layout":"ImmersiveSimulator — FileManager 390 + ЗАДАЧИ overlay","group":"Mobile 390"},
   {"file":"mobile-authed-17-simulator-code-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Code Lab gate","layout":"ImmersiveSimulator — PracticeKeyboardGate no exam chrome","group":"Mobile 390"},
   {"file":"mobile-authed-18-speed-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed gate","layout":"PracticeShell chips + ⏱ HUD + PracticeKeyboardGate","group":"Mobile 390"},
-  {"file":"mobile-authed-19-lesson-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Lesson gate","layout":"MarketingShell — LearnStatus + PracticeKeyboardGate","group":"Mobile 390"}
+  {"file":"mobile-authed-19-lesson-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Lesson gate","layout":"MarketingShell — LearnStatus + PracticeKeyboardGate","group":"Mobile 390"},
+  {"file":"mobile-authed-20-typing.jpg","page":"07 — Mobile Screens","name":"Mobile / Typing","layout":"PracticeShell chips + Показать клавиатуру","group":"Mobile 390"},
+  {"file":"mobile-authed-21-speed.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed idle","layout":"PracticeShell chips + Старт 60 сек","group":"Mobile 390"},
+  {"file":"mobile-authed-22-exam-setup.jpg","page":"07 — Mobile Screens","name":"Mobile / Exam setup","layout":"PracticeShell chips + Настройка сессии","group":"Mobile 390"},
+  {"file":"desktop-learner-simulator-desktop-iconmenu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop icon menu","layout":"ImmersiveSimulator — Этот компьютер ПКМ Открыть","group":"Learner"},
+  {"file":"desktop-guest-lesson-hotkey.jpg","page":"03 — Existing Screens","name":"Guest / Lesson hotkey","layout":"MarketingShell — PracticeRegisterGate + KeyCombo","group":"Guest"}
 ]

@@ -386,6 +386,11 @@ if (!names.includes('Mobile Desktop tasks 390')) fail.push('no mobile desktop-ta
 if (!names.includes('Mobile Code Lab gate 390')) fail.push('no mobile code-lab gate unique screen');
 if (!names.includes('Mobile Speed gate 390')) fail.push('no mobile speed-gate unique screen');
 if (!names.includes('Mobile Lesson gate 390')) fail.push('no mobile lesson-gate unique screen');
+if (!names.includes('Mobile Typing 390')) fail.push('no mobile typing unique screen');
+if (!names.includes('Mobile Speed idle 390')) fail.push('no mobile speed-idle unique screen');
+if (!names.includes('Mobile Exam setup 390')) fail.push('no mobile exam-setup unique screen');
+if (!names.includes('Desktop icon menu /simulator?mode=desktop')) fail.push('no desktop icon-menu unique screen');
+if (!names.includes('Lesson hotkey guest /lessons/:id')) fail.push('no guest hotkey lesson unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -422,6 +427,11 @@ if (!names.includes('Mobile / Desktop tasks')) fail.push('no mobile desktop-task
 if (!names.includes('Mobile / Code Lab gate')) fail.push('no mobile code-lab gate capture');
 if (!names.includes('Mobile / Speed gate')) fail.push('no mobile speed-gate capture');
 if (!names.includes('Mobile / Lesson gate')) fail.push('no mobile lesson-gate capture');
+if (!names.includes('Mobile / Typing')) fail.push('no mobile typing capture');
+if (!names.includes('Mobile / Speed idle')) fail.push('no mobile speed-idle capture');
+if (!names.includes('Mobile / Exam setup')) fail.push('no mobile exam-setup capture');
+if (!names.includes('Learner / Desktop icon menu')) fail.push('no desktop icon-menu capture');
+if (!names.includes('Guest / Lesson hotkey')) fail.push('no guest hotkey lesson capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1351,6 +1361,11 @@ let mobileDesktopTasksUnique = null;
 let mobileCodeGateUnique = null;
 let mobileSpeedGateUnique = null;
 let mobileLessonGateUnique = null;
+let mobileTypingUnique = null;
+let mobileSpeedIdleUnique = null;
+let mobileExamSetupUnique = null;
+let deskIconMenuUnique = null;
+let lessonHotkeyGuestUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1403,6 +1418,11 @@ for (const p of pages) {
   mobileCodeGateUnique = mobileCodeGateUnique || findByName(p, 'Mobile Code Lab gate 390');
   mobileSpeedGateUnique = mobileSpeedGateUnique || findByName(p, 'Mobile Speed gate 390');
   mobileLessonGateUnique = mobileLessonGateUnique || findByName(p, 'Mobile Lesson gate 390');
+  mobileTypingUnique = mobileTypingUnique || findByName(p, 'Mobile Typing 390');
+  mobileSpeedIdleUnique = mobileSpeedIdleUnique || findByName(p, 'Mobile Speed idle 390');
+  mobileExamSetupUnique = mobileExamSetupUnique || findByName(p, 'Mobile Exam setup 390');
+  deskIconMenuUnique = deskIconMenuUnique || findByName(p, 'Desktop icon menu /simulator?mode=desktop');
+  lessonHotkeyGuestUnique = lessonHotkeyGuestUnique || findByName(p, 'Lesson hotkey guest /lessons/:id');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1524,6 +1544,21 @@ if (!mobileSpeedGateUnique || !namesUnder(mobileSpeedGateUnique).includes('Ре�
 }
 if (!mobileLessonGateUnique || !namesUnder(mobileLessonGateUnique).includes('НЕ ИЗУЧЕНО') || !namesUnder(mobileLessonGateUnique).includes('← К каталогу') || !namesUnder(mobileLessonGateUnique).includes('Практика требует физической клавиатуры') || namesUnder(mobileLessonGateUnique).includes('⏱ 1:00') || namesUnder(mobileLessonGateUnique).includes('ВСЕ КУРСЫ') || namesUnder(mobileLessonGateUnique).includes('Тренировочный зал')) {
   fail.push('mobile lesson-gate unique missing MarketingShell LearnStatus + gate without practice chips');
+}
+if (!mobileTypingUnique || !namesUnder(mobileTypingUnique).includes('Показать клавиатуру') || !namesUnder(mobileTypingUnique).includes('Тренажёр печати') || !namesUnder(mobileTypingUnique).includes('Домашний ряд') || namesUnder(mobileTypingUnique).includes('Скрыть клавиатуру') || namesUnder(mobileTypingUnique).includes('Практика требует физической клавиатуры')) {
+  fail.push('mobile typing unique missing 390 train chrome with Показать клавиатуру');
+}
+if (!mobileSpeedIdleUnique || !namesUnder(mobileSpeedIdleUnique).includes('Старт 60 сек') || !namesUnder(mobileSpeedIdleUnique).includes('Режим скорости') || namesUnder(mobileSpeedIdleUnique).includes('⏱ 1:00') || namesUnder(mobileSpeedIdleUnique).includes('Практика требует физической клавиатуры')) {
+  fail.push('mobile speed-idle unique should be pre-start CTA without HUD or keyboard gate');
+}
+if (!mobileExamSetupUnique || !namesUnder(mobileExamSetupUnique).includes('Настройка сессии') || !namesUnder(mobileExamSetupUnique).includes('Начать экзамен') || !namesUnder(mobileExamSetupUnique).includes('ВАША СЕССИЯ') || namesUnder(mobileExamSetupUnique).includes('Практика требует физической клавиатуры') || namesUnder(mobileExamSetupUnique).includes('Завершить')) {
+  fail.push('mobile exam-setup unique missing setup chrome without exam-run gate');
+}
+if (!deskIconMenuUnique || !namesUnder(deskIconMenuUnique).includes('Открыть') || !namesUnder(deskIconMenuUnique).includes('Этот компьютер') || namesUnder(deskIconMenuUnique).includes('Открыть проводник') || namesUnder(deskIconMenuUnique).includes('Новый файл')) {
+  fail.push('desktop icon-menu unique should be single-item Открыть on Этот компьютер');
+}
+if (!lessonHotkeyGuestUnique || !namesUnder(lessonHotkeyGuestUnique).includes('Регистрация для практики') || !namesUnder(lessonHotkeyGuestUnique).includes('Копировать') || !namesUnder(lessonHotkeyGuestUnique).includes('Создайте бесплатный аккаунт') || namesUnder(lessonHotkeyGuestUnique).includes('Учебное поле') || namesUnder(lessonHotkeyGuestUnique).includes('Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».')) {
+  fail.push('guest hotkey unique missing PracticeRegisterGate + KeyCombo without trainer or study-only hint');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');

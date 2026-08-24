@@ -698,5 +698,25 @@
   "mobile-authed-19-lesson-gate.jpg": {
     "w": 390,
     "h": 844
+  },
+  "mobile-authed-20-typing.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-21-speed.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-22-exam-setup.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-learner-simulator-desktop-iconmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-hotkey.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }
