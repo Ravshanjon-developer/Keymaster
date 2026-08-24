@@ -55,8 +55,16 @@ const browser = await chromium.launch({
   args: ['--no-sandbox', '--disable-dev-shm-usage'],
 });
 
+const only = new Set(
+  (process.env.KM_CAPTURE || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
 const results = [];
 async function run(name, viewport, fn) {
+  if (only.size && !only.has(name)) return;
   try {
     const ctx = await browser.newContext({ viewport });
     const page = await ctx.newPage();
@@ -190,7 +198,7 @@ await run('desktop-keyboard', desk, async (page) => {
   const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-keyboard.jpg');
   await openDesktop(page);
   await page.getByTitle('Клавиатура').click();
-  await page.getByRole('button', { name: 'Клавиатура' }).click();
+  await page.locator('button').filter({ hasText: 'Клавиатура' }).click();
   await page.getByText('F12', { exact: true }).waitFor({ timeout: 8000 });
   await page.waitForTimeout(200);
   await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
@@ -210,6 +218,81 @@ await run('desktop-properties', desk, async (page) => {
   await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
   const { w, h } = jpegSize(fs.readFileSync(dest));
   return { file: 'desktop-learner-simulator-desktop-properties.jpg', w, h };
+});
+
+await run('desktop-filemenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-filemenu.jpg');
+  await openDesktop(page);
+  await page.getByText('Welcome.txt', { exact: true }).click({ button: 'right' });
+  await page.getByText('Открыть с помощью Code', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-filemenu.jpg', w, h };
+});
+
+async function openCodeLab(page) {
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/simulator', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Готовы к практике?', { exact: true }).waitFor({ timeout: 20000 });
+}
+
+await run('code-lab-find', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-find.jpg');
+  await openCodeLab(page);
+  await page.getByText('README.md', { exact: true }).click();
+  await page.getByText('# Keymaster Project', { exact: true }).waitFor({ timeout: 8000 });
+  await page.keyboard.press('Control+KeyF');
+  await page.getByPlaceholder('Find').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-find.jpg', w, h };
+});
+
+await run('code-lab-search', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-search.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Search', { exact: true }).click();
+  await page.getByPlaceholder('Search across files').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-search.jpg', w, h };
+});
+
+await run('code-lab-scm', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-scm.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Source Control', { exact: true }).click();
+  await page.getByText('Git не подключён', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-scm.jpg', w, h };
+});
+
+await run('code-lab-run', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-run.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Run and Debug', { exact: true }).click();
+  await page.getByText('Run (F5)', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Нет открытого файла. Откройте файл из Explorer.', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-run.jpg', w, h };
+});
+
+await run('code-lab-extensions', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-extensions.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Extensions', { exact: true }).click();
+  await page.getByText('Магазин расширений VS Code здесь не подключён. Ниже — настройки и импорт проекта с вашего компьютера.', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-extensions.jpg', w, h };
 });
 
 await browser.close();

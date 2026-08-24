@@ -1256,6 +1256,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-start.jpg', 'Start menu'],
       ['desktop-learner-simulator-desktop-editor.jpg', 'Welcome.txt'],
       ['desktop-learner-simulator-desktop-keyboard.jpg', 'Keyboard'],
+      ['desktop-learner-simulator-desktop-filemenu.jpg', 'File menu'],
       ['desktop-learner-simulator-desktop-properties.jpg', 'Properties'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
@@ -1269,6 +1270,11 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-palette.jpg', 'Command palette'],
       ['desktop-learner-simulator-code-quickopen.jpg', 'Quick Open'],
       ['desktop-learner-simulator-code-terminal.jpg', 'Terminal'],
+      ['desktop-learner-simulator-code-find.jpg', 'Find'],
+      ['desktop-learner-simulator-code-search.jpg', 'Search'],
+      ['desktop-learner-simulator-code-scm.jpg', 'Source Control'],
+      ['desktop-learner-simulator-code-run.jpg', 'Run and Debug'],
+      ['desktop-learner-simulator-code-extensions.jpg', 'Extensions'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1447,8 +1453,8 @@ async function buildSitemap() {
     [
       'ImmersiveSimulator',
       [
-        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · command palette · quick open · terminal'],
-        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · context menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties'],
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · palette · quick open · terminal · find · search · SCM · run · extensions'],
+        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · wallpaper menu · file menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties'],
       ],
     ],
   ];
@@ -4747,7 +4753,7 @@ async function buildUniqueScreens() {
     }
     const simBody = al('HORIZONTAL', 'panes');
     simBody.itemSpacing = 0;
-    const explorer = al('VERTICAL', 'Explorer');
+    const explorer = al('VERTICAL', overlay === 'search' ? 'Search' : overlay === 'scm' ? 'Source Control' : overlay === 'run' ? 'Run and Debug' : overlay === 'extensions' ? 'Extensions' : 'Explorer');
     explorer.fills = [solid(VSCODE_SIDE)];
     explorer.paddingTop = explorer.paddingBottom = 12;
     explorer.paddingLeft = explorer.paddingRight = 12;
@@ -4755,29 +4761,82 @@ async function buildUniqueScreens() {
     explorer.resize(220, 10);
     explorer.layoutSizingHorizontal = 'FIXED';
     explorer.layoutSizingVertical = 'HUG';
-    explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, VSCODE_MUTED));
-    explorer.appendChild(txt('KEYMASTER-PROJECT', outfit('Bold'), 10, WHITE));
-    explorer.appendChild(txt('src', outfit('Regular'), 12, WHITE));
-    explorer.appendChild(txt('README.md', outfit('Regular'), 12, WHITE));
-    explorer.appendChild(txt('package.json', outfit('Regular'), 12, WHITE));
-    explorer.appendChild(txt('index.html', outfit('Regular'), 12, WHITE));
+    if (overlay === 'search') {
+      explorer.appendChild(txt('SEARCH', outfit('Bold'), 10, VSCODE_MUTED));
+      explorer.appendChild(txt('Search across files', outfit('Regular'), 12, VSCODE_MUTED, 196));
+      explorer.appendChild(txt('Aa', outfit('Regular'), 11, VSCODE_MUTED));
+    } else if (overlay === 'scm') {
+      explorer.appendChild(txt('SOURCE CONTROL', outfit('Bold'), 10, VSCODE_MUTED));
+      explorer.appendChild(txt('Git не подключён', outfit('SemiBold'), 13, WHITE, 196));
+      explorer.appendChild(
+        txt(
+          'В учебном симуляторе нет связи с Git на ноутбуке. Импортируйте папку через Explorer и работайте с файлами локально в редакторе.',
+          outfit('Regular'),
+          11,
+          VSCODE_MUTED,
+          196,
+        ),
+      );
+    } else if (overlay === 'run') {
+      explorer.appendChild(txt('RUN AND DEBUG', outfit('Bold'), 10, VSCODE_MUTED));
+      explorer.appendChild(txt('Run (F5)', outfit('SemiBold'), 13, WHITE));
+      explorer.appendChild(txt('Нет открытого файла. Откройте файл из Explorer.', outfit('Regular'), 11, VSCODE_MUTED, 196));
+      explorer.appendChild(txt('Показать терминал', outfit('Regular'), 12, { r: 0.53, g: 0.81, b: 1 }));
+    } else if (overlay === 'extensions') {
+      explorer.appendChild(txt('EXTENSIONS & LAB', outfit('Bold'), 10, VSCODE_MUTED));
+      explorer.appendChild(
+        txt(
+          'Магазин расширений VS Code здесь не подключён. Ниже — настройки и импорт проекта с вашего компьютера.',
+          outfit('Regular'),
+          11,
+          VSCODE_MUTED,
+          196,
+        ),
+      );
+      explorer.appendChild(txt('Проект с компьютера', outfit('SemiBold'), 12, WHITE));
+      explorer.appendChild(txt('Показать клавиатуру', outfit('Regular'), 12, WHITE, 196));
+    } else {
+      explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, VSCODE_MUTED));
+      explorer.appendChild(txt('KEYMASTER-PROJECT', outfit('Bold'), 10, WHITE));
+      explorer.appendChild(txt('src', outfit('Regular'), 12, WHITE));
+      explorer.appendChild(txt('README.md', outfit('Regular'), 12, WHITE));
+      explorer.appendChild(txt('package.json', outfit('Regular'), 12, WHITE));
+      explorer.appendChild(txt('index.html', outfit('Regular'), 12, WHITE));
+    }
     const editor = al('VERTICAL', 'Editor');
     editor.fills = [solid(VSCODE_BG)];
-    editor.paddingTop = editor.paddingBottom = 32;
+    editor.paddingTop = editor.paddingBottom = overlay === 'find' ? 8 : 32;
     editor.paddingLeft = editor.paddingRight = 24;
     editor.itemSpacing = 8;
-    editor.primaryAxisAlignItems = 'CENTER';
+    editor.primaryAxisAlignItems = overlay === 'find' ? 'MIN' : 'CENTER';
     editor.resize(460, 10);
     editor.layoutSizingHorizontal = 'FIXED';
     editor.layoutSizingVertical = 'HUG';
-    for (const [label, chord] of [
-      ['Show All Commands', 'Ctrl+Shift+P'],
-      ['Go to File', 'Ctrl+P'],
-      ['Find in Files', 'Ctrl+Shift+F'],
-      ['Toggle Terminal', 'Ctrl+`'],
-      ['Toggle Primary Side Bar', 'Ctrl+B'],
-    ]) {
-      editor.appendChild(txt(label + '  ' + chord, outfit('Regular'), 12, VSCODE_MUTED, 400));
+    if (overlay === 'find') {
+      const findBar = al('HORIZONTAL', 'Find bar');
+      findBar.counterAxisAlignItems = 'CENTER';
+      findBar.itemSpacing = 8;
+      findBar.paddingLeft = findBar.paddingRight = 8;
+      findBar.paddingTop = findBar.paddingBottom = 6;
+      findBar.fills = [solid(VSCODE_SIDE)];
+      findBar.resize(412, 10);
+      findBar.layoutSizingHorizontal = 'FIXED';
+      findBar.layoutSizingVertical = 'HUG';
+      findBar.appendChild(txt('Find', outfit('Regular'), 12, VSCODE_MUTED, 200));
+      findBar.appendChild(txt('0 results', outfit('Regular'), 11, VSCODE_MUTED));
+      findBar.appendChild(txt('Esc', outfit('Regular'), 11, VSCODE_MUTED));
+      editor.appendChild(findBar);
+      editor.appendChild(txt('# Keymaster Project', outfit('Regular'), 13, WHITE, 400));
+    } else {
+      for (const [label, chord] of [
+        ['Show All Commands', 'Ctrl+Shift+P'],
+        ['Go to File', 'Ctrl+P'],
+        ['Find in Files', 'Ctrl+Shift+F'],
+        ['Toggle Terminal', 'Ctrl+`'],
+        ['Toggle Primary Side Bar', 'Ctrl+B'],
+      ]) {
+        editor.appendChild(txt(label + '  ' + chord, outfit('Regular'), 12, VSCODE_MUTED, 400));
+      }
     }
     const tasks = al('VERTICAL', 'Задачи');
     tasks.fills = [solid(VSCODE_SIDE)];
@@ -5046,7 +5105,7 @@ async function buildUniqueScreens() {
       deskWork.appendChild(win);
     } else if (overlay === 'keyboard') {
       const kb = al('VERTICAL', 'Virtual keyboard');
-      kb.itemSpacing = 8;
+      kb.itemSpacing = 6;
       kb.paddingTop = kb.paddingBottom = 10;
       kb.paddingLeft = kb.paddingRight = 12;
       kb.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
@@ -5055,8 +5114,36 @@ async function buildUniqueScreens() {
       kb.layoutSizingHorizontal = 'FIXED';
       kb.layoutSizingVertical = 'HUG';
       kb.appendChild(txt('Клавиатура', outfit('SemiBold'), 12, VSCODE_MUTED));
-      kb.appendChild(txt('Esc  F1  F2  F3  F4  F5  F6  F7  F8  F9  F10  F11  F12', outfit('Regular'), 11, WHITE, 560));
+      for (const row of [
+        ['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
+        ['Caps', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", 'Enter'],
+        ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
+        ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl'],
+      ]) {
+        kb.appendChild(txt(row.join('  '), outfit('Regular'), 11, WHITE, 560));
+      }
       deskWork.appendChild(kb);
+    } else if (overlay === 'filemenu') {
+      const menu = al('VERTICAL', 'File context menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of ['Открыть', 'Открыть с помощью Code', 'Переименовать', 'Копировать', 'Вырезать', 'Удалить']) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
     } else if (overlay === 'props') {
       deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов', false));
       const modal = al('VERTICAL', 'Свойства');
@@ -5136,6 +5223,11 @@ async function buildUniqueScreens() {
   const simPalette = makeCodeLab('Code Lab command palette /simulator', 'palette');
   const simQuick = makeCodeLab('Code Lab quick open /simulator', 'quickopen');
   const simTerm = makeCodeLab('Code Lab terminal /simulator', 'terminal');
+  const simFind = makeCodeLab('Code Lab find /simulator', 'find');
+  const simSearch = makeCodeLab('Code Lab search /simulator', 'search');
+  const simScm = makeCodeLab('Code Lab source control /simulator', 'scm');
+  const simRun = makeCodeLab('Code Lab run /simulator', 'run');
+  const simExt = makeCodeLab('Code Lab extensions /simulator', 'extensions');
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
@@ -5143,6 +5235,7 @@ async function buildUniqueScreens() {
   const deskStart = makeDesktopSim('Desktop start menu /simulator?mode=desktop', 'start');
   const deskEditor = makeDesktopSim('Desktop editor /simulator?mode=desktop', 'editor');
   const deskKeyboard = makeDesktopSim('Desktop keyboard /simulator?mode=desktop', 'keyboard');
+  const deskFileMenu = makeDesktopSim('Desktop file menu /simulator?mode=desktop', 'filemenu');
   const deskProps = makeDesktopSim('Desktop properties /simulator?mode=desktop', 'props');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
@@ -8818,7 +8911,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskProps]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

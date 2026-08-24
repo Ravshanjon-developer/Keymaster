@@ -1140,6 +1140,58 @@ if (!deskPropsUnique || !namesUnder(deskPropsUnique).includes('184 байт') ||
   fail.push('desktop properties unique missing live Welcome.txt size + close');
 }
 
+if (!names.includes('Code Lab find /simulator')) fail.push('no code-lab find unique screen');
+if (!names.includes('Code Lab search /simulator')) fail.push('no code-lab search unique screen');
+if (!names.includes('Code Lab source control /simulator')) fail.push('no code-lab scm unique screen');
+if (!names.includes('Code Lab run /simulator')) fail.push('no code-lab run unique screen');
+if (!names.includes('Code Lab extensions /simulator')) fail.push('no code-lab extensions unique screen');
+if (!names.includes('Desktop file menu /simulator?mode=desktop')) fail.push('no desktop file-menu unique screen');
+if (!names.includes('Search across files')) fail.push('no live Code Lab search placeholder unique screen');
+if (!names.includes('Git не подключён')) fail.push('no live Code Lab SCM empty unique screen');
+if (!names.includes('Run (F5)')) fail.push('no live Code Lab Run (F5) unique screen');
+if (!names.includes('EXTENSIONS & LAB')) fail.push('no live Code Lab extensions header unique screen');
+if (!names.includes('# Keymaster Project')) fail.push('no live README find unique screen');
+if (!names.includes('Открыть с помощью Code')) fail.push('no live desktop file-menu unique screen');
+if (!names.includes('Learner / Code Lab find')) fail.push('no code-lab find capture');
+if (!names.includes('Learner / Code Lab search')) fail.push('no code-lab search capture');
+if (!names.includes('Learner / Code Lab source control')) fail.push('no code-lab scm capture');
+if (!names.includes('Learner / Code Lab run')) fail.push('no code-lab run capture');
+if (!names.includes('Learner / Code Lab extensions')) fail.push('no code-lab extensions capture');
+if (!names.includes('Learner / Desktop file menu')) fail.push('no desktop file-menu capture');
+
+let simFindUnique = null;
+let simSearchUnique = null;
+let simScmUnique = null;
+let simRunUnique = null;
+let simExtUnique = null;
+let deskFileMenuUnique = null;
+for (const p of pages) {
+  simFindUnique = simFindUnique || findByName(p, 'Code Lab find /simulator');
+  simSearchUnique = simSearchUnique || findByName(p, 'Code Lab search /simulator');
+  simScmUnique = simScmUnique || findByName(p, 'Code Lab source control /simulator');
+  simRunUnique = simRunUnique || findByName(p, 'Code Lab run /simulator');
+  simExtUnique = simExtUnique || findByName(p, 'Code Lab extensions /simulator');
+  deskFileMenuUnique = deskFileMenuUnique || findByName(p, 'Desktop file menu /simulator?mode=desktop');
+}
+if (!simFindUnique || !namesUnder(simFindUnique).includes('Find') || !namesUnder(simFindUnique).includes('0 results') || !namesUnder(simFindUnique).includes('# Keymaster Project')) {
+  fail.push('code lab find unique missing live Find bar + README');
+}
+if (!simSearchUnique || !namesUnder(simSearchUnique).includes('SEARCH') || !namesUnder(simSearchUnique).includes('Search across files') || namesUnder(simSearchUnique).includes('EXPLORER')) {
+  fail.push('code lab search unique missing live Search panel without Explorer tree');
+}
+if (!simScmUnique || !namesUnder(simScmUnique).includes('SOURCE CONTROL') || !namesUnder(simScmUnique).includes('Git не подключён')) {
+  fail.push('code lab scm unique missing live Git empty copy');
+}
+if (!simRunUnique || !namesUnder(simRunUnique).includes('RUN AND DEBUG') || !namesUnder(simRunUnique).includes('Нет открытого файла. Откройте файл из Explorer.')) {
+  fail.push('code lab run unique missing live empty-file copy');
+}
+if (!simExtUnique || !namesUnder(simExtUnique).includes('EXTENSIONS & LAB') || !namesUnder(simExtUnique).includes('Показать клавиатуру')) {
+  fail.push('code lab extensions unique missing live Extensions & Lab copy');
+}
+if (!deskFileMenuUnique || !namesUnder(deskFileMenuUnique).includes('Открыть с помощью Code') || namesUnder(deskFileMenuUnique).includes('Открыть проводник') || namesUnder(deskFileMenuUnique).includes('С чего начать')) {
+  fail.push('desktop file-menu unique should be Welcome.txt menu, not wallpaper');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));
