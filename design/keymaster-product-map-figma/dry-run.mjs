@@ -406,7 +406,9 @@ if (!names.some((n) => String(n).includes('42 Уроки · 7 Категории
 }
 if (!names.includes('+ Создать')) fail.push('no live admin create CTA unique screen');
 if (!names.some((n) => String(n).includes('100-correct'))) fail.push('no live admin achievements unique screen');
-if (!names.includes('С чего начать сегодня')) fail.push('no live practice start-today unique screen');
+if (!names.includes('С ЧЕГО НАЧАТЬ СЕГОДНЯ')) fail.push('no live practice start-today unique screen');
+if (!names.includes('ПРАКТИКА')) fail.push('no live practice eyebrow unique screen');
+if (!names.includes('СТАРТ')) fail.push('no live status-chip СТАРТ unique screen');
 if (!names.includes('Exam empty card')) fail.push('no exam empty GlassCard unique screen');
 if (!names.includes('Скриншот')) fail.push('no live mobile review PrtSc/Скриншот unique screen');
 if (!names.includes('Dark Daily')) fail.push('no dark dashboard daily-tasks unique screen');
@@ -489,7 +491,7 @@ for (const p of pages) {
 if (!examFbUnique || !namesUnder(examFbUnique).includes('9:59') || !namesUnder(examFbUnique).includes('Откройте замену')) {
   fail.push('exam-feedback unique screen does not match live Неверно capture');
 }
-if (!darkCoursesUnique || namesUnder(darkCoursesUnique).includes('В процессе') || namesUnder(darkCoursesUnique).includes('Готово')) {
+if (!darkCoursesUnique || namesUnder(darkCoursesUnique).includes('В процессе') || namesUnder(darkCoursesUnique).includes('Готово') || namesUnder(darkCoursesUnique).includes('В ПРОЦЕССЕ') || namesUnder(darkCoursesUnique).includes('ГОТОВО')) {
   fail.push('dark catalog unique screen still uses InProgress/Done instead of live 0 XP СТАРТ cards');
 }
 if (!darkCoursesUnique || !namesUnder(darkCoursesUnique).includes('0/16 сочетаний') || !namesUnder(darkCoursesUnique).includes('Начните здесь')) {

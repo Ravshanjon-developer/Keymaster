@@ -1976,7 +1976,7 @@ function catalogCard(opts) {
   icon.cornerRadius = 12;
   icon.fills = [solid(opts.iconFill || BRAND50)];
   top.appendChild(icon);
-  if (opts.start) top.appendChild(pill('Старт', { r: 0.114, g: 0.306, b: 0.847 }, WHITE));
+  if (opts.start) top.appendChild(pill('СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE));
   c.appendChild(top);
   top.layoutSizingHorizontal = 'FILL';
   c.appendChild(txt(opts.title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, inner));
@@ -2474,10 +2474,10 @@ async function buildProductComponents(page) {
     return c;
   }
   const cards = [
-    cardVariant('Status=Start', 'Первый ноутбук', 'Старт', 'brand', true),
-    cardVariant('Status=InProgress', 'VS Code', 'В процессе', 'neutral', false),
-    cardVariant('Status=Completed', 'Git', 'Готово', 'success', false),
-    cardVariant('Status=Required', 'Основы программиста', 'Обязательный старт', 'brand', true),
+    cardVariant('Status=Start', 'Первый ноутбук', 'СТАРТ', 'brand', true),
+    cardVariant('Status=InProgress', 'VS Code', 'В ПРОЦЕССЕ', 'neutral', false),
+    cardVariant('Status=Completed', 'Git', 'ГОТОВО', 'success', false),
+    cardVariant('Status=Required', 'Основы программиста', 'ОБЯЗАТЕЛЬНЫЙ СТАРТ', 'brand', true),
   ];
   const cardSet = figma.combineAsVariants(cards, page);
   cardSet.name = 'CourseCard';
@@ -2911,9 +2911,9 @@ async function buildUniqueScreens() {
   );
   const statusStrip = al('HORIZONTAL', 'CourseCard statuses');
   statusStrip.itemSpacing = 12;
-  statusStrip.appendChild(instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true));
-  statusStrip.appendChild(instCourse('Status=InProgress') || courseCard('VS Code', 'В процессе', 'neutral', false));
-  statusStrip.appendChild(instCourse('Status=Completed') || courseCard('Git', 'Готово', 'success', false));
+  statusStrip.appendChild(instCourse('Status=Start') || courseCard('Первый ноутбук', 'СТАРТ', 'brand', true));
+  statusStrip.appendChild(instCourse('Status=InProgress') || courseCard('VS Code', 'В ПРОЦЕССЕ', 'neutral', false));
+  statusStrip.appendChild(instCourse('Status=Completed') || courseCard('Git', 'ГОТОВО', 'success', false));
   const filterRow = al('HORIZONTAL', 'Filters');
   filterRow.itemSpacing = 8;
   for (const [label, on] of [
@@ -3606,10 +3606,10 @@ async function buildUniqueScreens() {
   skillCards.resize(672, 10);
   skillCards.layoutSizingHorizontal = 'FIXED';
   skillCards.layoutSizingVertical = 'HUG';
-  skillCards.appendChild(modeCard('Слепая печать', 'Старт', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.'));
-  skillCards.appendChild(modeCard('Рабочий стол', 'Старт', 'neutral', 'Проводник Windows: папки, файлы и задания курса «Первый ноутбук» — без зубрёжки hotkeys.'));
-  skillCards.appendChild(modeCard('VS Code симулятор', 'Ядро', 'brand', 'Explorer, миссии и проверка шагов — папки и файлы как в настоящем редакторе.'));
-  skillCards.appendChild(modeCard('Hotkeys', 'Ядро', 'brand', 'Сочетания из курсов без подсказок — до мышечной памяти.'));
+  skillCards.appendChild(modeCard('Слепая печать', 'СТАРТ', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.'));
+  skillCards.appendChild(modeCard('Рабочий стол', 'СТАРТ', 'neutral', 'Проводник Windows: папки, файлы и задания курса «Первый ноутбук» — без зубрёжки hotkeys.'));
+  skillCards.appendChild(modeCard('VS Code симулятор', 'ЯДРО', 'brand', 'Explorer, миссии и проверка шагов — папки и файлы как в настоящем редакторе.'));
+  skillCards.appendChild(modeCard('Hotkeys', 'ЯДРО', 'brand', 'Сочетания из курсов без подсказок — до мышечной памяти.'));
   const speedChallenge = al('HORIZONTAL', 'Speed challenge');
   speedChallenge.primaryAxisAlignItems = 'SPACE_BETWEEN';
   speedChallenge.counterAxisAlignItems = 'CENTER';
@@ -3643,9 +3643,9 @@ async function buildUniqueScreens() {
   reinforceCards.resize(672, 10);
   reinforceCards.layoutSizingHorizontal = 'FIXED';
   reinforceCards.layoutSizingVertical = 'HUG';
-  reinforceCards.appendChild(modeCard('Повторение', 'Курс', 'neutral', 'Карточки одного курса: сочетание и программа, без давления.', 213));
-  reinforceCards.appendChild(modeCard('Основы hotkeys', 'Курс', 'neutral', '25 вопросов: базовый уровень (1–19) и практика (20–25).', 213));
-  reinforceCards.appendChild(modeCard('Экзамен', 'Курс', 'neutral', 'Вопросы по курсу на время, без подсказок — как финальная проверка.', 213));
+  reinforceCards.appendChild(modeCard('Повторение', 'КУРС', 'neutral', 'Карточки одного курса: сочетание и программа, без давления.', 213));
+  reinforceCards.appendChild(modeCard('Основы hotkeys', 'КУРС', 'neutral', '25 вопросов: базовый уровень (1–19) и практика (20–25).', 213));
+  reinforceCards.appendChild(modeCard('Экзамен', 'КУРС', 'neutral', 'Вопросы по курсу на время, без подсказок — как финальная проверка.', 213));
   const journey = al('VERTICAL', 'Journey');
   journey.itemSpacing = 8;
   journey.paddingTop = journey.paddingBottom = 20;
@@ -3653,7 +3653,7 @@ async function buildUniqueScreens() {
   journey.cornerRadius = 24;
   journey.fills = [solid(WHITE)];
   journey.strokes = [solid(BRAND, 0.25)];
-  journey.appendChild(txt('С чего начать сегодня', outfit('Bold'), 11, BRAND800));
+  journey.appendChild(txt('С ЧЕГО НАЧАТЬ СЕГОДНЯ', outfit('Bold'), 11, BRAND800));
   journey.appendChild(txt('Рекомендуемый маршрут', fraunces('SemiBold'), 20, INK));
   journey.appendChild(txt('Сначала печать и файлы, потом курс. Скорость — когда база уже есть.', outfit('Regular'), 13, MUTED, 680));
   for (const [n, step] of [
@@ -5407,7 +5407,7 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('PracticeShell', [
       practicePage('Practice hub /practice', 'Тренировочный зал', [
-        txt('Практика', outfit('Bold'), 11, BRAND800),
+        txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800),
         txt('Тренировочный зал', fraunces('Bold'), 32, INK),
         txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов. Идите по рекомендуемому маршруту.', outfit('Regular'), 13, MUTED, 680),
         journey,
@@ -5709,7 +5709,7 @@ async function buildUniqueScreens() {
         card.resize(358, 10);
         card.layoutSizingHorizontal = 'FIXED';
         card.layoutSizingVertical = 'HUG';
-        card.appendChild(txt('С чего начать сегодня', outfit('Bold'), 11, BRAND800));
+        card.appendChild(txt('С ЧЕГО НАЧАТЬ СЕГОДНЯ', outfit('Bold'), 11, BRAND800));
         card.appendChild(txt('Рекомендуемый маршрут', fraunces('SemiBold'), 18, INK, 326));
         card.appendChild(txt('1. Слепая печать — уверенность в пальцах', outfit('Regular'), 13, MUTED, 326));
         card.appendChild(txt('2. Симулятор — папки и файлы без страха', outfit('Regular'), 13, MUTED, 326));
@@ -6133,7 +6133,7 @@ async function buildUniqueScreens() {
         'Dark Practice / html.dark',
         'Тренировочный зал',
         [
-          txt('Практика', outfit('Bold'), 11, BRAND500),
+          txt('ПРАКТИКА', outfit('Bold'), 11, BRAND500),
           txt('Тренировочный зал', fraunces('Bold'), 32, DARK_TEXT),
           txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов. Идите по рекомендуемому маршруту.', outfit('Regular'), 13, DARK_MUTED, 680),
           (() => {
@@ -6144,7 +6144,7 @@ async function buildUniqueScreens() {
             card.cornerRadius = 24;
             card.fills = [solid(DARK_CARD)];
             card.strokes = [solid(BRAND, 0.35)];
-            card.appendChild(txt('С чего начать сегодня', outfit('Bold'), 11, BRAND500));
+            card.appendChild(txt('С ЧЕГО НАЧАТЬ СЕГОДНЯ', outfit('Bold'), 11, BRAND500));
             card.appendChild(txt('Рекомендуемый маршрут', fraunces('SemiBold'), 20, DARK_TEXT));
             card.appendChild(txt('Сначала печать и файлы, потом курс. Скорость — когда база уже есть.', outfit('Regular'), 13, DARK_MUTED, 640));
             for (const step of [
@@ -6159,8 +6159,8 @@ async function buildUniqueScreens() {
             return card;
           })(),
           txt('Навыки', outfit('SemiBold'), 16, DARK_TEXT),
-          modeCard('Слепая печать', 'Старт', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.', 328, true),
-          modeCard('Рабочий стол', 'Старт', 'neutral', 'Проводник, папки и файлы без страха — как на настоящем столе.', 328, true),
+          modeCard('Слепая печать', 'СТАРТ', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.', 328, true),
+          modeCard('Рабочий стол', 'СТАРТ', 'neutral', 'Проводник, папки и файлы без страха — как на настоящем столе.', 328, true),
         ],
         true,
       ),
