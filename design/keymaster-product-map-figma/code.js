@@ -3569,19 +3569,24 @@ async function buildUniqueScreens() {
   const trainKeys = al('HORIZONTAL', 'combo');
   trainKeys.itemSpacing = 8;
   for (const k of ['Ctrl', 'C']) {
-    const cap = al('HORIZONTAL', k);
-    cap.primaryAxisAlignItems = 'CENTER';
-    cap.counterAxisAlignItems = 'CENTER';
-    cap.minWidth = 40;
-    cap.minHeight = 40;
-    cap.paddingLeft = cap.paddingRight = 12;
-    cap.cornerRadius = 12;
-    cap.fills = [solid(WHITE)];
-    cap.strokes = [solid(INK)];
-    cap.strokeWeight = 1;
-    cap.strokeBottomWeight = 4;
-    cap.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    trainKeys.appendChild(cap);
+    const cap = instKeyCap(k);
+    if (cap) {
+      trainKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.primaryAxisAlignItems = 'CENTER';
+    box.counterAxisAlignItems = 'CENTER';
+    box.minWidth = 40;
+    box.minHeight = 40;
+    box.paddingLeft = box.paddingRight = 12;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.strokeWeight = 1;
+    box.strokeBottomWeight = 4;
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    trainKeys.appendChild(box);
   }
   trainBody.appendChild(trainKeys);
 
@@ -4346,7 +4351,6 @@ async function buildUniqueScreens() {
     [
       txt('Developer Growth Path', outfit('SemiBold'), 20, INK, 358),
       instPath('Status=Start') || pathNode('Start', 'Начать', false),
-      instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false),
       instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false),
     ],
     'Мой путь',
