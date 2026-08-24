@@ -855,6 +855,68 @@ if (!hotkeyDoneUnique || !namesUnder(hotkeyDoneUnique).includes('Сочетан�
   fail.push('hotkey-done unique missing live doneTitle / training CTA');
 }
 
+if (!names.includes('Verify email loading /verify-email')) fail.push('no verify-email loading unique screen');
+if (!names.includes('Verify email ok /verify-email')) fail.push('no verify-email success unique screen');
+if (!names.includes('Проверяем ссылку…')) fail.push('no live verify loading copy unique screen');
+if (!names.includes('Email подтверждён. Теперь можно войти.')) fail.push('no live verify success API message unique screen');
+if (!names.includes('Achievements loading /achievements')) fail.push('no achievements loading unique screen');
+if (!names.includes('Achievements unlocked /achievements')) fail.push('no achievements unlocked unique screen');
+if (!names.includes('Training loading /training')) fail.push('no training loading unique screen');
+if (!names.includes('Speed loading /speed')) fail.push('no speed loading unique screen');
+if (!names.includes('Review loading /review')) fail.push('no review loading unique screen');
+if (!names.includes('Mobile Leaderboard period empty 390')) fail.push('no mobile leaderboard period-empty unique screen');
+if (!names.includes('Guest / Verify email loading')) fail.push('no verify loading capture');
+if (!names.includes('Guest / Verify email ok')) fail.push('no verify success capture');
+if (!names.includes('Learner / Achievements loading')) fail.push('no achievements loading capture');
+if (!names.includes('Learner / Achievements unlocked')) fail.push('no achievements unlocked capture');
+if (!names.includes('Learner / Training loading')) fail.push('no training loading capture');
+if (!names.includes('Learner / Speed loading')) fail.push('no speed loading capture');
+if (!names.includes('Learner / Review loading')) fail.push('no review loading capture');
+if (!names.includes('Mobile / Leaderboard period empty')) fail.push('no mobile leaderboard period-empty capture');
+
+let verifyLoadUnique = null;
+let verifyOkUnique = null;
+let achLoadUnique = null;
+let achUnlockUnique = null;
+let trainLoadUnique = null;
+let speedLoadUnique = null;
+let reviewLoadUnique = null;
+let mobileLbPeriodUnique = null;
+for (const p of pages) {
+  verifyLoadUnique = verifyLoadUnique || findByName(p, 'Verify email loading /verify-email');
+  verifyOkUnique = verifyOkUnique || findByName(p, 'Verify email ok /verify-email');
+  achLoadUnique = achLoadUnique || findByName(p, 'Achievements loading /achievements');
+  achUnlockUnique = achUnlockUnique || findByName(p, 'Achievements unlocked /achievements');
+  trainLoadUnique = trainLoadUnique || findByName(p, 'Training loading /training');
+  speedLoadUnique = speedLoadUnique || findByName(p, 'Speed loading /speed');
+  reviewLoadUnique = reviewLoadUnique || findByName(p, 'Review loading /review');
+  mobileLbPeriodUnique = mobileLbPeriodUnique || findByName(p, 'Mobile Leaderboard period empty 390');
+}
+if (!verifyLoadUnique || !namesUnder(verifyLoadUnique).includes('Проверяем ссылку…') || namesUnder(verifyLoadUnique).includes('Выйти')) {
+  fail.push('verify loading unique should show Проверяем ссылку… with guest chrome');
+}
+if (!verifyOkUnique || !namesUnder(verifyOkUnique).includes('Email подтверждён. Теперь можно войти.') || !namesUnder(verifyOkUnique).includes('Войти')) {
+  fail.push('verify success unique missing live API message + Войти');
+}
+if (!achLoadUnique || !namesUnder(achLoadUnique).includes('Skeleton instance')) {
+  fail.push('achievements loading unique missing Skeleton instance');
+}
+if (!achUnlockUnique || !namesUnder(achUnlockUnique).includes('Первая победа') || !namesUnder(achUnlockUnique).includes('Achievement instance')) {
+  fail.push('achievements unlocked unique missing live Первая победа card');
+}
+if (!trainLoadUnique || !namesUnder(trainLoadUnique).includes('Skeleton instance') || !namesUnder(trainLoadUnique).includes('Rail')) {
+  fail.push('training loading unique should keep PracticeShell rail');
+}
+if (!speedLoadUnique || !namesUnder(speedLoadUnique).includes('Скорость')) {
+  fail.push('speed loading unique missing Speed rail active state');
+}
+if (!reviewLoadUnique || !namesUnder(reviewLoadUnique).includes('Повторение')) {
+  fail.push('review loading unique missing Review rail active state');
+}
+if (!mobileLbPeriodUnique || !namesUnder(mobileLbPeriodUnique).includes('За этот период пока никого') || !namesUnder(mobileLbPeriodUnique).includes('Выйти')) {
+  fail.push('mobile period-empty unique should keep authed chrome + week empty copy');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));

@@ -1226,7 +1226,9 @@ async function buildVisualFlows() {
     ]],
     ['F2 Sign up', [
       ['desktop-guest-03-register.jpg', 'Register'],
-      ['desktop-guest-verify-email-error.jpg', 'OTP / verify'],
+      ['desktop-guest-verify-email-loading.jpg', 'Verify loading'],
+      ['desktop-guest-verify-email-ok.jpg', 'Verify ok'],
+      ['desktop-guest-verify-email-error.jpg', 'Verify error'],
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
     ]],
     ['F3 Sign in', [
@@ -1277,6 +1279,8 @@ async function buildVisualFlows() {
       ['desktop-guest-leaderboard-api-down.jpg', 'Leaderboard API down'],
       ['desktop-learner-19-achievements.jpg', 'Achievements locked'],
       ['desktop-learner-achievements-empty.jpg', 'Achievements empty'],
+      ['desktop-learner-achievements-unlocked.jpg', 'Achievements unlocked'],
+      ['desktop-learner-achievements-loading.jpg', 'Achievements loading'],
     ]],
     ['F10 Progress', [
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
@@ -1392,7 +1396,7 @@ async function buildSitemap() {
         ['/lessons/:id', 'Lesson', 'hotkey | task | study guest/authed/learned | desktop-task · loading · done'],
         ['/path', 'Learning path', 'protected'],
         ['/leaderboard', 'Leaderboard', 'public · authed Вы · empty · period empty · api down · loading'],
-        ['/achievements', 'Achievements', 'locked grid / empty'],
+        ['/achievements', 'Achievements', 'locked / empty / loading / unlocked mix'],
         ['/dashboard', 'Dashboard', 'XP · streak'],
         ['/stats', 'Stats', 'protected'],
         ['/admin', 'Admin', 'overview · courses · users · achievements · forbidden'],
@@ -1403,7 +1407,7 @@ async function buildSitemap() {
       [
         ['/login', 'Login', 'OTP if unverified'],
         ['/register', 'Register', 'OTP nested'],
-        ['/verify-email', 'Verify email', 'link + error'],
+        ['/verify-email', 'Verify email', 'loading · error · ok'],
         ['/auth/callback', 'OAuth callback', 'skeleton · error'],
       ],
     ],
@@ -1412,9 +1416,9 @@ async function buildSitemap() {
       [
         ['/practice', 'Practice hub', 'skills + reinforce'],
         ['/typing', 'Typing', 'train | path | progress'],
-        ['/training', 'Hotkeys', 'run | empty | done'],
-        ['/speed', 'Speed', '60s'],
-        ['/review', 'Review', 'front / flipped / empty'],
+        ['/training', 'Hotkeys', 'run | empty | done | loading'],
+        ['/speed', 'Speed', '60s | done | loading'],
+        ['/review', 'Review', 'front / flipped / empty / loading'],
         ['/quiz', 'Quiz', 'play + done'],
         ['/exam', 'Exam', 'setup | run | feedback | done | empty'],
       ],
@@ -5003,6 +5007,33 @@ async function buildUniqueScreens() {
   verifyCard.appendChild(txt('В ссылке нет кода подтверждения', outfit('Regular'), 14, SIGNAL, 344));
   verifyCard.appendChild(secondaryBtn('Регистрация'));
 
+  const verifyLoading = al('VERTICAL', 'Verify email loading');
+  verifyLoading.itemSpacing = 12;
+  verifyLoading.paddingTop = verifyLoading.paddingBottom = 28;
+  verifyLoading.paddingLeft = verifyLoading.paddingRight = 28;
+  verifyLoading.cornerRadius = 24;
+  verifyLoading.fills = [solid(WHITE)];
+  verifyLoading.strokes = [solid(INK, 0.1)];
+  verifyLoading.resize(400, 10);
+  verifyLoading.layoutSizingHorizontal = 'FIXED';
+  verifyLoading.layoutSizingVertical = 'HUG';
+  verifyLoading.appendChild(txt('Подтверждение email', fraunces('Bold'), 22, INK));
+  verifyLoading.appendChild(txt('Проверяем ссылку…', outfit('Regular'), 14, MUTED, 344));
+
+  const verifyOk = al('VERTICAL', 'Verify email ok');
+  verifyOk.itemSpacing = 12;
+  verifyOk.paddingTop = verifyOk.paddingBottom = 28;
+  verifyOk.paddingLeft = verifyOk.paddingRight = 28;
+  verifyOk.cornerRadius = 24;
+  verifyOk.fills = [solid(WHITE)];
+  verifyOk.strokes = [solid(INK, 0.1)];
+  verifyOk.resize(400, 10);
+  verifyOk.layoutSizingHorizontal = 'FIXED';
+  verifyOk.layoutSizingVertical = 'HUG';
+  verifyOk.appendChild(txt('Подтверждение email', fraunces('Bold'), 22, INK));
+  verifyOk.appendChild(txt('Email подтверждён. Теперь можно войти.', outfit('Regular'), 14, SUCCESS, 344));
+  verifyOk.appendChild(instPrimary('Войти'));
+
   const callbackCard = al('VERTICAL', 'Auth callback');
   callbackCard.itemSpacing = 12;
   callbackCard.paddingTop = callbackCard.paddingBottom = 28;
@@ -6450,6 +6481,37 @@ async function buildUniqueScreens() {
         ) ||
           txt('Пройдите первый урок, чтобы открыть достижения', outfit('SemiBold'), 22, INK),
       ]),
+      marketingPage('Achievements loading /achievements', '', false, [
+        txt('Достижения', fraunces('Bold'), 32, INK),
+        (() => {
+          const grid = al('HORIZONTAL', 'Achievements skeleton');
+          grid.itemSpacing = 16;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(860, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          for (let i = 0; i < 4; i++) grid.appendChild(skelBlock(420, 192, 'Kind=Card'));
+          return grid;
+        })(),
+        txt('Achievements loading — SkeletonCardGrid count=4 sm:grid-cols-2, not catalog 9-card grid.', outfit('Regular'), 12, MUTED, 720),
+      ]),
+      marketingPage('Achievements unlocked /achievements', '', false, [
+        txt('Достижения', fraunces('Bold'), 32, INK),
+        txt('2 колонки: открытые цветные + закрытые grayscale. Не дублировать все 13.', outfit('Regular'), 13, MUTED, 720),
+        (() => {
+          const row = al('HORIZONTAL', 'Achievements mixed');
+          row.itemSpacing = 12;
+          row.layoutWrap = 'WRAP';
+          row.resize(860, 10);
+          row.layoutSizingHorizontal = 'FIXED';
+          row.layoutSizingVertical = 'HUG';
+          row.appendChild(instAchievement(false, 'Первая победа') || txt('Первая победа', outfit('SemiBold'), 16, INK));
+          row.appendChild(instAchievement(false, '100 правильных') || txt('100 правильных', outfit('SemiBold'), 16, INK));
+          row.appendChild(instAchievement(true, '500 XP') || txt('500 XP', outfit('SemiBold'), 16, MUTED));
+          row.appendChild(instAchievement(true, '1000 XP') || txt('1000 XP', outfit('SemiBold'), 16, MUTED));
+          return row;
+        })(),
+      ]),
       marketingPage('Stats /stats', '', false, [
         txt('Статистика', outfit('Bold'), 30, INK),
         statTiles,
@@ -6613,7 +6675,9 @@ async function buildUniqueScreens() {
       marketingPage('Register /register', '', true, [registerCard]),
       marketingPage('Register password /register', '', true, [registerPassword]),
       marketingPage('Register OTP /register', '', true, [registerOtp]),
-      marketingPage('Verify email /verify-email', '', false, [verifyCard]),
+      marketingPage('Verify email /verify-email', '', true, [verifyCard]),
+      marketingPage('Verify email loading /verify-email', '', true, [verifyLoading]),
+      marketingPage('Verify email ok /verify-email', '', true, [verifyOk]),
       marketingPage('Auth callback /auth/callback', '', true, [callbackCard]),
       marketingPage('Auth callback error /auth/callback', '', true, [callbackError]),
     ]),
@@ -6637,8 +6701,18 @@ async function buildUniqueScreens() {
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
       practicePage('Training done /training', 'Hotkeys', [trainDone]),
+      practicePage('Training loading /training', 'Hotkeys', [
+        skelBlock(224, 40, 'Kind=Line'),
+        skelBlock(680, 288, 'Kind=Card'),
+        txt('Training loading — PracticeShell + SkeletonBlock h-10 w-56 + h-72.', outfit('Regular'), 12, MUTED, 680),
+      ]),
       practicePage('Speed /speed', 'Скорость', [speedBody]),
       practicePage('Speed done /speed', 'Скорость', [speedDone]),
+      practicePage('Speed loading /speed', 'Скорость', [
+        skelBlock(192, 40, 'Kind=Line'),
+        skelBlock(680, 256, 'Kind=Card'),
+        txt('Speed loading — PracticeShell + SkeletonBlock h-10 w-48 + h-64.', outfit('Regular'), 12, MUTED, 680),
+      ]),
       practicePage('Quiz /quiz', 'Основы hotkeys', [quiz]),
       practicePage('Quiz picked /quiz', 'Основы hotkeys', [quizPicked]),
       practicePage('Quiz done /quiz', 'Основы hotkeys', [quizDone]),
@@ -6652,6 +6726,11 @@ async function buildUniqueScreens() {
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
       practicePage('Review empty /review', 'Повторение', [reviewEmpty]),
+      practicePage('Review loading /review', 'Повторение', [
+        skelBlock(160, 32, 'Kind=Line'),
+        skelBlock(448, 320, 'Kind=Card'),
+        txt('Review loading — PracticeShell + SkeletonBlock h-8 w-40 + h-80 max-w-md.', outfit('Regular'), 12, MUTED, 680),
+      ]),
     ]),
   );
   const darkLogo = figma.createRectangle();
@@ -6865,7 +6944,8 @@ async function buildUniqueScreens() {
     return frame;
   }
 
-  function mobileLbHero() {
+  function mobileLbHero(period) {
+    period = period || 'all';
     const hero = al('VERTICAL', 'Leaderboard hero 390');
     hero.itemSpacing = 8;
     hero.paddingTop = hero.paddingBottom = 20;
@@ -6894,11 +6974,12 @@ async function buildUniqueScreens() {
     periods.cornerRadius = 12;
     periods.fills = [solid(WHITE)];
     periods.strokes = [solid(INK, 0.1)];
-    for (const [label, on] of [
-      ['Всё время', true],
-      ['Неделя', false],
-      ['Месяц', false],
+    for (const [label, key] of [
+      ['Всё время', 'all'],
+      ['Неделя', 'week'],
+      ['Месяц', 'month'],
     ]) {
+      const on = period === key;
       const chip = al('HORIZONTAL', label);
       chip.paddingLeft = chip.paddingRight = 14;
       chip.paddingTop = chip.paddingBottom = 6;
@@ -7160,6 +7241,18 @@ async function buildUniqueScreens() {
         MUTED,
         358,
       ),
+    ],
+    'Рейтинг',
+    { authed: true },
+  );
+  const mobileLeaderboardPeriodEmpty = mobileFrame(
+    'Mobile Leaderboard period empty 390',
+    [
+      mobileLbHero('week'),
+      instEmpty(
+        'За этот период пока никого',
+        'Завершите уроки на этой неделе или в этом месяце — XP попадёт в таблицу.',
+      ) || txt('За этот период пока никого', outfit('SemiBold'), 18, INK, 326),
     ],
     'Рейтинг',
     { authed: true },
@@ -7926,6 +8019,7 @@ async function buildUniqueScreens() {
       mobileHomeAuthed,
       mobileLeaderboard,
       mobileLeaderboardAuthed,
+      mobileLeaderboardPeriodEmpty,
       mobileDashboard,
       mobileCourses,
       mobileCoursesAuthed,
