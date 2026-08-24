@@ -2195,6 +2195,27 @@ async function buildUniqueScreens() {
   coursesRow.appendChild(courseCard('Первый ноутбук', 'Старт', 'brand', true));
   coursesRow.appendChild(courseCard('VS Code', 'В процессе', 'neutral', false));
   coursesRow.appendChild(courseCard('Git', 'Готово', 'success', false));
+  const filterRow = al('HORIZONTAL', 'Filters');
+  filterRow.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Все', true],
+    ['Старт', false],
+    ['ОС', false],
+    ['Редакторы', false],
+    ['Браузеры', false],
+    ['Офис', false],
+    ['Git', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 99;
+    chip.fills = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : WHITE)];
+    chip.strokes = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+    filterRow.appendChild(chip);
+  }
 
   const lessonHotkey = al('VERTICAL', 'KeyboardTrainer');
   lessonHotkey.itemSpacing = 12;
@@ -2251,12 +2272,14 @@ async function buildUniqueScreens() {
   dash.itemSpacing = 12;
   dash.appendChild(txt('Привет, Анна!', fraunces('Bold'), 28, INK));
   dash.appendChild(txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED));
+  dash.appendChild(secondaryBtn('Мой путь развития'));
+  dash.appendChild(txt('Первый ноутбук: файлы и папки', outfit('SemiBold'), 16, INK));
+  dash.appendChild(txt('Ближайшие этапы', outfit('SemiBold'), 16, INK));
   const tiles = al('HORIZONTAL', 'Stat tiles');
   tiles.itemSpacing = 12;
   for (const [k, v] of [
-    ['Уровень', '3'],
+    ['Уровень', 'Novice Operator'],
     ['XP', '120'],
-    ['Прохождение', '18%'],
     ['Ежедневная серия', '4 дн.'],
   ]) {
     const t = al('VERTICAL', k);
@@ -2273,41 +2296,124 @@ async function buildUniqueScreens() {
     tiles.appendChild(t);
   }
   dash.appendChild(tiles);
+  dash.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
+  dash.appendChild(txt('Последние достижения', outfit('SemiBold'), 16, INK));
 
-  const loginCard = al('VERTICAL', 'AuthCard');
-  loginCard.itemSpacing = 12;
-  loginCard.paddingTop = loginCard.paddingBottom = 28;
-  loginCard.paddingLeft = loginCard.paddingRight = 28;
-  loginCard.cornerRadius = 24;
-  loginCard.fills = [solid(WHITE)];
-  loginCard.strokes = [solid(INK, 0.1)];
-  loginCard.resize(400, 10);
-  loginCard.layoutSizingHorizontal = 'FIXED';
-  loginCard.layoutSizingVertical = 'HUG';
-  loginCard.appendChild(txt('KeyMaster', fraunces('Bold'), 22, INK));
-  loginCard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
-  loginCard.appendChild(txt('Добро пожаловать в KeyMaster', outfit('Regular'), 13, MUTED));
-  loginCard.appendChild(field('Email', 'learner@example.com', INK));
-  loginCard.appendChild(field('Пароль', '••••••••', INK));
-  loginCard.appendChild(primaryBtn('Войти'));
-  loginCard.appendChild(txt('Нет аккаунта? Регистрация', outfit('Regular'), 12, MUTED));
+  function authScreen(title, subtitle, bodyNodes, footerText) {
+    const card = al('VERTICAL', 'AuthCard');
+    card.itemSpacing = 0;
+    card.cornerRadius = 24;
+    card.fills = [solid(WHITE)];
+    card.strokes = [solid(INK, 0.1)];
+    card.resize(400, 10);
+    card.layoutSizingHorizontal = 'FIXED';
+    card.layoutSizingVertical = 'HUG';
+    const head = al('VERTICAL', 'header');
+    head.itemSpacing = 8;
+    head.paddingTop = head.paddingBottom = 24;
+    head.paddingLeft = head.paddingRight = 24;
+    head.fills = [solid(BRAND50)];
+    const km = txt('KEYMASTER', outfit('Bold'), 10, BRAND800);
+    km.textCase = 'UPPER';
+    head.appendChild(km);
+    head.appendChild(txt(title, fraunces('Bold'), 26, INK));
+    if (subtitle) head.appendChild(txt(subtitle, outfit('Regular'), 13, MUTED, 352));
+    card.appendChild(head);
+    const body = al('VERTICAL', 'body');
+    body.itemSpacing = 12;
+    body.paddingTop = body.paddingBottom = 24;
+    body.paddingLeft = body.paddingRight = 24;
+    for (const n of bodyNodes) body.appendChild(n);
+    card.appendChild(body);
+    if (footerText) {
+      const foot = al('HORIZONTAL', 'footer');
+      foot.primaryAxisAlignItems = 'CENTER';
+      foot.paddingTop = foot.paddingBottom = 16;
+      foot.paddingLeft = foot.paddingRight = 24;
+      foot.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+      foot.appendChild(txt(footerText, outfit('Regular'), 13, MUTED));
+      card.appendChild(foot);
+    }
+    return card;
+  }
 
-  const registerCard = al('VERTICAL', 'AuthCard');
-  registerCard.itemSpacing = 12;
-  registerCard.paddingTop = registerCard.paddingBottom = 28;
-  registerCard.paddingLeft = registerCard.paddingRight = 28;
-  registerCard.cornerRadius = 24;
-  registerCard.fills = [solid(WHITE)];
-  registerCard.strokes = [solid(INK, 0.1)];
-  registerCard.resize(400, 10);
-  registerCard.layoutSizingHorizontal = 'FIXED';
-  registerCard.layoutSizingVertical = 'HUG';
-  registerCard.appendChild(txt('Регистрация', outfit('SemiBold'), 20, INK));
-  registerCard.appendChild(txt('Создайте аккаунт — на email придёт код подтверждения', outfit('Regular'), 13, MUTED, 344));
-  registerCard.appendChild(field('Имя', 'Анна', INK));
-  registerCard.appendChild(field('Email', 'anna@example.com', INK));
-  registerCard.appendChild(field('Пароль', '••••••••', INK));
-  registerCard.appendChild(primaryBtn('Создать аккаунт'));
+  function otpRow() {
+    const row = al('HORIZONTAL', 'OTP');
+    row.itemSpacing = 8;
+    for (let i = 0; i < 6; i++) {
+      const d = al('HORIZONTAL', 'digit');
+      d.primaryAxisAlignItems = 'CENTER';
+      d.counterAxisAlignItems = 'CENTER';
+      d.resize(44, 52);
+      d.layoutSizingHorizontal = 'FIXED';
+      d.layoutSizingVertical = 'FIXED';
+      d.cornerRadius = 12;
+      d.fills = [solid(WHITE)];
+      d.strokes = [solid(i === 0 ? BRAND : INK, i === 0 ? 1 : 0.18)];
+      d.appendChild(txt(i === 0 ? '4' : ' ', outfit('SemiBold'), 18, INK));
+      row.appendChild(d);
+    }
+    return row;
+  }
+
+  const strength = al('HORIZONTAL', 'PasswordStrength');
+  strength.itemSpacing = 4;
+  for (let i = 1; i <= 4; i++) {
+    const seg = figma.createRectangle();
+    seg.resize(80, 3);
+    seg.cornerRadius = 99;
+    seg.fills = [solid(i <= 2 ? BRAND : INK, i <= 2 ? 1 : 0.08)];
+    strength.appendChild(seg);
+  }
+
+  const loginCard = authScreen(
+    'Вход',
+    'Добро пожаловать в KeyMaster',
+    [field('Email', 'learner@example.com', INK), field('Пароль', '••••••••', INK), primaryBtn('Войти')],
+    'Нет аккаунта? Регистрация',
+  );
+  const loginError = authScreen(
+    'Вход',
+    'Добро пожаловать в KeyMaster',
+    [
+      field('Email', 'learner@example.com', SIGNAL),
+      field('Пароль', '••••••••', SIGNAL),
+      txt('Неверный email или пароль', outfit('Medium'), 13, SIGNAL, 352),
+      primaryBtn('Войти'),
+    ],
+    'Нет аккаунта? Регистрация',
+  );
+  const loginOtp = authScreen(
+    'Вход',
+    'Введите код из письма.',
+    [
+      txt('Код из письма', outfit('Medium'), 13, INK),
+      otpRow(),
+      txt('6 цифр из письма KeyMaster (можно скопировать с телефона)', outfit('Regular'), 11, MUTED, 352),
+      primaryBtn('Подтвердить код'),
+      secondaryBtn('Отправить снова'),
+    ],
+    'Нет аккаунта? Регистрация',
+  );
+  const registerCard = authScreen(
+    'Регистрация',
+    'Создайте аккаунт — на email придёт код подтверждения',
+    [
+      field('Имя', 'Анна', INK),
+      field('username', 'anna', INK),
+      field('Email', 'anna@example.com', INK),
+      field('Пароль', '••••••••', INK),
+      strength,
+      primaryBtn('Создать аккаунт'),
+    ],
+    'Уже есть аккаунт? Войти',
+  );
+  const registerOtp = authScreen(
+    'Код из письма',
+    'Код отправлен на anna@example.com.',
+    [otpRow(), primaryBtn('Подтвердить код'), secondaryBtn('Отправить снова')],
+    'Уже есть аккаунт? Войти',
+  );
 
   function modeCard(title, tag, tone) {
     const c = al('VERTICAL', title);
@@ -2388,10 +2494,74 @@ async function buildUniqueScreens() {
   quizDone.appendChild(primaryBtn('Ещё раз'));
 
   const exam = al('VERTICAL', 'Exam setup');
-  exam.itemSpacing = 10;
-  exam.appendChild(txt('Настройка сессии', outfit('SemiBold'), 22, INK));
-  exam.appendChild(txt('Курс · вопросы · время — без подсказок', outfit('Regular'), 13, MUTED));
-  exam.appendChild(primaryBtn('Начать экзамен'));
+  exam.itemSpacing = 12;
+  exam.appendChild(txt('ЭКЗАМЕН', outfit('Bold'), 11, BRAND800));
+  exam.appendChild(txt('Настройка сессии', fraunces('Bold'), 32, INK));
+  exam.appendChild(
+    txt(
+      'Выберите курс, объём и лимит времени. По истечении минут экзамен завершится автоматически.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      680,
+    ),
+  );
+  const examCard = al('VERTICAL', 'GlassCard');
+  examCard.itemSpacing = 16;
+  examCard.paddingTop = examCard.paddingBottom = 24;
+  examCard.paddingLeft = examCard.paddingRight = 24;
+  examCard.cornerRadius = 24;
+  examCard.fills = [solid(WHITE)];
+  examCard.appendChild(txt('Курс', outfit('SemiBold'), 13, INK));
+  examCard.appendChild(field('Курс', 'Все курсы', INK));
+  examCard.appendChild(txt('Число вопросов', outfit('SemiBold'), 13, INK));
+  const qRow = al('HORIZONTAL', 'questions');
+  qRow.itemSpacing = 8;
+  for (const n of [10, 20, 30, 50]) {
+    const chip = al('HORIZONTAL', String(n));
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 99;
+    chip.fills = [solid(n === 20 ? BRAND : WHITE)];
+    chip.strokes = [solid(n === 20 ? BRAND : INK, n === 20 ? 1 : 0.12)];
+    chip.appendChild(txt(String(n), outfit('SemiBold'), 13, n === 20 ? WHITE : INK));
+    qRow.appendChild(chip);
+  }
+  examCard.appendChild(qRow);
+  examCard.appendChild(txt('Лимит времени', outfit('SemiBold'), 13, INK));
+  const mRow = al('HORIZONTAL', 'minutes');
+  mRow.itemSpacing = 8;
+  for (const n of [5, 10, 15, 20]) {
+    const chip = al('HORIZONTAL', String(n));
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 99;
+    chip.fills = [solid(n === 10 ? BRAND : WHITE)];
+    chip.strokes = [solid(n === 10 ? BRAND : INK, n === 10 ? 1 : 0.12)];
+    chip.appendChild(txt(n + ' мин', outfit('SemiBold'), 13, n === 10 ? WHITE : INK));
+    mRow.appendChild(chip);
+  }
+  examCard.appendChild(mRow);
+  const summary = al('VERTICAL', 'Ваша сессия');
+  summary.itemSpacing = 8;
+  summary.paddingTop = summary.paddingBottom = 16;
+  summary.paddingLeft = summary.paddingRight = 16;
+  summary.cornerRadius = 16;
+  summary.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  summary.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 10, MUTED));
+  summary.appendChild(txt('20 вопросов · 10 мин · ~30 сек. · Все курсы', outfit('Regular'), 13, INK, 600));
+  examCard.appendChild(summary);
+  examCard.appendChild(primaryBtn('Начать экзамен'));
+  exam.appendChild(examCard);
+
+  const examEmpty = al('VERTICAL', 'Exam empty');
+  examEmpty.itemSpacing = 10;
+  examEmpty.primaryAxisAlignItems = 'CENTER';
+  examEmpty.appendChild(txt('Нет вопросов', outfit('SemiBold'), 22, INK));
+  examEmpty.appendChild(txt('В выбранном курсе нет горячих клавиш для экзамена.', outfit('Regular'), 13, MUTED, 520));
+  examEmpty.appendChild(primaryBtn('Назад к настройке'));
 
   const review = al('VERTICAL', 'Review card');
   review.itemSpacing = 12;
@@ -2897,7 +3067,11 @@ async function buildUniqueScreens() {
     section('MarketingShell', [
       marketingPage('Home /', 'Главная', true, homeBody),
       marketingPage('Courses /courses', 'Курсы', true, [
+        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
         txt('Каталог курсов', outfit('SemiBold'), 28, INK),
+        txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 860),
+        field('Поиск', 'Название курса или инструмента', INK),
+        filterRow,
         txt('Один layout карточки · статусы Старт / В процессе / Готово / Обязательный старт', outfit('Regular'), 13, MUTED, 860),
         coursesRow,
       ]),
@@ -2944,7 +3118,10 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('AuthCard', [
       marketingPage('Login /login', 'Главная', true, [loginCard]),
+      marketingPage('Login error /login', 'Главная', true, [loginError]),
+      marketingPage('Login OTP /login', 'Главная', true, [loginOtp]),
       marketingPage('Register /register', 'Главная', true, [registerCard]),
+      marketingPage('Register OTP /register', 'Главная', true, [registerOtp]),
       marketingPage('Verify email /verify-email', 'Главная', true, [verifyCard]),
       marketingPage('Auth callback /auth/callback', 'Главная', true, [callbackCard]),
     ]),
@@ -2970,6 +3147,7 @@ async function buildUniqueScreens() {
       practicePage('Quiz picked /quiz', 'Основы hotkeys', [quizPicked]),
       practicePage('Quiz done /quiz', 'Основы hotkeys', [quizDone]),
       practicePage('Exam setup /exam', 'Экзамен', [exam]),
+      practicePage('Exam empty /exam', 'Экзамен', [examEmpty]),
       practicePage('Exam run /exam', 'Экзамен', [examRun]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Review front /review', 'Повторение', [review]),

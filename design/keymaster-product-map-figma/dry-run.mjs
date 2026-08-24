@@ -282,7 +282,9 @@ if (!names.includes('Auth callback /auth/callback')) fail.push('no auth callback
 if (!names.includes('Typing path /typing')) fail.push('no typing path unique screen');
 if (!names.includes('Typing progress /typing')) fail.push('no typing progress unique screen');
 if (!names.includes('Quiz done /quiz')) fail.push('no quiz done unique screen');
-if (!names.includes('Practice hub /practice')) fail.push('no practice hub unique screen');
+if (!names.includes('Login error /login')) fail.push('no login error unique screen');
+if (!names.includes('Register OTP /register')) fail.push('no register OTP unique screen');
+if (!names.includes('Exam empty /exam')) fail.push('no exam empty unique screen');
 if (!sets.includes('Exam')) fail.push('no Exam set');
 if (!sets.includes('Navbar')) fail.push('no Navbar set');
 if (!sets.includes('PasswordStrength')) fail.push('no PasswordStrength set');
