@@ -1176,16 +1176,16 @@ for (const p of pages) {
 if (!simFindUnique || !namesUnder(simFindUnique).includes('Find') || !namesUnder(simFindUnique).includes('0 results') || !namesUnder(simFindUnique).includes('# Keymaster Project')) {
   fail.push('code lab find unique missing live Find bar + README');
 }
-if (!simSearchUnique || !namesUnder(simSearchUnique).includes('SEARCH') || !namesUnder(simSearchUnique).includes('Search across files') || namesUnder(simSearchUnique).includes('EXPLORER')) {
+if (!simSearchUnique || !namesUnder(simSearchUnique).includes('SEARCH') || !namesUnder(simSearchUnique).includes('Search across files') || !namesUnder(simSearchUnique).includes('Type to search across all files') || namesUnder(simSearchUnique).includes('EXPLORER')) {
   fail.push('code lab search unique missing live Search panel without Explorer tree');
 }
 if (!simScmUnique || !namesUnder(simScmUnique).includes('SOURCE CONTROL') || !namesUnder(simScmUnique).includes('Git не подключён')) {
   fail.push('code lab scm unique missing live Git empty copy');
 }
-if (!simRunUnique || !namesUnder(simRunUnique).includes('RUN AND DEBUG') || !namesUnder(simRunUnique).includes('Нет открытого файла. Откройте файл из Explorer.')) {
+if (!simRunUnique || !namesUnder(simRunUnique).includes('RUN AND DEBUG') || !namesUnder(simRunUnique).includes('Нет открытого файла. Откройте файл из Explorer.') || !namesUnder(simRunUnique).includes('run file.py')) {
   fail.push('code lab run unique missing live empty-file copy');
 }
-if (!simExtUnique || !namesUnder(simExtUnique).includes('EXTENSIONS & LAB') || !namesUnder(simExtUnique).includes('Показать клавиатуру')) {
+if (!simExtUnique || !namesUnder(simExtUnique).includes('EXTENSIONS & LAB') || !namesUnder(simExtUnique).includes('Показать клавиатуру') || !namesUnder(simExtUnique).includes('Папка с компьютера') || !namesUnder(simExtUnique).includes('Скрыть Tasks')) {
   fail.push('code lab extensions unique missing live Extensions & Lab copy');
 }
 if (!deskFileMenuUnique || !namesUnder(deskFileMenuUnique).includes('Открыть с помощью Code') || namesUnder(deskFileMenuUnique).includes('Открыть проводник') || namesUnder(deskFileMenuUnique).includes('С чего начать')) {

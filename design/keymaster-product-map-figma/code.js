@@ -4765,6 +4765,7 @@ async function buildUniqueScreens() {
       explorer.appendChild(txt('SEARCH', outfit('Bold'), 10, VSCODE_MUTED));
       explorer.appendChild(txt('Search across files', outfit('Regular'), 12, VSCODE_MUTED, 196));
       explorer.appendChild(txt('Aa', outfit('Regular'), 11, VSCODE_MUTED));
+      explorer.appendChild(txt('Type to search across all files', outfit('Regular'), 12, VSCODE_MUTED, 196));
     } else if (overlay === 'scm') {
       explorer.appendChild(txt('SOURCE CONTROL', outfit('Bold'), 10, VSCODE_MUTED));
       explorer.appendChild(txt('Git не подключён', outfit('SemiBold'), 13, WHITE, 196));
@@ -4781,6 +4782,10 @@ async function buildUniqueScreens() {
       explorer.appendChild(txt('RUN AND DEBUG', outfit('Bold'), 10, VSCODE_MUTED));
       explorer.appendChild(txt('Run (F5)', outfit('SemiBold'), 13, WHITE));
       explorer.appendChild(txt('Нет открытого файла. Откройте файл из Explorer.', outfit('Regular'), 11, VSCODE_MUTED, 196));
+      explorer.appendChild(txt('Терминал', outfit('SemiBold'), 12, WHITE));
+      explorer.appendChild(txt('run file.py', outfit('Regular'), 11, VSCODE_MUTED));
+      explorer.appendChild(txt('python file.py', outfit('Regular'), 11, VSCODE_MUTED));
+      explorer.appendChild(txt('preview index.html', outfit('Regular'), 11, VSCODE_MUTED));
       explorer.appendChild(txt('Показать терминал', outfit('Regular'), 12, { r: 0.53, g: 0.81, b: 1 }));
     } else if (overlay === 'extensions') {
       explorer.appendChild(txt('EXTENSIONS & LAB', outfit('Bold'), 10, VSCODE_MUTED));
@@ -4793,8 +4798,11 @@ async function buildUniqueScreens() {
           196,
         ),
       );
-      explorer.appendChild(txt('Проект с компьютера', outfit('SemiBold'), 12, WHITE));
+      explorer.appendChild(txt('Папка с компьютера', outfit('Regular'), 12, WHITE));
+      explorer.appendChild(txt('Файлы с компьютера', outfit('Regular'), 12, WHITE));
+      explorer.appendChild(txt('Светлая тема', outfit('Regular'), 12, WHITE));
       explorer.appendChild(txt('Показать клавиатуру', outfit('Regular'), 12, WHITE, 196));
+      explorer.appendChild(txt('Скрыть Tasks', outfit('Regular'), 12, WHITE));
     } else {
       explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, VSCODE_MUTED));
       explorer.appendChild(txt('KEYMASTER-PROJECT', outfit('Bold'), 10, WHITE));
@@ -5140,7 +5148,7 @@ async function buildUniqueScreens() {
         const row = al('HORIZONTAL', label);
         row.paddingLeft = row.paddingRight = 12;
         row.paddingTop = row.paddingBottom = 7;
-        row.appendChild(txt(label, outfit('Regular'), 13, WHITE));
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Удалить' ? SIGNAL : WHITE));
         menu.appendChild(row);
       }
       deskWork.appendChild(menu);

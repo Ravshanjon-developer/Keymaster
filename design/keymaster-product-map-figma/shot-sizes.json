@@ -466,5 +466,33 @@
   "desktop-learner-simulator-desktop-properties.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-simulator-desktop-keyboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-filemenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-find.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-search.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-scm.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-run.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-extensions.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }
