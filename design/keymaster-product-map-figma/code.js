@@ -3190,13 +3190,16 @@ async function buildUniqueScreens() {
   deskCard.resize(720, 10);
   deskCard.layoutSizingHorizontal = 'FIXED';
   deskCard.layoutSizingVertical = 'HUG';
-  deskCard.appendChild(txt('Создайте папку «Practice»', fraunces('Bold'), 28, INK, 672));
+  deskCard.appendChild(txt('Папка Practice', fraunces('Bold'), 28, INK, 672));
+  deskCard.appendChild(
+    txt('Имена латиницей проще для программ. В симуляторе шаг засчитается сам.', outfit('Regular'), 13, MUTED, 672),
+  );
   const deskPrompt = al('VERTICAL', 'prompt');
   deskPrompt.paddingTop = deskPrompt.paddingBottom = 14;
   deskPrompt.paddingLeft = deskPrompt.paddingRight = 16;
   deskPrompt.cornerRadius = 16;
   deskPrompt.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
-  deskPrompt.appendChild(txt('Создайте папку «Practice» на рабочем столе', outfit('SemiBold'), 14, BRAND800, 640));
+  deskPrompt.appendChild(txt('Создайте на рабочем столе папку Practice', outfit('SemiBold'), 14, BRAND800, 640));
   deskCard.appendChild(deskPrompt);
   const deskPanel = al('VERTICAL', 'ЗАДАНИЕ');
   deskPanel.itemSpacing = 12;
@@ -3206,8 +3209,8 @@ async function buildUniqueScreens() {
   deskPanel.fills = [solid(WHITE)];
   deskPanel.strokes = [solid(BRAND, 0.2)];
   deskPanel.appendChild(txt('ЗАДАНИЕ', outfit('Bold'), 11, BRAND800));
-  deskPanel.appendChild(txt('Создайте папку «Practice»', outfit('SemiBold'), 16, INK));
-  deskPanel.appendChild(txt('Создайте папку «Practice» на рабочем столе', outfit('Regular'), 13, MUTED, 640));
+  deskPanel.appendChild(txt('Папка Practice', outfit('SemiBold'), 16, INK));
+  deskPanel.appendChild(txt('Создайте на рабочем столе папку Practice', outfit('Regular'), 13, MUTED, 640));
   const deskSteps = al('VERTICAL', 'Шаги');
   deskSteps.itemSpacing = 6;
   deskSteps.paddingTop = deskSteps.paddingBottom = 12;
@@ -3215,8 +3218,8 @@ async function buildUniqueScreens() {
   deskSteps.cornerRadius = 12;
   deskSteps.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
   deskSteps.appendChild(txt('Шаги', outfit('SemiBold'), 13, INK));
-  deskSteps.appendChild(txt('• Правый клик на рабочем столе', outfit('Regular'), 13, MUTED, 600));
-  deskSteps.appendChild(txt('• Создать → Папка → Practice', outfit('Regular'), 13, MUTED, 600));
+  deskSteps.appendChild(txt('• ПКМ по обоям → Новая папка → Practice', outfit('Regular'), 13, MUTED, 600));
+  deskSteps.appendChild(txt('• или Ctrl+Shift+N', outfit('Regular'), 13, MUTED, 600));
   deskPanel.appendChild(deskSteps);
   deskPanel.appendChild(instSecondary('Открыть симулятор рабочего стола'));
   deskPanel.appendChild(txt('Симулятор сам засчитает урок и XP, когда шаг будет выполнен.', outfit('Regular'), 12, MUTED, 600));
@@ -6493,6 +6496,75 @@ async function buildUniqueScreens() {
     'Рейтинг',
     { authed: true },
   );
+  const mobileDashboard = mobileFrame(
+    'Mobile Dashboard 390',
+    [
+      txt('Привет, Анна!', fraunces('Bold'), 28, INK, 358),
+      txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED, 358),
+      secondaryBtn('Мой путь развития'),
+      (() => {
+        const card = al('VERTICAL', 'NextStepCard 390');
+        card.itemSpacing = 8;
+        card.paddingTop = card.paddingBottom = 16;
+        card.paddingLeft = card.paddingRight = 16;
+        card.cornerRadius = 24;
+        card.fills = [solid(BRAND50, 0.8)];
+        card.strokes = [solid(BRAND, 0.25)];
+        card.resize(358, 10);
+        card.layoutSizingHorizontal = 'FIXED';
+        card.layoutSizingVertical = 'HUG';
+        card.appendChild(txt('СЕГОДНЯ', outfit('Bold'), 11, BRAND800));
+        card.appendChild(txt('Первый ноутбук: файлы и папки', fraunces('SemiBold'), 20, INK, 326));
+        card.appendChild(txt('XP 0 · пройдено 0/20 · дальше: First Laptop', outfit('Regular'), 13, MUTED, 326));
+        const btns = al('VERTICAL', 'next ctas 390');
+        btns.itemSpacing = 8;
+        btns.appendChild(instPrimary('Приступить'));
+        btns.appendChild(secondaryBtn('Открыть путь обучения'));
+        card.appendChild(btns);
+        card.appendChild(txt('Novice Operator', outfit('Regular'), 12, MUTED));
+        return card;
+      })(),
+      txt('Ближайшие этапы', outfit('SemiBold'), 16, INK),
+      (() => {
+        const row = al('VERTICAL', 'PathStageStrip 390');
+        row.itemSpacing = 8;
+        for (const [num, title, status, locked] of [
+          ['01', 'Первый ноутбук: файлы и папки', 'НАЧАТЬ', false],
+          ['02', 'Основные горячие клавиши программиста', 'ЗАБЛОКИРОВАНО', true],
+        ]) {
+          const c = al('HORIZONTAL', 'stage ' + num);
+          c.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          c.counterAxisAlignItems = 'CENTER';
+          c.paddingTop = c.paddingBottom = 12;
+          c.paddingLeft = c.paddingRight = 12;
+          c.cornerRadius = 16;
+          c.fills = [solid(locked ? WHITE : BRAND50)];
+          c.strokes = [solid(locked ? INK : BRAND, locked ? 0.1 : 0.35)];
+          c.resize(358, 10);
+          c.layoutSizingHorizontal = 'FIXED';
+          c.layoutSizingVertical = 'HUG';
+          const left = al('VERTICAL', 'stage copy');
+          left.itemSpacing = 4;
+          left.appendChild(txt(num, outfit('Bold'), 11, MUTED));
+          left.appendChild(txt(title, outfit('SemiBold'), 13, INK, 220));
+          c.appendChild(left);
+          const chip = al('HORIZONTAL', status);
+          chip.paddingLeft = chip.paddingRight = 8;
+          chip.paddingTop = chip.paddingBottom = 2;
+          chip.cornerRadius = 6;
+          chip.fills = [solid(locked ? { r: 0.941, g: 0.945, b: 0.953 } : INK)];
+          chip.appendChild(txt(status, outfit('Bold'), 9, locked ? MUTED : WHITE));
+          c.appendChild(chip);
+          row.appendChild(c);
+        }
+        return row;
+      })(),
+      txt('УРОВЕНЬ', outfit('SemiBold'), 11, MUTED),
+      txt('Новичок', outfit('SemiBold'), 22, INK),
+    ],
+    '',
+    { authed: true },
+  );
   const mobilePractice = mobileFrame(
     'Mobile Practice 390',
     [
@@ -7186,6 +7258,7 @@ async function buildUniqueScreens() {
       mobileHomeAuthed,
       mobileLeaderboard,
       mobileLeaderboardAuthed,
+      mobileDashboard,
       mobileCourses,
       mobileCoursesAuthed,
       mobileLogin,

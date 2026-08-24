@@ -67,5 +67,7 @@
   {"file":"mobile-guest-04-leaderboard.jpg","page":"07 — Mobile Screens","name":"Mobile / Leaderboard","layout":"BottomNav Рейтинг guest","group":"Mobile 390"},
   {"file":"mobile-authed-10-leaderboard.jpg","page":"07 — Mobile Screens","name":"Mobile / Leaderboard authed","layout":"BottomNav Рейтинг + ВЫ","group":"Mobile 390"},
   {"file":"mobile-guest-05-register.jpg","page":"07 — Mobile Screens","name":"Mobile / Register","layout":"BottomNav hidden — ProtectedRoute /register","group":"Mobile 390"},
-  {"file":"mobile-authed-11-courses.jpg","page":"07 — Mobile Screens","name":"Mobile / Courses authed","layout":"BottomNav Курсы + 0/N progress","group":"Mobile 390"}
+  {"file":"mobile-authed-11-courses.jpg","page":"07 — Mobile Screens","name":"Mobile / Courses authed","layout":"BottomNav Курсы + 0/N progress","group":"Mobile 390"},
+  {"file":"desktop-learner-lesson-desktop-task.jpg","page":"03 — Existing Screens","name":"Learner / Lesson desktop-task","layout":"MarketingShell — desktop: sim-only XP","group":"Learner"},
+  {"file":"mobile-authed-12-dashboard.jpg","page":"07 — Mobile Screens","name":"Mobile / Dashboard","layout":"BottomNav inactive + Кабинет","group":"Mobile 390"}
 ]

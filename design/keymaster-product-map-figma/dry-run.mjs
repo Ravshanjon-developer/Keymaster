@@ -395,6 +395,17 @@ if (!names.includes('0/20 курсов')) fail.push('no live path 0/20 courses u
 if (!names.includes('Готовы к практике?')) fail.push('no live code-lab empty unique screen');
 if (!names.includes('Welcome.txt')) fail.push('no live desktop Welcome.txt unique screen');
 if (!names.includes('Создайте папку «Practice»')) fail.push('no live desktop first-task unique screen');
+if (!names.includes('Папка Practice')) fail.push('no live desktop-task lesson title unique screen');
+if (!names.includes('Имена латиницей проще для программ. В симуляторе шаг засчитается сам.')) {
+  fail.push('no live desktop-task latin-names hint unique screen');
+}
+if (!names.includes('Создайте на рабочем столе папку Practice')) fail.push('no live desktop-task prompt unique screen');
+if (!names.some((n) => String(n).includes('ПКМ по обоям → Новая папка → Practice'))) {
+  fail.push('no live desktop-task steps unique screen');
+}
+if (!names.includes('Mobile Dashboard 390')) fail.push('no mobile dashboard unique screen');
+if (!names.includes('Learner / Lesson desktop-task')) fail.push('no desktop-task lesson capture');
+if (!names.includes('Mobile / Dashboard')) fail.push('no mobile dashboard capture');
 if (!names.includes('Копировать')) fail.push('no live lesson hotkey title unique screen');
 if (!names.includes('Учебное поле')) fail.push('no live lesson hotkey demo unique screen');
 if (!names.includes('Задание 1 из 13')) fail.push('no live training progress unique screen');
@@ -636,6 +647,18 @@ if (!names.includes('ЕЖЕДНЕВНАЯ СЕРИЯ')) fail.push('no live dashb
 if (!names.includes('Courses empty /courses')) fail.push('no catalog empty unique screen');
 if (!names.includes('Ничего не нашлось. Снимите фильтр или измените запрос.')) {
   fail.push('no live catalog no-matches unique screen');
+}
+let deskTaskUnique = null;
+let mobileDashUnique = null;
+for (const p of pages) {
+  deskTaskUnique = deskTaskUnique || findByName(p, 'Lesson desktop-task /lessons/:id');
+  mobileDashUnique = mobileDashUnique || findByName(p, 'Mobile Dashboard 390');
+}
+if (!deskTaskUnique || !namesUnder(deskTaskUnique).includes('Папка Practice') || !namesUnder(deskTaskUnique).some((n) => String(n).includes('ПКМ по обоям → Новая папка → Practice')) || namesUnder(deskTaskUnique).includes('Правый клик на рабочем столе')) {
+  fail.push('desktop-task unique screen does not match live Папка Practice copy');
+}
+if (!mobileDashUnique || !namesUnder(mobileDashUnique).includes('Выйти') || !namesUnder(mobileDashUnique).includes('Привет, Анна!') || namesUnder(mobileDashUnique).includes('Регистрация')) {
+  fail.push('mobile dashboard unique should show Выйти + Привет, Анна! without Регистрация');
 }
 
 console.log(JSON.stringify(report, null, 2));

@@ -13,7 +13,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 
 Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter).
 
-Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 69 as-is shots. Recapture: `node capture-catalog-states.mjs`, `node capture-leaderboard-filter.mjs`, `node capture-mobile-home-authed.mjs`, `node capture-mobile-leaderboard.mjs`, `node capture-mobile-register-catalog.mjs`.
+Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 71 as-is shots. Recapture: `node capture-catalog-states.mjs`, `node capture-leaderboard-filter.mjs`, `node capture-mobile-home-authed.mjs`, `node capture-mobile-leaderboard.mjs`, `node capture-mobile-register-catalog.mjs`, `node capture-desktop-task-dashboard.mjs`.
 
 Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
 
@@ -21,13 +21,13 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | Unique as-is recreations. Includes guest `/path`, path spine, keyboard gate, hamburger drawers, desktop-task lesson (`desktop:` keys, sim-only XP), Home TJ, authed catalog `0/N`, catalog loading/API-down, authed VS Code course detail (Training/Exam), course not found, auth-callback error, authed mobile Home, guest/authed mobile Leaderboard, authed mobile catalog `0/N`, and mobile Register (BottomNav hidden; guest `/path` redirects here). |
+| `01 — Product Map` | Unique as-is recreations. Includes guest `/path`, path spine, keyboard gate, hamburger drawers, desktop-task lesson (`Папка Practice`, sim-only XP), Home TJ, authed catalog `0/N`, catalog loading/API-down, authed VS Code course detail (Training/Exam), course not found, auth-callback error, authed mobile Home, guest/authed mobile Leaderboard, authed mobile catalog `0/N`, mobile Register (BottomNav hidden; guest `/path` redirects here), and mobile Dashboard. |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
-| `03 — Existing Screens` | As-is desktop, dark, and state captures (69), including path full-scroll, authed catalog, authed vscode, course not found, authed leaderboard, and catalog start filter |
+| `03 — Existing Screens` | As-is desktop, dark, and state captures (71), including path full-scroll, authed catalog, authed vscode, course not found, authed leaderboard, catalog start filter, and desktop-task lesson (`Папка Practice`) |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
 | `05 — Components` | Button (incl. focus), Input, Badge, KeyCap, Nav, Navbar (default/scrolled/mobile/authed), Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, PasswordStrength, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
-| `07 — Mobile Screens` | 390 captures covering all four BottomNav tabs plus Register (BottomNav hidden). Guest vs authed Home, Leaderboard, and Courses. Authed catalog shows `0/16 сочетаний`. `mobile-authed-08-training-gate.jpg` is PracticeKeyboardGate on `/exam`. Closed authed navbar shows Выйти because `.btn-secondary { inline-flex }` wins over `hidden`. |
+| `07 — Mobile Screens` | 390 captures covering all four BottomNav tabs plus Register (BottomNav hidden) and Dashboard (Кабинет, no tab). Guest vs authed Home, Leaderboard, and Courses. Authed catalog shows `0/16 сочетаний`. `mobile-authed-08-training-gate.jpg` is PracticeKeyboardGate on `/exam`. Closed authed navbar shows Выйти because `.btn-secondary { inline-flex }` wins over `hidden`. |
 
 Do **not** duplicate 20 courses or every lesson. One course detail + hotkey + task + study-only lesson cover the catalog.
 
