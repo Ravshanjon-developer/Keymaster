@@ -378,7 +378,12 @@ if (!names.includes('Learner / Typing busy')) fail.push('no typing-busy capture'
 if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capture');
 if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
-if (!names.includes('Training explain /training')) fail.push('no training-explain unique screen');
+if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
+if (!names.includes('Learner / Training hint')) fail.push('no training-hint capture');
+if (!names.includes('Quiz finished /quiz')) fail.push('no quiz-finished unique screen');
+if (!names.includes('Learner / Quiz finished')) fail.push('no quiz-finished capture');
+if (!names.includes('Desktop recycle-bin full /simulator?mode=desktop')) fail.push('no desktop trash-full unique screen');
+if (!names.includes('Learner / Desktop recycle-bin full')) fail.push('no desktop trash-full capture');
 if (!names.includes('Training correct /training')) fail.push('no training-correct unique screen');
 if (!names.includes('Learner / Desktop new folder')) fail.push('no desktop new-folder capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
@@ -1303,6 +1308,9 @@ let typingPausedUnique = null;
 let typingResultUnique = null;
 let deskNewFolderUnique = null;
 let trainExplainUnique = null;
+let trainHintUnique = null;
+let quizFinishedUnique = null;
+let deskTrashFullUnique = null;
 let trainCorrectUnique = null;
 let examTimeoutUnique = null;
 for (const p of pages) {
@@ -1334,6 +1342,9 @@ for (const p of pages) {
   typingResultUnique = typingResultUnique || findByName(p, 'Typing result /typing');
   deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
+  trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
+  quizFinishedUnique = quizFinishedUnique || findByName(p, 'Quiz finished /quiz');
+  deskTrashFullUnique = deskTrashFullUnique || findByName(p, 'Desktop recycle-bin full /simulator?mode=desktop');
   trainCorrectUnique = trainCorrectUnique || findByName(p, 'Training correct /training');
   examTimeoutUnique = examTimeoutUnique || findByName(p, 'Exam timeout /exam');
 }
@@ -1420,6 +1431,15 @@ if (!deskNewFolderUnique || !namesUnder(deskNewFolderUnique).includes('Нова�
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');
+}
+if (!trainHintUnique || !namesUnder(trainHintUnique).includes('Начните с Ctrl') || !namesUnder(trainHintUnique).includes('Подсказка') || !namesUnder(trainHintUnique).includes('Слово вправо') || namesUnder(trainHintUnique).includes('К упражнению') || namesUnder(trainHintUnique).includes('Верно!')) {
+  fail.push('training-hint unique missing live first-hint KeyboardTrainer front');
+}
+if (!quizFinishedUnique || !namesUnder(quizFinishedUnique).includes('Основы hotkeys — готово') || !namesUnder(quizFinishedUnique).includes('8 из 25') || !namesUnder(quizFinishedUnique).includes('Ещё раз') || namesUnder(quizFinishedUnique).includes('Дальше ›') || namesUnder(quizFinishedUnique).includes('Правильно!')) {
+  fail.push('quiz-finished unique missing live end card Основы hotkeys — готово');
+}
+if (!deskTrashFullUnique || !namesUnder(deskTrashFullUnique).includes('1 объектов') || !namesUnder(deskTrashFullUnique).includes('Welcome.txt') || !namesUnder(deskTrashFullUnique).includes('TXT') || namesUnder(deskTrashFullUnique).includes('Эта папка пуста') || namesUnder(deskTrashFullUnique).includes('С чего начать')) {
+  fail.push('desktop trash-full unique missing live Welcome.txt in Корзина');
 }
 if (!trainCorrectUnique || !namesUnder(trainCorrectUnique).includes('Верно!') || !namesUnder(trainCorrectUnique).includes('Далее →') || !namesUnder(trainCorrectUnique).includes('Автоматически через 2…') || !namesUnder(trainCorrectUnique).includes('Ctrl + H') || !namesUnder(trainCorrectUnique).includes('Серия: 1') || namesUnder(trainCorrectUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainCorrectUnique).includes('К упражнению') || namesUnder(trainCorrectUnique).includes('Тренировка завершена')) {
   fail.push('training-correct unique missing live waitingNext card');

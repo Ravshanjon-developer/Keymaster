@@ -614,5 +614,17 @@
   "desktop-learner-training-correct.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-quiz-finished.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-trash-full.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-hint.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }
