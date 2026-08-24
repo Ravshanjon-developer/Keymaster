@@ -1377,7 +1377,7 @@ async function buildSitemap() {
       'MarketingShell',
       [
         ['/', 'Home', 'Guest + learner'],
-        ['/courses', 'Catalog', 'filters + 3 card statuses'],
+        ['/courses', 'Catalog', 'filters · 0 XP cards · empty search'],
         ['/courses/:slug', 'Course detail', '1 layout × 20 slugs'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study'],
         ['/path', 'Learning path', 'protected'],
@@ -2436,8 +2436,41 @@ async function buildProductComponents(page) {
     c.resize(260, 10);
     c.layoutSizingHorizontal = 'FIXED';
     c.layoutSizingVertical = 'HUG';
-    c.appendChild(txt(title, outfit('SemiBold'), 15, INK, 220));
-    c.appendChild(pill(status, tone === 'brand' ? { r: 0.114, g: 0.306, b: 0.847 } : tone === 'success' ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 }, tone === 'brand' ? WHITE : tone === 'success' ? SUCCESS : MUTED));
+    const top = al('HORIZONTAL', 'top');
+    top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    top.counterAxisAlignItems = 'MIN';
+    const icon = figma.createRectangle();
+    icon.resize(42, 42);
+    icon.cornerRadius = 12;
+    icon.fills = [solid(tone === 'success' ? { r: 0.941, g: 0.992, b: 0.957 } : BRAND50)];
+    top.appendChild(icon);
+    top.appendChild(
+      pill(
+        status,
+        tone === 'brand' ? { r: 0.114, g: 0.306, b: 0.847 } : tone === 'success' ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 },
+        tone === 'brand' ? WHITE : tone === 'success' ? SUCCESS : MUTED,
+      ),
+    );
+    c.appendChild(top);
+    top.layoutSizingHorizontal = 'FILL';
+    c.appendChild(txt(title, outfit('SemiBold'), 16, INK, 220));
+    c.appendChild(txt('Каталог · 1 layout на все курсы', outfit('Regular'), 13, MUTED, 220));
+    const foot = al('HORIZONTAL', 'footer');
+    foot.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    foot.counterAxisAlignItems = 'CENTER';
+    foot.paddingTop = 12;
+    foot.appendChild(txt(required ? '16 уроков · 4 категории' : '42 урока · 7 категорий', outfit('Medium'), 12, MUTED));
+    const cta = al('HORIZONTAL', required ? 'Начните здесь' : 'open');
+    cta.itemSpacing = 4;
+    cta.paddingLeft = cta.paddingRight = 10;
+    cta.paddingTop = cta.paddingBottom = 4;
+    cta.cornerRadius = 8;
+    cta.fills = [solid({ r: 0.88, g: 0.93, b: 1 })];
+    if (required) cta.appendChild(txt('Начните здесь', outfit('SemiBold'), 11, BRAND800));
+    cta.appendChild(txt('↗', outfit('SemiBold'), 11, BRAND800));
+    foot.appendChild(cta);
+    c.appendChild(foot);
+    foot.layoutSizingHorizontal = 'FILL';
     return c;
   }
   const cards = [
@@ -2799,7 +2832,7 @@ async function buildUniqueScreens() {
   );
   const ctas = al('HORIZONTAL', 'CTAs');
   ctas.itemSpacing = 12;
-  ctas.appendChild(instPrimary('Начать бесплатно'));
+  ctas.appendChild(instPrimary('Начать бесплатно →'));
   ctas.appendChild(secondaryBtn('Каталог курсов'));
   hero.appendChild(ctas);
   homeBody.push(hero);
@@ -2830,7 +2863,7 @@ async function buildUniqueScreens() {
   heroAuthed.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 24, { r: 0.2, g: 0.255, b: 0.333 }, 640));
   const ctasAuthed = al('HORIZONTAL', 'CTAs authed');
   ctasAuthed.itemSpacing = 12;
-  ctasAuthed.appendChild(instPrimary('Мой путь развития'));
+  ctasAuthed.appendChild(instPrimary('Мой путь развития →'));
   ctasAuthed.appendChild(secondaryBtn('Практика'));
   heroAuthed.appendChild(ctasAuthed);
   homeAuthed.push(heroAuthed);
@@ -3301,13 +3334,13 @@ async function buildUniqueScreens() {
   levelTile.resize(280, 10);
   levelTile.layoutSizingHorizontal = 'FIXED';
   levelTile.layoutSizingVertical = 'HUG';
-  levelTile.appendChild(txt('Уровень', outfit('Regular'), 12, MUTED));
+  levelTile.appendChild(txt('УРОВЕНЬ', outfit('SemiBold'), 11, MUTED));
   levelTile.appendChild(txt('Новичок', outfit('SemiBold'), 22, INK));
   levelTile.appendChild(instProgress('Value=Empty') || progressBar(240, 0.02, BRAND, 8));
   tiles.appendChild(levelTile);
   for (const [k, v] of [
     ['XP', '0'],
-    ['Ежедневная серия', '1 дн.'],
+    ['ЕЖЕДНЕВНАЯ СЕРИЯ', '1 дн.'],
   ]) {
     const t = al('VERTICAL', k);
     t.itemSpacing = 4;
@@ -3407,11 +3440,18 @@ async function buildUniqueScreens() {
     card.appendChild(body);
     if (footerText) {
       const foot = al('HORIZONTAL', 'footer');
+      foot.itemSpacing = 4;
       foot.primaryAxisAlignItems = 'CENTER';
       foot.paddingTop = foot.paddingBottom = compact ? 12 : 16;
       foot.paddingLeft = foot.paddingRight = padX;
       foot.fills = [solid(dark ? { r: 0.09, g: 0.145, b: 0.329 } : { r: 0.976, g: 0.98, b: 0.984 }, dark ? 0.55 : 1)];
-      foot.appendChild(txt(footerText, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED));
+      const split = footerText.split('?');
+      if (split.length === 2) {
+        foot.appendChild(txt(split[0].trim() + '?', outfit('Regular'), 13, dark ? DARK_MUTED : MUTED));
+        foot.appendChild(txt(split[1].trim(), outfit('SemiBold'), 13, dark ? BRAND500 : BRAND800));
+      } else {
+        foot.appendChild(txt(footerText, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED));
+      }
       card.appendChild(foot);
     }
     return card;
@@ -4159,7 +4199,7 @@ async function buildUniqueScreens() {
   const mctas = al('VERTICAL', 'mobile home CTAs');
   mctas.itemSpacing = 8;
   mctas.counterAxisAlignItems = 'CENTER';
-  mctas.appendChild(instPrimary('Начать бесплатно'));
+  mctas.appendChild(instPrimary('Начать бесплатно →'));
   mctas.appendChild(secondaryBtn('Каталог курсов'));
   mbody.appendChild(mctas);
   const bnav = al('HORIZONTAL', 'BottomNav');
@@ -5076,11 +5116,13 @@ async function buildUniqueScreens() {
   mlform.appendChild(instPrimary('Войти'));
   mlcard.appendChild(mlform);
   const mlfoot = al('HORIZONTAL', 'footer');
+  mlfoot.itemSpacing = 4;
   mlfoot.primaryAxisAlignItems = 'CENTER';
   mlfoot.paddingTop = mlfoot.paddingBottom = 12;
   mlfoot.paddingLeft = mlfoot.paddingRight = 16;
   mlfoot.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
-  mlfoot.appendChild(txt('Нет аккаунта? Регистрация', outfit('Regular'), 13, MUTED));
+  mlfoot.appendChild(txt('Нет аккаунта?', outfit('Regular'), 13, MUTED));
+  mlfoot.appendChild(txt('Регистрация', outfit('SemiBold'), 13, BRAND800));
   mlcard.appendChild(mlfoot);
   mlbody.appendChild(mlcard);
   mobileLogin.appendChild(mlnav);
@@ -5113,6 +5155,13 @@ async function buildUniqueScreens() {
         coursesRow,
         txt('getCourseStatus variants (not the empty learner catalog)', outfit('Regular'), 12, MUTED, 860),
         statusStrip,
+      ]),
+      marketingPage('Courses empty /courses', 'Курсы', true, [
+        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+        txt('Каталог курсов', fraunces('Bold'), 32, INK),
+        searchField(880),
+        instEmpty('Ничего не нашлось. Снимите фильтр или измените запрос.', '') ||
+          txt('Ничего не нашлось. Снимите фильтр или измените запрос.', outfit('SemiBold'), 17, INK, 640),
       ]),
       marketingPage('Course detail /courses/:slug', 'Курсы', true, [
         pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
@@ -5401,7 +5450,7 @@ async function buildUniqueScreens() {
   darkHero.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 24, DARK_SECONDARY, 640));
   const darkCtas = al('HORIZONTAL', 'CTAs');
   darkCtas.itemSpacing = 12;
-  darkCtas.appendChild(instPrimary('Мой путь развития'));
+  darkCtas.appendChild(instPrimary('Мой путь развития →'));
   darkCtas.appendChild(secondaryBtn('Практика', 'dark'));
   darkHero.appendChild(darkCtas);
   const darkFeats = al('HORIZONTAL', 'Dark features');
@@ -5897,13 +5946,13 @@ async function buildUniqueScreens() {
   darkLevel.resize(280, 10);
   darkLevel.layoutSizingHorizontal = 'FIXED';
   darkLevel.layoutSizingVertical = 'HUG';
-  darkLevel.appendChild(txt('Уровень', outfit('Regular'), 12, DARK_MUTED));
+  darkLevel.appendChild(txt('УРОВЕНЬ', outfit('SemiBold'), 11, DARK_MUTED));
   darkLevel.appendChild(txt('Новичок', outfit('SemiBold'), 22, DARK_TEXT));
   darkLevel.appendChild(instProgress('Value=Empty') || progressBar(240, 0.02, BRAND, 8));
   darkTiles.appendChild(darkLevel);
   for (const [k, v] of [
     ['XP', '0'],
-    ['Ежедневная серия', '1 дн.'],
+    ['ЕЖЕДНЕВНАЯ СЕРИЯ', '1 дн.'],
   ]) {
     const t = al('VERTICAL', k + ' dark');
     t.itemSpacing = 4;

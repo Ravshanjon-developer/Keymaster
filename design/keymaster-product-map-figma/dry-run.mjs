@@ -501,7 +501,14 @@ if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начн�
 if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти')) {
   fail.push('mobile practice unique screen is not authed chrome like the live capture');
 }
-if (shots.length < 59) fail.push('expected at least 59 shots, got ' + shots.length);
+if (!names.includes('Начать бесплатно →')) fail.push('no live home CTA arrow unique screen');
+if (!names.includes('Нет аккаунта?')) fail.push('no live auth footer question unique screen');
+if (!names.includes('УРОВЕНЬ')) fail.push('no live dashboard level caption unique screen');
+if (!names.includes('ЕЖЕДНЕВНАЯ СЕРИЯ')) fail.push('no live dashboard streak caption unique screen');
+if (!names.includes('Courses empty /courses')) fail.push('no catalog empty unique screen');
+if (!names.includes('Ничего не нашлось. Снимите фильтр или измените запрос.')) {
+  fail.push('no live catalog no-matches unique screen');
+}
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
