@@ -312,6 +312,20 @@ if (!names.includes('Mobile Register — BottomNav hidden')) fail.push('no mobil
 if (!names.includes('Mobile Courses authed 390')) fail.push('no authed mobile catalog unique screen');
 if (!names.includes('Mobile / Register')) fail.push('no mobile register capture');
 if (!names.includes('Mobile / Courses authed')) fail.push('no authed mobile catalog capture');
+if (!names.includes('Training empty /training')) fail.push('no training empty unique screen');
+if (!names.includes('Training done /training')) fail.push('no training done unique screen');
+if (!names.includes('Нет заданий')) fail.push('no live training empty title unique screen');
+if (!names.includes('Тренировка завершена')) fail.push('no live training done title unique screen');
+if (!names.includes('Все сочетания дались уверенно. Отличная работа!')) fail.push('no live training doneAllGood unique screen');
+if (!names.includes('Пройти ещё раз')) fail.push('no live training restart unique screen');
+if (!names.includes('Review empty /review')) fail.push('no review empty unique screen');
+if (!names.includes('Нет карточек')) fail.push('no live review empty title unique screen');
+if (!names.includes('Course detail loading /courses/:slug')) fail.push('no course-detail loading unique screen');
+if (!names.includes('Mobile Course computer-basics 390')) fail.push('no mobile computer-basics course unique screen');
+if (!names.includes('Learner / Training empty')) fail.push('no training empty capture');
+if (!names.includes('Learner / Review empty')) fail.push('no review empty capture');
+if (!names.includes('Guest / Course detail loading')) fail.push('no course-detail loading capture');
+if (!names.includes('Mobile / Course detail (computer-basics)')) fail.push('no mobile computer-basics course capture');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
@@ -693,6 +707,33 @@ if (!courseNotFoundUnique || !namesUnder(courseNotFoundUnique).includes('Кур�
 }
 if (courseNotFoundUnique && namesUnder(courseNotFoundUnique).includes('Здесь появятся элементы, когда будет прогресс.')) {
   fail.push('course-not-found unique still shows default EmptyState description');
+}
+let trainEmptyUnique = null;
+let trainDoneUnique = null;
+let reviewEmptyUnique = null;
+let courseLoadingUnique = null;
+let mobileCourseBasicsUnique = null;
+for (const p of pages) {
+  trainEmptyUnique = trainEmptyUnique || findByName(p, 'Training empty /training');
+  trainDoneUnique = trainDoneUnique || findByName(p, 'Training done /training');
+  reviewEmptyUnique = reviewEmptyUnique || findByName(p, 'Review empty /review');
+  courseLoadingUnique = courseLoadingUnique || findByName(p, 'Course detail loading /courses/:slug');
+  mobileCourseBasicsUnique = mobileCourseBasicsUnique || findByName(p, 'Mobile Course computer-basics 390');
+}
+if (!trainEmptyUnique || !namesUnder(trainEmptyUnique).includes('Нет заданий') || !namesUnder(trainEmptyUnique).includes('Запустите backend и обновите страницу')) {
+  fail.push('training empty unique missing live Нет заданий copy');
+}
+if (!trainDoneUnique || !namesUnder(trainDoneUnique).includes('Тренировка завершена') || !namesUnder(trainDoneUnique).includes('Пройти ещё раз')) {
+  fail.push('training done unique missing live finished copy');
+}
+if (!reviewEmptyUnique || !namesUnder(reviewEmptyUnique).includes('Нет карточек')) {
+  fail.push('review empty unique missing live Нет карточек copy');
+}
+if (!courseLoadingUnique || !namesUnder(courseLoadingUnique).includes('Skeleton instance')) {
+  fail.push('course-detail loading unique missing Skeleton instance');
+}
+if (!mobileCourseBasicsUnique || !namesUnder(mobileCourseBasicsUnique).includes('Рабочий стол') || namesUnder(mobileCourseBasicsUnique).includes('Тренировка') || namesUnder(mobileCourseBasicsUnique).includes('Регистрация')) {
+  fail.push('mobile computer-basics unique should show Desktop CTA without Training or guest Регистрация');
 }
 let gateUnique = null;
 for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');

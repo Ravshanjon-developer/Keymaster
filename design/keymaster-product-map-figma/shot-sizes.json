@@ -294,5 +294,21 @@
   "desktop-learner-course-programmer-basics.jpg": {
     "w": 1440,
     "h": 1571
+  },
+  "desktop-learner-training-empty.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-guest-course-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-review-empty.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "mobile-authed-13-course-computer-basics.jpg": {
+    "w": 390,
+    "h": 2322
   }
 }

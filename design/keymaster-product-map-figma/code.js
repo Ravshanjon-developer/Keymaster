@@ -1408,9 +1408,9 @@ async function buildSitemap() {
       [
         ['/practice', 'Practice hub', 'skills + reinforce'],
         ['/typing', 'Typing', 'train | path | progress'],
-        ['/training', 'Hotkeys', 'keyboard gate on phone'],
+        ['/training', 'Hotkeys', 'run | empty | done'],
         ['/speed', 'Speed', '60s'],
-        ['/review', 'Review', 'front / flipped'],
+        ['/review', 'Review', 'front / flipped / empty'],
         ['/quiz', 'Quiz', 'play + done'],
         ['/exam', 'Exam', 'setup | run | feedback | done | empty'],
       ],
@@ -1904,6 +1904,7 @@ function guestRegisterLine() {
 function courseDetailCtas(kind) {
   const row = al('HORIZONTAL', 'course ctas');
   row.itemSpacing = 8;
+  row.layoutWrap = 'WRAP';
   row.appendChild(secondaryBtn('Мой путь'));
   if (kind === 'desktop') {
     row.appendChild(instPrimary('Рабочий стол'));
@@ -4165,6 +4166,40 @@ async function buildUniqueScreens() {
   examEmptyCard.appendChild(instPrimary('Назад к настройке'));
   examEmpty.appendChild(examEmptyCard);
 
+  const trainEmpty = instEmpty('Нет заданий', 'Запустите backend и обновите страницу') || (() => {
+    const c = al('VERTICAL', 'Training empty');
+    c.itemSpacing = 8;
+    c.primaryAxisAlignItems = 'CENTER';
+    c.appendChild(txt('Нет заданий', outfit('SemiBold'), 22, INK));
+    c.appendChild(txt('Запустите backend и обновите страницу', outfit('Regular'), 13, MUTED, 340));
+    return c;
+  })();
+  const trainDone = al('VERTICAL', 'Training done card');
+  trainDone.itemSpacing = 10;
+  trainDone.primaryAxisAlignItems = 'CENTER';
+  trainDone.paddingTop = trainDone.paddingBottom = 40;
+  trainDone.paddingLeft = trainDone.paddingRight = 32;
+  trainDone.cornerRadius = 24;
+  trainDone.fills = [solid(WHITE)];
+  trainDone.resize(420, 10);
+  trainDone.layoutSizingHorizontal = 'FIXED';
+  trainDone.layoutSizingVertical = 'HUG';
+  trainDone.appendChild(txt('Тренировка завершена', outfit('SemiBold'), 22, INK));
+  trainDone.appendChild(txt('Выполнено 13 из 13 заданий', outfit('Regular'), 13, MUTED));
+  trainDone.appendChild(txt('Все сочетания дались уверенно. Отличная работа!', outfit('Regular'), 13, SUCCESS, 340));
+  trainDone.appendChild(instPrimary('Пройти ещё раз'));
+  const reviewEmpty = instEmpty(
+    'Нет карточек',
+    'Сначала загрузите курсы или выберите другой курс в параметрах.',
+  ) || (() => {
+    const c = al('VERTICAL', 'Review empty');
+    c.itemSpacing = 8;
+    c.primaryAxisAlignItems = 'CENTER';
+    c.appendChild(txt('Нет карточек', outfit('SemiBold'), 22, INK));
+    c.appendChild(txt('Сначала загрузите курсы или выберите другой курс в параметрах.', outfit('Regular'), 13, MUTED, 340));
+    return c;
+  })();
+
   const review = al('VERTICAL', 'Review card');
   review.itemSpacing = 12;
   review.appendChild(txt('Повторение', fraunces('Bold'), 32, INK));
@@ -5872,6 +5907,37 @@ async function buildUniqueScreens() {
       marketingPage('Course not found /courses/:slug', 'Курсы', true, [
         instEmpty('Курс не найден', '') || txt('Курс не найден', fraunces('Bold'), 32, INK, 640),
       ]),
+      marketingPage('Course detail loading /courses/:slug', 'Курсы', true, [
+        (() => {
+          const line = instSkeleton('Kind=Line');
+          if (line) {
+            line.resize(400, 40);
+            line.layoutSizingHorizontal = 'FIXED';
+            return line;
+          }
+          const r = figma.createRectangle();
+          r.name = 'Skeleton instance';
+          r.resize(400, 40);
+          r.cornerRadius = 8;
+          r.fills = [solid(INK, 0.08)];
+          return r;
+        })(),
+        (() => {
+          const card = instSkeleton('Kind=Card');
+          if (card) {
+            card.resize(880, 256);
+            card.layoutSizingHorizontal = 'FIXED';
+            return card;
+          }
+          const r = figma.createRectangle();
+          r.name = 'Skeleton instance';
+          r.resize(880, 256);
+          r.cornerRadius = 24;
+          r.fills = [solid(INK, 0.08)];
+          return r;
+        })(),
+        txt('Course detail loading — PageShell Skeleton h-10 + h-64, not catalog SkeletonCardGrid.', outfit('Regular'), 12, MUTED, 860),
+      ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', true, [lessonStudy]),
@@ -6251,6 +6317,8 @@ async function buildUniqueScreens() {
       practicePage('Typing path /typing', 'Слепая печать', [typingPath]),
       practicePage('Typing progress /typing', 'Слепая печать', [typingProgress]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
+      practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
+      practicePage('Training done /training', 'Hotkeys', [trainDone]),
       practicePage('Speed /speed', 'Скорость', [speedBody]),
       practicePage('Speed done /speed', 'Скорость', [speedDone]),
       practicePage('Quiz /quiz', 'Основы hotkeys', [quiz]),
@@ -6265,6 +6333,7 @@ async function buildUniqueScreens() {
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
+      practicePage('Review empty /review', 'Повторение', [reviewEmpty]),
     ]),
   );
   const darkLogo = figma.createRectangle();
@@ -6650,6 +6719,25 @@ async function buildUniqueScreens() {
         percent: '0%',
         iconFill: { r: 0.96, g: 0.55, b: 0.2 },
       }),
+    ],
+    'Курсы',
+    { authed: true },
+  );
+  const mobileCourseBasics = mobileFrame(
+    'Mobile Course computer-basics 390',
+    [
+      pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+      txt('Первый ноутбук: файлы и папки', fraunces('Bold'), 28, INK, 358),
+      txt('Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».', outfit('Regular'), 13, MUTED, 358),
+      txt('0/16 сочетаний', outfit('Regular'), 13, MUTED),
+      txt('Файлы и папки', outfit('SemiBold'), 16, INK),
+      txt('0/3 изучено', outfit('Medium'), 12, MUTED),
+      txt('Файл и папка', outfit('SemiBold'), 14, INK, 358),
+      txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED),
+      txt('+15 XP', outfit('Regular'), 11, MUTED),
+      txt('Папка Practice', outfit('SemiBold'), 14, INK, 358),
+      courseDetailCtas('desktop'),
+      txt('Mobile authed computer-basics — Desktop CTA, no Training/Exam.', outfit('Regular'), 11, MUTED, 358),
     ],
     'Курсы',
     { authed: true },
@@ -7523,6 +7611,7 @@ async function buildUniqueScreens() {
       mobileDashboard,
       mobileCourses,
       mobileCoursesAuthed,
+      mobileCourseBasics,
       mobileLogin,
       mobileRegister,
       mobilePractice,
