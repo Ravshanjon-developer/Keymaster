@@ -1371,6 +1371,7 @@ async function buildVisualFlows() {
       ['desktop-admin-users.jpg', 'Users'],
       ['desktop-admin-achievements.jpg', 'Achievements'],
       ['desktop-admin-achievement-create.jpg', 'Create achievement'],
+      ['desktop-admin-achievement-edit.jpg', 'Edit achievement'],
       ['desktop-learner-21-admin-forbidden.jpg', 'Forbidden'],
     ]],
     ['F12 Theme + locale', [
@@ -9019,6 +9020,43 @@ async function buildUniqueScreens() {
           return form;
         })(),
         txt('Форма создания достижения. Список бейджей не дублировать.', outfit('Regular'), 12, MUTED, 800),
+      ], false, true),
+      marketingPage('Admin achievement edit /admin', '', false, [
+        ...adminHeader('Достижения'),
+        instPrimary('+ Создать'),
+        (() => {
+          const form = al('VERTICAL', 'Achievement edit form');
+          form.itemSpacing = 12;
+          form.paddingTop = form.paddingBottom = 20;
+          form.paddingLeft = form.paddingRight = 20;
+          form.cornerRadius = 16;
+          form.fills = [solid(WHITE)];
+          form.strokes = [solid(INK, 0.08)];
+          form.resize(860, 10);
+          form.layoutSizingHorizontal = 'FIXED';
+          form.layoutSizingVertical = 'HUG';
+          const grid = al('HORIZONTAL', 'ach edit grid');
+          grid.itemSpacing = 12;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(820, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          grid.appendChild(field('Slug', 'first-win', INK));
+          grid.appendChild(field('Название', 'Первая победа', INK));
+          grid.appendChild(field('Иконка', 'star', INK));
+          grid.appendChild(field('Бонус XP', '50', INK));
+          grid.appendChild(field('Тип условия', 'correct_answers', INK));
+          grid.appendChild(field('Значение', '1', INK));
+          form.appendChild(grid);
+          form.appendChild(field('Описание', 'Первый правильный ответ', INK));
+          const actions = al('HORIZONTAL', 'ach edit actions');
+          actions.itemSpacing = 8;
+          actions.appendChild(instPrimary('Сохранить'));
+          actions.appendChild(instSecondary('Отмена'));
+          form.appendChild(actions);
+          return form;
+        })(),
+        txt('Инлайн-редактирование бейджа (не пустая форма Создать). Остальные 12 бейджей не дублировать.', outfit('Regular'), 12, MUTED, 800),
       ], false, true),
       marketingPage('Admin course editor /admin', '', false, [
         ...adminHeader('Курсы'),

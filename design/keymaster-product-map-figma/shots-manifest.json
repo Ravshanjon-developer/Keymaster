@@ -183,5 +183,6 @@
   {"file":"desktop-guest-lesson-task.jpg","page":"03 — Existing Screens","name":"Guest / Lesson task","layout":"MarketingShell — PracticeRegisterGate, no ЗАДАНИЕ","group":"Guest"},
   {"file":"desktop-learner-typing-code.jpg","page":"03 — Existing Screens","name":"Learner / Typing code","layout":"PracticeShell — Код + javascript langs","group":"Learner"},
   {"file":"desktop-learner-exam-capped.jpg","page":"03 — Existing Screens","name":"Learner / Exam capped","layout":"PracticeShell — computer-basics 16 vs 50","group":"Learner"},
-  {"file":"desktop-admin-edit-lesson.jpg","page":"03 — Existing Screens","name":"Admin / Edit lesson","layout":"MarketingShell — CourseEditor inline edit","group":"Admin"}
+  {"file":"desktop-admin-edit-lesson.jpg","page":"03 — Existing Screens","name":"Admin / Edit lesson","layout":"MarketingShell — CourseEditor inline edit","group":"Admin"},
+  {"file":"desktop-admin-achievement-edit.jpg","page":"03 — Existing Screens","name":"Admin / Edit achievement","layout":"MarketingShell — inline achievement form star/first-win","group":"Admin"}
 ]

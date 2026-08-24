@@ -1594,6 +1594,25 @@ await run('admin-edit-lesson', desk, async (page) => {
   return { file: 'desktop-admin-edit-lesson.jpg', w, h, snippet: main.slice(0, 1400) };
 });
 
+await run('admin-edit-achievement', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-admin-achievement-edit.jpg');
+  await login(page, 'admin@example.com', 'KeyMasterAdmin1!');
+  await page.goto(BASE + '/admin', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.getByRole('button', { name: 'Достижения' }).click();
+  await page.getByText('Первая победа', { exact: true }).waitFor({ timeout: 15000 });
+  await page.locator('div').filter({ hasText: /^Первая победа/ }).locator('button').first().click();
+  await page.waitForFunction(() => {
+    const inputs = [...document.querySelectorAll('input')];
+    return inputs.some((el) => el.value === 'first-win');
+  }, { timeout: 8000 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72, fullPage: true });
+  const main = await page.locator('#main-content').innerText();
+  if (!String(main).includes('Отмена')) throw new Error('edit achievement missing Отмена');
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-admin-achievement-edit.jpg', w, h, snippet: main.slice(0, 1400) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

@@ -396,6 +396,7 @@ if (!names.includes('Login verified /login?verified=1')) fail.push('no login-ver
 if (!names.includes('Typing code /typing')) fail.push('no typing-code unique screen');
 if (!names.includes('Exam capped /exam')) fail.push('no exam-capped unique screen');
 if (!names.includes('Admin edit lesson /admin')) fail.push('no admin edit-lesson unique screen');
+if (!names.includes('Admin achievement edit /admin')) fail.push('no admin achievement-edit unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -442,6 +443,7 @@ if (!names.includes('Guest / Login verified')) fail.push('no login-verified capt
 if (!names.includes('Learner / Typing code')) fail.push('no typing-code capture');
 if (!names.includes('Learner / Exam capped')) fail.push('no exam-capped capture');
 if (!names.includes('Admin / Edit lesson')) fail.push('no admin edit-lesson capture');
+if (!names.includes('Admin / Edit achievement')) fail.push('no admin achievement-edit capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1383,6 +1385,7 @@ let loginVerifiedUnique = null;
 let typingCodeUnique = null;
 let examCappedUnique = null;
 let adminEditLessonUnique = null;
+let adminAchEditUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1445,6 +1448,7 @@ for (const p of pages) {
   typingCodeUnique = typingCodeUnique || findByName(p, 'Typing code /typing');
   examCappedUnique = examCappedUnique || findByName(p, 'Exam capped /exam');
   adminEditLessonUnique = adminEditLessonUnique || findByName(p, 'Admin edit lesson /admin');
+  adminAchEditUnique = adminAchEditUnique || findByName(p, 'Admin achievement edit /admin');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1599,6 +1603,9 @@ if (examCappedUnique && namesUnder(examCappedUnique).filter((n) => n === 'Все
 }
 if (!adminEditLessonUnique || !namesUnder(adminEditLessonUnique).includes('Файл и папка') || !namesUnder(adminEditLessonUnique).includes('Отмена') || !namesUnder(adminEditLessonUnique).includes('Поймите разницу между файлом и папкой') || !namesUnder(adminEditLessonUnique).includes('Расширение файла') || namesUnder(adminEditLessonUnique).includes('Через + , например Control+Shift+P') || namesUnder(adminEditLessonUnique).includes('Control+C') || namesUnder(adminEditLessonUnique).includes('Папка Practice')) {
   fail.push('admin edit-lesson unique missing filled inline form without add-lesson keysHint defaults');
+}
+if (!adminAchEditUnique || !namesUnder(adminAchEditUnique).includes('first-win') || !namesUnder(adminAchEditUnique).includes('Первая победа') || !namesUnder(adminAchEditUnique).includes('star') || !namesUnder(adminAchEditUnique).includes('Отмена') || namesUnder(adminAchEditUnique).includes('trophy')) {
+  fail.push('admin achievement-edit unique missing filled first-win / star form without create trophy default');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');
