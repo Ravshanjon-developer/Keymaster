@@ -19,11 +19,11 @@ Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01�
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, unique pages, grouping rules |
-| `02 — User Flows` | F1–F12 from the live router |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations |
+| `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
-| `05 — Components` | Button, Input, Badge, KeyCap, Nav, Progress, Card, OTP, rail, BottomNav |
+| `05 — Components` | Button, Input, Badge, KeyCap, Nav, Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, Skeleton |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
 | `07 — Mobile Screens` | 390 captures (BottomNav, keyboard gate) |
 

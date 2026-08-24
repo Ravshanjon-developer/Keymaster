@@ -254,8 +254,22 @@ if (!collNames.includes('Color/Primitives')) fail.push('no Color/Primitives');
 if (!collNames.includes('Color/Semantic')) fail.push('no Color/Semantic');
 if (!sets.includes('Button')) fail.push('no Button set');
 if (!sets.includes('Input')) fail.push('no Input set');
+if (!sets.includes('CourseCard')) fail.push('no CourseCard set');
+if (!sets.includes('PathNode')) fail.push('no PathNode set');
+if (!sets.includes('FloatingLabelInput')) fail.push('no FloatingLabelInput set');
+if (!sets.includes('LearnStatus')) fail.push('no LearnStatus set');
 if (!pageNames.includes('06 — Improved Screens')) fail.push('no page 06');
 if (!String(figma._closed || '').includes('KeyMaster')) fail.push('did not close successfully: ' + figma._closed);
+
+const names = [];
+function walkNames(n) {
+  names.push(n.name);
+  for (const c of n.children || []) walkNames(c);
+}
+for (const p of pages) walkNames(p);
+if (!names.includes('IA — unique pages by layout')) fail.push('no IA sitemap');
+if (!names.includes('Unique screens — editable as-is')) fail.push('no unique screen recreations');
+if (!names.includes('User flows — screens')) fail.push('no visual flows');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {

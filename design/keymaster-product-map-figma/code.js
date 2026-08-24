@@ -618,7 +618,11 @@ function makeBtn(name, fill, textColor, opacity, label, padX, padY, size) {
 async function buildComponents() {
   const page = pageByName('05 — Components');
   await figma.setCurrentPageAsync(page);
-  if (page.findOne((n) => n.type === 'COMPONENT_SET' && n.name === 'Button')) return;
+  const hasButton = page.findOne((n) => n.type === 'COMPONENT_SET' && n.name === 'Button');
+  if (hasButton) {
+    await buildProductComponents(page);
+    return;
+  }
 
   const primary = [
     makeBtn('Variant=Primary, State=Default, Size=MD', BRAND, WHITE, 1, 'Продолжить', 20, 10, 14),
@@ -1001,6 +1005,8 @@ async function buildComponents() {
   tabSet.layoutMode = 'HORIZONTAL';
   tabSet.itemSpacing = 12;
   tabSet.paddingLeft = tabSet.paddingRight = tabSet.paddingTop = tabSet.paddingBottom = 24;
+
+  await buildProductComponents(page);
 }
 
 async function buildPlaceholder() {
@@ -1234,6 +1240,1002 @@ async function buildVisualFlows() {
   page.appendChild(root);
 }
 
+function al(dir, name) {
+  const f = figma.createAutoLayout(dir === 'VERTICAL' ? 'VERTICAL' : 'HORIZONTAL');
+  f.name = name || 'Frame';
+  return f;
+}
+
+function pill(label, fill, color) {
+  const p = al('HORIZONTAL', label);
+  p.paddingLeft = p.paddingRight = 8;
+  p.paddingTop = p.paddingBottom = 3;
+  p.cornerRadius = 6;
+  p.fills = [solid(fill)];
+  p.appendChild(txt(label, outfit('Bold'), 10, color));
+  p.layoutSizingHorizontal = 'HUG';
+  p.layoutSizingVertical = 'HUG';
+  return p;
+}
+
+function routeNode(route, title, note) {
+  const n = al('VERTICAL', route);
+  n.itemSpacing = 4;
+  n.paddingTop = n.paddingBottom = 10;
+  n.paddingLeft = n.paddingRight = 12;
+  n.cornerRadius = 10;
+  n.fills = [solid(WHITE)];
+  n.strokes = [solid(INK, 0.1)];
+  n.strokeWeight = 1;
+  n.resize(210, 10);
+  n.layoutSizingHorizontal = 'FIXED';
+  n.layoutSizingVertical = 'HUG';
+  n.appendChild(txt(route, outfit('SemiBold'), 11, BRAND, 186));
+  n.appendChild(txt(title, outfit('Regular'), 11, INK, 186));
+  if (note) n.appendChild(txt(note, outfit('Regular'), 10, MUTED, 186));
+  return n;
+}
+
+async function buildSitemap() {
+  const page = pageByName('01 — Product Map');
+  await figma.setCurrentPageAsync(page);
+  if (page.findOne((n) => n.name === 'IA — unique pages by layout')) return;
+  const board = al('VERTICAL', 'IA — unique pages by layout');
+  board.itemSpacing = 16;
+  board.paddingTop = board.paddingBottom = 32;
+  board.paddingLeft = board.paddingRight = 32;
+  board.fills = [solid(WHITE)];
+  board.cornerRadius = 16;
+  board.strokes = [solid(INK, 0.08)];
+  board.appendChild(txt('Information architecture (current product)', fraunces('Bold'), 28, INK, 1720));
+  board.appendChild(
+    txt(
+      'One node per unique page. /courses/:slug is one Course Detail layout × 20 slugs. /lessons/:id is three kinds, not N lessons.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      1720,
+    ),
+  );
+  const cols = al('HORIZONTAL', 'Layout columns');
+  cols.itemSpacing = 16;
+  const groups = [
+    [
+      'MarketingShell',
+      [
+        ['/', 'Home', 'Guest + learner'],
+        ['/courses', 'Catalog', 'filters + 3 card statuses'],
+        ['/courses/:slug', 'Course detail', '1 layout × 20 slugs'],
+        ['/lessons/:id', 'Lesson', 'hotkey | task | study'],
+        ['/path', 'Learning path', 'protected'],
+        ['/leaderboard', 'Leaderboard', 'public'],
+        ['/achievements', 'Achievements', 'locked / unlocked'],
+        ['/dashboard', 'Dashboard', 'XP · streak'],
+        ['/stats', 'Stats', 'protected'],
+        ['/admin', 'Admin', 'tabs · forbidden'],
+      ],
+    ],
+    [
+      'AuthCard',
+      [
+        ['/login', 'Login', 'OTP if unverified'],
+        ['/register', 'Register', 'OTP nested'],
+        ['/verify-email', 'Verify email', 'link + error'],
+        ['/auth/callback', 'OAuth callback', 'transient'],
+      ],
+    ],
+    [
+      'PracticeShell',
+      [
+        ['/practice', 'Practice hub', 'skills + reinforce'],
+        ['/typing', 'Typing', 'train | path | progress'],
+        ['/training', 'Hotkeys', 'keyboard gate on phone'],
+        ['/speed', 'Speed', '60s'],
+        ['/review', 'Review', 'front / flipped'],
+        ['/quiz', 'Quiz', 'play + done'],
+        ['/exam', 'Exam', 'setup | run | done'],
+      ],
+    ],
+    [
+      'ImmersiveSimulator',
+      [
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e'],
+        ['/simulator?mode=desktop', 'Desktop sim', 'same layout'],
+      ],
+    ],
+  ];
+  for (const [layout, nodes] of groups) {
+    const col = al('VERTICAL', layout);
+    col.itemSpacing = 8;
+    col.paddingTop = col.paddingBottom = 16;
+    col.paddingLeft = col.paddingRight = 16;
+    col.cornerRadius = 12;
+    col.fills = [solid(layout === 'PracticeShell' || layout === 'ImmersiveSimulator' ? { r: 0.078, g: 0.094, b: 0.125 } : PAPER)];
+    const titleColor = layout === 'PracticeShell' || layout === 'ImmersiveSimulator' ? WHITE : INK;
+    col.appendChild(txt(layout, outfit('Bold'), 14, layout === 'ImmersiveSimulator' ? { r: 0.678, g: 0.776, b: 1 } : BRAND, 210));
+    col.appendChild(txt(layout === 'MarketingShell' ? 'Navbar + footer + BottomNav' : layout === 'AuthCard' ? 'max-w-md GlassCard' : layout === 'PracticeShell' ? 'Rail 240px #141820' : 'No Navbar / BottomNav', outfit('Regular'), 11, titleColor, 210));
+    for (const [route, title, note] of nodes) col.appendChild(routeNode(route, title, note));
+    cols.appendChild(col);
+  }
+  board.appendChild(cols);
+  const root = page.findOne((n) => n.name === 'KM Product Map — as-is');
+  if (root) root.appendChild(board);
+  else {
+    board.x = 80;
+    board.y = 980;
+    page.appendChild(board);
+  }
+}
+
+function field(label, value, border, hint) {
+  const wrap = al('VERTICAL', label);
+  wrap.itemSpacing = 4;
+  wrap.appendChild(txt(label, outfit('Medium'), 11, MUTED));
+  const box = al('HORIZONTAL', 'field');
+  box.paddingLeft = box.paddingRight = 14;
+  box.paddingTop = box.paddingBottom = 10;
+  box.cornerRadius = 16;
+  box.fills = [solid(WHITE)];
+  box.strokes = [solid(border || { r: 0.059, g: 0.09, b: 0.165 }, border ? 1 : 0.18)];
+  box.strokeWeight = 1;
+  box.resize(320, 44);
+  box.layoutSizingHorizontal = 'FIXED';
+  box.layoutSizingVertical = 'FIXED';
+  box.appendChild(txt(value, outfit('Regular'), 14, value === label || !value ? MUTED : INK));
+  wrap.appendChild(box);
+  if (hint) wrap.appendChild(txt(hint, outfit('Regular'), 11, MUTED, 320));
+  wrap.layoutSizingHorizontal = 'HUG';
+  wrap.layoutSizingVertical = 'HUG';
+  return wrap;
+}
+
+function primaryBtn(label) {
+  const b = al('HORIZONTAL', 'Button');
+  b.primaryAxisAlignItems = 'CENTER';
+  b.counterAxisAlignItems = 'CENTER';
+  b.paddingLeft = b.paddingRight = 20;
+  b.paddingTop = b.paddingBottom = 10;
+  b.cornerRadius = 16;
+  b.fills = [solid(BRAND)];
+  b.appendChild(txt(label, outfit('SemiBold'), 14, WHITE));
+  b.layoutSizingHorizontal = 'HUG';
+  b.layoutSizingVertical = 'HUG';
+  return b;
+}
+
+function secondaryBtn(label) {
+  const b = al('HORIZONTAL', 'Button');
+  b.primaryAxisAlignItems = 'CENTER';
+  b.counterAxisAlignItems = 'CENTER';
+  b.paddingLeft = b.paddingRight = 20;
+  b.paddingTop = b.paddingBottom = 10;
+  b.cornerRadius = 16;
+  b.fills = [solid(WHITE)];
+  b.strokes = [solid(INK, 0.12)];
+  b.strokeWeight = 1;
+  b.appendChild(txt(label, outfit('SemiBold'), 14, INK));
+  b.layoutSizingHorizontal = 'HUG';
+  b.layoutSizingVertical = 'HUG';
+  return b;
+}
+
+function makeNavbar(active, guest) {
+  const nav = al('HORIZONTAL', 'Navbar');
+  nav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  nav.counterAxisAlignItems = 'CENTER';
+  nav.paddingLeft = nav.paddingRight = 24;
+  nav.resize(960, 64);
+  nav.layoutSizingHorizontal = 'FIXED';
+  nav.layoutSizingVertical = 'FIXED';
+  nav.fills = [solid(WHITE)];
+  nav.strokes = [solid(INK, 0.06)];
+  const brand = al('HORIZONTAL', 'Brand');
+  brand.itemSpacing = 8;
+  brand.counterAxisAlignItems = 'CENTER';
+  const mark = figma.createRectangle();
+  mark.resize(32, 32);
+  mark.cornerRadius = 10;
+  mark.fills = [solid(BRAND)];
+  brand.appendChild(mark);
+  brand.appendChild(txt('KeyMaster', fraunces('SemiBold'), 18, INK));
+  nav.appendChild(brand);
+  const links = al('HORIZONTAL', 'Nav links');
+  links.itemSpacing = 4;
+  links.counterAxisAlignItems = 'CENTER';
+  const items = ['Главная', 'Курсы', 'Мой путь', 'Практика', 'Рейтинг'];
+  for (const item of items) {
+    const l = al('VERTICAL', item);
+    l.itemSpacing = 4;
+    l.paddingLeft = l.paddingRight = 10;
+    l.paddingTop = l.paddingBottom = 8;
+    l.cornerRadius = 8;
+    l.fills = item === active ? [solid(BRAND50)] : [TRANSPARENT];
+    l.appendChild(txt(item, outfit('SemiBold'), 12, item === active ? { r: 0.118, g: 0.251, b: 0.686 } : INK));
+    if (item === active) {
+      const bar = figma.createRectangle();
+      bar.resize(22, 2);
+      bar.cornerRadius = 99;
+      bar.fills = [solid(BRAND)];
+      l.appendChild(bar);
+    }
+    l.layoutSizingHorizontal = 'HUG';
+    l.layoutSizingVertical = 'HUG';
+    links.appendChild(l);
+  }
+  nav.appendChild(links);
+  const actions = al('HORIZONTAL', 'Actions');
+  actions.itemSpacing = 8;
+  actions.counterAxisAlignItems = 'CENTER';
+  const lang = al('HORIZONTAL', 'LanguageSwitcher');
+  lang.paddingLeft = lang.paddingRight = lang.paddingTop = lang.paddingBottom = 2;
+  lang.cornerRadius = 8;
+  lang.strokes = [solid(INK, 0.1)];
+  const ru = al('HORIZONTAL', 'RU');
+  ru.paddingLeft = ru.paddingRight = 8;
+  ru.paddingTop = ru.paddingBottom = 4;
+  ru.cornerRadius = 6;
+  ru.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 })];
+  ru.appendChild(txt('RU', outfit('Bold'), 11, WHITE));
+  const tj = al('HORIZONTAL', 'TJ');
+  tj.paddingLeft = tj.paddingRight = 8;
+  tj.paddingTop = tj.paddingBottom = 4;
+  tj.cornerRadius = 6;
+  tj.fills = [TRANSPARENT];
+  tj.appendChild(txt('TJ', outfit('Bold'), 11, INK));
+  lang.appendChild(ru);
+  lang.appendChild(tj);
+  actions.appendChild(lang);
+  if (guest) {
+    actions.appendChild(txt('Вход', outfit('SemiBold'), 12, INK));
+    actions.appendChild(primaryBtn('Регистрация'));
+  } else {
+    actions.appendChild(txt('Анна  120 XP', outfit('SemiBold'), 12, INK));
+  }
+  nav.appendChild(actions);
+  brand.layoutSizingHorizontal = 'HUG';
+  links.layoutSizingHorizontal = 'HUG';
+  actions.layoutSizingHorizontal = 'HUG';
+  return nav;
+}
+
+function makeFooter() {
+  const f = al('HORIZONTAL', 'Footer');
+  f.primaryAxisAlignItems = 'CENTER';
+  f.counterAxisAlignItems = 'CENTER';
+  f.resize(960, 48);
+  f.layoutSizingHorizontal = 'FIXED';
+  f.layoutSizingVertical = 'FIXED';
+  f.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  f.appendChild(txt('KeyMaster  ·  © 2026  ·  от первого ноутбука до Shortcut Legend', outfit('Regular'), 11, MUTED));
+  return f;
+}
+
+function marketingPage(name, active, guest, body) {
+  const page = al('VERTICAL', name);
+  page.itemSpacing = 0;
+  page.fills = [solid(PAPER)];
+  page.strokes = [solid(INK, 0.08)];
+  page.strokeWeight = 1;
+  page.resize(960, 10);
+  page.layoutSizingHorizontal = 'FIXED';
+  page.layoutSizingVertical = 'HUG';
+  page.appendChild(makeNavbar(active, guest));
+  const main = al('VERTICAL', 'main');
+  main.itemSpacing = 16;
+  main.paddingTop = main.paddingBottom = 32;
+  main.paddingLeft = main.paddingRight = 40;
+  main.fills = [solid(PAPER)];
+  main.resize(960, 10);
+  main.layoutSizingHorizontal = 'FIXED';
+  main.layoutSizingVertical = 'HUG';
+  for (const child of body) main.appendChild(child);
+  page.appendChild(main);
+  page.appendChild(makeFooter());
+  return page;
+}
+
+function practicePage(name, active, body) {
+  const page = al('VERTICAL', name);
+  page.itemSpacing = 0;
+  page.fills = [solid(PAPER)];
+  page.strokes = [solid(INK, 0.08)];
+  page.resize(960, 10);
+  page.layoutSizingHorizontal = 'FIXED';
+  page.layoutSizingVertical = 'HUG';
+  page.appendChild(makeNavbar('Практика', false));
+  const row = al('HORIZONTAL', 'PracticeShell');
+  row.itemSpacing = 0;
+  const rail = al('VERTICAL', 'Rail');
+  rail.itemSpacing = 4;
+  rail.paddingTop = 16;
+  rail.paddingLeft = rail.paddingRight = 12;
+  rail.fills = [solid({ r: 0.078, g: 0.094, b: 0.125 })];
+  rail.resize(216, 10);
+  rail.layoutSizingHorizontal = 'FIXED';
+  rail.layoutSizingVertical = 'HUG';
+  const items = ['Зал', 'Слепая печать', 'Рабочий стол', 'Code Lab', 'Hotkeys', 'Скорость', 'Повторение', 'Основы hotkeys', 'Экзамен'];
+  for (const item of items) {
+    const on = item === active;
+    const it = al('HORIZONTAL', item);
+    it.itemSpacing = 8;
+    it.paddingLeft = it.paddingRight = 10;
+    it.paddingTop = it.paddingBottom = 8;
+    it.cornerRadius = 8;
+    it.fills = on ? [solid({ r: 0.118, g: 0.149, b: 0.212 })] : [TRANSPARENT];
+    if (on) {
+      const tick = figma.createRectangle();
+      tick.resize(3, 14);
+      tick.cornerRadius = 99;
+      tick.fills = [solid({ r: 0.537, g: 0.808, b: 1 })];
+      it.appendChild(tick);
+    }
+    it.appendChild(txt(item, outfit('Medium'), 12, on ? { r: 0.678, g: 0.776, b: 1 } : { r: 0.659, g: 0.69, b: 0.765 }));
+    it.resize(192, 10);
+    it.layoutSizingHorizontal = 'FIXED';
+    it.layoutSizingVertical = 'HUG';
+    rail.appendChild(it);
+  }
+  const outlet = al('VERTICAL', 'Outlet');
+  outlet.itemSpacing = 12;
+  outlet.paddingTop = outlet.paddingBottom = 24;
+  outlet.paddingLeft = outlet.paddingRight = 24;
+  outlet.fills = [solid(PAPER)];
+  outlet.resize(744, 10);
+  outlet.layoutSizingHorizontal = 'FIXED';
+  outlet.layoutSizingVertical = 'HUG';
+  for (const child of body) outlet.appendChild(child);
+  row.appendChild(rail);
+  row.appendChild(outlet);
+  page.appendChild(row);
+  return page;
+}
+
+function courseCard(title, statusLabel, tone, required) {
+  const c = al('VERTICAL', title);
+  c.itemSpacing = 8;
+  c.paddingTop = c.paddingBottom = 20;
+  c.paddingLeft = c.paddingRight = 20;
+  c.cornerRadius = 24;
+  c.fills = required ? [solid(BRAND50)] : [solid(WHITE)];
+  c.strokes = [solid(required ? BRAND : INK, required ? 0.22 : 0.1)];
+  c.resize(280, 10);
+  c.layoutSizingHorizontal = 'FIXED';
+  c.layoutSizingVertical = 'HUG';
+  const top = al('HORIZONTAL', 'top');
+  top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  top.counterAxisAlignItems = 'CENTER';
+  const icon = figma.createRectangle();
+  icon.resize(42, 42);
+  icon.cornerRadius = 12;
+  icon.fills = [solid(BRAND50)];
+  top.appendChild(icon);
+  top.appendChild(
+    pill(
+      statusLabel,
+      tone === 'brand' ? { r: 0.114, g: 0.306, b: 0.847 } : tone === 'success' ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 },
+      tone === 'brand' ? WHITE : tone === 'success' ? { r: 0.082, g: 0.502, b: 0.239 } : { r: 0.2, g: 0.255, b: 0.333 },
+    ),
+  );
+  top.layoutSizingHorizontal = 'FILL';
+  c.appendChild(top);
+  c.appendChild(txt(title, outfit('SemiBold'), 16, INK, 240));
+  c.appendChild(txt('Каталог · 1 layout на все курсы', outfit('Regular'), 12, MUTED, 240));
+  return c;
+}
+
+function pathNode(title, status, locked) {
+  const c = al('VERTICAL', title);
+  c.itemSpacing = 8;
+  c.paddingTop = c.paddingBottom = 16;
+  c.paddingLeft = c.paddingRight = 16;
+  c.cornerRadius = 16;
+  c.fills = [solid(WHITE)];
+  c.strokes = [solid(locked ? INK : BRAND, locked ? 0.1 : 0.35)];
+  c.opacity = locked ? 0.7 : 1;
+  c.resize(260, 10);
+  c.layoutSizingHorizontal = 'FIXED';
+  c.layoutSizingVertical = 'HUG';
+  c.appendChild(pill(status, locked ? { r: 0.941, g: 0.945, b: 0.953 } : BRAND, locked ? MUTED : WHITE));
+  c.appendChild(txt(title, outfit('SemiBold'), 14, INK, 228));
+  c.appendChild(txt(locked ? 'Нужен прогресс предыдущего этапа' : 'Открыть курс', outfit('Regular'), 11, MUTED, 228));
+  return c;
+}
+
+async function buildProductComponents(page) {
+  if (page.findOne((n) => n.type === 'COMPONENT_SET' && n.name === 'CourseCard')) return;
+
+  function cardVariant(name, title, status, tone, required) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'VERTICAL';
+    c.itemSpacing = 8;
+    c.paddingTop = c.paddingBottom = 20;
+    c.paddingLeft = c.paddingRight = 20;
+    c.cornerRadius = 24;
+    c.fills = required ? [solid(BRAND50)] : [solid(WHITE)];
+    c.strokes = [solid(required ? BRAND : INK, required ? 0.22 : 0.1)];
+    c.resize(260, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(txt(title, outfit('SemiBold'), 15, INK, 220));
+    c.appendChild(pill(status, tone === 'brand' ? { r: 0.114, g: 0.306, b: 0.847 } : tone === 'success' ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 }, tone === 'brand' ? WHITE : tone === 'success' ? SUCCESS : MUTED));
+    return c;
+  }
+  const cards = [
+    cardVariant('Status=Start', 'Первый ноутбук', 'Старт', 'brand', true),
+    cardVariant('Status=InProgress', 'VS Code', 'В процессе', 'neutral', false),
+    cardVariant('Status=Completed', 'Git', 'Готово', 'success', false),
+    cardVariant('Status=Required', 'Основы программиста', 'Обязательный старт', 'brand', true),
+  ];
+  const cardSet = figma.combineAsVariants(cards, page);
+  cardSet.name = 'CourseCard';
+  cardSet.x = 80;
+  cardSet.y = 2280;
+  cardSet.layoutMode = 'HORIZONTAL';
+  cardSet.itemSpacing = 16;
+  cardSet.paddingLeft = cardSet.paddingRight = cardSet.paddingTop = cardSet.paddingBottom = 24;
+  cardSet.description = 'CoursesPages GlassCard statuses from getCourseStatus — do not duplicate ×20 slugs';
+
+  function nodeVariant(name, title, status, locked) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'VERTICAL';
+    c.itemSpacing = 6;
+    c.paddingTop = c.paddingBottom = 14;
+    c.paddingLeft = c.paddingRight = 14;
+    c.cornerRadius = 16;
+    c.fills = [solid(WHITE)];
+    c.strokes = [solid(locked ? INK : BRAND, locked ? 0.1 : 0.4)];
+    c.opacity = locked ? 0.7 : 1;
+    c.resize(200, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(txt(status, outfit('Bold'), 10, locked ? MUTED : BRAND));
+    c.appendChild(txt(title, outfit('SemiBold'), 13, INK, 172));
+    return c;
+  }
+  const nodes = [
+    nodeVariant('Status=Start', 'Developer Growth Path', 'Начать', false),
+    nodeVariant('Status=Available', 'Первый ноутбук', 'Начать', false),
+    nodeVariant('Status=Progress', 'VS Code', 'Продолжается', false),
+    nodeVariant('Status=Done', 'Git', 'Завершено', false),
+    nodeVariant('Status=Locked', 'Shortcut Legend', 'Заблокировано', true),
+  ];
+  const nodeSet = figma.combineAsVariants(nodes, page);
+  nodeSet.name = 'PathNode';
+  nodeSet.x = 80;
+  nodeSet.y = 2580;
+  nodeSet.layoutMode = 'HORIZONTAL';
+  nodeSet.itemSpacing = 12;
+  nodeSet.paddingLeft = nodeSet.paddingRight = nodeSet.paddingTop = nodeSet.paddingBottom = 24;
+  nodeSet.description = 'LearningPathPage PathNodeCard — NodeStatus locked|start|progress|done';
+
+  function ach(name, locked) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'VERTICAL';
+    c.primaryAxisAlignItems = 'CENTER';
+    c.itemSpacing = 8;
+    c.paddingTop = c.paddingBottom = 16;
+    c.paddingLeft = c.paddingRight = 16;
+    c.cornerRadius = 16;
+    c.fills = [solid(WHITE)];
+    c.strokes = [solid(INK, 0.1)];
+    c.opacity = locked ? 0.45 : 1;
+    c.resize(140, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    const badge = figma.createRectangle();
+    badge.resize(40, 40);
+    badge.cornerRadius = 20;
+    badge.fills = [solid(locked ? MUTED : { r: 0.961, g: 0.769, b: 0.157 })];
+    c.appendChild(badge);
+    c.appendChild(txt(locked ? 'Закрыто' : 'Первый урок', outfit('SemiBold'), 11, INK));
+    return c;
+  }
+  const achSet = figma.combineAsVariants([ach('State=Unlocked', false), ach('State=Locked', true)], page);
+  achSet.name = 'Achievement';
+  achSet.x = 80;
+  achSet.y = 2860;
+  achSet.layoutMode = 'HORIZONTAL';
+  achSet.itemSpacing = 16;
+  achSet.paddingLeft = achSet.paddingRight = achSet.paddingTop = achSet.paddingBottom = 24;
+  achSet.description = 'Achievements unlocked vs locked (grayscale)';
+
+  function learn(name, learned) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'HORIZONTAL';
+    c.itemSpacing = 4;
+    c.paddingLeft = c.paddingRight = 8;
+    c.paddingTop = c.paddingBottom = 3;
+    c.cornerRadius = 6;
+    c.fills = [solid(learned ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 })];
+    c.strokes = [solid(learned ? SUCCESS : INK, learned ? 0.25 : 0.1)];
+    c.appendChild(txt(learned ? 'Изучено' : 'Не изучено', outfit('Bold'), 10, learned ? { r: 0.082, g: 0.502, b: 0.239 } : MUTED));
+    c.layoutSizingHorizontal = 'HUG';
+    c.layoutSizingVertical = 'HUG';
+    return c;
+  }
+  const learnSet = figma.combineAsVariants([learn('Learned=True', true), learn('Learned=False', false)], page);
+  learnSet.name = 'LearnStatus';
+  learnSet.x = 480;
+  learnSet.y = 2860;
+  learnSet.layoutMode = 'HORIZONTAL';
+  learnSet.itemSpacing = 12;
+  learnSet.paddingLeft = learnSet.paddingRight = learnSet.paddingTop = learnSet.paddingBottom = 24;
+  learnSet.description = 'LearnStatusBadge — frontend/src/shared/components/LearnStatus.tsx';
+
+  function float(name, label, value, border, shadow, opacity) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'VERTICAL';
+    c.itemSpacing = 0;
+    c.resize(280, 52);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'FIXED';
+    c.cornerRadius = 16;
+    c.fills = [solid(WHITE)];
+    c.strokes = [solid(border)];
+    c.strokeWeight = 1;
+    c.opacity = opacity == null ? 1 : opacity;
+    if (shadow) {
+      c.effects = [{ type: 'DROP_SHADOW', color: shadow, offset: { x: 0, y: 0 }, radius: 0, spread: 4, visible: true, blendMode: 'NORMAL' }];
+    }
+    const inner = al('VERTICAL', 'inner');
+    inner.paddingLeft = inner.paddingRight = 14;
+    inner.paddingTop = 8;
+    inner.paddingBottom = 8;
+    inner.itemSpacing = 0;
+    inner.appendChild(txt(label, outfit('Medium'), 10, MUTED));
+    inner.appendChild(txt(value, outfit('Regular'), 14, INK));
+    c.appendChild(inner);
+    inner.layoutSizingHorizontal = 'FILL';
+    return c;
+  }
+  const floats = [
+    float('State=Default', 'Email', ' ', { r: 0.059, g: 0.09, b: 0.165 }),
+    float('State=Floated', 'Email', 'learner@example.com', { r: 0.059, g: 0.09, b: 0.165 }),
+    float('State=Focus', 'Email', 'learner@example.com', BRAND, { r: 0.145, g: 0.388, b: 0.922, a: 0.35 }),
+    float('State=Error', 'Email', 'bad', SIGNAL),
+    float('State=Success', 'Email', 'ok@example.com', SUCCESS, { r: 0.086, g: 0.639, b: 0.29, a: 0.25 }),
+    float('State=Disabled', 'Email', 'locked', { r: 0.059, g: 0.09, b: 0.165 }, null, 0.6),
+  ];
+  const floatSet = figma.combineAsVariants(floats, page);
+  floatSet.name = 'FloatingLabelInput';
+  floatSet.x = 80;
+  floatSet.y = 3140;
+  floatSet.layoutMode = 'HORIZONTAL';
+  floatSet.itemSpacing = 12;
+  floatSet.paddingLeft = floatSet.paddingRight = floatSet.paddingTop = floatSet.paddingBottom = 24;
+  floatSet.description = 'FloatingLabelInput — default, floated, focus, error, success, disabled';
+
+  function skel(name, w, h) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.resize(w, h);
+    c.cornerRadius = name.includes('Card') ? 24 : 8;
+    c.fills = [solid(INK, 0.08)];
+    return c;
+  }
+  const skelSet = figma.combineAsVariants([skel('Kind=Line', 220, 16), skel('Kind=Card', 220, 120)], page);
+  skelSet.name = 'Skeleton';
+  skelSet.x = 80;
+  skelSet.y = 3380;
+  skelSet.layoutMode = 'HORIZONTAL';
+  skelSet.itemSpacing = 16;
+  skelSet.paddingLeft = skelSet.paddingRight = skelSet.paddingTop = skelSet.paddingBottom = 24;
+  skelSet.description = 'Skeleton / SkeletonCardGrid loading states';
+}
+
+async function buildUniqueScreens() {
+  const page = pageByName('01 — Product Map');
+  await figma.setCurrentPageAsync(page);
+  if (page.findOne((n) => n.name === 'Unique screens — editable as-is')) return;
+  const board = al('VERTICAL', 'Unique screens — editable as-is');
+  board.itemSpacing = 28;
+  board.paddingTop = board.paddingBottom = 40;
+  board.paddingLeft = board.paddingRight = 40;
+  board.fills = [solid(PAPER)];
+  board.cornerRadius = 16;
+  board.appendChild(txt('Unique screens recreated from current UI (not a redesign)', fraunces('Bold'), 28, INK, 1720));
+  board.appendChild(
+    txt(
+      'Grouped by shared layout. Pixel captures live on pages 03 and 07. Do not duplicate 20 courses or every lesson.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      1720,
+    ),
+  );
+
+  function section(title, frames) {
+    const s = al('VERTICAL', title);
+    s.itemSpacing = 12;
+    s.appendChild(txt(title, outfit('Bold'), 16, BRAND, 1720));
+    const row = al('HORIZONTAL', title + ' row');
+    row.itemSpacing = 24;
+    row.layoutWrap = 'WRAP';
+    for (const f of frames) row.appendChild(f);
+    s.appendChild(row);
+    return s;
+  }
+
+  const homeBody = [];
+  const hero = al('VERTICAL', 'Hero');
+  hero.itemSpacing = 12;
+  hero.primaryAxisAlignItems = 'CENTER';
+  hero.counterAxisAlignItems = 'CENTER';
+  hero.appendChild(txt('KeyMaster', fraunces('Bold'), 48, INK));
+  hero.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 18, { r: 0.2, g: 0.255, b: 0.333 }, 640));
+  hero.appendChild(
+    txt(
+      'Файлы и папки, слепая печать, горячие клавиши и симулятор рабочего стола — понятный путь без скуки, с нуля.',
+      outfit('Regular'),
+      14,
+      MUTED,
+      560,
+    ),
+  );
+  const ctas = al('HORIZONTAL', 'CTAs');
+  ctas.itemSpacing = 12;
+  ctas.appendChild(primaryBtn('Начать бесплатно'));
+  ctas.appendChild(secondaryBtn('Каталог курсов'));
+  hero.appendChild(ctas);
+  homeBody.push(hero);
+  const feats = al('HORIZONTAL', 'Features');
+  feats.itemSpacing = 12;
+  for (const [t, d] of [
+    ['С нуля до уверенности', 'Сначала проводник и папки, потом текст и шорткаты.'],
+    ['Симулятор и печать', 'Песочница файлов и слепая печать с подсветкой клавиш.'],
+    ['Hotkeys до автоматизма', 'Windows, VS Code, браузеры и IDE — живой тренажёр.'],
+  ]) {
+    const tile = al('VERTICAL', t);
+    tile.itemSpacing = 8;
+    tile.paddingTop = tile.paddingBottom = 16;
+    tile.paddingLeft = tile.paddingRight = 16;
+    tile.cornerRadius = 16;
+    tile.fills = [solid(WHITE)];
+    tile.resize(280, 10);
+    tile.layoutSizingHorizontal = 'FIXED';
+    tile.layoutSizingVertical = 'HUG';
+    tile.appendChild(txt(t, outfit('SemiBold'), 14, INK, 248));
+    tile.appendChild(txt(d, outfit('Regular'), 12, MUTED, 248));
+    feats.appendChild(tile);
+  }
+  homeBody.push(feats);
+
+  const coursesRow = al('HORIZONTAL', 'Course cards');
+  coursesRow.itemSpacing = 12;
+  coursesRow.appendChild(courseCard('Первый ноутбук', 'Старт', 'brand', true));
+  coursesRow.appendChild(courseCard('VS Code', 'В процессе', 'neutral', false));
+  coursesRow.appendChild(courseCard('Git', 'Готово', 'success', false));
+
+  const lessonHotkey = al('VERTICAL', 'KeyboardTrainer');
+  lessonHotkey.itemSpacing = 12;
+  lessonHotkey.primaryAxisAlignItems = 'CENTER';
+  lessonHotkey.counterAxisAlignItems = 'CENTER';
+  lessonHotkey.appendChild(txt('Сохраните файл', outfit('SemiBold'), 20, INK));
+  const keys = al('HORIZONTAL', 'KeyCombo');
+  keys.itemSpacing = 8;
+  for (const k of ['Ctrl', 'S']) {
+    const cap = al('HORIZONTAL', k);
+    cap.primaryAxisAlignItems = 'CENTER';
+    cap.counterAxisAlignItems = 'CENTER';
+    cap.minWidth = 40;
+    cap.minHeight = 40;
+    cap.paddingLeft = cap.paddingRight = 12;
+    cap.cornerRadius = 12;
+    cap.fills = [solid(WHITE)];
+    cap.strokes = [solid(INK)];
+    cap.strokeWeight = 1;
+    cap.strokeBottomWeight = 4;
+    cap.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    keys.appendChild(cap);
+  }
+  lessonHotkey.appendChild(keys);
+  lessonHotkey.appendChild(txt('Изучено / Не изучено · flash ok/err', outfit('Regular'), 12, MUTED));
+
+  const lessonTask = al('VERTICAL', 'Task lesson');
+  lessonTask.itemSpacing = 10;
+  lessonTask.appendChild(txt('Задание · симулятор', outfit('Bold'), 11, BRAND));
+  lessonTask.appendChild(txt('Создайте папку Documents на рабочем столе', outfit('SemiBold'), 18, INK, 800));
+  lessonTask.appendChild(primaryBtn('Симулятор рабочего стола'));
+
+  const pathRow = al('HORIZONTAL', 'Path nodes');
+  pathRow.itemSpacing = 12;
+  pathRow.appendChild(pathNode('Start', 'Начать', false));
+  pathRow.appendChild(pathNode('Первый ноутбук', 'Продолжается', false));
+  pathRow.appendChild(pathNode('Shortcut Legend', 'Заблокировано', true));
+
+  const dash = al('VERTICAL', 'Dashboard body');
+  dash.itemSpacing = 12;
+  dash.appendChild(txt('Привет, Анна!', fraunces('Bold'), 28, INK));
+  dash.appendChild(txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED));
+  const tiles = al('HORIZONTAL', 'Stat tiles');
+  tiles.itemSpacing = 12;
+  for (const [k, v] of [
+    ['Уровень', '3'],
+    ['XP', '120'],
+    ['Прохождение', '18%'],
+    ['Ежедневная серия', '4 дн.'],
+  ]) {
+    const t = al('VERTICAL', k);
+    t.itemSpacing = 4;
+    t.paddingTop = t.paddingBottom = 16;
+    t.paddingLeft = t.paddingRight = 16;
+    t.cornerRadius = 16;
+    t.fills = [solid(WHITE)];
+    t.resize(200, 10);
+    t.layoutSizingHorizontal = 'FIXED';
+    t.layoutSizingVertical = 'HUG';
+    t.appendChild(txt(k, outfit('Regular'), 12, MUTED));
+    t.appendChild(txt(v, outfit('SemiBold'), 22, INK));
+    tiles.appendChild(t);
+  }
+  dash.appendChild(tiles);
+
+  const loginCard = al('VERTICAL', 'AuthCard');
+  loginCard.itemSpacing = 12;
+  loginCard.paddingTop = loginCard.paddingBottom = 28;
+  loginCard.paddingLeft = loginCard.paddingRight = 28;
+  loginCard.cornerRadius = 24;
+  loginCard.fills = [solid(WHITE)];
+  loginCard.strokes = [solid(INK, 0.1)];
+  loginCard.resize(400, 10);
+  loginCard.layoutSizingHorizontal = 'FIXED';
+  loginCard.layoutSizingVertical = 'HUG';
+  loginCard.appendChild(txt('KeyMaster', fraunces('Bold'), 22, INK));
+  loginCard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
+  loginCard.appendChild(txt('Добро пожаловать в KeyMaster', outfit('Regular'), 13, MUTED));
+  loginCard.appendChild(field('Email', 'learner@example.com', INK));
+  loginCard.appendChild(field('Пароль', '••••••••', INK));
+  loginCard.appendChild(primaryBtn('Войти'));
+  loginCard.appendChild(txt('Нет аккаунта? Регистрация', outfit('Regular'), 12, MUTED));
+
+  const registerCard = al('VERTICAL', 'AuthCard');
+  registerCard.itemSpacing = 12;
+  registerCard.paddingTop = registerCard.paddingBottom = 28;
+  registerCard.paddingLeft = registerCard.paddingRight = 28;
+  registerCard.cornerRadius = 24;
+  registerCard.fills = [solid(WHITE)];
+  registerCard.strokes = [solid(INK, 0.1)];
+  registerCard.resize(400, 10);
+  registerCard.layoutSizingHorizontal = 'FIXED';
+  registerCard.layoutSizingVertical = 'HUG';
+  registerCard.appendChild(txt('Регистрация', outfit('SemiBold'), 20, INK));
+  registerCard.appendChild(txt('Создайте аккаунт — на email придёт код подтверждения', outfit('Regular'), 13, MUTED, 344));
+  registerCard.appendChild(field('Имя', 'Анна', INK));
+  registerCard.appendChild(field('Email', 'anna@example.com', INK));
+  registerCard.appendChild(field('Пароль', '••••••••', INK));
+  registerCard.appendChild(primaryBtn('Создать аккаунт'));
+
+  const hubCards = al('HORIZONTAL', 'Mode cards');
+  hubCards.itemSpacing = 12;
+  for (const [title, tag] of [
+    ['Слепая печать', 'Старт'],
+    ['Рабочий стол', 'Старт'],
+    ['VS Code симулятор', 'Ядро'],
+    ['Повторение', 'Курс'],
+  ]) {
+    const c = al('VERTICAL', title);
+    c.itemSpacing = 8;
+    c.paddingTop = c.paddingBottom = 16;
+    c.paddingLeft = c.paddingRight = 16;
+    c.cornerRadius = 24;
+    c.fills = [solid(WHITE)];
+    c.resize(168, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(pill(tag, BRAND50, BRAND));
+    c.appendChild(txt(title, outfit('SemiBold'), 13, INK, 136));
+    hubCards.appendChild(c);
+  }
+
+  const quiz = al('VERTICAL', 'Quiz');
+  quiz.itemSpacing = 10;
+  quiz.appendChild(txt('Основы hotkeys', outfit('SemiBold'), 18, INK));
+  quiz.appendChild(txt('Какое сочетание сохраняет файл?', outfit('Regular'), 14, MUTED, 680));
+  for (const [opt, on] of [
+    ['Ctrl + S', true],
+    ['Ctrl + P', false],
+    ['Alt + F4', false],
+  ]) {
+    const row = al('HORIZONTAL', opt);
+    row.paddingTop = row.paddingBottom = 10;
+    row.paddingLeft = row.paddingRight = 12;
+    row.cornerRadius = 12;
+    row.fills = [solid(on ? BRAND50 : WHITE)];
+    row.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.1)];
+    row.appendChild(txt(opt, outfit('Medium'), 14, INK));
+    quiz.appendChild(row);
+  }
+
+  const exam = al('VERTICAL', 'Exam setup');
+  exam.itemSpacing = 10;
+  exam.appendChild(txt('Экзамен', outfit('SemiBold'), 18, INK));
+  exam.appendChild(txt('Курс · вопросы · время — без подсказок', outfit('Regular'), 13, MUTED));
+  exam.appendChild(primaryBtn('Начать экзамен'));
+
+  const review = al('VERTICAL', 'Review card');
+  review.itemSpacing = 12;
+  review.paddingTop = review.paddingBottom = 32;
+  review.paddingLeft = review.paddingRight = 24;
+  review.cornerRadius = 24;
+  review.fills = [solid(WHITE)];
+  review.resize(320, 10);
+  review.layoutSizingHorizontal = 'FIXED';
+  review.layoutSizingVertical = 'HUG';
+  review.primaryAxisAlignItems = 'CENTER';
+  review.appendChild(txt('Ctrl + S', outfit('SemiBold'), 28, INK));
+  review.appendChild(txt('Нажмите, чтобы перевернуть', outfit('Regular'), 12, MUTED));
+
+  const sim = al('VERTICAL', 'Code Lab');
+  sim.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
+  sim.paddingTop = sim.paddingBottom = 24;
+  sim.paddingLeft = sim.paddingRight = 24;
+  sim.itemSpacing = 12;
+  sim.resize(960, 280);
+  sim.layoutSizingHorizontal = 'FIXED';
+  sim.layoutSizingVertical = 'FIXED';
+  sim.appendChild(txt('VS Code Simulator  ·  no Navbar / Footer / BottomNav  ·  #1e1e1e', outfit('Regular'), 13, WHITE, 900));
+  const panes = al('HORIZONTAL', 'panes');
+  panes.itemSpacing = 8;
+  const explorer = al('VERTICAL', 'Explorer');
+  explorer.fills = [solid({ r: 0.145, g: 0.145, b: 0.145 })];
+  explorer.paddingTop = explorer.paddingBottom = 12;
+  explorer.paddingLeft = explorer.paddingRight = 12;
+  explorer.resize(200, 180);
+  explorer.layoutSizingHorizontal = 'FIXED';
+  explorer.layoutSizingVertical = 'FIXED';
+  explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, { r: 0.8, g: 0.8, b: 0.8 }));
+  explorer.appendChild(txt('src\n  App.tsx', outfit('Regular'), 12, WHITE));
+  const editor = al('VERTICAL', 'Editor');
+  editor.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
+  editor.paddingTop = editor.paddingBottom = 12;
+  editor.paddingLeft = editor.paddingRight = 12;
+  editor.resize(700, 180);
+  editor.layoutSizingHorizontal = 'FIXED';
+  editor.layoutSizingVertical = 'FIXED';
+  editor.appendChild(txt('App.tsx', outfit('Regular'), 12, WHITE));
+  panes.appendChild(explorer);
+  panes.appendChild(editor);
+  sim.appendChild(panes);
+
+  const desk = al('VERTICAL', 'Desktop');
+  desk.fills = [solid({ r: 0.05, g: 0.35, b: 0.55 })];
+  desk.paddingTop = 24;
+  desk.paddingLeft = desk.paddingRight = 24;
+  desk.itemSpacing = 12;
+  desk.resize(960, 280);
+  desk.layoutSizingHorizontal = 'FIXED';
+  desk.layoutSizingVertical = 'FIXED';
+  desk.appendChild(txt('Рабочий стол · проводник  ·  ImmersiveSimulator', outfit('Regular'), 13, WHITE));
+  const folder = al('VERTICAL', 'Folder');
+  folder.itemSpacing = 4;
+  folder.primaryAxisAlignItems = 'CENTER';
+  const folderIcon = figma.createRectangle();
+  folderIcon.resize(48, 36);
+  folderIcon.cornerRadius = 4;
+  folderIcon.fills = [solid({ r: 0.96, g: 0.78, b: 0.2 })];
+  folder.appendChild(folderIcon);
+  folder.appendChild(txt('Documents', outfit('Regular'), 11, WHITE));
+  desk.appendChild(folder);
+
+  const mobile = al('VERTICAL', 'Mobile Home 390');
+  mobile.itemSpacing = 0;
+  mobile.fills = [solid(PAPER)];
+  mobile.strokes = [solid(INK, 0.1)];
+  mobile.resize(390, 10);
+  mobile.layoutSizingHorizontal = 'FIXED';
+  mobile.layoutSizingVertical = 'HUG';
+  const mnav = al('HORIZONTAL', 'Mobile header');
+  mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  mnav.counterAxisAlignItems = 'CENTER';
+  mnav.paddingLeft = mnav.paddingRight = 16;
+  mnav.resize(390, 56);
+  mnav.layoutSizingHorizontal = 'FIXED';
+  mnav.layoutSizingVertical = 'FIXED';
+  mnav.fills = [solid(WHITE)];
+  mnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
+  mnav.appendChild(txt('☰', outfit('Bold'), 16, INK));
+  const mbody = al('VERTICAL', 'body');
+  mbody.paddingTop = mbody.paddingBottom = 24;
+  mbody.paddingLeft = mbody.paddingRight = 16;
+  mbody.itemSpacing = 10;
+  mbody.appendChild(txt('KeyMaster', fraunces('Bold'), 32, INK));
+  mbody.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Regular'), 13, MUTED, 358));
+  mbody.appendChild(primaryBtn('Начать бесплатно'));
+  const bnav = al('HORIZONTAL', 'BottomNav');
+  bnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  bnav.paddingLeft = bnav.paddingRight = 8;
+  bnav.paddingTop = 6;
+  bnav.paddingBottom = 10;
+  bnav.resize(390, 56);
+  bnav.layoutSizingHorizontal = 'FIXED';
+  bnav.layoutSizingVertical = 'FIXED';
+  bnav.fills = [solid(WHITE)];
+  bnav.strokes = [solid(INK, 0.08)];
+  for (const [label, on] of [
+    ['Курсы', true],
+    ['Мой путь', false],
+    ['Практика', false],
+    ['Рейтинг', false],
+  ]) {
+    const it = al('VERTICAL', label);
+    it.primaryAxisAlignItems = 'CENTER';
+    it.itemSpacing = 2;
+    it.resize(80, 44);
+    it.layoutSizingHorizontal = 'FIXED';
+    it.layoutSizingVertical = 'FIXED';
+    it.appendChild(txt('•', outfit('Bold'), 14, on ? BRAND : MUTED));
+    it.appendChild(txt(label, outfit('SemiBold'), 10, on ? BRAND : MUTED));
+    bnav.appendChild(it);
+  }
+  mobile.appendChild(mnav);
+  mobile.appendChild(mbody);
+  mobile.appendChild(bnav);
+
+  board.appendChild(
+    section('MarketingShell', [
+      marketingPage('Home /', 'Главная', true, homeBody),
+      marketingPage('Courses /courses', 'Курсы', true, [
+        txt('Каталог курсов', outfit('SemiBold'), 28, INK),
+        txt('Один layout карточки · статусы Старт / В процессе / Готово / Обязательный старт', outfit('Regular'), 13, MUTED, 860),
+        coursesRow,
+      ]),
+      marketingPage('Course detail /courses/:slug', 'Курсы', true, [
+        pill('Обязательный старт', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+        txt('Первый ноутбук', outfit('SemiBold'), 28, INK),
+        txt('1 layout × 20 slugs. Не дублировать каталог.', outfit('Regular'), 13, MUTED, 720),
+        txt('Урок 1 · Горячие клавиши     Изучено', outfit('Regular'), 14, INK),
+        txt('Урок 2 · Задание · симулятор  Не изучено', outfit('Regular'), 14, INK),
+      ]),
+      marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
+      marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
+      marketingPage('Path /path', 'Мой путь', false, [
+        txt('Developer Growth Path', outfit('SemiBold'), 24, INK),
+        txt('Не дублировать каждый узел курса — 5 статусов покрывают карту.', outfit('Regular'), 13, MUTED, 800),
+        pathRow,
+      ]),
+      marketingPage('Dashboard /dashboard', 'Главная', false, [dash]),
+    ]),
+  );
+  board.appendChild(
+    section('AuthCard', [
+      marketingPage('Login /login', 'Главная', true, [loginCard]),
+      marketingPage('Register /register', 'Главная', true, [registerCard]),
+    ]),
+  );
+  board.appendChild(
+    section('PracticeShell', [
+      practicePage('Practice hub /practice', 'Зал', [
+        txt('Тренировочный зал', outfit('SemiBold'), 24, INK),
+        txt('Один вход — все режимы. Навыки, затем закрепление.', outfit('Regular'), 13, MUTED, 680),
+        hubCards,
+      ]),
+      practicePage('Quiz /quiz', 'Основы hotkeys', [quiz]),
+      practicePage('Exam /exam', 'Экзамен', [exam]),
+      practicePage('Review /review', 'Повторение', [review]),
+    ]),
+  );
+  board.appendChild(section('ImmersiveSimulator', [sim, desk]));
+  board.appendChild(
+    section('Mobile 390 · BottomNav', [
+      mobile,
+      txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard.', outfit('Regular'), 12, MUTED, 390),
+    ]),
+  );
+  const root = page.findOne((n) => n.name === 'KM Product Map — as-is');
+  if (root) root.appendChild(board);
+  else {
+    board.x = 80;
+    board.y = 2100;
+    page.appendChild(board);
+  }
+}
+
+
 async function buildAll() {
   figma.ui.postMessage({ type: 'status', text: 'Creating pages…' });
   await ensurePages();
@@ -1244,6 +2246,8 @@ async function buildAll() {
   await createTextAndEffects();
   figma.ui.postMessage({ type: 'status', text: 'Product map…' });
   await buildProductMap();
+  await buildSitemap();
+  await buildUniqueScreens();
   await buildFlows();
   await buildDesignSystemBoard();
   await buildComponents();
