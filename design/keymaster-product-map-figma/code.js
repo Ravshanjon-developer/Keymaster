@@ -25,6 +25,7 @@ let fraunces = (style) => outfit(style);
 
 const screenIndex = {};
 const groupCursors = {};
+const imageByFile = {};
 
 function hexToRgba(hex) {
   const h = hex.replace('#', '');
@@ -373,6 +374,112 @@ async function buildProductMap() {
     ),
   );
   page.appendChild(root);
+  await buildLayoutChrome(root);
+}
+
+async function buildLayoutChrome(parent) {
+  if (parent.findOne && parent.findOne((n) => n.name === 'Shared layouts — chrome')) return;
+  const board = figma.createAutoLayout('HORIZONTAL');
+  board.name = 'Shared layouts — chrome';
+  board.itemSpacing = 32;
+  board.fills = [solid(WHITE)];
+  board.paddingTop = board.paddingBottom = 32;
+  board.paddingLeft = board.paddingRight = 32;
+  board.cornerRadius = 16;
+
+  function shell(name, w, h, build) {
+    const col = figma.createAutoLayout('VERTICAL');
+    col.itemSpacing = 8;
+    col.appendChild(txt(name, outfit('Bold'), 14, BRAND, w));
+    const frame = figma.createFrame();
+    frame.name = name;
+    frame.resize(w, h);
+    frame.fills = [solid(WHITE)];
+    frame.strokes = [solid(INK, 0.1)];
+    build(frame);
+    col.appendChild(frame);
+    board.appendChild(col);
+  }
+
+  shell('MarketingShell', 420, 280, (frame) => {
+    const nav = figma.createRectangle();
+    nav.resize(420, 40);
+    nav.fills = [solid(WHITE)];
+    nav.strokes = [solid(INK, 0.08)];
+    nav.y = 0;
+    frame.appendChild(nav);
+    const main = figma.createRectangle();
+    main.resize(420, 200);
+    main.y = 40;
+    main.fills = [solid(PAPER)];
+    frame.appendChild(main);
+    const footer = figma.createRectangle();
+    footer.resize(420, 40);
+    footer.y = 240;
+    footer.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    frame.appendChild(footer);
+    const n = txt('Navbar  Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('Regular'), 9, MUTED, 400);
+    n.x = 10;
+    n.y = 12;
+    frame.appendChild(n);
+    const f = txt('Footer sm+ · BottomNav lg:hidden (hidden on /login /register)', outfit('Regular'), 9, MUTED, 400);
+    f.x = 10;
+    f.y = 252;
+    frame.appendChild(f);
+  });
+
+  shell('PracticeShell', 420, 280, (frame) => {
+    const nav = figma.createRectangle();
+    nav.resize(420, 40);
+    nav.fills = [solid(WHITE)];
+    frame.appendChild(nav);
+    const rail = figma.createRectangle();
+    rail.resize(90, 240);
+    rail.x = 0;
+    rail.y = 40;
+    rail.fills = [solid({ r: 0.078, g: 0.094, b: 0.125 })];
+    frame.appendChild(rail);
+    const body = figma.createRectangle();
+    body.resize(330, 240);
+    body.x = 90;
+    body.y = 40;
+    body.fills = [solid(PAPER)];
+    frame.appendChild(body);
+    const r = txt('Rail 240px #141820\nactive #89ceff', outfit('Regular'), 9, { r: 0.678, g: 0.776, b: 1 }, 80);
+    r.x = 6;
+    r.y = 50;
+    frame.appendChild(r);
+    const b = txt('Outlet: hub / typing / training / speed / review / quiz / exam', outfit('Regular'), 9, MUTED, 300);
+    b.x = 100;
+    b.y = 140;
+    frame.appendChild(b);
+  });
+
+  shell('AuthCard', 280, 280, (frame) => {
+    frame.fills = [solid(PAPER)];
+    const card = figma.createRectangle();
+    card.resize(200, 180);
+    card.x = 40;
+    card.y = 50;
+    card.cornerRadius = 24;
+    card.fills = [solid(WHITE)];
+    card.strokes = [solid(INK, 0.1)];
+    frame.appendChild(card);
+    const t = txt('max-w-md GlassCard\nLogin / Register / OTP\nVerify email', outfit('Regular'), 10, INK, 180);
+    t.x = 50;
+    t.y = 90;
+    frame.appendChild(t);
+  });
+
+  shell('ImmersiveSimulator', 280, 280, (frame) => {
+    frame.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
+    const t = txt('No Navbar / Footer / BottomNav\nh-dvh #1e1e1e\nCode Lab or Desktop ?mode=desktop', outfit('Regular'), 11, WHITE, 240);
+    t.x = 20;
+    t.y = 110;
+    frame.appendChild(t);
+  });
+
+  parent.appendChild(board);
 }
 
 async function buildFlows() {
@@ -1003,6 +1110,128 @@ async function placeImage(msg) {
   page.appendChild(wrap);
   pos.y += fh + 72;
   screenIndex[msg.file] = frame.id;
+  imageByFile[msg.file] = { hash: image.hash, w: fw, h: fh };
+}
+
+function flowThumb(file, label) {
+  const col = figma.createAutoLayout('VERTICAL');
+  col.itemSpacing = 6;
+  col.primaryAxisAlignItems = 'CENTER';
+  col.appendChild(txt(label, outfit('SemiBold'), 11, INK, 200));
+  const frame = figma.createFrame();
+  frame.name = label;
+  frame.resize(200, 125);
+  frame.cornerRadius = 8;
+  frame.strokes = [solid(INK, 0.1)];
+  const info = imageByFile[file];
+  if (info) {
+    frame.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: info.hash }];
+  } else {
+    frame.fills = [solid(PAPER)];
+  }
+  col.appendChild(frame);
+  return col;
+}
+
+function arrow() {
+  const t = txt('→', outfit('Bold'), 18, BRAND);
+  t.layoutAlign = 'CENTER';
+  return t;
+}
+
+async function buildVisualFlows() {
+  const page = pageByName('02 — User Flows');
+  await figma.setCurrentPageAsync(page);
+  if (page.findOne((n) => n.name === 'User flows — screens')) return;
+  const flows = [
+    ['F1 Guest discover', [
+      ['desktop-guest-01-home.jpg', 'Home'],
+      ['desktop-guest-04-courses.jpg', 'Courses'],
+      ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
+      ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
+      ['desktop-guest-03-register.jpg', 'Register gate'],
+    ]],
+    ['F2 Sign up', [
+      ['desktop-guest-03-register.jpg', 'Register'],
+      ['desktop-guest-verify-email-error.jpg', 'OTP / verify'],
+      ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
+    ]],
+    ['F3 Sign in', [
+      ['desktop-guest-02-login.jpg', 'Login'],
+      ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
+    ]],
+    ['F4 Learning path', [
+      ['desktop-learner-09-path-viewport.jpg', 'Path'],
+      ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
+      ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
+    ]],
+    ['F5 First laptop', [
+      ['desktop-guest-05-course-computer-basics.jpg', 'Computer basics'],
+      ['desktop-learner-23-simulator-desktop.jpg', 'Desktop sim'],
+      ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
+    ]],
+    ['F6 Hotkey learn', [
+      ['desktop-learner-17-lesson-hotkey.jpg', 'KeyboardTrainer'],
+    ]],
+    ['F7 Practice hub', [
+      ['desktop-learner-10-practice.jpg', 'Hub'],
+      ['desktop-learner-11-typing.jpg', 'Typing'],
+      ['desktop-learner-22-simulator-code.jpg', 'Code Lab'],
+      ['desktop-learner-12-training.jpg', 'Training'],
+      ['desktop-learner-13-speed.jpg', 'Speed'],
+    ]],
+    ['F8 Reinforce', [
+      ['desktop-learner-14-review.jpg', 'Review'],
+      ['desktop-learner-15-quiz.jpg', 'Quiz'],
+      ['desktop-learner-16-exam.jpg', 'Exam setup'],
+      ['desktop-learner-exam-run.jpg', 'Exam run'],
+      ['desktop-learner-exam-done.jpg', 'Exam done'],
+    ]],
+    ['F9 Social', [
+      ['desktop-guest-07-leaderboard.jpg', 'Leaderboard'],
+      ['desktop-learner-19-achievements.jpg', 'Achievements'],
+    ]],
+    ['F10 Progress', [
+      ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
+      ['desktop-learner-20-stats.jpg', 'Stats'],
+    ]],
+    ['F11 Admin', [
+      ['desktop-admin-24-admin.jpg', 'Overview'],
+      ['desktop-admin-courses.jpg', 'Courses'],
+      ['desktop-learner-21-admin-forbidden.jpg', 'Forbidden'],
+    ]],
+    ['F12 Theme + locale', [
+      ['desktop-guest-01-home.jpg', 'Light'],
+      ['dark-01-home.jpg', 'Dark'],
+      ['desktop-guest-02-login.jpg', 'RU / TJ in Navbar'],
+    ]],
+  ];
+  const root = figma.createAutoLayout('VERTICAL');
+  root.name = 'User flows — screens';
+  root.itemSpacing = 20;
+  root.paddingTop = root.paddingBottom = 32;
+  root.paddingLeft = root.paddingRight = 32;
+  root.fills = [solid(PAPER)];
+  root.x = 80;
+  root.y = 980;
+  root.appendChild(txt('Flows with as-is captures (not a redesign)', outfit('SemiBold'), 16, INK, 1200));
+  for (const [title, steps] of flows) {
+    const row = figma.createAutoLayout('HORIZONTAL');
+    row.name = title;
+    row.itemSpacing = 8;
+    row.counterAxisAlignItems = 'CENTER';
+    row.paddingTop = row.paddingBottom = 12;
+    row.paddingLeft = row.paddingRight = 12;
+    row.cornerRadius = 12;
+    row.fills = [solid(WHITE)];
+    row.appendChild(txt(title, outfit('Bold'), 12, BRAND, 140));
+    steps.forEach((step, i) => {
+      row.appendChild(flowThumb(step[0], step[1]));
+      if (i < steps.length - 1) row.appendChild(arrow());
+    });
+    root.appendChild(row);
+  }
+  page.appendChild(root);
 }
 
 async function buildAll() {
@@ -1029,7 +1258,10 @@ figma.ui.onmessage = async (msg) => {
     if (msg.type === 'image') {
       await placeImage(msg);
       figma.ui.postMessage({ type: 'ack' });
+    } else if (msg.type === 'skip') {
+      figma.ui.postMessage({ type: 'ack' });
     } else if (msg.type === 'done') {
+      await buildVisualFlows();
       await figma.setCurrentPageAsync(pageByName('01 — Product Map'));
       figma.closePlugin('KeyMaster — Product Map (Current UI) built. Stage 1 as-is.');
     }

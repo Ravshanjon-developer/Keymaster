@@ -99,7 +99,11 @@
           const item = SHOTS[i];
           status.textContent = 'Placing ' + (i + 1) + '/' + SHOTS.length + ' — ' + item.name;
           bar.value = i;
-          const buf = await fetch('shots/' + item.file).then((r) => r.arrayBuffer());
+          try {
+          const buf = await fetch('shots/' + item.file).then((r) => {
+            if (!r.ok) throw new Error(r.status + ' ' + item.file);
+            return r.arrayBuffer();
+          });
           parent.postMessage({
             pluginMessage: {
               type: 'image',
@@ -112,6 +116,10 @@
             },
           }, '*');
           await ack();
+          } catch (err) {
+            parent.postMessage({ pluginMessage: { type: 'skip', file: item.file } }, '*');
+            await ack();
+          }
         }
         bar.value = SHOTS.length;
         parent.postMessage({ pluginMessage: { type: 'done' } }, '*');
