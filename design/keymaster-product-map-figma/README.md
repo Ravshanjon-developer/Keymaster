@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations (auth compact register, catalog filters, exam phases, admin overview/courses, leaderboard periods, speed done, dark login/register/practice, mobile chips) |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations (empty FloatingLabelInput + EyeOff, Sun/Moon theme toggle, home feature visuals, practice 2-col ModeCards + speed row, auth compact register, catalog filters, exam phases, admin overview/courses, leaderboard periods, speed done, dark login/register/practice, mobile chips) |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |

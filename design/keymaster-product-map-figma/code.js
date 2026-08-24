@@ -1436,6 +1436,239 @@ function field(label, value, border, hint, theme) {
   return wrap;
 }
 
+function iconEyeOff(color) {
+  const wrap = figma.createFrame();
+  wrap.name = 'EyeOff';
+  wrap.resize(16, 16);
+  wrap.fills = [TRANSPARENT];
+  wrap.clipsContent = false;
+  const eye = figma.createEllipse();
+  eye.resize(14, 8);
+  eye.x = 1;
+  eye.y = 4;
+  eye.fills = [TRANSPARENT];
+  eye.strokes = [solid(color, 0.75)];
+  eye.strokeWeight = 1.4;
+  wrap.appendChild(eye);
+  const pupil = figma.createEllipse();
+  pupil.resize(4, 4);
+  pupil.x = 6;
+  pupil.y = 6;
+  pupil.fills = [solid(color, 0.75)];
+  wrap.appendChild(pupil);
+  const slash = figma.createRectangle();
+  slash.resize(16, 1.4);
+  slash.cornerRadius = 1;
+  slash.x = 0;
+  slash.y = 7.3;
+  slash.rotation = -38;
+  slash.fills = [solid(color, 0.75)];
+  wrap.appendChild(slash);
+  return wrap;
+}
+
+function floatingField(label, value, opts) {
+  opts = opts || {};
+  const dark = !!(opts.dark || opts.theme === 'dark');
+  const password = !!opts.password;
+  const floated = !!(value && String(value).trim());
+  const invalid = !!opts.error;
+  const w = opts.width || 352;
+  const wrap = al('VERTICAL', 'FloatingLabelInput');
+  wrap.itemSpacing = 6;
+  const box = al('HORIZONTAL', floated ? 'Floated' : 'Default');
+  box.counterAxisAlignItems = 'CENTER';
+  box.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  box.paddingLeft = 14;
+  box.paddingRight = password ? 8 : 14;
+  box.paddingTop = floated ? 8 : 14;
+  box.paddingBottom = floated ? 8 : 14;
+  box.cornerRadius = 16;
+  box.fills = [solid(dark ? DARK_ELEVATED : WHITE)];
+  box.strokes = [solid(invalid ? SIGNAL : dark ? WHITE : { r: 0.059, g: 0.09, b: 0.165 }, invalid ? 1 : dark ? 0.1 : 0.18)];
+  box.strokeWeight = 1;
+  box.resize(w, 48);
+  box.layoutSizingHorizontal = 'FIXED';
+  box.layoutSizingVertical = 'FIXED';
+  const inner = al('VERTICAL', 'inner');
+  inner.itemSpacing = 0;
+  if (floated) {
+    inner.appendChild(txt(label, outfit('Medium'), 10, invalid ? SIGNAL : dark ? BRAND500 : { r: 0.114, g: 0.306, b: 0.847 }));
+    inner.appendChild(txt(value, outfit('Regular'), 14, dark ? DARK_TEXT : INK));
+  } else {
+    inner.appendChild(txt(label, outfit('Regular'), 14, dark ? DARK_MUTED : MUTED));
+  }
+  inner.layoutSizingHorizontal = 'FILL';
+  box.appendChild(inner);
+  if (password) box.appendChild(iconEyeOff(dark ? DARK_MUTED : MUTED));
+  wrap.appendChild(box);
+  if (opts.hint) wrap.appendChild(txt(opts.hint, outfit('Regular'), 11, dark ? DARK_MUTED : MUTED, w));
+  wrap.layoutSizingHorizontal = 'HUG';
+  wrap.layoutSizingVertical = 'HUG';
+  return wrap;
+}
+
+function homeFeatureVisual(variant, dark) {
+  const art = figma.createFrame();
+  art.name = 'HomeFeatureVisual / ' + variant;
+  art.resize(232, 132);
+  art.fills = [TRANSPARENT];
+  art.clipsContent = true;
+  if (variant === 'path') {
+    const pts = [
+      [18, 88, true],
+      [64, 30, true],
+      [118, 62, true],
+      [196, 26, false],
+    ];
+    for (const [x, y, done] of pts) {
+      const d = figma.createEllipse();
+      d.resize(done ? 22 : 18, done ? 22 : 18);
+      d.x = x;
+      d.y = y;
+      d.fills = [solid(done ? BRAND : dark ? DARK_ELEVATED : WHITE)];
+      d.strokes = [solid(done ? BRAND500 : dark ? WHITE : INK, done ? 1 : 0.18)];
+      d.strokeWeight = 2;
+      art.appendChild(d);
+    }
+    const xp = txt('XP', outfit('Regular'), 9, dark ? DARK_MUTED : MUTED);
+    xp.x = 16;
+    xp.y = 114;
+    art.appendChild(xp);
+    const track = figma.createRectangle();
+    track.resize(48, 6);
+    track.x = 36;
+    track.y = 116;
+    track.cornerRadius = 3;
+    track.fills = [solid(dark ? WHITE : INK, 0.1)];
+    art.appendChild(track);
+    const fillN = figma.createRectangle();
+    fillN.resize(32, 6);
+    fillN.x = 36;
+    fillN.y = 116;
+    fillN.cornerRadius = 3;
+    fillN.fills = [solid(BRAND500)];
+    art.appendChild(fillN);
+  } else if (variant === 'keyboard') {
+    const board = figma.createRectangle();
+    board.resize(200, 108);
+    board.x = 16;
+    board.y = 12;
+    board.cornerRadius = 12;
+    board.fills = [solid(dark ? WHITE : INK, 0.08)];
+    art.appendChild(board);
+    let x = 28;
+    for (const hot of [false, false, true, true, false]) {
+      const key = figma.createRectangle();
+      key.resize(26, 24);
+      key.x = x;
+      key.y = 28;
+      key.cornerRadius = 6;
+      key.fills = [solid(hot ? BRAND : dark ? DARK_ELEVATED : WHITE)];
+      key.strokes = [solid(hot ? BRAND500 : dark ? WHITE : INK, hot ? 1 : 0.12)];
+      art.appendChild(key);
+      x += 30;
+    }
+    const chip = al('HORIZONTAL', 'Ctrl+K');
+    chip.paddingLeft = chip.paddingRight = 8;
+    chip.paddingTop = chip.paddingBottom = 4;
+    chip.cornerRadius = 6;
+    chip.fills = [solid(BRAND50)];
+    chip.appendChild(txt('Ctrl+K', outfit('Bold'), 8, BRAND800));
+    chip.x = 160;
+    chip.y = 8;
+    art.appendChild(chip);
+    const ev = txt('KeyboardEvent', outfit('Regular'), 8, dark ? DARK_MUTED : MUTED);
+    ev.x = 24;
+    ev.y = 118;
+    art.appendChild(ev);
+  } else {
+    const win = figma.createRectangle();
+    win.resize(192, 92);
+    win.x = 20;
+    win.y = 16;
+    win.cornerRadius = 12;
+    win.fills = [solid(dark ? DARK_ELEVATED : WHITE)];
+    win.strokes = [solid(dark ? WHITE : INK, 0.1)];
+    art.appendChild(win);
+    const bar = figma.createRectangle();
+    bar.resize(192, 22);
+    bar.x = 20;
+    bar.y = 16;
+    bar.cornerRadius = 12;
+    bar.fills = [solid(dark ? WHITE : INK, 0.08)];
+    art.appendChild(bar);
+    const lights = [
+      [30, SIGNAL],
+      [42, { r: 0.961, g: 0.62, b: 0.043 }],
+      [54, SUCCESS],
+    ];
+    for (const [cx, col] of lights) {
+      const c = figma.createEllipse();
+      c.resize(8, 8);
+      c.x = cx;
+      c.y = 23;
+      c.fills = [solid(col, 0.7)];
+      art.appendChild(c);
+    }
+    const exam = txt('Exam · 12/15', outfit('SemiBold'), 8, dark ? DARK_MUTED : MUTED);
+    exam.x = 70;
+    exam.y = 24;
+    art.appendChild(exam);
+    const track = figma.createRectangle();
+    track.resize(120, 6);
+    track.x = 32;
+    track.y = 48;
+    track.cornerRadius = 3;
+    track.fills = [solid(dark ? WHITE : INK, 0.1)];
+    art.appendChild(track);
+    const fillN = figma.createRectangle();
+    fillN.resize(96, 6);
+    fillN.x = 32;
+    fillN.y = 48;
+    fillN.cornerRadius = 3;
+    fillN.fills = [solid(BRAND500)];
+    art.appendChild(fillN);
+    const pass = figma.createEllipse();
+    pass.resize(44, 44);
+    pass.x = 176;
+    pass.y = 76;
+    pass.fills = [solid(BRAND)];
+    art.appendChild(pass);
+    const passL = txt('PASS', outfit('Bold'), 7, dark ? DARK_MUTED : MUTED);
+    passL.x = 186;
+    passL.y = 122;
+    art.appendChild(passL);
+  }
+  return art;
+}
+
+function featureTile(num, title, desc, variant, dark) {
+  const tile = al('VERTICAL', title);
+  tile.itemSpacing = 8;
+  tile.paddingTop = tile.paddingBottom = 28;
+  tile.paddingLeft = tile.paddingRight = 28;
+  tile.cornerRadius = 20;
+  tile.fills = [solid(dark ? DARK_CARD : WHITE)];
+  tile.strokes = [solid(dark ? WHITE : INK, 0.08)];
+  tile.resize(280, 10);
+  tile.layoutSizingHorizontal = 'FIXED';
+  tile.layoutSizingVertical = 'HUG';
+  const chrome = al('VERTICAL', 'visual');
+  chrome.paddingTop = chrome.paddingBottom = chrome.paddingLeft = chrome.paddingRight = 8;
+  chrome.cornerRadius = 16;
+  chrome.fills = [solid(dark ? DARK_ELEVATED : { r: 0.937, g: 0.965, b: 1 }, dark ? 0.6 : 0.8)];
+  chrome.strokes = [solid(dark ? WHITE : INK, 0.06)];
+  chrome.appendChild(homeFeatureVisual(variant, dark));
+  chrome.layoutSizingHorizontal = 'FILL';
+  chrome.layoutSizingVertical = 'HUG';
+  tile.appendChild(chrome);
+  tile.appendChild(txt(num, outfit('SemiBold'), 11, dark ? BRAND500 : BRAND800));
+  tile.appendChild(txt(title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, 224));
+  tile.appendChild(txt(desc, outfit('Regular'), 12, dark ? DARK_MUTED : MUTED, 224));
+  return tile;
+}
+
 function primaryBtn(label, compact) {
   const b = al('HORIZONTAL', 'Button');
   b.primaryAxisAlignItems = 'CENTER';
@@ -1508,17 +1741,59 @@ function navDivider() {
   return d;
 }
 
-function themeToggle() {
+function themeToggle(dark) {
   const b = al('HORIZONTAL', 'Theme toggle');
   b.primaryAxisAlignItems = 'CENTER';
   b.counterAxisAlignItems = 'CENTER';
   b.paddingLeft = b.paddingRight = b.paddingTop = b.paddingBottom = 8;
   b.cornerRadius = 8;
   b.fills = [TRANSPARENT];
-  const moon = figma.createEllipse();
-  moon.resize(20, 20);
-  moon.fills = [solid(INK, 0.85)];
-  b.appendChild(moon);
+  const icon = figma.createFrame();
+  icon.name = dark ? 'Moon' : 'Sun';
+  icon.resize(20, 20);
+  icon.fills = [TRANSPARENT];
+  icon.clipsContent = false;
+  if (dark) {
+    const disc = figma.createEllipse();
+    disc.resize(14, 14);
+    disc.x = 4;
+    disc.y = 3;
+    disc.fills = [solid(DARK_TEXT, 0.9)];
+    icon.appendChild(disc);
+    const cut = figma.createEllipse();
+    cut.resize(12, 12);
+    cut.x = 8;
+    cut.y = 2;
+    cut.fills = [solid(DARK_ELEVATED)];
+    icon.appendChild(cut);
+  } else {
+    const core = figma.createEllipse();
+    core.resize(8, 8);
+    core.x = 6;
+    core.y = 6;
+    core.fills = [solid(INK, 0.85)];
+    icon.appendChild(core);
+    const rays = [
+      [9, 1],
+      [14.5, 3.5],
+      [17, 9],
+      [14.5, 14.5],
+      [9, 17],
+      [3.5, 14.5],
+      [1, 9],
+      [3.5, 3.5],
+    ];
+    for (const [x, y] of rays) {
+      const r = figma.createRectangle();
+      r.resize(2, 2);
+      r.cornerRadius = 1;
+      r.x = x;
+      r.y = y;
+      r.fills = [solid(INK, 0.85)];
+      icon.appendChild(r);
+    }
+  }
+  b.appendChild(icon);
   b.layoutSizingHorizontal = 'HUG';
   b.layoutSizingVertical = 'HUG';
   return b;
@@ -1601,7 +1876,7 @@ function makeNavbar(active, guest, dark) {
   lang.appendChild(ru);
   lang.appendChild(tj);
   actions.appendChild(lang);
-  actions.appendChild(themeToggle());
+  actions.appendChild(themeToggle(dark));
   if (guest) {
     const login = al('HORIZONTAL', 'Вход');
     login.paddingLeft = login.paddingRight = 10;
@@ -1958,12 +2233,17 @@ async function buildProductComponents(page) {
   learnSet.paddingLeft = learnSet.paddingRight = learnSet.paddingTop = learnSet.paddingBottom = 24;
   learnSet.description = 'LearnStatusBadge — frontend/src/shared/components/LearnStatus.tsx';
 
-  function float(name, label, value, border, shadow, opacity) {
+  function float(name, label, value, border, shadow, opacity, password) {
     const c = figma.createComponent();
     c.name = name;
-    c.layoutMode = 'VERTICAL';
-    c.itemSpacing = 0;
-    c.resize(280, 52);
+    c.layoutMode = 'HORIZONTAL';
+    c.counterAxisAlignItems = 'CENTER';
+    c.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    c.paddingLeft = 14;
+    c.paddingRight = password ? 8 : 14;
+    c.paddingTop = 8;
+    c.paddingBottom = 8;
+    c.resize(280, 48);
     c.layoutSizingHorizontal = 'FIXED';
     c.layoutSizingVertical = 'FIXED';
     c.cornerRadius = 16;
@@ -1974,24 +2254,28 @@ async function buildProductComponents(page) {
     if (shadow) {
       c.effects = [{ type: 'DROP_SHADOW', color: shadow, offset: { x: 0, y: 0 }, radius: 0, spread: 4, visible: true, blendMode: 'NORMAL' }];
     }
+    const floated = !!(value && String(value).trim());
     const inner = al('VERTICAL', 'inner');
-    inner.paddingLeft = inner.paddingRight = 14;
-    inner.paddingTop = 8;
-    inner.paddingBottom = 8;
     inner.itemSpacing = 0;
-    inner.appendChild(txt(label, outfit('Medium'), 10, MUTED));
-    inner.appendChild(txt(value, outfit('Regular'), 14, INK));
+    if (floated) {
+      inner.appendChild(txt(label, outfit('Medium'), 10, MUTED));
+      inner.appendChild(txt(value, outfit('Regular'), 14, INK));
+    } else {
+      inner.appendChild(txt(label, outfit('Regular'), 14, MUTED));
+    }
     c.appendChild(inner);
     inner.layoutSizingHorizontal = 'FILL';
+    if (password) c.appendChild(iconEyeOff(MUTED));
     return c;
   }
   const floats = [
-    float('State=Default', 'Email', ' ', { r: 0.059, g: 0.09, b: 0.165 }),
+    float('State=Default', 'Email', '', { r: 0.059, g: 0.09, b: 0.165 }),
     float('State=Floated', 'Email', 'learner@example.com', { r: 0.059, g: 0.09, b: 0.165 }),
     float('State=Focus', 'Email', 'learner@example.com', BRAND, { r: 0.145, g: 0.388, b: 0.922, a: 0.35 }),
     float('State=Error', 'Email', 'bad', SIGNAL),
     float('State=Success', 'Email', 'ok@example.com', SUCCESS, { r: 0.086, g: 0.639, b: 0.29, a: 0.25 }),
     float('State=Disabled', 'Email', 'locked', { r: 0.059, g: 0.09, b: 0.165 }, null, 0.6),
+    float('State=Password', 'Пароль', '', { r: 0.059, g: 0.09, b: 0.165 }, null, 1, true),
   ];
   const floatSet = figma.combineAsVariants(floats, page);
   floatSet.name = 'FloatingLabelInput';
@@ -2000,7 +2284,7 @@ async function buildProductComponents(page) {
   floatSet.layoutMode = 'HORIZONTAL';
   floatSet.itemSpacing = 12;
   floatSet.paddingLeft = floatSet.paddingRight = floatSet.paddingTop = floatSet.paddingBottom = 24;
-  floatSet.description = 'FloatingLabelInput — default, floated, focus, error, success, disabled';
+  floatSet.description = 'FloatingLabelInput — empty placeholder, floated, focus, error, success, disabled, password+EyeOff';
 
   function skel(name, w, h) {
     const c = figma.createComponent();
@@ -2081,7 +2365,12 @@ async function buildProductComponents(page) {
       links.itemSpacing = 8;
       links.appendChild(txt('Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('SemiBold'), 15, INK));
       bar.appendChild(links);
-      bar.appendChild(txt(authed ? 'Анна  120 XP' : 'Вход  Регистрация', outfit('SemiBold'), 14, INK));
+      const right = al('HORIZONTAL', 'actions');
+      right.itemSpacing = 8;
+      right.counterAxisAlignItems = 'CENTER';
+      right.appendChild(themeToggle(false));
+      right.appendChild(txt(authed ? 'Анна  120 XP' : 'Вход  Регистрация', outfit('SemiBold'), 14, INK));
+      bar.appendChild(right);
     } else {
       bar.appendChild(txt('☰', outfit('Bold'), 18, INK));
     }
@@ -2213,25 +2502,15 @@ async function buildUniqueScreens() {
   homeBody.push(hero);
   const feats = al('HORIZONTAL', 'Features');
   feats.itemSpacing = 12;
-  [
-    ['01', 'С нуля до уверенности', 'Сначала проводник и папки, потом текст и шорткаты — как реальная дорога новичка.'],
-    ['02', 'Симулятор и печать', 'Тренируйте создание файлов в безопасной песочнице и слепую печать с подсветкой клавиш.'],
-    ['03', 'Hotkeys до автоматизма', 'Windows, VS Code, браузеры и IDE — живой тренажёр, XP и экзамен под ваши цели.'],
-  ].forEach(([n, t, d]) => {
-    const tile = al('VERTICAL', t);
-    tile.itemSpacing = 8;
-    tile.paddingTop = tile.paddingBottom = 24;
-    tile.paddingLeft = tile.paddingRight = 24;
-    tile.cornerRadius = 16;
-    tile.fills = [solid(WHITE)];
-    tile.resize(280, 10);
-    tile.layoutSizingHorizontal = 'FIXED';
-    tile.layoutSizingVertical = 'HUG';
-    tile.appendChild(txt(n, outfit('SemiBold'), 11, BRAND800));
-    tile.appendChild(txt(t, outfit('SemiBold'), 16, INK, 232));
-    tile.appendChild(txt(d, outfit('Regular'), 12, MUTED, 232));
-    feats.appendChild(tile);
-  });
+  feats.appendChild(
+    featureTile('01', 'С нуля до уверенности', 'Сначала проводник и папки, потом текст и шорткаты — как реальная дорога новичка.', 'path'),
+  );
+  feats.appendChild(
+    featureTile('02', 'Симулятор и печать', 'Тренируйте создание файлов в безопасной песочнице и слепую печать с подсветкой клавиш.', 'keyboard'),
+  );
+  feats.appendChild(
+    featureTile('03', 'Hotkeys до автоматизма', 'Windows, VS Code, браузеры и IDE — живой тренажёр, XP и экзамен под ваши цели.', 'exam'),
+  );
   homeBody.push(feats);
 
   const coursesRow = al('HORIZONTAL', 'Course cards');
@@ -2445,28 +2724,18 @@ async function buildUniqueScreens() {
     return row;
   }
 
-  const strength = al('HORIZONTAL', 'PasswordStrength');
-  strength.itemSpacing = 4;
-  for (let i = 1; i <= 4; i++) {
-    const seg = figma.createRectangle();
-    seg.resize(80, 3);
-    seg.cornerRadius = 99;
-    seg.fills = [solid(i <= 2 ? BRAND : INK, i <= 2 ? 1 : 0.08)];
-    strength.appendChild(seg);
-  }
-
   const loginCard = authScreen(
     'Вход',
     'Добро пожаловать в KeyMaster',
-    [field('Email', 'learner@example.com', INK), field('Пароль', '••••••••', INK), primaryBtn('Войти')],
+    [floatingField('Email', ''), floatingField('Пароль', '', { password: true }), primaryBtn('Войти')],
     'Нет аккаунта? Регистрация',
   );
   const loginError = authScreen(
     'Вход',
     'Добро пожаловать в KeyMaster',
     [
-      field('Email', 'learner@example.com', SIGNAL),
-      field('Пароль', '••••••••', SIGNAL),
+      floatingField('Email', 'learner@example.com'),
+      floatingField('Пароль', '••••••••', { password: true }),
       (() => {
         const alert = al('HORIZONTAL', 'error');
         alert.paddingLeft = alert.paddingRight = 12;
@@ -2497,11 +2766,10 @@ async function buildUniqueScreens() {
     'Регистрация',
     'Добро пожаловать в KeyMaster',
     [
-      field('Имя', 'Анна', INK),
-      field('username', 'anna', INK),
-      field('Email', 'anna@example.com', INK),
-      field('Пароль', '••••••••', INK),
-      strength,
+      floatingField('Имя', '', { width: 360 }),
+      floatingField('username', '', { width: 360 }),
+      floatingField('Email', '', { width: 360 }),
+      floatingField('Пароль', '', { password: true, width: 360 }),
       primaryBtn('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
@@ -2514,40 +2782,94 @@ async function buildUniqueScreens() {
     'Уже есть аккаунт? Войти',
   );
 
-  function modeCard(title, tag, tone) {
+  function modeCard(title, tag, tone, desc, width, dark) {
+    const w = width || 328;
     const c = al('VERTICAL', title);
     c.itemSpacing = 8;
-    c.paddingTop = c.paddingBottom = 20;
-    c.paddingLeft = c.paddingRight = 20;
+    c.paddingTop = c.paddingBottom = 24;
+    c.paddingLeft = c.paddingRight = 24;
     c.cornerRadius = 24;
-    c.fills = [solid(WHITE)];
-    c.resize(168, 10);
+    c.minHeight = 168;
+    c.fills = [solid(dark ? DARK_CARD : WHITE)];
+    c.strokes = [solid(dark ? WHITE : INK, 0.08)];
+    c.resize(w, 10);
     c.layoutSizingHorizontal = 'FIXED';
     c.layoutSizingVertical = 'HUG';
     const icon = figma.createRectangle();
     icon.resize(44, 44);
     icon.cornerRadius = 12;
-    icon.fills = [solid(BRAND50)];
+    icon.fills = [solid(dark ? { r: 0.09, g: 0.145, b: 0.329 } : BRAND50)];
     const top = al('HORIZONTAL', 'top');
     top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    top.counterAxisAlignItems = 'CENTER';
     top.appendChild(icon);
-    top.appendChild(pill(tag, tone === 'brand' ? BRAND : BRAND50, tone === 'brand' ? WHITE : BRAND));
+    top.appendChild(
+      pill(
+        tag,
+        tone === 'brand' ? BRAND : dark ? DARK_ELEVATED : { r: 0.941, g: 0.945, b: 0.953 },
+        tone === 'brand' ? WHITE : dark ? DARK_MUTED : MUTED,
+      ),
+    );
     top.layoutSizingHorizontal = 'FILL';
     c.appendChild(top);
-    c.appendChild(txt(title, outfit('SemiBold'), 14, INK, 128));
+    c.appendChild(txt(title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, w - 48));
+    c.appendChild(txt(desc, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED, w - 48));
+    c.appendChild(txt('↗', outfit('SemiBold'), 14, dark ? BRAND500 : BRAND800));
     return c;
   }
+  function sectionIntro(title, desc) {
+    const s = al('VERTICAL', title + ' intro');
+    s.itemSpacing = 6;
+    s.appendChild(txt(title, outfit('SemiBold'), 18, INK));
+    s.appendChild(txt(desc, outfit('Regular'), 13, MUTED, 640));
+    return s;
+  }
   const skillCards = al('HORIZONTAL', 'Skills');
-  skillCards.itemSpacing = 12;
-  skillCards.appendChild(modeCard('Слепая печать', 'Старт', 'neutral'));
-  skillCards.appendChild(modeCard('Рабочий стол', 'Старт', 'neutral'));
-  skillCards.appendChild(modeCard('VS Code симулятор', 'Ядро', 'brand'));
-  skillCards.appendChild(modeCard('Hotkeys', 'Ядро', 'brand'));
+  skillCards.itemSpacing = 16;
+  skillCards.layoutWrap = 'WRAP';
+  skillCards.resize(672, 10);
+  skillCards.layoutSizingHorizontal = 'FIXED';
+  skillCards.layoutSizingVertical = 'HUG';
+  skillCards.appendChild(modeCard('Слепая печать', 'Старт', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.'));
+  skillCards.appendChild(modeCard('Рабочий стол', 'Старт', 'neutral', 'Проводник Windows: папки, файлы и задания курса «Первый ноутбук» — без зубрёжки hotkeys.'));
+  skillCards.appendChild(modeCard('VS Code симулятор', 'Ядро', 'brand', 'Explorer, миссии и проверка шагов — папки и файлы как в настоящем редакторе.'));
+  skillCards.appendChild(modeCard('Hotkeys', 'Ядро', 'brand', 'Сочетания из курсов без подсказок — до мышечной памяти.'));
+  const speedChallenge = al('HORIZONTAL', 'Speed challenge');
+  speedChallenge.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  speedChallenge.counterAxisAlignItems = 'CENTER';
+  speedChallenge.itemSpacing = 16;
+  speedChallenge.paddingLeft = speedChallenge.paddingRight = 20;
+  speedChallenge.paddingTop = speedChallenge.paddingBottom = 16;
+  speedChallenge.cornerRadius = 16;
+  speedChallenge.fills = [solid(WHITE)];
+  speedChallenge.strokes = [solid(INK, 0.12)];
+  speedChallenge.resize(672, 10);
+  speedChallenge.layoutSizingHorizontal = 'FIXED';
+  speedChallenge.layoutSizingVertical = 'HUG';
+  const speedLeft = al('HORIZONTAL', 'speed label');
+  speedLeft.itemSpacing = 12;
+  speedLeft.counterAxisAlignItems = 'CENTER';
+  const speedIcon = figma.createRectangle();
+  speedIcon.resize(40, 40);
+  speedIcon.cornerRadius = 12;
+  speedIcon.fills = [solid(BRAND50)];
+  speedLeft.appendChild(speedIcon);
+  const speedCopy = al('VERTICAL', 'speed copy');
+  speedCopy.itemSpacing = 2;
+  speedCopy.appendChild(txt('Скорость', outfit('SemiBold'), 14, INK));
+  speedCopy.appendChild(txt('60 секунд на реакцию: комбо, очки и точность под давлением.', outfit('Regular'), 13, MUTED, 380));
+  speedLeft.appendChild(speedCopy);
+  speedChallenge.appendChild(speedLeft);
+  speedChallenge.appendChild(secondaryBtn('Начать испытание'));
   const reinforceCards = al('HORIZONTAL', 'Reinforce');
-  reinforceCards.itemSpacing = 12;
-  reinforceCards.appendChild(modeCard('Повторение', 'Курс', 'neutral'));
-  reinforceCards.appendChild(modeCard('Основы hotkeys', 'Курс', 'neutral'));
-  reinforceCards.appendChild(modeCard('Экзамен', 'Курс', 'neutral'));
+  reinforceCards.itemSpacing = 16;
+  reinforceCards.layoutWrap = 'WRAP';
+  reinforceCards.resize(672, 10);
+  reinforceCards.layoutSizingHorizontal = 'FIXED';
+  reinforceCards.layoutSizingVertical = 'HUG';
+  reinforceCards.appendChild(modeCard('Повторение', 'Курс', 'neutral', 'Карточки одного курса: сочетание и программа, без давления.', 213));
+  reinforceCards.appendChild(modeCard('Основы hotkeys', 'Курс', 'neutral', '25 вопросов: базовый уровень (1–19) и практика (20–25).', 213));
+  reinforceCards.appendChild(modeCard('Экзамен', 'Курс', 'neutral', 'Вопросы по курсу на время, без подсказок — как финальная проверка.', 213));
   const journey = al('VERTICAL', 'Journey');
   journey.itemSpacing = 8;
   journey.paddingTop = journey.paddingBottom = 20;
@@ -3346,8 +3668,8 @@ async function buildUniqueScreens() {
   mlcard.cornerRadius = 24;
   mlcard.fills = [solid(WHITE)];
   mlcard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
-  mlcard.appendChild(field('Email', 'learner@example.com', INK));
-  mlcard.appendChild(field('Пароль', '••••••••', INK));
+  mlcard.appendChild(floatingField('Email', '', { width: 326 }));
+  mlcard.appendChild(floatingField('Пароль', '', { password: true, width: 326 }));
   mlcard.appendChild(primaryBtn('Войти'));
   mlbody.appendChild(mlcard);
   mlbody.appendChild(txt('BottomNav hidden on /login /register', outfit('Regular'), 11, MUTED, 358));
@@ -3507,9 +3829,10 @@ async function buildUniqueScreens() {
         txt('Тренировочный зал', outfit('SemiBold'), 24, INK),
         txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов. Идите по рекомендуемому маршруту.', outfit('Regular'), 13, MUTED, 680),
         journey,
-        txt('Навыки', outfit('SemiBold'), 18, INK),
+        sectionIntro('Навыки', 'Тренируйте пальцы, проводник и горячие клавиши — основа перед экзаменами.'),
         skillCards,
-        txt('Закрепление', outfit('SemiBold'), 18, INK),
+        speedChallenge,
+        sectionIntro('Закрепление', 'Повторение, основы hotkeys и экзамен по материалам курсов — когда база уже есть.'),
         reinforceCards,
       ]),
       practicePage('Typing /typing', 'Слепая печать', [typingBody]),
@@ -3546,6 +3869,17 @@ async function buildUniqueScreens() {
   darkCtas.appendChild(primaryBtn('Начать бесплатно'));
   darkCtas.appendChild(secondaryBtn('Каталог курсов', 'dark'));
   darkHero.appendChild(darkCtas);
+  const darkFeats = al('HORIZONTAL', 'Dark features');
+  darkFeats.itemSpacing = 12;
+  darkFeats.appendChild(
+    featureTile('01', 'С нуля до уверенности', 'Сначала проводник и папки, потом текст и шорткаты — как реальная дорога новичка.', 'path', true),
+  );
+  darkFeats.appendChild(
+    featureTile('02', 'Симулятор и печать', 'Тренируйте создание файлов в безопасной песочнице и слепую печать с подсветкой клавиш.', 'keyboard', true),
+  );
+  darkFeats.appendChild(
+    featureTile('03', 'Hotkeys до автоматизма', 'Windows, VS Code, браузеры и IDE — живой тренажёр, XP и экзамен под ваши цели.', 'exam', true),
+  );
 
   const darkFilterRow = al('HORIZONTAL', 'Filters');
   darkFilterRow.itemSpacing = 8;
@@ -3591,8 +3925,8 @@ async function buildUniqueScreens() {
     'Вход',
     'Добро пожаловать в KeyMaster',
     [
-      field('Email', 'learner@example.com', null, null, 'dark'),
-      field('Пароль', '••••••••', null, null, 'dark'),
+      floatingField('Email', '', { dark: true }),
+      floatingField('Пароль', '', { password: true, dark: true }),
       primaryBtn('Войти'),
     ],
     'Нет аккаунта? Регистрация',
@@ -3740,10 +4074,10 @@ async function buildUniqueScreens() {
     'Регистрация',
     'Добро пожаловать в KeyMaster',
     [
-      field('Имя', 'Анна', null, null, 'dark'),
-      field('username', 'anna', null, null, 'dark'),
-      field('Email', 'anna@example.com', null, null, 'dark'),
-      field('Пароль', '••••••••', null, null, 'dark'),
+      floatingField('Имя', '', { dark: true, width: 360 }),
+      floatingField('username', '', { dark: true, width: 360 }),
+      floatingField('Email', '', { dark: true, width: 360 }),
+      floatingField('Пароль', '', { password: true, dark: true, width: 360 }),
       primaryBtn('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
@@ -3753,7 +4087,7 @@ async function buildUniqueScreens() {
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
-      marketingPage('Dark Home / html.dark', 'Главная', true, [darkHero], true),
+      marketingPage('Dark Home / html.dark', 'Главная', true, [darkHero, darkFeats], true),
       marketingPage('Dark Login / html.dark', 'Главная', true, [darkLoginCard], true),
       marketingPage('Dark Register / html.dark', 'Главная', true, [darkRegisterCard], true),
       marketingPage('Dark Courses / html.dark', 'Курсы', true, [
@@ -3770,6 +4104,8 @@ async function buildUniqueScreens() {
           txt('Практика', outfit('Bold'), 11, BRAND500),
           txt('Тренировочный зал', outfit('SemiBold'), 24, DARK_TEXT),
           txt('Rail stays #141820. Outlet uses --bg-primary #020617.', outfit('Regular'), 13, DARK_MUTED, 680),
+          modeCard('Слепая печать', 'Старт', 'neutral', 'Ряды клавиш, слова и фразы. WPM, точность и подсветка следующей клавиши.', 328, true),
+          modeCard('VS Code симулятор', 'Ядро', 'brand', 'Explorer, миссии и проверка шагов — папки и файлы как в настоящем редакторе.', 328, true),
         ],
         true,
       ),

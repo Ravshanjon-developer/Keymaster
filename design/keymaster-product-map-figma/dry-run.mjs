@@ -299,7 +299,14 @@ if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
 if (!names.includes('Dark Register / html.dark')) fail.push('no dark register unique screen');
 if (!names.includes('Dark Practice / html.dark')) fail.push('no dark practice unique screen');
-if (!names.includes('Period filter')) fail.push('no leaderboard period filter');
+if (!names.includes('Speed challenge')) fail.push('no practice speed challenge row');
+if (!names.includes('HomeFeatureVisual / path')) fail.push('no home path feature visual');
+if (!names.includes('HomeFeatureVisual / keyboard')) fail.push('no home keyboard feature visual');
+if (!names.includes('HomeFeatureVisual / exam')) fail.push('no home exam feature visual');
+if (!names.includes('Sun')) fail.push('no light-mode Sun theme toggle');
+if (!names.includes('Moon')) fail.push('no dark-mode Moon theme toggle');
+if (!names.includes('EyeOff')) fail.push('no password EyeOff on FloatingLabelInput');
+if (!names.includes('State=Password')) fail.push('no FloatingLabelInput password variant');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
