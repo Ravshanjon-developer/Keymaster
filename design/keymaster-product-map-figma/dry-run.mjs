@@ -418,7 +418,14 @@ if (!names.includes('quiz stats compact')) fail.push('no compact mobile quiz sta
 if (!names.includes('Сбалансированный темп: успеете вспомнить сочетание и нажать его.')) {
   fail.push('no live exam session pace unique screen');
 }
-if (!names.includes('Keyboard gate card')) fail.push('no keyboard-gate GlassCard unique screen');
+if (!names.includes('Path guest /path')) fail.push('no guest path unique screen');
+if (!names.includes('Войдите, чтобы видеть прогресс по существующим курсам на карьерной карте.')) {
+  fail.push('no live guest path banner unique screen');
+}
+if (!names.includes('Mobile nav open guest 390')) fail.push('no guest mobile-nav-open unique screen');
+if (!names.includes('Mobile nav open authed 390')) fail.push('no authed mobile-nav-open unique screen');
+if (!names.includes('Кабинет · 0 XP')) fail.push('no live mobile drawer dashboard XP unique screen');
+if (!names.includes('Обучение')) fail.push('no live mobile drawer learn-group unique screen');
 if (!names.includes('Keyboard illustration')) fail.push('no live PracticeKeyboardGate keyboard illustration unique screen');
 if (!names.includes('Path timeline line')) fail.push('no live path spine unique screen');
 if (!names.includes('Следующий курс')) fail.push('no live path next-course CTA unique screen');

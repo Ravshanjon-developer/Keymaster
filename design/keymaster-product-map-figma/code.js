@@ -2792,6 +2792,11 @@ async function buildProductComponents(page) {
       menu.appendChild(txt(group, outfit('Bold'), 11, MUTED));
       menu.appendChild(txt(group === 'Обучение' ? 'Главная · Курсы · Мой путь' : group === 'Практика' ? 'Тренировочный зал' : 'Рейтинг', outfit('SemiBold'), 14, INK));
     }
+    const guestCtas = al('VERTICAL', 'drawer auth');
+    guestCtas.itemSpacing = 8;
+    guestCtas.appendChild(instPrimary('Регистрация') || primaryBtn('Регистрация'));
+    guestCtas.appendChild(secondaryBtn('Вход'));
+    menu.appendChild(guestCtas);
     c.appendChild(menu);
     return c;
   }
@@ -5203,6 +5208,46 @@ async function buildUniqueScreens() {
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', true, [lessonStudy]),
       marketingPage('Path /path', 'Мой путь', false, pathBody),
+      marketingPage('Path guest /path', 'Мой путь', true, [
+        txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
+        txt('Developer Growth Path', fraunces('Bold'), 32, INK),
+        txt(
+          'От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.',
+          outfit('Regular'),
+          13,
+          MUTED,
+          800,
+        ),
+        (() => {
+          const banner = al('VERTICAL', 'path guest banner');
+          banner.itemSpacing = 6;
+          banner.paddingTop = banner.paddingBottom = 12;
+          banner.paddingLeft = banner.paddingRight = 16;
+          banner.cornerRadius = 16;
+          banner.fills = [solid(WHITE)];
+          banner.strokes = [solid(INK, 0.1)];
+          banner.resize(880, 10);
+          banner.layoutSizingHorizontal = 'FIXED';
+          banner.layoutSizingVertical = 'HUG';
+          const line = al('HORIZONTAL', 'guest line');
+          line.itemSpacing = 4;
+          line.layoutWrap = 'WRAP';
+          line.appendChild(
+            txt(
+              'Войдите, чтобы видеть прогресс по существующим курсам на карьерной карте.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              720,
+            ),
+          );
+          line.appendChild(txt('Регистрация', outfit('SemiBold'), 13, BRAND800));
+          banner.appendChild(line);
+          return banner;
+        })(),
+        instPath('Status=Start') || pathNode('Start', 'Начать', false),
+        txt('Гостевой /path — те же курсы, прогресс только после входа. Не дублировать всю карту.', outfit('Regular'), 12, MUTED, 800),
+      ]),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
         txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800),
@@ -5723,6 +5768,99 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Тренировочный зал', authed: true },
   );
+  function mobileNavOpen(name, guest) {
+    const frame = al('VERTICAL', name);
+    frame.itemSpacing = 0;
+    frame.fills = [solid(PAPER)];
+    frame.strokes = [solid(INK, 0.1)];
+    frame.resize(390, 10);
+    frame.layoutSizingHorizontal = 'FIXED';
+    frame.layoutSizingVertical = 'HUG';
+    const mnav = al('HORIZONTAL', 'Mobile header');
+    mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    mnav.counterAxisAlignItems = 'CENTER';
+    mnav.paddingLeft = mnav.paddingRight = 12;
+    mnav.resize(390, 56);
+    mnav.layoutSizingHorizontal = 'FIXED';
+    mnav.layoutSizingVertical = 'FIXED';
+    mnav.fills = [solid(WHITE)];
+    mnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
+    const right = al('HORIZONTAL', 'mobile actions');
+    right.itemSpacing = 6;
+    right.counterAxisAlignItems = 'CENTER';
+    right.appendChild(themeToggle(false));
+    right.appendChild(txt('✕', outfit('Bold'), 16, INK));
+    mnav.appendChild(right);
+    frame.appendChild(mnav);
+    const menu = al('VERTICAL', 'km-mobile-nav');
+    menu.itemSpacing = 12;
+    menu.paddingTop = menu.paddingBottom = 16;
+    menu.paddingLeft = menu.paddingRight = 16;
+    menu.fills = [solid(WHITE)];
+    menu.resize(390, 10);
+    menu.layoutSizingHorizontal = 'FIXED';
+    menu.layoutSizingVertical = 'HUG';
+    const lang = al('HORIZONTAL', 'LanguageSwitcher compact');
+    lang.itemSpacing = 0;
+    lang.paddingLeft = lang.paddingRight = lang.paddingTop = lang.paddingBottom = 2;
+    lang.cornerRadius = 8;
+    lang.strokes = [solid(INK, 0.1)];
+    lang.resize(358, 44);
+    lang.layoutSizingHorizontal = 'FIXED';
+    lang.layoutSizingVertical = 'FIXED';
+    const ru = al('HORIZONTAL', 'RU');
+    ru.primaryAxisAlignItems = 'CENTER';
+    ru.counterAxisAlignItems = 'CENTER';
+    ru.paddingLeft = ru.paddingRight = 10;
+    ru.cornerRadius = 6;
+    ru.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 })];
+    ru.resize(177, 40);
+    ru.layoutSizingHorizontal = 'FIXED';
+    ru.layoutSizingVertical = 'FIXED';
+    ru.appendChild(txt('RU', outfit('Bold'), 13, WHITE));
+    const tj = al('HORIZONTAL', 'TJ');
+    tj.primaryAxisAlignItems = 'CENTER';
+    tj.counterAxisAlignItems = 'CENTER';
+    tj.paddingLeft = tj.paddingRight = 10;
+    tj.cornerRadius = 6;
+    tj.fills = [TRANSPARENT];
+    tj.resize(177, 40);
+    tj.layoutSizingHorizontal = 'FIXED';
+    tj.layoutSizingVertical = 'FIXED';
+    tj.appendChild(txt('TJ', outfit('Bold'), 13, INK));
+    lang.appendChild(ru);
+    lang.appendChild(tj);
+    menu.appendChild(lang);
+    for (const [group, items] of [
+      ['Обучение', ['Главная', 'Курсы', 'Мой путь']],
+      ['Практика', ['Тренировочный зал']],
+      ['Сообщество', ['Рейтинг']],
+    ]) {
+      const g = al('VERTICAL', group);
+      g.itemSpacing = 4;
+      g.appendChild(txt(group, outfit('Bold'), 11, MUTED));
+      for (const item of items) g.appendChild(txt(item, outfit('SemiBold'), 15, INK));
+      menu.appendChild(g);
+    }
+    const auth = al('VERTICAL', 'drawer auth');
+    auth.itemSpacing = 8;
+    auth.paddingTop = 12;
+    if (guest) {
+      auth.appendChild(instPrimary('Регистрация'));
+      auth.appendChild(secondaryBtn('Вход'));
+    } else {
+      auth.appendChild(txt('Кабинет · 0 XP', outfit('SemiBold'), 15, INK));
+      const logout = al('HORIZONTAL', 'Выйти');
+      logout.appendChild(txt('Выйти', outfit('SemiBold'), 15, SIGNAL));
+      auth.appendChild(logout);
+    }
+    menu.appendChild(auth);
+    frame.appendChild(menu);
+    frame.appendChild(bottomNav390(''));
+    return frame;
+  }
+  const mobileNavGuest = mobileNavOpen('Mobile nav open guest 390', true);
+  const mobileNavAuthed = mobileNavOpen('Mobile nav open authed 390', false);
   const mobilePath = mobileFrame(
     'Mobile Path 390',
     [
@@ -6261,12 +6399,14 @@ async function buildUniqueScreens() {
       mobileCourses,
       mobileLogin,
       mobilePractice,
+      mobileNavGuest,
+      mobileNavAuthed,
       mobilePath,
       mobileReview,
       mobileQuiz,
       mobileTraining,
       gate,
-      txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard. Practice rail becomes compact chips < lg.', outfit('Regular'), 12, MUTED, 390),
+      txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard. Practice rail becomes compact chips < lg. Hamburger opens km-mobile-nav (guest: Регистрация/Вход; authed: Кабинет · 0 XP).', outfit('Regular'), 12, MUTED, 390),
     ]),
   );
   const root = page.findOne((n) => n.name === 'KM Product Map — as-is');
