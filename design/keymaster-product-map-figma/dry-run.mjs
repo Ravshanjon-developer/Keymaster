@@ -379,7 +379,13 @@ if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capt
 if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
+if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Learner / Training hint')) fail.push('no training-hint capture');
+if (!names.includes('Learner / Training hint 2')) fail.push('no training-hint2 capture');
+if (!names.includes('Desktop explorer file menu /simulator?mode=desktop')) fail.push('no explorer file-menu unique screen');
+if (!names.includes('Learner / Desktop explorer file menu')) fail.push('no explorer file-menu capture');
+if (!names.includes('Desktop recycle-bin restore /simulator?mode=desktop')) fail.push('no trash-restore unique screen');
+if (!names.includes('Learner / Desktop recycle-bin restore')) fail.push('no trash-restore capture');
 if (!names.includes('Quiz finished /quiz')) fail.push('no quiz-finished unique screen');
 if (!names.includes('Learner / Quiz finished')) fail.push('no quiz-finished capture');
 if (!names.includes('Desktop recycle-bin full /simulator?mode=desktop')) fail.push('no desktop trash-full unique screen');
@@ -1309,8 +1315,11 @@ let typingResultUnique = null;
 let deskNewFolderUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
+let trainHint2Unique = null;
 let quizFinishedUnique = null;
 let deskTrashFullUnique = null;
+let deskExplorerFileMenuUnique = null;
+let deskTrashRestoreUnique = null;
 let trainCorrectUnique = null;
 let examTimeoutUnique = null;
 for (const p of pages) {
@@ -1343,8 +1352,11 @@ for (const p of pages) {
   deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
+  trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
   quizFinishedUnique = quizFinishedUnique || findByName(p, 'Quiz finished /quiz');
   deskTrashFullUnique = deskTrashFullUnique || findByName(p, 'Desktop recycle-bin full /simulator?mode=desktop');
+  deskExplorerFileMenuUnique = deskExplorerFileMenuUnique || findByName(p, 'Desktop explorer file menu /simulator?mode=desktop');
+  deskTrashRestoreUnique = deskTrashRestoreUnique || findByName(p, 'Desktop recycle-bin restore /simulator?mode=desktop');
   trainCorrectUnique = trainCorrectUnique || findByName(p, 'Training correct /training');
   examTimeoutUnique = examTimeoutUnique || findByName(p, 'Exam timeout /exam');
 }
@@ -1434,6 +1446,15 @@ if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕ
 }
 if (!trainHintUnique || !namesUnder(trainHintUnique).includes('Начните с Ctrl') || !namesUnder(trainHintUnique).includes('Подсказка') || !namesUnder(trainHintUnique).includes('Слово вправо') || namesUnder(trainHintUnique).includes('К упражнению') || namesUnder(trainHintUnique).includes('Верно!')) {
   fail.push('training-hint unique missing live first-hint KeyboardTrainer front');
+}
+if (!trainHint2Unique || !namesUnder(trainHint2Unique).includes('Зажмите Ctrl, затем нажмите H') || !namesUnder(trainHint2Unique).includes('Показать ответ') || !namesUnder(trainHint2Unique).includes('Замена') || namesUnder(trainHint2Unique).includes('Начните с Ctrl') || namesUnder(trainHint2Unique).includes('К упражнению')) {
+  fail.push('training-hint2 unique missing live second-hint KeyboardTrainer front');
+}
+if (!deskExplorerFileMenuUnique || !namesUnder(deskExplorerFileMenuUnique).includes('Сжать в ZIP') || !namesUnder(deskExplorerFileMenuUnique).includes('Свойства') || !namesUnder(deskExplorerFileMenuUnique).includes('Проводник') || namesUnder(deskExplorerFileMenuUnique).includes('Восстановить') || namesUnder(deskExplorerFileMenuUnique).includes('С чего начать')) {
+  fail.push('explorer file-menu unique missing live Сжать в ZIP chrome');
+}
+if (!deskTrashRestoreUnique || !namesUnder(deskTrashRestoreUnique).includes('Восстановить') || !namesUnder(deskTrashRestoreUnique).includes('1 объектов') || !namesUnder(deskTrashRestoreUnique).includes('Welcome.txt') || namesUnder(deskTrashRestoreUnique).includes('Эта папка пуста') || namesUnder(deskTrashRestoreUnique).includes('С чего начать')) {
+  fail.push('trash-restore unique missing live Восстановить menu on Корзина with file');
 }
 if (!quizFinishedUnique || !namesUnder(quizFinishedUnique).includes('Основы hotkeys — готово') || !namesUnder(quizFinishedUnique).includes('8 из 25') || !namesUnder(quizFinishedUnique).includes('Ещё раз') || namesUnder(quizFinishedUnique).includes('Дальше ›') || namesUnder(quizFinishedUnique).includes('Правильно!')) {
   fail.push('quiz-finished unique missing live end card Основы hotkeys — готово');

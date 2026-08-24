@@ -1252,8 +1252,10 @@ async function buildVisualFlows() {
       ['desktop-learner-23-simulator-desktop.jpg', 'Desktop sim'],
       ['desktop-learner-simulator-desktop-menu.jpg', 'Desktop context menu'],
       ['desktop-learner-simulator-desktop-explorer.jpg', 'Explorer'],
+      ['desktop-learner-simulator-desktop-explorer-filemenu.jpg', 'Explorer file menu'],
       ['desktop-learner-simulator-desktop-trash.jpg', 'Recycle bin'],
       ['desktop-learner-simulator-desktop-trash-full.jpg', 'Recycle bin with file'],
+      ['desktop-learner-simulator-desktop-trash-restore.jpg', 'Recycle bin restore'],
       ['desktop-learner-simulator-desktop-start.jpg', 'Start menu'],
       ['desktop-learner-simulator-desktop-editor.jpg', 'Welcome.txt'],
       ['desktop-learner-simulator-desktop-keyboard.jpg', 'Keyboard'],
@@ -1304,6 +1306,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-hint.jpg', 'Create folder hint'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-training-hint.jpg', 'Training hint'],
+      ['desktop-learner-training-hint2.jpg', 'Training hint 2'],
       ['desktop-learner-training-explain.jpg', 'Training explain'],
       ['desktop-learner-training-correct.jpg', 'Training correct'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
@@ -5462,6 +5465,65 @@ async function buildUniqueScreens() {
         menu.appendChild(row);
       }
       deskWork.appendChild(menu);
+    } else if (overlay === 'explorerfilemenu') {
+      deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов', false));
+      const menu = al('VERTICAL', 'Explorer file menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of [
+        'Открыть',
+        'Открыть с помощью Code',
+        'Переименовать',
+        'Копировать',
+        'Вырезать',
+        'Сжать в ZIP',
+        'Удалить',
+        'Свойства',
+      ]) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Удалить' ? SIGNAL : WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
+    } else if (overlay === 'trashrestore') {
+      deskWork.appendChild(deskWin('Корзина', '/Корзина', '1 объектов', false, true));
+      const menu = al('VERTICAL', 'Trash restore menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of [
+        'Открыть',
+        'Открыть с помощью Code',
+        'Переименовать',
+        'Копировать',
+        'Вырезать',
+        'Сжать в ZIP',
+        'Восстановить',
+        'Удалить',
+        'Свойства',
+      ]) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Удалить' ? SIGNAL : WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
     } else if (overlay === 'props') {
       deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов', false));
       const modal = al('VERTICAL', 'Свойства');
@@ -5618,6 +5680,8 @@ async function buildUniqueScreens() {
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
   const deskTrash = makeDesktopSim('Desktop recycle-bin /simulator?mode=desktop', 'trash');
   const deskTrashFull = makeDesktopSim('Desktop recycle-bin full /simulator?mode=desktop', 'trashfull');
+  const deskExplorerFileMenu = makeDesktopSim('Desktop explorer file menu /simulator?mode=desktop', 'explorerfilemenu');
+  const deskTrashRestore = makeDesktopSim('Desktop recycle-bin restore /simulator?mode=desktop', 'trashrestore');
   const deskStart = makeDesktopSim('Desktop start menu /simulator?mode=desktop', 'start');
   const deskEditor = makeDesktopSim('Desktop editor /simulator?mode=desktop', 'editor');
   const deskKeyboard = makeDesktopSim('Desktop keyboard /simulator?mode=desktop', 'keyboard');
@@ -6420,6 +6484,66 @@ async function buildUniqueScreens() {
   hintBtns.appendChild(ghostBtn('Пропустить'));
   hintCard.appendChild(hintBtns);
   trainHint.appendChild(hintCard);
+
+  const trainHint2 = al('VERTICAL', 'Training hint 2');
+  trainHint2.itemSpacing = 12;
+  trainHint2.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const hint2Meta = al('HORIZONTAL', 'hint2 meta');
+  hint2Meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  hint2Meta.counterAxisAlignItems = 'CENTER';
+  hint2Meta.resize(640, 10);
+  hint2Meta.layoutSizingHorizontal = 'FIXED';
+  hint2Meta.layoutSizingVertical = 'HUG';
+  const hint2Prog = al('VERTICAL', 'hint2 progress');
+  hint2Prog.itemSpacing = 6;
+  hint2Prog.appendChild(txt('Задание 1 из 13', outfit('Regular'), 13, MUTED));
+  hint2Prog.appendChild(instProgress('Value=Partial') || progressBar(220, 0.08, BRAND, 6));
+  hint2Meta.appendChild(hint2Prog);
+  const hint2Stats = al('HORIZONTAL', 'hint2 stats');
+  hint2Stats.itemSpacing = 16;
+  hint2Stats.appendChild(txt('Серия: 0', outfit('SemiBold'), 13, MUTED));
+  hint2Stats.appendChild(txt('✓ Верно: 0', outfit('SemiBold'), 13, MUTED));
+  hint2Meta.appendChild(hint2Stats);
+  trainHint2.appendChild(hint2Meta);
+  const hint2Card = al('VERTICAL', 'hint2 trainer front');
+  hint2Card.itemSpacing = 16;
+  hint2Card.paddingTop = hint2Card.paddingBottom = 24;
+  hint2Card.paddingLeft = hint2Card.paddingRight = 24;
+  hint2Card.cornerRadius = 24;
+  hint2Card.fills = [solid(WHITE)];
+  hint2Card.strokes = [solid(BRAND, 0.18)];
+  hint2Card.primaryAxisAlignItems = 'CENTER';
+  hint2Card.resize(640, 10);
+  hint2Card.layoutSizingHorizontal = 'FIXED';
+  hint2Card.layoutSizingVertical = 'HUG';
+  hint2Card.appendChild(txt('Замена', outfit('SemiBold'), 20, INK));
+  const hint2Keys = al('HORIZONTAL', 'hint2 KeyCombo');
+  hint2Keys.itemSpacing = 8;
+  hint2Keys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Ctrl', 'H']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      hint2Keys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    hint2Keys.appendChild(box);
+  }
+  hint2Card.appendChild(hint2Keys);
+  hint2Card.appendChild(txt('Зажмите Ctrl, затем нажмите H', outfit('Regular'), 13, MUTED));
+  const hint2Btns = al('HORIZONTAL', 'hint2 actions');
+  hint2Btns.itemSpacing = 8;
+  hint2Btns.appendChild(instSecondary('Показать ответ'));
+  hint2Btns.appendChild(ghostBtn('Объяснение'));
+  hint2Btns.appendChild(ghostBtn('Пропустить'));
+  hint2Card.appendChild(hint2Btns);
+  trainHint2.appendChild(hint2Card);
 
   const trainExplain = al('VERTICAL', 'Training explain');
   trainExplain.itemSpacing = 12;
@@ -8525,6 +8649,7 @@ async function buildUniqueScreens() {
       practicePage('Typing result /typing', 'Слепая печать', [typingResult]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Training hint /training', 'Hotkeys', [trainHint]),
+      practicePage('Training hint 2 /training', 'Hotkeys', [trainHint2]),
       practicePage('Training explain /training', 'Hotkeys', [trainExplain]),
       practicePage('Training correct /training', 'Hotkeys', [trainCorrect]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
@@ -9774,7 +9899,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskTrashFull, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskExplorerFileMenu, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

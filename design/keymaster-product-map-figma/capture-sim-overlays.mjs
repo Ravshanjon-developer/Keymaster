@@ -939,6 +939,82 @@ await run('desktop-trash-full', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-trash-full.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
+async function resetDesktopFirstTask(page) {
+  await login(page, 'learner@example.com', 'learn123');
+  await page.route('**/progress/lessons**', async (route) => {
+    const res = await route.fetch();
+    let json = [];
+    try {
+      json = await res.json();
+    } catch {
+      json = [];
+    }
+    const body = (Array.isArray(json) ? json : []).map((row) => {
+      const key = Array.isArray(row.keys) ? row.keys[0] : '';
+      if (typeof key === 'string' && key.startsWith('desktop:')) {
+        return { ...row, completed: false };
+      }
+      return row;
+    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  await page.evaluate(() => {
+    localStorage.setItem('km_desktop_tasks_v1', JSON.stringify({ completed: [], xp: 0 }));
+    localStorage.removeItem('km-desktop-vfs-v1');
+    localStorage.setItem('km-desktop-firstrun-v1', '1');
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 20000 });
+  const ok = page.getByRole('button', { name: 'Понятно' });
+  if (await ok.isVisible().catch(() => false)) await ok.click();
+}
+
+await run('training-hint2', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-hint2.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Подсказка' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  await page.getByRole('button', { name: 'Показать ответ' }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-training-hint2.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('desktop-explorer-filemenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-explorer-filemenu.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Этот компьютер', { exact: true }).dblclick();
+  await page.getByText('Проводник', { exact: true }).waitFor({ timeout: 10000 });
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Welcome.txt', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Сжать в ZIP', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-explorer-filemenu.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('desktop-trash-restore', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-trash-restore.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Welcome.txt', { exact: true }).click({ button: 'right' });
+  await page.getByText('Удалить', { exact: true }).click();
+  await page.getByText('Корзина', { exact: true }).first().dblclick();
+  await page.getByText('Welcome.txt', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Welcome.txt', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Восстановить', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-trash-restore.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');
