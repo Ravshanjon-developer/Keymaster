@@ -393,6 +393,9 @@ if (!names.includes('Desktop icon menu /simulator?mode=desktop')) fail.push('no 
 if (!names.includes('Lesson hotkey guest /lessons/:id')) fail.push('no guest hotkey lesson unique screen');
 if (!names.includes('Lesson task guest /lessons/:id')) fail.push('no guest task lesson unique screen');
 if (!names.includes('Login verified /login?verified=1')) fail.push('no login-verified unique screen');
+if (!names.includes('Login unverified /login')) fail.push('no login-unverified unique screen');
+if (!names.includes('Typing EN /typing')) fail.push('no typing-EN unique screen');
+if (!names.includes('Mobile Typing code 390')) fail.push('no mobile typing-code unique screen');
 if (!names.includes('Typing code /typing')) fail.push('no typing-code unique screen');
 if (!names.includes('Exam capped /exam')) fail.push('no exam-capped unique screen');
 if (!names.includes('Admin edit lesson /admin')) fail.push('no admin edit-lesson unique screen');
@@ -440,6 +443,9 @@ if (!names.includes('Learner / Desktop icon menu')) fail.push('no desktop icon-m
 if (!names.includes('Guest / Lesson hotkey')) fail.push('no guest hotkey lesson capture');
 if (!names.includes('Guest / Lesson task')) fail.push('no guest task lesson capture');
 if (!names.includes('Guest / Login verified')) fail.push('no login-verified capture');
+if (!names.includes('Guest / Login unverified')) fail.push('no login-unverified capture');
+if (!names.includes('Learner / Typing EN')) fail.push('no typing-EN capture');
+if (!names.includes('Mobile / Typing code')) fail.push('no mobile typing-code capture');
 if (!names.includes('Learner / Typing code')) fail.push('no typing-code capture');
 if (!names.includes('Learner / Exam capped')) fail.push('no exam-capped capture');
 if (!names.includes('Admin / Edit lesson')) fail.push('no admin edit-lesson capture');
@@ -1382,7 +1388,10 @@ let deskIconMenuUnique = null;
 let lessonHotkeyGuestUnique = null;
 let lessonTaskGuestUnique = null;
 let loginVerifiedUnique = null;
+let loginUnverifiedUnique = null;
 let typingCodeUnique = null;
+let typingEnUnique = null;
+let mobileTypingCodeUnique = null;
 let examCappedUnique = null;
 let adminEditLessonUnique = null;
 let adminAchEditUnique = null;
@@ -1445,7 +1454,10 @@ for (const p of pages) {
   lessonHotkeyGuestUnique = lessonHotkeyGuestUnique || findByName(p, 'Lesson hotkey guest /lessons/:id');
   lessonTaskGuestUnique = lessonTaskGuestUnique || findByName(p, 'Lesson task guest /lessons/:id');
   loginVerifiedUnique = loginVerifiedUnique || findByName(p, 'Login verified /login?verified=1');
+  loginUnverifiedUnique = loginUnverifiedUnique || findByName(p, 'Login unverified /login');
   typingCodeUnique = typingCodeUnique || findByName(p, 'Typing code /typing');
+  typingEnUnique = typingEnUnique || findByName(p, 'Typing EN /typing');
+  mobileTypingCodeUnique = mobileTypingCodeUnique || findByName(p, 'Mobile Typing code 390');
   examCappedUnique = examCappedUnique || findByName(p, 'Exam capped /exam');
   adminEditLessonUnique = adminEditLessonUnique || findByName(p, 'Admin edit lesson /admin');
   adminAchEditUnique = adminAchEditUnique || findByName(p, 'Admin achievement edit /admin');
@@ -1591,6 +1603,15 @@ if (!lessonTaskGuestUnique || !namesUnder(lessonTaskGuestUnique).includes('Фа�
 }
 if (!loginVerifiedUnique || !namesUnder(loginVerifiedUnique).includes('Email подтверждён. Можно войти.') || !namesUnder(loginVerifiedUnique).includes('Войти') || namesUnder(loginVerifiedUnique).includes('Неверный email или пароль')) {
   fail.push('login-verified unique missing green verifySuccess banner without error toast');
+}
+if (!loginUnverifiedUnique || !namesUnder(loginUnverifiedUnique).includes('Введите код из письма.') || !namesUnder(loginUnverifiedUnique).includes('Отправить снова') || !namesUnder(loginUnverifiedUnique).includes('Письмо не пришло? Подождите 2–5 минут и проверьте папку «Спам».') || namesUnder(loginUnverifiedUnique).includes('Подтвердить код') || namesUnder(loginUnverifiedUnique).includes('Email подтверждён. Можно войти.')) {
+  fail.push('login-unverified unique missing EMAIL_NOT_VERIFIED resend without OTP digits');
+}
+if (!typingEnUnique || !namesUnder(typingEnUnique).includes('EN') || !namesUnder(typingEnUnique).includes('skhj ggds kfh; ;lsg fafk kddl fs;j fhlf gkfs dghs fd') || namesUnder(typingEnUnique).includes('фыва олдж фыва олдж ваол джфы аовы лджф') || namesUnder(typingEnUnique).includes('javascript')) {
+  fail.push('typing-EN unique missing EN home-row prompt without RU home-row or code langs');
+}
+if (!mobileTypingCodeUnique || !namesUnder(mobileTypingCodeUnique).includes('javascript') || !namesUnder(mobileTypingCodeUnique).includes('Код') || !namesUnder(mobileTypingCodeUnique).includes('Показать клавиатуру') || !namesUnder(mobileTypingCodeUnique).includes('const user = { id: 1, name: "Ada" };') || namesUnder(mobileTypingCodeUnique).includes('Скрыть клавиатуру') || namesUnder(mobileTypingCodeUnique).includes('фыва олдж фыва олдж ваол джфы аовы лджф')) {
+  fail.push('mobile typing-code unique missing Код + javascript + Показать клавиатуру');
 }
 if (!typingCodeUnique || !namesUnder(typingCodeUnique).includes('javascript') || !namesUnder(typingCodeUnique).includes('Код') || !namesUnder(typingCodeUnique).some((n) => /function init\(config\)|const user = \{ id: 1|const total = items.reduce/.test(String(n))) || namesUnder(typingCodeUnique).includes('фыва олдж фыва олдж ваол джфы аовы лджф')) {
   fail.push('typing-code unique missing Код + javascript sample without home-row prompt');

@@ -1234,6 +1234,7 @@ async function buildVisualFlows() {
     ['F3 Sign in', [
       ['desktop-guest-02-login.jpg', 'Login'],
       ['desktop-guest-login-verified.jpg', 'Login verified'],
+      ['desktop-guest-login-unverified.jpg', 'Login unverified'],
       ['desktop-guest-login-error.jpg', 'Login error'],
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
     ]],
@@ -1286,6 +1287,7 @@ async function buildVisualFlows() {
       ['desktop-learner-10-practice.jpg', 'Hub'],
       ['desktop-learner-11-typing.jpg', 'Typing'],
       ['desktop-learner-typing-code.jpg', 'Typing code'],
+      ['desktop-learner-typing-en.jpg', 'Typing EN'],
       ['desktop-learner-typing-busy.jpg', 'Typing busy'],
       ['desktop-learner-typing-paused.jpg', 'Typing paused'],
       ['desktop-learner-typing-result.jpg', 'Typing result'],
@@ -1486,7 +1488,7 @@ async function buildSitemap() {
     [
       'AuthCard',
       [
-        ['/login', 'Login', 'OTP if unverified · ?verified=1 banner'],
+        ['/login', 'Login', 'OTP if unverified · ?verified=1 banner · EMAIL_NOT_VERIFIED resend'],
         ['/register', 'Register', 'OTP nested'],
         ['/verify-email', 'Verify email', 'loading · error · ok'],
         ['/auth/callback', 'OAuth callback', 'skeleton · error'],
@@ -1496,7 +1498,7 @@ async function buildSitemap() {
       'PracticeShell',
       [
         ['/practice', 'Practice hub', 'skills + reinforce'],
-        ['/typing', 'Typing', 'train | code | path | progress'],
+        ['/typing', 'Typing', 'train | code | EN | path | progress'],
         ['/training', 'Hotkeys', 'run | empty | done | loading'],
         ['/speed', 'Speed', '60s | done | loading'],
         ['/review', 'Review', 'front / flipped / empty / loading'],
@@ -4275,6 +4277,28 @@ async function buildUniqueScreens() {
     ],
     'Нет аккаунта? Регистрация',
   );
+  const loginUnverified = authScreen(
+    'Вход',
+    'Добро пожаловать в KeyMaster',
+    [
+      floatingField('Email', 'newuser@example.com'),
+      floatOrInst('State=PasswordFilled', 'Пароль', { password: true, value: '••••••••' }),
+      (() => {
+        const alert = al('HORIZONTAL', 'unverified');
+        alert.paddingLeft = alert.paddingRight = 12;
+        alert.paddingTop = alert.paddingBottom = 8;
+        alert.cornerRadius = 12;
+        alert.fills = [solid(SIGNAL, 0.1)];
+        alert.strokes = [solid(SIGNAL, 0.3)];
+        alert.appendChild(txt('Введите код из письма.', outfit('Medium'), 13, SIGNAL, 296));
+        return alert;
+      })(),
+      instSecondary('Отправить снова'),
+      txt('Письмо не пришло? Подождите 2–5 минут и проверьте папку «Спам».', outfit('Regular'), 11, MUTED, 352),
+      instPrimary('Войти'),
+    ],
+    'Нет аккаунта? Регистрация',
+  );
   const loginOtp = authScreen(
     'Вход',
     'Введите код из письма.',
@@ -6414,7 +6438,7 @@ async function buildUniqueScreens() {
   callbackError.appendChild(txt('Ссылка недействительна или устарела', outfit('Regular'), 14, SIGNAL, 344));
   callbackError.appendChild(instPrimary('Войти'));
 
-  function typingSeg(active) {
+  function typingSeg(active, layout) {
     const wrap = al('HORIZONTAL', 'views');
     wrap.itemSpacing = 12;
     wrap.counterAxisAlignItems = 'CENTER';
@@ -6443,8 +6467,8 @@ async function buildUniqueScreens() {
     lang.cornerRadius = 12;
     lang.fills = [solid(WHITE)];
     for (const [label, on] of [
-      ['RU', true],
-      ['EN', false],
+      ['RU', layout !== 'en'],
+      ['EN', layout === 'en'],
     ]) {
       const chip = al('HORIZONTAL', label);
       chip.paddingLeft = chip.paddingRight = 10;
@@ -6520,13 +6544,13 @@ async function buildUniqueScreens() {
     return head;
   }
 
-  function typingHead(active) {
+  function typingHead(active, layout) {
     const head = al('VERTICAL', 'typing head');
     head.itemSpacing = 8;
     head.appendChild(txt('СЛЕПАЯ ПЕЧАТЬ', outfit('Bold'), 11, BRAND800));
     head.appendChild(txt('Тренажёр печати', fraunces('Bold'), 32, INK));
     head.appendChild(txt('Смотрите на экран. Печатайте. После подхода увидите, что улучшить.', outfit('Regular'), 13, MUTED, 680));
-    head.appendChild(typingSeg(active));
+    head.appendChild(typingSeg(active, layout));
     return head;
   }
 
@@ -6654,6 +6678,47 @@ async function buildUniqueScreens() {
   codeCtl.appendChild(txt('Скрыть клавиатуру', outfit('SemiBold'), 13, BRAND800));
   typingCode.appendChild(codeCtl);
   typingCode.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
+
+  const typingEn = al('VERTICAL', 'Typing EN');
+  typingEn.itemSpacing = 12;
+  typingEn.appendChild(typingHead('Тренировка', 'en'));
+  const enModeRow = al('HORIZONTAL', 'en modes');
+  enModeRow.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Домашний ряд', true],
+    ['Все буквы', false],
+    ['Слова', false],
+    ['Фразы', false],
+    ['Код', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 8;
+    chip.cornerRadius = 99;
+    chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+    chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+    enModeRow.appendChild(chip);
+  }
+  typingEn.appendChild(enModeRow);
+  typingEn.appendChild(typingLiveStats('—'));
+  const enBox = al('VERTICAL', 'en prompt');
+  enBox.itemSpacing = 8;
+  enBox.paddingTop = enBox.paddingBottom = 20;
+  enBox.paddingLeft = enBox.paddingRight = 20;
+  enBox.cornerRadius = 24;
+  enBox.fills = [solid(WHITE)];
+  enBox.appendChild(txt('skhj ggds kfh; ;lsg fafk kddl fs;j fhlf gkfs dghs fd', outfit('Regular'), 18, INK, 640));
+  typingEn.appendChild(enBox);
+  const enCtl = al('HORIZONTAL', 'en typing controls');
+  enCtl.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  enCtl.resize(680, 10);
+  enCtl.layoutSizingHorizontal = 'FIXED';
+  enCtl.layoutSizingVertical = 'HUG';
+  enCtl.appendChild(instSecondary('Ещё раз'));
+  enCtl.appendChild(txt('Скрыть клавиатуру', outfit('SemiBold'), 13, BRAND800));
+  typingEn.appendChild(enCtl);
+  typingEn.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
 
   const typingPath = al('VERTICAL', 'Typing path');
   typingPath.itemSpacing = 12;
@@ -9397,6 +9462,7 @@ async function buildUniqueScreens() {
     section('AuthCard', [
       marketingPage('Login /login', '', true, [loginCard]),
       marketingPage('Login verified /login?verified=1', '', true, [loginVerified]),
+      marketingPage('Login unverified /login', '', true, [loginUnverified]),
       marketingPage('Login error /login', '', true, [
         (() => {
           const toast = al('HORIZONTAL', 'toast');
@@ -9439,6 +9505,7 @@ async function buildUniqueScreens() {
       ]),
       practicePage('Typing /typing', 'Слепая печать', [typingBody]),
       practicePage('Typing code /typing', 'Слепая печать', [typingCode]),
+      practicePage('Typing EN /typing', 'Слепая печать', [typingEn]),
       practicePage('Typing path /typing', 'Слепая печать', [typingPath]),
       practicePage('Typing progress /typing', 'Слепая печать', [typingProgress]),
       practicePage('Typing busy /typing', 'Слепая печать', [typingBusy]),
@@ -10190,6 +10257,81 @@ async function buildUniqueScreens() {
         return metrics;
       })(),
       txt('фыва олдж фыва олдж ваол джфы аовы лджф', outfit('Regular'), 16, INK, 358),
+      txt('Показать клавиатуру', outfit('SemiBold'), 13, BRAND800),
+    ],
+    'Практика',
+    { chips: 'Слепая печать', authed: true },
+  );
+  const mobileTypingCode = mobileFrame(
+    'Mobile Typing code 390',
+    [
+      txt('СЛЕПАЯ ПЕЧАТЬ', outfit('Bold'), 11, BRAND800),
+      txt('Тренажёр печати', fraunces('Bold'), 28, INK, 358),
+      txt('Смотрите на экран. Печатайте. После подхода увидите, что улучшить.', outfit('Regular'), 13, MUTED, 358),
+      (() => {
+        const segs = al('HORIZONTAL', 'typing code seg 390');
+        segs.itemSpacing = 6;
+        for (const [label, on] of [
+          ['Тренировка', true],
+          ['Путь', false],
+          ['Прогресс', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 10;
+          chip.paddingTop = chip.paddingBottom = 6;
+          chip.cornerRadius = 8;
+          chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? WHITE : MUTED));
+          segs.appendChild(chip);
+        }
+        return segs;
+      })(),
+      (() => {
+        const modes = al('HORIZONTAL', 'typing code modes 390');
+        modes.itemSpacing = 6;
+        modes.layoutWrap = 'WRAP';
+        for (const [label, on] of [
+          ['Домашний ряд', false],
+          ['Все буквы', false],
+          ['Слова', false],
+          ['Фразы', false],
+          ['Код', true],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 10;
+          chip.paddingTop = chip.paddingBottom = 6;
+          chip.cornerRadius = 99;
+          chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+          chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? WHITE : INK));
+          modes.appendChild(chip);
+        }
+        return modes;
+      })(),
+      (() => {
+        const langs = al('HORIZONTAL', 'code langs 390');
+        langs.itemSpacing = 4;
+        langs.layoutWrap = 'WRAP';
+        for (const [label, on] of [
+          ['python', false],
+          ['javascript', true],
+          ['html', false],
+          ['css', false],
+          ['sql', false],
+          ['git', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 8;
+          chip.paddingTop = chip.paddingBottom = 4;
+          chip.cornerRadius = 8;
+          chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+          chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? WHITE : MUTED));
+          langs.appendChild(chip);
+        }
+        return langs;
+      })(),
+      txt('const user = { id: 1, name: "Ada" };', outfit('Regular'), 14, INK, 358),
+      txt('console.log(user.name);', outfit('Regular'), 14, INK, 358),
       txt('Показать клавиатуру', outfit('SemiBold'), 13, BRAND800),
     ],
     'Практика',
@@ -11216,6 +11358,7 @@ async function buildUniqueScreens() {
       mobileRegister,
       mobilePractice,
       mobileTyping,
+      mobileTypingCode,
       mobileSpeedIdle,
       mobileExamSetup,
       mobileDesktop,

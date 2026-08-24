@@ -184,5 +184,8 @@
   {"file":"desktop-learner-typing-code.jpg","page":"03 — Existing Screens","name":"Learner / Typing code","layout":"PracticeShell — Код + javascript langs","group":"Learner"},
   {"file":"desktop-learner-exam-capped.jpg","page":"03 — Existing Screens","name":"Learner / Exam capped","layout":"PracticeShell — computer-basics 16 vs 50","group":"Learner"},
   {"file":"desktop-admin-edit-lesson.jpg","page":"03 — Existing Screens","name":"Admin / Edit lesson","layout":"MarketingShell — CourseEditor inline edit","group":"Admin"},
-  {"file":"desktop-admin-achievement-edit.jpg","page":"03 — Existing Screens","name":"Admin / Edit achievement","layout":"MarketingShell — inline achievement form star/first-win","group":"Admin"}
+  {"file":"desktop-admin-achievement-edit.jpg","page":"03 — Existing Screens","name":"Admin / Edit achievement","layout":"MarketingShell — inline achievement form star/first-win","group":"Admin"},
+  {"file":"desktop-guest-login-unverified.jpg","page":"03 — Existing Screens","name":"Guest / Login unverified","layout":"AuthCard — EMAIL_NOT_VERIFIED resend","group":"Guest"},
+  {"file":"desktop-learner-typing-en.jpg","page":"03 — Existing Screens","name":"Learner / Typing EN","layout":"PracticeShell — EN home-row","group":"Learner"},
+  {"file":"mobile-authed-23-typing-code.jpg","page":"07 — Mobile Screens","name":"Mobile / Typing code","layout":"PracticeShell chips + Код + javascript + Показать клавиатуру","group":"Mobile 390"}
 ]

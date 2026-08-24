@@ -1613,6 +1613,85 @@ await run('admin-edit-achievement', desk, async (page) => {
   return { file: 'desktop-admin-achievement-edit.jpg', w, h, snippet: main.slice(0, 1400) };
 });
 
+await run('guest-login-unverified', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-guest-login-unverified.jpg');
+  await page.route('**/auth/login/json', async (route) => {
+    await route.fulfill({
+      status: 403,
+      contentType: 'application/json',
+      body: JSON.stringify({ detail: 'EMAIL_NOT_VERIFIED' }),
+    });
+  });
+  await page.goto(BASE + '/login', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.fill('#login-email', 'newuser@example.com');
+  await page.fill('#login-password', 'learn123');
+  await page.click('button[type="submit"]');
+  await page.getByText('Введите код из письма.', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Отправить снова' }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('body').innerText();
+  if (String(snippet).includes('Подтвердить код')) throw new Error('supabase OTP form, not local resend');
+  return { file: 'desktop-guest-login-unverified.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('typing-en', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-typing-en.jpg');
+  await page.goto(BASE + '/login', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.fill('#login-email', 'learner@example.com');
+  await page.fill('#login-password', 'learn123');
+  await page.click('button[type="submit"]');
+  await page.waitForFunction(() => (localStorage.getItem('km_token') || '').length > 20, { timeout: 20000 });
+  await page.goto(BASE + '/typing', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Тренажёр печати', { exact: true }).waitFor({ timeout: 15000 });
+  await page.locator('button').filter({ hasText: /^EN$/ }).click({ timeout: 8000 });
+  await page.waitForFunction(() => {
+    const prompt = [...document.querySelectorAll('.font-mono')].map((el) => el.innerText).join(' ');
+    const enOn = [...document.querySelectorAll('button')].some(
+      (b) => b.textContent === 'EN' && b.className.includes('bg-brand'),
+    );
+    return (
+      enOn &&
+      /[asdfghjkl;]/.test(prompt) &&
+      !/[фывапролджэ]/.test(prompt) &&
+      !prompt.includes('фыва олдж')
+    );
+  }, { timeout: 15000 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const prompt = await page.locator('.font-mono').first().innerText();
+  const snippet = await page.locator('body').innerText();
+  return {
+    file: 'desktop-learner-typing-en.jpg',
+    w,
+    h,
+    prompt: String(prompt).replace(/\s+/g, ' ').trim(),
+    snippet: String(snippet).slice(0, 900),
+  };
+});
+
+await run(
+  'mobile-typing-code',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-23-typing-code.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/typing', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByText('Тренажёр печати', { exact: true }).waitFor({ timeout: 15000 });
+    await page.getByRole('button', { name: 'Код' }).click();
+    await page.getByText('javascript', { exact: true }).waitFor({ timeout: 8000 });
+    await page.getByText('Показать клавиатуру', { exact: true }).waitFor({ timeout: 8000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-23-typing-code.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true },
+);
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');
