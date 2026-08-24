@@ -50,6 +50,7 @@ function node(type, extra = {}) {
         itemSpacing: n.itemSpacing,
         cornerRadius: n.cornerRadius,
       });
+      for (const child of n.children) c.appendChild(child.clone());
       return c;
     },
     resize() {},
@@ -100,7 +101,15 @@ const figma = {
     f.layoutMode = dir || 'HORIZONTAL';
     return f;
   },
-  createComponent: () => node('COMPONENT'),
+  createComponent: () => {
+    const n = node('COMPONENT');
+    n.createInstance = function createInstance() {
+      const inst = node('INSTANCE', { name: n.name });
+      for (const child of n.children) inst.appendChild(child.clone());
+      return inst;
+    };
+    return n;
+  },
   createTextStyle: () => {
     const s = { id: nid(), name: '', description: '' };
     textStyles.push(s);
@@ -293,7 +302,7 @@ if (!names.includes('Dark Login / html.dark')) fail.push('no dark login unique s
 if (!names.includes('Dark Courses / html.dark')) fail.push('no dark courses unique screen');
 if (!names.includes('Mobile Practice 390')) fail.push('no mobile practice unique screen');
 if (!names.includes('Mobile Courses 390')) fail.push('no mobile courses unique screen');
-if (!names.includes('Exam feedback /exam')) fail.push('no exam feedback unique screen');
+if (!names.includes('Exam wrong /exam')) fail.push('no exam wrong unique screen');
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
 if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
@@ -306,7 +315,10 @@ if (!names.includes('HomeFeatureVisual / exam')) fail.push('no home exam feature
 if (!names.includes('Sun')) fail.push('no light-mode Sun theme toggle');
 if (!names.includes('Moon')) fail.push('no dark-mode Moon theme toggle');
 if (!names.includes('EyeOff')) fail.push('no password EyeOff on FloatingLabelInput');
-if (!names.includes('State=Password')) fail.push('no FloatingLabelInput password variant');
+if (!names.includes('Button instance')) fail.push('no Button instances on unique screens');
+if (!names.includes('KeyCap instance')) fail.push('no KeyCap instances on unique screens');
+if (!names.includes('OtpDigit instance')) fail.push('no OTP instances on unique screens');
+if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {

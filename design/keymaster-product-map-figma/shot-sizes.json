@@ -214,5 +214,25 @@
   "state-input-focus.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-guest-login-error.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-feedback.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-speed-done.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-study-only.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

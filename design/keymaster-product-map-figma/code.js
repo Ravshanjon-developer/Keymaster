@@ -62,6 +62,26 @@ function pageByName(name) {
   return figma.root.children.find((p) => p.type === 'PAGE' && p.name === name);
 }
 
+function findAll(node, pred) {
+  const out = [];
+  function walk(n) {
+    if (pred(n)) out.push(n);
+    for (const c of n.children || []) walk(c);
+  }
+  walk(node);
+  return out;
+}
+
+function inst(setName, variantName) {
+  const page = pageByName('05 — Components');
+  if (!page) return null;
+  const set = page.findOne((n) => n.type === 'COMPONENT_SET' && n.name === setName);
+  if (!set || !set.children) return null;
+  const variant = set.children.find((c) => c.name === variantName) || set.children[0];
+  if (!variant || typeof variant.createInstance !== 'function') return null;
+  return variant.createInstance();
+}
+
 async function loadType() {
   const fonts = await figma.listAvailableFontsAsync();
   const has = (family, style) => fonts.some((f) => f.fontName.family === family && f.fontName.style === style);
@@ -1209,6 +1229,7 @@ async function buildVisualFlows() {
     ]],
     ['F3 Sign in', [
       ['desktop-guest-02-login.jpg', 'Login'],
+      ['desktop-guest-login-error.jpg', 'Login error'],
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
     ]],
     ['F4 Learning path', [
@@ -1230,13 +1251,16 @@ async function buildVisualFlows() {
       ['desktop-learner-22-simulator-code.jpg', 'Code Lab'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
+      ['desktop-learner-speed-done.jpg', 'Speed done'],
     ]],
     ['F8 Reinforce', [
       ['desktop-learner-14-review.jpg', 'Review'],
       ['desktop-learner-15-quiz.jpg', 'Quiz'],
       ['desktop-learner-16-exam.jpg', 'Exam setup'],
       ['desktop-learner-exam-run.jpg', 'Exam run'],
+      ['desktop-learner-exam-feedback.jpg', 'Exam feedback'],
       ['desktop-learner-exam-done.jpg', 'Exam done'],
+      ['desktop-learner-exam-empty.jpg', 'Exam empty'],
     ]],
     ['F9 Social', [
       ['desktop-guest-07-leaderboard.jpg', 'Leaderboard'],
@@ -1700,6 +1724,40 @@ function secondaryBtn(label, theme) {
   b.layoutSizingHorizontal = 'HUG';
   b.layoutSizingVertical = 'HUG';
   return b;
+}
+
+function instPrimary(label) {
+  const n = inst('Button', 'Variant=Primary, State=Default, Size=MD');
+  if (!n) return primaryBtn(label);
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'Button instance';
+  return n;
+}
+
+function instSecondary(label) {
+  const n = inst('Button/Rest', 'Variant=Secondary, State=Default, Size=MD');
+  if (!n) return secondaryBtn(label);
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'Button instance';
+  return n;
+}
+
+function instKeyCap(label) {
+  const n = inst('KeyCap', 'State=Default');
+  if (!n) return null;
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'KeyCap instance';
+  return n;
+}
+
+function instOtpDigit(filling) {
+  const n = inst('OtpDigit', filling ? 'State=Filling' : 'State=Empty');
+  if (!n) return null;
+  n.name = 'OtpDigit instance';
+  return n;
 }
 
 function ghostBtn(label) {
@@ -2453,7 +2511,7 @@ async function buildUniqueScreens() {
   board.appendChild(txt('Unique screens recreated from current UI (not a redesign)', fraunces('Bold'), 28, INK, 1720));
   board.appendChild(
     txt(
-      'Grouped by shared layout. Pixel captures live on pages 03 and 07. Do not duplicate 20 courses or every lesson.',
+      'Grouped by shared layout. Pixel captures live on pages 03 and 07. Buttons, KeyCap, and OTP instance page 05. Do not duplicate 20 courses or every lesson.',
       outfit('Regular'),
       13,
       MUTED,
@@ -2496,7 +2554,7 @@ async function buildUniqueScreens() {
   );
   const ctas = al('HORIZONTAL', 'CTAs');
   ctas.itemSpacing = 12;
-  ctas.appendChild(primaryBtn('Начать бесплатно'));
+  ctas.appendChild(instPrimary('Начать бесплатно'));
   ctas.appendChild(secondaryBtn('Каталог курсов'));
   hero.appendChild(ctas);
   homeBody.push(hero);
@@ -2548,19 +2606,24 @@ async function buildUniqueScreens() {
   const keys = al('HORIZONTAL', 'KeyCombo');
   keys.itemSpacing = 8;
   for (const k of ['Ctrl', 'S']) {
-    const cap = al('HORIZONTAL', k);
-    cap.primaryAxisAlignItems = 'CENTER';
-    cap.counterAxisAlignItems = 'CENTER';
-    cap.minWidth = 40;
-    cap.minHeight = 40;
-    cap.paddingLeft = cap.paddingRight = 12;
-    cap.cornerRadius = 12;
-    cap.fills = [solid(WHITE)];
-    cap.strokes = [solid(INK)];
-    cap.strokeWeight = 1;
-    cap.strokeBottomWeight = 4;
-    cap.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    keys.appendChild(cap);
+    const cap = instKeyCap(k);
+    if (cap) {
+      keys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.primaryAxisAlignItems = 'CENTER';
+    box.counterAxisAlignItems = 'CENTER';
+    box.minWidth = 40;
+    box.minHeight = 40;
+    box.paddingLeft = box.paddingRight = 12;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.strokeWeight = 1;
+    box.strokeBottomWeight = 4;
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    keys.appendChild(box);
   }
   lessonHotkey.appendChild(keys);
   lessonHotkey.appendChild(txt('Изучено / Не изучено · flash ok/err', outfit('Regular'), 12, MUTED));
@@ -2569,12 +2632,30 @@ async function buildUniqueScreens() {
   lessonTask.itemSpacing = 10;
   lessonTask.appendChild(txt('Задание · симулятор', outfit('Bold'), 11, BRAND));
   lessonTask.appendChild(txt('Создайте папку Documents на рабочем столе', outfit('SemiBold'), 18, INK, 800));
-  lessonTask.appendChild(primaryBtn('Симулятор рабочего стола'));
+  lessonTask.appendChild(instPrimary('Симулятор рабочего стола'));
 
   const lessonStudy = al('VERTICAL', 'Study-only lesson');
   lessonStudy.itemSpacing = 10;
-  lessonStudy.appendChild(txt('Теория · системное сочетание', outfit('Bold'), 11, BRAND));
-  lessonStudy.appendChild(txt('Закройте вкладку', outfit('SemiBold'), 20, INK));
+  lessonStudy.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
+  lessonStudy.appendChild(txt('Переключение окон', outfit('SemiBold'), 20, INK));
+  const studyKeys = al('HORIZONTAL', 'combo');
+  studyKeys.itemSpacing = 8;
+  for (const k of ['Alt', 'Tab']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      studyKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    studyKeys.appendChild(box);
+  }
+  lessonStudy.appendChild(studyKeys);
   lessonStudy.appendChild(
     txt(
       'Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».',
@@ -2584,6 +2665,20 @@ async function buildUniqueScreens() {
       720,
     ),
   );
+  const studyCta = al('VERTICAL', 'register gate');
+  studyCta.itemSpacing = 8;
+  studyCta.paddingTop = studyCta.paddingBottom = 16;
+  studyCta.paddingLeft = studyCta.paddingRight = 16;
+  studyCta.cornerRadius = 16;
+  studyCta.strokes = [solid(INK, 0.12)];
+  studyCta.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
+  studyCta.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
+  const studyBtns = al('HORIZONTAL', 'ctas');
+  studyBtns.itemSpacing = 8;
+  studyBtns.appendChild(instPrimary('Регистрация'));
+  studyBtns.appendChild(instSecondary('Уже есть аккаунт'));
+  studyCta.appendChild(studyBtns);
+  lessonStudy.appendChild(studyCta);
 
   const pathRow = al('HORIZONTAL', 'Path nodes');
   pathRow.itemSpacing = 12;
@@ -2709,17 +2804,22 @@ async function buildUniqueScreens() {
     const row = al('HORIZONTAL', 'OTP');
     row.itemSpacing = 8;
     for (let i = 0; i < 6; i++) {
-      const d = al('HORIZONTAL', 'digit');
-      d.primaryAxisAlignItems = 'CENTER';
-      d.counterAxisAlignItems = 'CENTER';
-      d.resize(44, 52);
-      d.layoutSizingHorizontal = 'FIXED';
-      d.layoutSizingVertical = 'FIXED';
-      d.cornerRadius = 12;
-      d.fills = [solid(WHITE)];
-      d.strokes = [solid(i === 0 ? BRAND : INK, i === 0 ? 1 : 0.18)];
-      d.appendChild(txt(i === 0 ? '4' : ' ', outfit('SemiBold'), 18, INK));
-      row.appendChild(d);
+      const d = instOtpDigit(i === 0);
+      if (d) {
+        row.appendChild(d);
+        continue;
+      }
+      const box = al('HORIZONTAL', 'digit');
+      box.primaryAxisAlignItems = 'CENTER';
+      box.counterAxisAlignItems = 'CENTER';
+      box.resize(44, 52);
+      box.layoutSizingHorizontal = 'FIXED';
+      box.layoutSizingVertical = 'FIXED';
+      box.cornerRadius = 12;
+      box.fills = [solid(WHITE)];
+      box.strokes = [solid(i === 0 ? BRAND : INK, i === 0 ? 1 : 0.18)];
+      box.appendChild(txt(i === 0 ? '4' : ' ', outfit('SemiBold'), 18, INK));
+      row.appendChild(box);
     }
     return row;
   }
@@ -2727,7 +2827,7 @@ async function buildUniqueScreens() {
   const loginCard = authScreen(
     'Вход',
     'Добро пожаловать в KeyMaster',
-    [floatingField('Email', ''), floatingField('Пароль', '', { password: true }), primaryBtn('Войти')],
+    [floatingField('Email', ''), floatingField('Пароль', '', { password: true }), instPrimary('Войти')],
     'Нет аккаунта? Регистрация',
   );
   const loginError = authScreen(
@@ -2746,7 +2846,7 @@ async function buildUniqueScreens() {
         alert.appendChild(txt('Неверный email или пароль', outfit('Medium'), 13, SIGNAL, 296));
         return alert;
       })(),
-      primaryBtn('Войти'),
+      instPrimary('Войти'),
     ],
     'Нет аккаунта? Регистрация',
   );
@@ -2757,8 +2857,8 @@ async function buildUniqueScreens() {
       txt('Код из письма', outfit('Medium'), 13, INK),
       otpRow(),
       txt('6 цифр из письма KeyMaster (можно скопировать с телефона)', outfit('Regular'), 11, MUTED, 352),
-      primaryBtn('Подтвердить код'),
-      secondaryBtn('Отправить снова'),
+      instPrimary('Подтвердить код'),
+      instSecondary('Отправить снова'),
     ],
     'Нет аккаунта? Регистрация',
   );
@@ -2770,7 +2870,7 @@ async function buildUniqueScreens() {
       floatingField('username', '', { width: 360 }),
       floatingField('Email', '', { width: 360 }),
       floatingField('Пароль', '', { password: true, width: 360 }),
-      primaryBtn('Создать аккаунт'),
+      instPrimary('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
     { compact: true },
@@ -2778,7 +2878,7 @@ async function buildUniqueScreens() {
   const registerOtp = authScreen(
     'Код из письма',
     'Код отправлен на anna@example.com.',
-    [otpRow(), primaryBtn('Подтвердить код'), secondaryBtn('Отправить снова')],
+    [otpRow(), instPrimary('Подтвердить код'), instSecondary('Отправить снова')],
     'Уже есть аккаунт? Войти',
   );
 
@@ -2860,7 +2960,7 @@ async function buildUniqueScreens() {
   speedCopy.appendChild(txt('60 секунд на реакцию: комбо, очки и точность под давлением.', outfit('Regular'), 13, MUTED, 380));
   speedLeft.appendChild(speedCopy);
   speedChallenge.appendChild(speedLeft);
-  speedChallenge.appendChild(secondaryBtn('Начать испытание'));
+  speedChallenge.appendChild(instSecondary('Начать испытание'));
   const reinforceCards = al('HORIZONTAL', 'Reinforce');
   reinforceCards.itemSpacing = 16;
   reinforceCards.layoutWrap = 'WRAP';
@@ -2902,7 +3002,7 @@ async function buildUniqueScreens() {
     row.appendChild(txt(step, outfit('Regular'), 13, MUTED, 600));
     journey.appendChild(row);
   }
-  journey.appendChild(primaryBtn('Открыть «Первый ноутбук»'));
+  journey.appendChild(instPrimary('Открыть «Первый ноутбук»'));
 
   const quiz = al('VERTICAL', 'Quiz');
   quiz.itemSpacing = 10;
@@ -2928,14 +3028,14 @@ async function buildUniqueScreens() {
   quizPicked.appendChild(txt('Основы hotkeys', outfit('SemiBold'), 18, INK));
   quizPicked.appendChild(txt('Правильно!', outfit('SemiBold'), 14, SUCCESS));
   quizPicked.appendChild(txt('Ctrl + S — сохраняет текущий файл.', outfit('Regular'), 13, MUTED, 680));
-  quizPicked.appendChild(primaryBtn('Дальше'));
+  quizPicked.appendChild(instPrimary('Дальше'));
 
   const quizDone = al('VERTICAL', 'Quiz done');
   quizDone.itemSpacing = 10;
   quizDone.appendChild(txt('Основы hotkeys — готово', outfit('SemiBold'), 22, INK));
   quizDone.appendChild(txt('18 из 25', outfit('SemiBold'), 18, BRAND));
   quizDone.appendChild(txt('Лучшая серия: 7', outfit('Regular'), 13, MUTED));
-  quizDone.appendChild(primaryBtn('Ещё раз'));
+  quizDone.appendChild(instPrimary('Ещё раз'));
 
   const exam = al('VERTICAL', 'Exam setup');
   exam.itemSpacing = 12;
@@ -2997,7 +3097,7 @@ async function buildUniqueScreens() {
   summary.appendChild(txt('ВАША СЕССИЯ', outfit('Bold'), 10, MUTED));
   summary.appendChild(txt('20 вопросов · 10 мин · ~30 сек. · Все курсы', outfit('Regular'), 13, INK, 600));
   examCard.appendChild(summary);
-  examCard.appendChild(primaryBtn('Начать экзамен'));
+  examCard.appendChild(instPrimary('Начать экзамен'));
   exam.appendChild(examCard);
 
   const examEmpty = al('VERTICAL', 'Exam empty');
@@ -3005,7 +3105,7 @@ async function buildUniqueScreens() {
   examEmpty.primaryAxisAlignItems = 'CENTER';
   examEmpty.appendChild(txt('Нет вопросов', outfit('SemiBold'), 22, INK));
   examEmpty.appendChild(txt('Выберите другой курс или запустите backend.', outfit('Regular'), 13, MUTED, 520));
-  examEmpty.appendChild(primaryBtn('Назад к настройке'));
+  examEmpty.appendChild(instPrimary('Назад к настройке'));
 
   const review = al('VERTICAL', 'Review card');
   review.itemSpacing = 12;
@@ -3095,7 +3195,7 @@ async function buildUniqueScreens() {
   mbody.itemSpacing = 10;
   mbody.appendChild(txt('KeyMaster', fraunces('Bold'), 32, INK));
   mbody.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Regular'), 13, MUTED, 358));
-  mbody.appendChild(primaryBtn('Начать бесплатно'));
+  mbody.appendChild(instPrimary('Начать бесплатно'));
   const bnav = al('HORIZONTAL', 'BottomNav');
   bnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   bnav.paddingLeft = bnav.paddingRight = 8;
@@ -3383,7 +3483,7 @@ async function buildUniqueScreens() {
     speedRow.appendChild(m);
   }
   speedBody.appendChild(speedRow);
-  speedBody.appendChild(primaryBtn('Старт 60 сек'));
+  speedBody.appendChild(instPrimary('Старт 60 сек'));
 
   const speedDone = al('VERTICAL', 'Speed done');
   speedDone.itemSpacing = 12;
@@ -3415,7 +3515,7 @@ async function buildUniqueScreens() {
     speedStats.appendChild(m);
   }
   speedDone.appendChild(speedStats);
-  speedDone.appendChild(primaryBtn('Ещё раз'));
+  speedDone.appendChild(instPrimary('Ещё раз'));
 
   const examRun = al('VERTICAL', 'Exam run');
   examRun.itemSpacing = 12;
@@ -3494,6 +3594,45 @@ async function buildUniqueScreens() {
   examFeedback.appendChild(txt('Следующий вопрос через 2…', outfit('Regular'), 13, MUTED));
   examFeedback.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
 
+  const examWrong = al('VERTICAL', 'Exam wrong');
+  examWrong.itemSpacing = 10;
+  examWrong.paddingTop = examWrong.paddingBottom = 32;
+  examWrong.paddingLeft = examWrong.paddingRight = 24;
+  examWrong.cornerRadius = 24;
+  examWrong.fills = [solid(SIGNAL, 0.08)];
+  examWrong.strokes = [solid(SIGNAL, 0.4)];
+  examWrong.primaryAxisAlignItems = 'CENTER';
+  examWrong.resize(680, 10);
+  examWrong.layoutSizingHorizontal = 'FIXED';
+  examWrong.layoutSizingVertical = 'HUG';
+  examWrong.appendChild(txt('Неверно', outfit('Bold'), 24, SIGNAL));
+  examWrong.appendChild(txt('К следующему слову', outfit('Regular'), 13, MUTED));
+  examWrong.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
+  const wrongKeys = al('HORIZONTAL', 'combo');
+  wrongKeys.itemSpacing = 8;
+  for (const k of ['Ctrl', '→']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      wrongKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.primaryAxisAlignItems = 'CENTER';
+    box.counterAxisAlignItems = 'CENTER';
+    box.minWidth = 40;
+    box.minHeight = 40;
+    box.paddingLeft = box.paddingRight = 12;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    wrongKeys.appendChild(box);
+  }
+  examWrong.appendChild(wrongKeys);
+  examWrong.appendChild(txt('Ctrl + →', outfit('SemiBold'), 18, INK));
+  examWrong.appendChild(txt('Следующий вопрос через 3…', outfit('Regular'), 13, MUTED));
+  examWrong.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
+
   const examDone = al('VERTICAL', 'Exam done');
   examDone.itemSpacing = 12;
   examDone.paddingTop = examDone.paddingBottom = 24;
@@ -3555,7 +3694,7 @@ async function buildUniqueScreens() {
   examDone.appendChild(statsGrid);
   const doneBtns = al('HORIZONTAL', 'done actions');
   doneBtns.itemSpacing = 8;
-  doneBtns.appendChild(primaryBtn('Новый экзамен'));
+  doneBtns.appendChild(instPrimary('Новый экзамен'));
   doneBtns.appendChild(secondaryBtn('К пути'));
   examDone.appendChild(doneBtns);
 
@@ -3611,7 +3750,7 @@ async function buildUniqueScreens() {
       350,
     ),
   );
-  gbody.appendChild(primaryBtn('Изучить комбинации'));
+  gbody.appendChild(instPrimary('Изучить комбинации'));
   gbody.appendChild(secondaryBtn('Основы hotkeys'));
   const gbnav = al('HORIZONTAL', 'BottomNav');
   gbnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
@@ -3670,7 +3809,7 @@ async function buildUniqueScreens() {
   mlcard.appendChild(txt('Вход', outfit('SemiBold'), 20, INK));
   mlcard.appendChild(floatingField('Email', '', { width: 326 }));
   mlcard.appendChild(floatingField('Пароль', '', { password: true, width: 326 }));
-  mlcard.appendChild(primaryBtn('Войти'));
+  mlcard.appendChild(instPrimary('Войти'));
   mlbody.appendChild(mlcard);
   mlbody.appendChild(txt('BottomNav hidden on /login /register', outfit('Regular'), 11, MUTED, 358));
   mobileLogin.appendChild(mlnav);
@@ -3804,7 +3943,7 @@ async function buildUniqueScreens() {
         txt('Slug                  Название                         Уроки', outfit('Regular'), 12, MUTED, 800),
         txt('computer-basics       Первый ноутбук: файлы и папки    12', outfit('Regular'), 13, INK, 800),
         txt('programmer-basics     Основы программиста              18', outfit('Regular'), 13, INK, 800),
-        primaryBtn('Создать'),
+        instPrimary('Создать'),
       ]),
       marketingPage('Admin forbidden', 'Главная', false, [
         txt('Доступ только для администраторов', outfit('SemiBold'), 22, INK, 800),
@@ -3814,7 +3953,22 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('AuthCard', [
       marketingPage('Login /login', 'Главная', true, [loginCard]),
-      marketingPage('Login error /login', 'Главная', true, [loginError]),
+      marketingPage('Login error /login', 'Главная', true, [
+        (() => {
+          const toast = al('HORIZONTAL', 'toast');
+          toast.itemSpacing = 8;
+          toast.counterAxisAlignItems = 'CENTER';
+          toast.paddingLeft = toast.paddingRight = 14;
+          toast.paddingTop = toast.paddingBottom = 8;
+          toast.cornerRadius = 99;
+          toast.fills = [solid(WHITE)];
+          toast.strokes = [solid(SIGNAL, 0.45)];
+          toast.appendChild(txt('×', outfit('Bold'), 12, SIGNAL));
+          toast.appendChild(txt('Неверный email или пароль', outfit('Medium'), 12, SIGNAL));
+          return toast;
+        })(),
+        loginError,
+      ]),
       marketingPage('Login OTP /login', 'Главная', true, [loginOtp]),
       marketingPage('Register /register', 'Главная', true, [registerCard]),
       marketingPage('Register OTP /register', 'Главная', true, [registerOtp]),
@@ -3848,6 +4002,7 @@ async function buildUniqueScreens() {
       practicePage('Exam empty /exam', 'Экзамен', [examEmpty]),
       practicePage('Exam run /exam', 'Экзамен', [examRun]),
       practicePage('Exam feedback /exam', 'Экзамен', [examFeedback]),
+      practicePage('Exam wrong /exam', 'Экзамен', [examWrong]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
@@ -3866,7 +4021,7 @@ async function buildUniqueScreens() {
   darkHero.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 24, DARK_SECONDARY, 640));
   const darkCtas = al('HORIZONTAL', 'CTAs');
   darkCtas.itemSpacing = 12;
-  darkCtas.appendChild(primaryBtn('Начать бесплатно'));
+  darkCtas.appendChild(instPrimary('Начать бесплатно'));
   darkCtas.appendChild(secondaryBtn('Каталог курсов', 'dark'));
   darkHero.appendChild(darkCtas);
   const darkFeats = al('HORIZONTAL', 'Dark features');
@@ -3927,7 +4082,7 @@ async function buildUniqueScreens() {
     [
       floatingField('Email', '', { dark: true }),
       floatingField('Пароль', '', { password: true, dark: true }),
-      primaryBtn('Войти'),
+      instPrimary('Войти'),
     ],
     'Нет аккаунта? Регистрация',
     { dark: true },
@@ -4078,7 +4233,7 @@ async function buildUniqueScreens() {
       floatingField('username', '', { dark: true, width: 360 }),
       floatingField('Email', '', { dark: true, width: 360 }),
       floatingField('Пароль', '', { password: true, dark: true, width: 360 }),
-      primaryBtn('Создать аккаунт'),
+      instPrimary('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
     { compact: true, dark: true },
@@ -4145,10 +4300,10 @@ async function buildAll() {
   figma.ui.postMessage({ type: 'status', text: 'Product map…' });
   await buildProductMap();
   await buildSitemap();
-  await buildUniqueScreens();
-  await buildFlows();
   await buildDesignSystemBoard();
   await buildComponents();
+  await buildUniqueScreens();
+  await buildFlows();
   await buildPlaceholder();
   await buildScreenHeaders();
   figma.ui.postMessage({ type: 'ready' });

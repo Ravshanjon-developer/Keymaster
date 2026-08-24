@@ -13,7 +13,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 
 Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter).
 
-Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 53 as-is shots.
+Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 58 as-is shots.
 
 Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
 
@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations (empty FloatingLabelInput + EyeOff, Sun/Moon theme toggle, home feature visuals, practice 2-col ModeCards + speed row, auth compact register, catalog filters, exam phases, admin overview/courses, leaderboard periods, speed done, dark login/register/practice, mobile chips) |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations that instance Button / KeyCap / OTP from page 05. Includes empty FloatingLabelInput + EyeOff, Sun/Moon theme toggle, home feature visuals, practice 2-col ModeCards + speed row, exam Верно/Неверно, guest study-only Alt+Tab, auth compact register, catalog filters, admin overview/courses, leaderboard periods, dark + mobile 390 |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
