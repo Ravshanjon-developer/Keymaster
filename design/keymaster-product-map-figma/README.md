@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout, editable as-is recreations that instance Button, KeyCap, OTP, FloatingLabelInput, CourseCard, PathNode, Achievement, LearnStatus, NavLink, LanguageSwitcher, PracticeRailItem, BottomNavItem, PasswordStrength, ProgressBar, and EmptyState from page 05. Includes guest + authed Home CTAs, live leaderboard (Анна @learner 0 XP), admin overview 2/20/193/13/0/1, NextStepCard / PathStageStrip on Dashboard, stats answers chart, register password-strength, PathNode 5 statuses, dark + mobile 390 |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Path unique screen matches live viewport (Novice Operator, 0/20, First Laptop + START node). ImmersiveSimulator unique screens match Code Lab empty state and desktop first-task. Guest + authed Home CTAs, live leaderboard, admin 2/20/193/13/0/1, PathNode 5 statuses, dark + mobile 390 |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
