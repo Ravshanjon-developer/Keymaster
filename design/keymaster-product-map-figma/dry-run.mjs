@@ -380,6 +380,8 @@ if (!names.includes('Learner / Typing result')) fail.push('no typing-result capt
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
 if (!names.includes('Desktop new file /simulator?mode=desktop')) fail.push('no desktop new-file unique screen');
 if (!names.includes('Desktop paste menu /simulator?mode=desktop')) fail.push('no desktop paste-menu unique screen');
+if (!names.includes('Desktop tasks closed /simulator?mode=desktop')) fail.push('no desktop tasks-closed unique screen');
+if (!names.includes('Mobile Desktop 390')) fail.push('no mobile desktop unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -410,6 +412,8 @@ if (!names.includes('Training correct /training')) fail.push('no training-correc
 if (!names.includes('Learner / Desktop new folder')) fail.push('no desktop new-folder capture');
 if (!names.includes('Learner / Desktop new file')) fail.push('no desktop new-file capture');
 if (!names.includes('Learner / Desktop paste menu')) fail.push('no desktop paste-menu capture');
+if (!names.includes('Learner / Desktop tasks closed')) fail.push('no desktop tasks-closed capture');
+if (!names.includes('Mobile / Desktop sim')) fail.push('no mobile desktop capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1333,6 +1337,8 @@ let typingResultUnique = null;
 let deskNewFolderUnique = null;
 let deskNewFileUnique = null;
 let deskMenuPasteUnique = null;
+let deskTasksClosedUnique = null;
+let mobileDesktopUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1379,6 +1385,8 @@ for (const p of pages) {
   deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
   deskNewFileUnique = deskNewFileUnique || findByName(p, 'Desktop new file /simulator?mode=desktop');
   deskMenuPasteUnique = deskMenuPasteUnique || findByName(p, 'Desktop paste menu /simulator?mode=desktop');
+  deskTasksClosedUnique = deskTasksClosedUnique || findByName(p, 'Desktop tasks closed /simulator?mode=desktop');
+  mobileDesktopUnique = mobileDesktopUnique || findByName(p, 'Mobile Desktop 390');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1482,6 +1490,12 @@ if (!deskNewFileUnique || !namesUnder(deskNewFileUnique).includes('newfile.txt')
 }
 if (!deskMenuPasteUnique || !namesUnder(deskMenuPasteUnique).includes('Вставить') || !namesUnder(deskMenuPasteUnique).includes('Открыть проводник') || namesUnder(deskMenuPasteUnique).includes('С чего начать') || namesUnder(deskMenuPasteUnique).includes('Обновить')) {
   fail.push('desktop paste-menu unique missing live wallpaper ПКМ with Вставить');
+}
+if (!deskTasksClosedUnique || !namesUnder(deskTasksClosedUnique).includes('Этот компьютер') || namesUnder(deskTasksClosedUnique).includes('ЗАДАЧИ') || namesUnder(deskTasksClosedUnique).includes('ТЕКУЩАЯ · 1/12') || namesUnder(deskTasksClosedUnique).includes('С чего начать')) {
+  fail.push('desktop tasks-closed unique should be wallpaper without ЗАДАЧИ rail');
+}
+if (!mobileDesktopUnique || !namesUnder(mobileDesktopUnique).includes('К практике') || !namesUnder(mobileDesktopUnique).includes('/Рабочий стол') || !namesUnder(mobileDesktopUnique).includes('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ') || namesUnder(mobileDesktopUnique).includes('KeyMaster') || namesUnder(mobileDesktopUnique).includes('Тренировочный зал')) {
+  fail.push('mobile desktop unique missing live FileManager 390 chrome without BottomNav header');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');

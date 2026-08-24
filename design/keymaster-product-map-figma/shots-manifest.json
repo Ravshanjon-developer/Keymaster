@@ -130,6 +130,7 @@
   {"file":"desktop-learner-simulator-desktop-hint.jpg","page":"03 — Existing Screens","name":"Learner / Desktop hint","layout":"ImmersiveSimulator — Скрыть подсказку","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-newfolder.jpg","page":"03 — Existing Screens","name":"Learner / Desktop new folder","layout":"ImmersiveSimulator — inline rename Новая папка","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-newfile.jpg","page":"03 — Existing Screens","name":"Learner / Desktop new file","layout":"ImmersiveSimulator — inline rename newfile.txt","group":"Learner"},
+  {"file":"desktop-learner-simulator-desktop-tasks-closed.jpg","page":"03 — Existing Screens","name":"Learner / Desktop tasks closed","layout":"ImmersiveSimulator — no ЗАДАЧИ rail","group":"Learner"},
   {"file":"desktop-admin-24-admin.jpg","page":"03 — Existing Screens","name":"Admin / Overview","layout":"MarketingShell","group":"Admin"},
   {"file":"desktop-admin-courses.jpg","page":"03 — Existing Screens","name":"Admin / Courses","layout":"MarketingShell","group":"Admin"},
   {"file":"desktop-admin-users.jpg","page":"03 — Existing Screens","name":"Admin / Users","layout":"MarketingShell","group":"Admin"},
@@ -167,5 +168,6 @@
   {"file":"desktop-learner-lesson-desktop-task.jpg","page":"03 — Existing Screens","name":"Learner / Lesson desktop-task","layout":"MarketingShell — desktop: sim-only XP","group":"Learner"},
   {"file":"desktop-learner-lesson-desktop-task-done.jpg","page":"03 — Existing Screens","name":"Learner / Lesson desktop-task done","layout":"MarketingShell — Задание выполнено + Выполнено","group":"Learner"},
   {"file":"mobile-authed-12-dashboard.jpg","page":"07 — Mobile Screens","name":"Mobile / Dashboard","layout":"BottomNav inactive + Кабинет","group":"Mobile 390"},
-  {"file":"mobile-authed-13-course-computer-basics.jpg","page":"07 — Mobile Screens","name":"Mobile / Course detail (computer-basics)","layout":"BottomNav Курсы + Desktop CTA","group":"Mobile 390"}
+  {"file":"mobile-authed-13-course-computer-basics.jpg","page":"07 — Mobile Screens","name":"Mobile / Course detail (computer-basics)","layout":"BottomNav Курсы + Desktop CTA","group":"Mobile 390"},
+  {"file":"mobile-authed-15-simulator-desktop.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop sim","layout":"ImmersiveSimulator — FileManager 390 no BottomNav","group":"Mobile 390"}
 ]

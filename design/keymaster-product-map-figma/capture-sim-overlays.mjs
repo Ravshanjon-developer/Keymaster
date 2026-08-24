@@ -1228,6 +1228,56 @@ await run('desktop-explorer-foldermenu', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-explorer-foldermenu.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
+await run('desktop-tasks-closed', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-tasks-closed.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('ЗАДАЧИ', { exact: true }).waitFor({ timeout: 8000 });
+  await page.locator('.bolt-desktop-root button[aria-label="Задачи"]').last().click();
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  if (String(snippet).includes('ТЕКУЩАЯ · 1/12')) throw new Error('task panel still open');
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-tasks-closed.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+const mobileVp = { width: 390, height: 844 };
+await run('mobile-desktop', mobileVp, async (page) => {
+  const dest = path.join(shotsDir, 'mobile-authed-15-simulator-desktop.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.route('**/progress/lessons**', async (route) => {
+    const res = await route.fetch();
+    let json = [];
+    try {
+      json = await res.json();
+    } catch {
+      json = [];
+    }
+    const body = (Array.isArray(json) ? json : []).map((row) => {
+      const key = Array.isArray(row.keys) ? row.keys[0] : '';
+      if (typeof key === 'string' && key.startsWith('desktop:')) {
+        return { ...row, completed: false };
+      }
+      return row;
+    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  await page.evaluate(() => {
+    localStorage.setItem('km_desktop_tasks_v1', JSON.stringify({ completed: [], xp: 0 }));
+    localStorage.removeItem('km-desktop-vfs-v1');
+    localStorage.setItem('km-desktop-firstrun-v1', '1');
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('К практике', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'mobile-authed-15-simulator-desktop.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

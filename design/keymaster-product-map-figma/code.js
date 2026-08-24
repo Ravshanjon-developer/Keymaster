@@ -1272,6 +1272,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-fromlesson.jpg', 'From lesson'],
       ['desktop-learner-simulator-desktop-newfolder.jpg', 'New folder rename'],
       ['desktop-learner-simulator-desktop-newfile.jpg', 'New file rename'],
+      ['desktop-learner-simulator-desktop-tasks-closed.jpg', 'Tasks closed'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
     ['F6 Hotkey learn', [
@@ -1499,7 +1500,7 @@ async function buildSitemap() {
       'ImmersiveSimulator',
       [
         ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · light theme · File/Edit/View/Go/Run/Terminal/Help · Manage · find · search · SCM · run · extensions · preview · current/all tasks · keyboard'],
-        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · wallpaper menu · paste · newfile.txt · file menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties · light theme'],
+        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · wallpaper menu · paste · newfile.txt · tasks closed · file menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties · light theme · mobile FileManager'],
       ],
     ],
   ];
@@ -5323,7 +5324,7 @@ async function buildUniqueScreens() {
     deskWork.paddingTop = 20;
     deskWork.paddingLeft = deskWork.paddingRight = 20;
     deskWork.paddingBottom = 20;
-    deskWork.resize(640, 10);
+    deskWork.resize(overlay === 'notasks' ? 960 : 640, 10);
     deskWork.layoutSizingHorizontal = 'FIXED';
     deskWork.layoutSizingVertical = 'HUG';
     const icons = al('VERTICAL', 'icons');
@@ -5730,6 +5731,8 @@ async function buildUniqueScreens() {
       modal.appendChild(txt('Закрыть', outfit('SemiBold'), 13, WHITE));
       deskWork.appendChild(modal);
     }
+    deskBody.appendChild(deskWork);
+    if (overlay !== 'notasks') {
     const deskTasks = al('VERTICAL', 'desktop tasks');
     deskTasks.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
     deskTasks.paddingTop = deskTasks.paddingBottom = 16;
@@ -5789,8 +5792,8 @@ async function buildUniqueScreens() {
       deskTasks.appendChild(txt('Создайте файл «notes.txt»  +10', outfit('Regular'), 12, VSCODE_MUTED, 280));
       deskTasks.appendChild(txt('Переименуйте notes.txt в my-notes.txt  +10', outfit('Regular'), 12, VSCODE_MUTED, 280));
     }
-    deskBody.appendChild(deskWork);
     deskBody.appendChild(deskTasks);
+    }
     desk.appendChild(deskBody);
     if (overlay === 'toast') {
       const toastRow = al('HORIZONTAL', 'desktop toast row');
@@ -5872,6 +5875,7 @@ async function buildUniqueScreens() {
   const deskHint = makeDesktopSim('Desktop hint /simulator?mode=desktop', 'deskhint');
   const deskNewFolder = makeDesktopSim('Desktop new folder /simulator?mode=desktop', 'newfolder');
   const deskNewFile = makeDesktopSim('Desktop new file /simulator?mode=desktop', 'desknewfile');
+  const deskTasksClosed = makeDesktopSim('Desktop tasks closed /simulator?mode=desktop', 'notasks');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -9705,6 +9709,78 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Тренировочный зал', authed: true },
   );
+  const mobileDesktop = al('VERTICAL', 'Mobile Desktop 390');
+  mobileDesktop.itemSpacing = 0;
+  mobileDesktop.fills = [solid(DESK_BG)];
+  mobileDesktop.strokes = [solid(INK, 0.1)];
+  mobileDesktop.resize(390, 10);
+  mobileDesktop.layoutSizingHorizontal = 'FIXED';
+  mobileDesktop.layoutSizingVertical = 'HUG';
+  const mdTop = al('HORIZONTAL', 'mobile desktop chrome');
+  mdTop.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  mdTop.counterAxisAlignItems = 'CENTER';
+  mdTop.paddingLeft = mdTop.paddingRight = 12;
+  mdTop.resize(390, 48);
+  mdTop.layoutSizingHorizontal = 'FIXED';
+  mdTop.layoutSizingVertical = 'FIXED';
+  mdTop.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
+  mdTop.appendChild(txt('К практике', outfit('SemiBold'), 13, WHITE));
+  mdTop.appendChild(txt('Клавиатура  ·  Задачи', outfit('Regular'), 11, VSCODE_MUTED));
+  mobileDesktop.appendChild(mdTop);
+  const mdBody = al('HORIZONTAL', 'mobile FileManager');
+  mdBody.itemSpacing = 0;
+  const mdSide = al('VERTICAL', 'sidebar');
+  mdSide.itemSpacing = 6;
+  mdSide.paddingTop = mdSide.paddingBottom = 8;
+  mdSide.paddingLeft = mdSide.paddingRight = 8;
+  mdSide.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 })];
+  mdSide.resize(148, 10);
+  mdSide.layoutSizingHorizontal = 'FIXED';
+  mdSide.layoutSizingVertical = 'HUG';
+  mdSide.appendChild(txt('Рабочий стол', outfit('SemiBold'), 12, WHITE));
+  mdSide.appendChild(txt('Welcome.txt', outfit('Regular'), 11, VSCODE_MUTED));
+  for (const label of ['Документы', 'Загрузки', 'Projects', 'Корзина']) {
+    mdSide.appendChild(txt(label, outfit('Regular'), 12, VSCODE_MUTED));
+  }
+  mdSide.appendChild(txt('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ', outfit('Regular'), 10, VSCODE_MUTED, 132));
+  const mdMain = al('VERTICAL', 'files');
+  mdMain.itemSpacing = 8;
+  mdMain.paddingTop = mdMain.paddingBottom = 8;
+  mdMain.paddingLeft = mdMain.paddingRight = 8;
+  mdMain.resize(242, 10);
+  mdMain.layoutSizingHorizontal = 'FIXED';
+  mdMain.layoutSizingVertical = 'HUG';
+  const mdTool = al('HORIZONTAL', 'toolbar');
+  mdTool.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  mdTool.counterAxisAlignItems = 'CENTER';
+  mdTool.resize(226, 10);
+  mdTool.layoutSizingHorizontal = 'FIXED';
+  mdTool.layoutSizingVertical = 'HUG';
+  mdTool.appendChild(txt('/Рабочий стол', outfit('Regular'), 12, WHITE, 140));
+  mdTool.appendChild(txt('1 объектов', outfit('Regular'), 11, VSCODE_MUTED));
+  mdMain.appendChild(mdTool);
+  const mdFile = al('VERTICAL', 'Welcome.txt');
+  mdFile.itemSpacing = 4;
+  mdFile.primaryAxisAlignItems = 'CENTER';
+  mdFile.appendChild(txt('TXT', outfit('Bold'), 10, VSCODE_MUTED));
+  mdFile.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
+  mdMain.appendChild(mdFile);
+  mdBody.appendChild(mdSide);
+  mdBody.appendChild(mdMain);
+  mobileDesktop.appendChild(mdBody);
+  const mdBar = al('HORIZONTAL', 'taskbar');
+  mdBar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  mdBar.counterAxisAlignItems = 'CENTER';
+  mdBar.paddingLeft = mdBar.paddingRight = 10;
+  mdBar.paddingTop = mdBar.paddingBottom = 8;
+  mdBar.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
+  mdBar.resize(390, 40);
+  mdBar.layoutSizingHorizontal = 'FIXED';
+  mdBar.layoutSizingVertical = 'FIXED';
+  mdBar.appendChild(txt('Пуск  ·  Поиск  ·  Проводник', outfit('Regular'), 10, WHITE, 200));
+  mdBar.appendChild(txt('РУС  ·  17:42  24.08.2026', outfit('Regular'), 10, WHITE));
+  mobileDesktop.appendChild(mdBar);
+
   function mobileNavOpen(name, guest) {
     const frame = al('VERTICAL', name);
     frame.itemSpacing = 0;
@@ -10285,7 +10361,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskMenuPaste, deskExplorer, deskExplorerMenu, deskFolderMenu, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder, deskNewFile]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskMenuPaste, deskExplorer, deskExplorerMenu, deskFolderMenu, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder, deskNewFile, deskTasksClosed]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
@@ -10375,6 +10451,7 @@ async function buildUniqueScreens() {
       mobileLogin,
       mobileRegister,
       mobilePractice,
+      mobileDesktop,
       mobileNavGuest,
       mobileNavAuthed,
       mobilePath,
