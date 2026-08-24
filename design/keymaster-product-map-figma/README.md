@@ -23,7 +23,7 @@ Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01�
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
-| `05 — Components` | Button, Input, Badge, KeyCap, Nav, Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, Skeleton |
+| `05 — Components` | Button, Input, Badge, KeyCap, Nav, Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
 | `07 — Mobile Screens` | 390 captures (BottomNav, keyboard gate) |
 
