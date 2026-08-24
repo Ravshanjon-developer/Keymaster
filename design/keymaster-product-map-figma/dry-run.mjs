@@ -94,6 +94,7 @@ const figma = {
   createText: () => node('TEXT'),
   createFrame: () => node('FRAME'),
   createRectangle: () => node('RECTANGLE'),
+  createEllipse: () => node('ELLIPSE'),
   createAutoLayout: (dir) => {
     const f = node('FRAME');
     f.layoutMode = dir || 'HORIZONTAL';
@@ -276,6 +277,12 @@ if (!names.includes('User flows — screens')) fail.push('no visual flows');
 if (!names.includes('Leaderboard /leaderboard')) fail.push('no leaderboard unique screen');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
+if (!names.includes('Lesson study-only /lessons/:id')) fail.push('no study-only lesson unique screen');
+if (!names.includes('Auth callback /auth/callback')) fail.push('no auth callback unique screen');
+if (!names.includes('Typing path /typing')) fail.push('no typing path unique screen');
+if (!names.includes('Typing progress /typing')) fail.push('no typing progress unique screen');
+if (!names.includes('Quiz done /quiz')) fail.push('no quiz done unique screen');
+if (!names.includes('Practice hub /practice')) fail.push('no practice hub unique screen');
 if (!sets.includes('Exam')) fail.push('no Exam set');
 if (!sets.includes('Navbar')) fail.push('no Navbar set');
 if (!sets.includes('PasswordStrength')) fail.push('no PasswordStrength set');

@@ -15,6 +15,8 @@ Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter)
 
 Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 53 as-is shots.
 
+Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
+
 ## Pages created
 
 | Page | Contents |
@@ -27,7 +29,7 @@ Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01�
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
 | `07 — Mobile Screens` | 390 captures (BottomNav, keyboard gate) |
 
-Do **not** duplicate 20 courses or every lesson. One course detail + hotkey lesson + task lesson cover the catalog.
+Do **not** duplicate 20 courses or every lesson. One course detail + hotkey + task + study-only lesson cover the catalog.
 
 ## After the file exists
 
