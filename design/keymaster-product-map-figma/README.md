@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog, course detail, hotkey/task lessons, review, and quiz unique screens match live RU copy (Ctrl+C copy lesson, Файл и папка task, 1/19 review, quiz Q1). Path unique screen matches live viewport (Novice Operator, 0/20, First Laptop + START node). ImmersiveSimulator unique screens match Code Lab empty state and desktop first-task. Guest + authed Home CTAs, live leaderboard, admin 2/20/193/13/0/1, PathNode 5 statuses, dark + mobile 390 |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog, course, lessons, review, quiz, exam run (1/20 · 10:00 · «В начало строки»), typing (home-row RU), and speed idle unique screens match live RU copy. Path unique screen matches live viewport (Novice Operator, 0/20, First Laptop + START node). ImmersiveSimulator unique screens match Code Lab empty state and desktop first-task. Guest + authed Home CTAs, live leaderboard, admin 2/20/193/13/0/1, PathNode 5 statuses, dark + mobile 390 |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |

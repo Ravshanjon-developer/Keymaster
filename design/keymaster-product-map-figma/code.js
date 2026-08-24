@@ -4139,43 +4139,15 @@ async function buildUniqueScreens() {
   callbackCard.appendChild(skel);
   callbackCard.appendChild(txt('Local auth: /auth/callback redirects to /login', outfit('Regular'), 11, MUTED, 344));
 
-  const typingBody = al('VERTICAL', 'Typing');
-  typingBody.itemSpacing = 12;
-  const typingTabs = al('HORIZONTAL', 'views');
-  typingTabs.itemSpacing = 8;
-  for (const [label, on] of [
-    ['Тренировка', true],
-    ['Путь', false],
-    ['Прогресс', false],
-  ]) {
-    const tab = al('HORIZONTAL', label);
-    tab.paddingLeft = tab.paddingRight = 12;
-    tab.paddingTop = tab.paddingBottom = 6;
-    tab.cornerRadius = 8;
-    tab.fills = on ? [solid(BRAND50)] : [TRANSPARENT];
-    tab.appendChild(txt(label, outfit('SemiBold'), 12, on ? BRAND : MUTED));
-    typingTabs.appendChild(tab);
-  }
-  typingBody.appendChild(txt('Тренажёр печати', outfit('SemiBold'), 22, INK));
-  typingBody.appendChild(typingTabs);
-  typingBody.appendChild(txt('the quick brown fox jumps over the lazy dog', outfit('Regular'), 18, INK, 680));
-  const metrics = al('HORIZONTAL', 'metrics');
-  metrics.itemSpacing = 16;
-  for (const [k, v] of [
-    ['WPM', '42'],
-    ['Точность', '96%'],
-    ['Ошибки', '2'],
-  ]) {
-    const m = al('VERTICAL', k);
-    m.appendChild(txt(k, outfit('Regular'), 11, MUTED));
-    m.appendChild(txt(v, outfit('SemiBold'), 18, INK));
-    metrics.appendChild(m);
-  }
-  typingBody.appendChild(metrics);
-
   function typingSeg(active) {
-    const tabs = al('HORIZONTAL', 'views');
-    tabs.itemSpacing = 8;
+    const wrap = al('HORIZONTAL', 'views');
+    wrap.itemSpacing = 12;
+    wrap.counterAxisAlignItems = 'CENTER';
+    const tabs = al('HORIZONTAL', 'seg');
+    tabs.itemSpacing = 4;
+    tabs.paddingTop = tabs.paddingBottom = tabs.paddingLeft = tabs.paddingRight = 4;
+    tabs.cornerRadius = 12;
+    tabs.fills = [solid(WHITE)];
     for (const [label, on] of [
       ['Тренировка', active === 'Тренировка'],
       ['Путь', active === 'Путь'],
@@ -4185,51 +4157,178 @@ async function buildUniqueScreens() {
       tab.paddingLeft = tab.paddingRight = 12;
       tab.paddingTop = tab.paddingBottom = 6;
       tab.cornerRadius = 8;
-      tab.fills = on ? [solid(BRAND50)] : [TRANSPARENT];
-      tab.appendChild(txt(label, outfit('SemiBold'), 12, on ? BRAND : MUTED));
+      tab.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+      tab.appendChild(txt(label, outfit('SemiBold'), 12, on ? WHITE : MUTED));
       tabs.appendChild(tab);
     }
-    return tabs;
+    wrap.appendChild(tabs);
+    const lang = al('HORIZONTAL', 'RU/EN');
+    lang.itemSpacing = 4;
+    lang.paddingTop = lang.paddingBottom = lang.paddingLeft = lang.paddingRight = 4;
+    lang.cornerRadius = 12;
+    lang.fills = [solid(WHITE)];
+    for (const [label, on] of [
+      ['RU', true],
+      ['EN', false],
+    ]) {
+      const chip = al('HORIZONTAL', label);
+      chip.paddingLeft = chip.paddingRight = 10;
+      chip.paddingTop = chip.paddingBottom = 4;
+      chip.cornerRadius = 8;
+      chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+      chip.appendChild(txt(label, outfit('Bold'), 11, on ? WHITE : MUTED));
+      lang.appendChild(chip);
+    }
+    wrap.appendChild(lang);
+    return wrap;
   }
+
+  function typingHead(active) {
+    const head = al('VERTICAL', 'typing head');
+    head.itemSpacing = 8;
+    head.appendChild(txt('СЛЕПАЯ ПЕЧАТЬ', outfit('Bold'), 11, BRAND800));
+    head.appendChild(txt('Тренажёр печати', fraunces('Bold'), 32, INK));
+    head.appendChild(txt('Смотрите на экран. Печатайте. После подхода увидите, что улучшить.', outfit('Regular'), 13, MUTED, 680));
+    head.appendChild(typingSeg(active));
+    return head;
+  }
+
+  const typingBody = al('VERTICAL', 'Typing');
+  typingBody.itemSpacing = 12;
+  typingBody.appendChild(typingHead('Тренировка'));
+  const modeRow = al('HORIZONTAL', 'modes');
+  modeRow.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Домашний ряд', true],
+    ['Все буквы', false],
+    ['Слова', false],
+    ['Фразы', false],
+    ['Код', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 8;
+    chip.cornerRadius = 99;
+    chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+    chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+    modeRow.appendChild(chip);
+  }
+  typingBody.appendChild(modeRow);
+  const metrics = al('HORIZONTAL', 'metrics');
+  metrics.itemSpacing = 12;
+  for (const [k, v] of [
+    ['WPM', '0'],
+    ['ТОЧНОСТЬ', '100%'],
+    ['ОШИБКИ', '0'],
+    ['РЕКОРД', '—'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 4;
+    m.paddingTop = m.paddingBottom = 16;
+    m.paddingLeft = m.paddingRight = 16;
+    m.cornerRadius = 16;
+    m.fills = [solid(WHITE)];
+    m.resize(155, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    m.appendChild(txt(v, outfit('SemiBold'), 20, INK));
+    metrics.appendChild(m);
+  }
+  typingBody.appendChild(metrics);
+  const typeBox = al('VERTICAL', 'prompt');
+  typeBox.itemSpacing = 8;
+  typeBox.paddingTop = typeBox.paddingBottom = 20;
+  typeBox.paddingLeft = typeBox.paddingRight = 20;
+  typeBox.cornerRadius = 24;
+  typeBox.fills = [solid(WHITE)];
+  typeBox.appendChild(txt('фыва олдж фыва олдж ваол джфы аовы лджф', outfit('Regular'), 18, INK, 640));
+  typingBody.appendChild(typeBox);
+  const typeCtl = al('HORIZONTAL', 'typing controls');
+  typeCtl.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  typeCtl.resize(680, 10);
+  typeCtl.layoutSizingHorizontal = 'FIXED';
+  typeCtl.layoutSizingVertical = 'HUG';
+  typeCtl.appendChild(instSecondary('Ещё раз'));
+  typeCtl.appendChild(txt('Скрыть клавиатуру', outfit('SemiBold'), 13, BRAND800));
+  typingBody.appendChild(typeCtl);
+  typingBody.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
+
   const typingPath = al('VERTICAL', 'Typing path');
   typingPath.itemSpacing = 12;
-  typingPath.appendChild(txt('Тренажёр печати', outfit('SemiBold'), 22, INK));
-  typingPath.appendChild(typingSeg('Путь'));
-  typingPath.appendChild(txt('Один шаг за раз. Откройте следующий уровень, пройдя текущий.', outfit('Regular'), 13, MUTED, 680));
-  for (const [label, status] of [
-    ['Домашний ряд', 'Открыто'],
-    ['Слова', 'Заблокировано'],
+  typingPath.appendChild(typingHead('Путь'));
+  const pathCard = al('VERTICAL', 'Путь обучения');
+  pathCard.itemSpacing = 12;
+  pathCard.paddingTop = pathCard.paddingBottom = 20;
+  pathCard.paddingLeft = pathCard.paddingRight = 20;
+  pathCard.cornerRadius = 24;
+  pathCard.fills = [solid(WHITE)];
+  pathCard.appendChild(txt('Путь обучения', outfit('SemiBold'), 18, INK));
+  pathCard.appendChild(txt('Один шаг за раз. Откройте следующий уровень, пройдя текущий.', outfit('Regular'), 13, MUTED, 640));
+  pathCard.appendChild(txt('Уроки пути: 0%', outfit('Regular'), 12, MUTED));
+  for (const [label, desc, locked] of [
+    ['Домашний ряд', 'Основа: пальцы на ФЫВА ОЛДЖ.', false],
+    ['Буквы', 'Все буквы без спешки.', true],
+    ['Слова', 'Короткие рабочие слова.', true],
+    ['Предложения', 'Ритм и пробелы.', true],
+    ['Цифры', 'Верхний ряд без взгляда вниз.', true],
   ]) {
     const n = al('HORIZONTAL', label);
     n.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    n.counterAxisAlignItems = 'CENTER';
     n.paddingTop = n.paddingBottom = 12;
     n.paddingLeft = n.paddingRight = 12;
     n.cornerRadius = 12;
-    n.fills = [solid(WHITE)];
-    n.resize(680, 10);
+    n.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    n.resize(640, 10);
     n.layoutSizingHorizontal = 'FIXED';
     n.layoutSizingVertical = 'HUG';
-    n.appendChild(txt(label, outfit('SemiBold'), 14, INK));
-    n.appendChild(txt(status, outfit('Regular'), 12, MUTED));
-    typingPath.appendChild(n);
+    const copy = al('VERTICAL', 'copy');
+    copy.itemSpacing = 2;
+    copy.appendChild(txt(label, outfit('SemiBold'), 14, INK));
+    copy.appendChild(txt(desc + (locked ? ' Закрыто' : ''), outfit('Regular'), 12, MUTED, 420));
+    n.appendChild(copy);
+    n.appendChild(locked ? txt('Закрыто', outfit('Regular'), 12, MUTED) : instPrimary('Начать'));
+    pathCard.appendChild(n);
   }
+  typingPath.appendChild(pathCard);
+
   const typingProgress = al('VERTICAL', 'Typing progress');
   typingProgress.itemSpacing = 12;
-  typingProgress.appendChild(txt('Тренажёр печати', outfit('SemiBold'), 22, INK));
-  typingProgress.appendChild(typingSeg('Прогресс'));
+  typingProgress.appendChild(typingHead('Прогресс'));
+  const progCard = al('VERTICAL', 'Ваш прогресс');
+  progCard.itemSpacing = 12;
+  progCard.paddingTop = progCard.paddingBottom = 20;
+  progCard.paddingLeft = progCard.paddingRight = 20;
+  progCard.cornerRadius = 24;
+  progCard.fills = [solid(WHITE)];
+  progCard.appendChild(txt('Ваш прогресс', outfit('SemiBold'), 18, INK));
   const rec = al('HORIZONTAL', 'records');
-  rec.itemSpacing = 16;
+  rec.itemSpacing = 12;
   for (const [k, v] of [
-    ['Рекорд', '48 WPM'],
-    ['Точность', '97%'],
-    ['Подходы', '12'],
+    ['РЕКОРД', '—'],
+    ['ТОЧНОСТЬ', '—'],
+    ['ПОДХОДЫ', '0'],
+    ['СЕРИЯ ДНЕЙ', '0'],
   ]) {
     const m = al('VERTICAL', k);
-    m.appendChild(txt(k, outfit('Regular'), 11, MUTED));
+    m.itemSpacing = 4;
+    m.paddingTop = m.paddingBottom = 12;
+    m.paddingLeft = m.paddingRight = 12;
+    m.cornerRadius = 12;
+    m.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    m.resize(140, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
     m.appendChild(txt(v, outfit('SemiBold'), 18, INK));
     rec.appendChild(m);
   }
-  typingProgress.appendChild(rec);
+  progCard.appendChild(rec);
+  progCard.appendChild(txt('Время практики: 0:00', outfit('Regular'), 13, MUTED));
+  progCard.appendChild(txt('WPM ЗА НЕДЕЛЮ', outfit('Bold'), 10, MUTED));
+  typingProgress.appendChild(progCard);
 
   const trainBody = al('VERTICAL', 'Training');
   trainBody.itemSpacing = 12;
@@ -4282,23 +4381,16 @@ async function buildUniqueScreens() {
   trainBody.appendChild(trainCard);
 
   const speedBody = al('VERTICAL', 'Speed');
-  speedBody.itemSpacing = 10;
-  speedBody.appendChild(txt('Режим скорости', outfit('SemiBold'), 22, INK));
-  speedBody.appendChild(txt('60 секунд на реакцию', outfit('Regular'), 13, MUTED));
-  const speedRow = al('HORIZONTAL', 'score');
-  speedRow.itemSpacing = 16;
-  for (const [k, v] of [
-    ['Осталось', '48'],
-    ['Очки', '120'],
-    ['Комбо', '4'],
-  ]) {
-    const m = al('VERTICAL', k);
-    m.appendChild(txt(k, outfit('Regular'), 11, MUTED));
-    m.appendChild(txt(v, outfit('SemiBold'), 20, INK));
-    speedRow.appendChild(m);
-  }
-  speedBody.appendChild(speedRow);
-  speedBody.appendChild(instPrimary('Старт 60 сек'));
+  speedBody.itemSpacing = 16;
+  const speedHead = al('HORIZONTAL', 'speed head');
+  speedHead.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  speedHead.counterAxisAlignItems = 'CENTER';
+  speedHead.resize(680, 10);
+  speedHead.layoutSizingHorizontal = 'FIXED';
+  speedHead.layoutSizingVertical = 'HUG';
+  speedHead.appendChild(txt('Режим скорости', fraunces('Bold'), 32, INK));
+  speedHead.appendChild(instPrimary('Старт 60 сек'));
+  speedBody.appendChild(speedHead);
 
   const speedDone = al('VERTICAL', 'Speed done');
   speedDone.itemSpacing = 12;
@@ -4343,19 +4435,18 @@ async function buildUniqueScreens() {
   const examRunMeta = al('HORIZONTAL', 'meta');
   examRunMeta.itemSpacing = 8;
   examRunMeta.counterAxisAlignItems = 'CENTER';
-  examRunMeta.appendChild(txt('Экзамен · 3/20', outfit('Medium'), 13, MUTED));
-  examRunMeta.appendChild(pill('Все курсы', { r: 0.976, g: 0.98, b: 0.984 }, MUTED));
+  examRunMeta.appendChild(txt('Экзамен · 1/20', outfit('Medium'), 13, MUTED));
+  examRunMeta.appendChild(pill('ВСЕ КУРСЫ', { r: 0.976, g: 0.98, b: 0.984 }, MUTED));
   examRunHead.appendChild(examRunMeta);
   const timerChip = al('HORIZONTAL', 'timer');
   timerChip.paddingLeft = timerChip.paddingRight = 12;
   timerChip.paddingTop = timerChip.paddingBottom = 6;
   timerChip.cornerRadius = 12;
   timerChip.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
-  timerChip.appendChild(txt('8:12', outfit('Bold'), 13, INK));
+  timerChip.appendChild(txt('10:00', outfit('Bold'), 13, INK));
   examRunHead.appendChild(timerChip);
   examRun.appendChild(examRunHead);
-  examRun.appendChild(progressBar(680, 0.82, BRAND, 4));
-  examRun.appendChild(progressBar(680, 0.15, BRAND, 8));
+  examRun.appendChild(instProgress('Value=Partial') || progressBar(680, 0.05, BRAND, 8));
   const scoreRow = al('HORIZONTAL', 'score');
   scoreRow.primaryAxisAlignItems = 'SPACE_BETWEEN';
   scoreRow.counterAxisAlignItems = 'CENTER';
@@ -4364,14 +4455,31 @@ async function buildUniqueScreens() {
   scoreRow.layoutSizingVertical = 'HUG';
   const counts = al('HORIZONTAL', 'counts');
   counts.itemSpacing = 16;
-  counts.appendChild(txt('2', outfit('SemiBold'), 14, SUCCESS));
-  counts.appendChild(txt('1', outfit('SemiBold'), 14, SIGNAL));
+  counts.appendChild(txt('0', outfit('SemiBold'), 14, SUCCESS));
+  counts.appendChild(txt('0', outfit('SemiBold'), 14, SIGNAL));
   scoreRow.appendChild(counts);
   scoreRow.appendChild(ghostBtn('Завершить'));
   examRun.appendChild(scoreRow);
-  examRun.appendChild(txt('Вопрос 3', outfit('Bold'), 11, BRAND800));
-  examRun.appendChild(txt('Сохраните файл', outfit('SemiBold'), 20, INK));
-  examRun.appendChild(txt('Вспомните сочетание сами — без подсказок.', outfit('Regular'), 13, MUTED, 680));
+  const examQ = al('VERTICAL', 'question');
+  examQ.itemSpacing = 12;
+  examQ.paddingTop = examQ.paddingBottom = 24;
+  examQ.paddingLeft = examQ.paddingRight = 24;
+  examQ.cornerRadius = 24;
+  examQ.fills = [solid(WHITE)];
+  examQ.strokes = [solid(BRAND, 0.18)];
+  examQ.appendChild(txt('ВОПРОС 1', outfit('Bold'), 11, BRAND800));
+  examQ.appendChild(txt('В начало строки', outfit('SemiBold'), 22, INK));
+  const examPrompt = al('VERTICAL', 'prompt');
+  examPrompt.itemSpacing = 8;
+  examPrompt.primaryAxisAlignItems = 'CENTER';
+  examPrompt.paddingTop = examPrompt.paddingBottom = 24;
+  examPrompt.paddingLeft = examPrompt.paddingRight = 24;
+  examPrompt.cornerRadius = 16;
+  examPrompt.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  examPrompt.appendChild(txt('?', outfit('Bold'), 28, INK));
+  examPrompt.appendChild(txt('Вспомните сочетание сами — без подсказок.', outfit('Regular'), 13, MUTED));
+  examQ.appendChild(examPrompt);
+  examRun.appendChild(examQ);
 
   const examFeedback = al('VERTICAL', 'Exam feedback');
   examFeedback.itemSpacing = 10;
@@ -4426,11 +4534,11 @@ async function buildUniqueScreens() {
   examWrong.layoutSizingHorizontal = 'FIXED';
   examWrong.layoutSizingVertical = 'HUG';
   examWrong.appendChild(txt('Неверно', outfit('Bold'), 24, SIGNAL));
-  examWrong.appendChild(txt('К следующему слову', outfit('Regular'), 13, MUTED));
+  examWrong.appendChild(txt('Откройте замену', outfit('Regular'), 13, MUTED));
   examWrong.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
   const wrongKeys = al('HORIZONTAL', 'combo');
   wrongKeys.itemSpacing = 8;
-  for (const k of ['Ctrl', '→']) {
+  for (const k of ['Ctrl', 'H']) {
     const cap = instKeyCap(k);
     if (cap) {
       wrongKeys.appendChild(cap);
@@ -4449,7 +4557,7 @@ async function buildUniqueScreens() {
     wrongKeys.appendChild(box);
   }
   examWrong.appendChild(wrongKeys);
-  examWrong.appendChild(txt('Ctrl + →', outfit('SemiBold'), 18, INK));
+  examWrong.appendChild(txt('Ctrl + H', outfit('SemiBold'), 18, INK));
   examWrong.appendChild(txt('Следующий вопрос через 3…', outfit('Regular'), 13, MUTED));
   examWrong.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
 
@@ -4496,7 +4604,7 @@ async function buildUniqueScreens() {
     ['Точность ответов', '0%'],
     ['Пройдено', '0/20'],
     ['Без ответа', '20'],
-    ['Время', '0:08'],
+    ['Время', '0:00'],
   ]) {
     const st = al('VERTICAL', k);
     st.itemSpacing = 4;
@@ -4872,7 +4980,7 @@ async function buildUniqueScreens() {
         })(),
       ], false, true),
       marketingPage('Admin forbidden', '', false, [
-        txt('Доступ только для администраторов', outfit('SemiBold'), 22, INK, 800),
+        txt('Доступ только для администраторов', fraunces('Bold'), 32, INK, 800),
       ]),
     ]),
   );

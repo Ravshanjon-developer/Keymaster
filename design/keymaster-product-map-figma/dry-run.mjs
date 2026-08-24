@@ -377,6 +377,14 @@ if (!names.includes('Неправильно!')) fail.push('no live quiz wrong to
 if (!names.includes('+5 XP')) fail.push('no live quiz correct XP unique screen');
 if (!names.includes('Вырезать')) fail.push('no live review front unique screen');
 if (!names.includes('На лицевую сторону')) fail.push('no live review flipped unique screen');
+if (!names.includes('Экзамен · 1/20')) fail.push('no live exam-run 1/20 unique screen');
+if (!names.includes('10:00')) fail.push('no live exam-run timer unique screen');
+if (!names.includes('Откройте замену')) fail.push('no live exam-wrong combo unique screen');
+if (!names.includes('фыва олдж фыва олдж ваол джфы аовы лджф')) fail.push('no live typing home-row unique screen');
+if (!names.includes('Ваш прогресс')) fail.push('no live typing progress unique screen');
+if (!names.includes('Уроки пути: 0%')) fail.push('no live typing path unique screen');
+if (!names.includes('Старт 60 сек')) fail.push('no live speed start unique screen');
+if (!names.includes('Время практики: 0:00')) fail.push('no live typing practice-time unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
