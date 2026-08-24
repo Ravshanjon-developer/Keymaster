@@ -362,6 +362,21 @@ if (!names.includes('0/20 курсов')) fail.push('no live path 0/20 courses u
 if (!names.includes('Готовы к практике?')) fail.push('no live code-lab empty unique screen');
 if (!names.includes('Welcome.txt')) fail.push('no live desktop Welcome.txt unique screen');
 if (!names.includes('Создайте папку «Practice»')) fail.push('no live desktop first-task unique screen');
+if (!names.includes('Копировать')) fail.push('no live lesson hotkey title unique screen');
+if (!names.includes('Учебное поле')) fail.push('no live lesson hotkey demo unique screen');
+if (!names.includes('Задание 1 из 13')) fail.push('no live training progress unique screen');
+if (!names.includes('В начало строки')) fail.push('no live training prompt unique screen');
+if (!names.includes('Путь обучения')) fail.push('no live catalog path CTA unique screen');
+if (!names.includes('ОБЯЗАТЕЛЬНЫЙ СТАРТ')) fail.push('no live course-detail start badge unique screen');
+if (!names.includes('Отметить выполненным')) fail.push('no live task-lesson complete CTA unique screen');
+if (!names.includes('Поймите разницу между файлом и папкой')) fail.push('no live task-lesson hint unique screen');
+if (!names.includes('Какая комбинация клавиш используется для копирования текста или файла?')) {
+  fail.push('no live quiz question unique screen');
+}
+if (!names.includes('Неправильно!')) fail.push('no live quiz wrong toast unique screen');
+if (!names.includes('+5 XP')) fail.push('no live quiz correct XP unique screen');
+if (!names.includes('Вырезать')) fail.push('no live review front unique screen');
+if (!names.includes('На лицевую сторону')) fail.push('no live review flipped unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));

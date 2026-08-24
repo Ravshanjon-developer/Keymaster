@@ -2785,12 +2785,44 @@ async function buildUniqueScreens() {
 
   const lessonHotkey = al('VERTICAL', 'KeyboardTrainer');
   lessonHotkey.itemSpacing = 12;
-  lessonHotkey.primaryAxisAlignItems = 'CENTER';
-  lessonHotkey.counterAxisAlignItems = 'CENTER';
-  lessonHotkey.appendChild(txt('Сохраните файл', outfit('SemiBold'), 20, INK));
+  const notLearned = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
+  notLearned.itemSpacing = 6;
+  notLearned.paddingLeft = notLearned.paddingRight = 10;
+  notLearned.paddingTop = notLearned.paddingBottom = 4;
+  notLearned.cornerRadius = 99;
+  notLearned.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  notLearned.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+  lessonHotkey.appendChild(notLearned);
+  const trainerCard = al('VERTICAL', 'trainer card');
+  trainerCard.itemSpacing = 16;
+  trainerCard.paddingTop = trainerCard.paddingBottom = 24;
+  trainerCard.paddingLeft = trainerCard.paddingRight = 24;
+  trainerCard.cornerRadius = 24;
+  trainerCard.fills = [solid(WHITE)];
+  trainerCard.strokes = [solid(BRAND, 0.18)];
+  trainerCard.resize(640, 10);
+  trainerCard.layoutSizingHorizontal = 'FIXED';
+  trainerCard.layoutSizingVertical = 'HUG';
+  trainerCard.appendChild(txt('Копировать', outfit('SemiBold'), 22, INK));
+  const demo = al('VERTICAL', 'Учебное поле');
+  demo.itemSpacing = 8;
+  demo.paddingTop = demo.paddingBottom = 16;
+  demo.paddingLeft = demo.paddingRight = 16;
+  demo.cornerRadius = 16;
+  demo.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  demo.appendChild(txt('Учебное поле', outfit('Bold'), 11, MUTED));
+  const demoText = al('HORIZONTAL', 'selection');
+  demoText.paddingLeft = demoText.paddingRight = 8;
+  demoText.paddingTop = demoText.paddingBottom = 4;
+  demoText.cornerRadius = 6;
+  demoText.fills = [solid(BRAND, 0.18)];
+  demoText.appendChild(txt('Выделенный текст для тренировки', outfit('Regular'), 14, INK));
+  demo.appendChild(demoText);
+  trainerCard.appendChild(demo);
   const keys = al('HORIZONTAL', 'KeyCombo');
   keys.itemSpacing = 8;
-  for (const k of ['Ctrl', 'S']) {
+  keys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Ctrl', 'C']) {
     const cap = instKeyCap(k);
     if (cap) {
       keys.appendChild(cap);
@@ -2810,14 +2842,82 @@ async function buildUniqueScreens() {
     box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
     keys.appendChild(box);
   }
-  lessonHotkey.appendChild(keys);
-  lessonHotkey.appendChild(txt('Изучено / Не изучено · flash ok/err', outfit('Regular'), 12, MUTED));
+  trainerCard.appendChild(keys);
+  trainerCard.appendChild(txt('Зажмите Ctrl, затем вторую клавишу', outfit('Regular'), 12, MUTED));
+  const trainerBtns = al('HORIZONTAL', 'trainer actions');
+  trainerBtns.itemSpacing = 8;
+  trainerBtns.appendChild(instSecondary('Показать ответ'));
+  trainerBtns.appendChild(ghostBtn('Объяснение'));
+  trainerCard.appendChild(trainerBtns);
+  lessonHotkey.appendChild(trainerCard);
+  lessonHotkey.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const lessonTask = al('VERTICAL', 'Task lesson');
-  lessonTask.itemSpacing = 10;
-  lessonTask.appendChild(txt('Задание · симулятор', outfit('Bold'), 11, BRAND));
-  lessonTask.appendChild(txt('Создайте папку Documents на рабочем столе', outfit('SemiBold'), 18, INK, 800));
-  lessonTask.appendChild(instPrimary('Симулятор рабочего стола'));
+  lessonTask.itemSpacing = 12;
+  const taskNotLearned = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
+  taskNotLearned.itemSpacing = 6;
+  taskNotLearned.paddingLeft = taskNotLearned.paddingRight = 10;
+  taskNotLearned.paddingTop = taskNotLearned.paddingBottom = 4;
+  taskNotLearned.cornerRadius = 99;
+  taskNotLearned.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  taskNotLearned.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+  lessonTask.appendChild(taskNotLearned);
+  const taskCard = al('VERTICAL', 'task card');
+  taskCard.itemSpacing = 16;
+  taskCard.paddingTop = taskCard.paddingBottom = 24;
+  taskCard.paddingLeft = taskCard.paddingRight = 24;
+  taskCard.cornerRadius = 24;
+  taskCard.fills = [solid(WHITE)];
+  taskCard.strokes = [solid(INK, 0.08)];
+  taskCard.resize(720, 10);
+  taskCard.layoutSizingHorizontal = 'FIXED';
+  taskCard.layoutSizingVertical = 'HUG';
+  taskCard.appendChild(txt('Файл и папка', fraunces('Bold'), 28, INK));
+  taskCard.appendChild(
+    txt(
+      'Папки помогают не искать всё на рабочем столе. У файла есть имя и расширение: report.docx, photo.jpg.',
+      outfit('Regular'),
+      14,
+      MUTED,
+      672,
+    ),
+  );
+  const taskHint = al('VERTICAL', 'hint');
+  taskHint.paddingTop = taskHint.paddingBottom = 14;
+  taskHint.paddingLeft = taskHint.paddingRight = 16;
+  taskHint.cornerRadius = 16;
+  taskHint.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  taskHint.appendChild(txt('Поймите разницу между файлом и папкой', outfit('SemiBold'), 14, BRAND800, 640));
+  taskCard.appendChild(taskHint);
+  const taskPanel = al('VERTICAL', 'ЗАДАНИЕ');
+  taskPanel.itemSpacing = 12;
+  taskPanel.paddingTop = taskPanel.paddingBottom = 20;
+  taskPanel.paddingLeft = taskPanel.paddingRight = 20;
+  taskPanel.cornerRadius = 16;
+  taskPanel.fills = [solid(WHITE)];
+  taskPanel.strokes = [solid(INK, 0.1)];
+  taskPanel.appendChild(txt('ЗАДАНИЕ', outfit('Bold'), 11, BRAND800));
+  taskPanel.appendChild(txt('Файл и папка', outfit('SemiBold'), 16, INK));
+  taskPanel.appendChild(txt('Поймите разницу между файлом и папкой', outfit('Regular'), 13, MUTED, 640));
+  const steps = al('VERTICAL', 'Шаги');
+  steps.itemSpacing = 6;
+  steps.paddingTop = steps.paddingBottom = 12;
+  steps.paddingLeft = steps.paddingRight = 14;
+  steps.cornerRadius = 12;
+  steps.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  steps.appendChild(txt('Шаги', outfit('SemiBold'), 13, INK));
+  steps.appendChild(txt('• Папка — «конверт»', outfit('Regular'), 13, MUTED, 600));
+  steps.appendChild(txt('• Файл — одна заметка, фото или программа', outfit('Regular'), 13, MUTED, 600));
+  taskPanel.appendChild(steps);
+  const taskBtns = al('HORIZONTAL', 'task actions');
+  taskBtns.itemSpacing = 8;
+  taskBtns.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  taskBtns.appendChild(instPrimary('Отметить выполненным'));
+  taskPanel.appendChild(taskBtns);
+  taskPanel.appendChild(txt('Честно отметьте, когда прочитали шаги.', outfit('Regular'), 12, MUTED, 600));
+  taskCard.appendChild(taskPanel);
+  lessonTask.appendChild(taskCard);
+  lessonTask.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const lessonStudy = al('VERTICAL', 'Study-only lesson');
   lessonStudy.itemSpacing = 10;
@@ -3397,38 +3497,135 @@ async function buildUniqueScreens() {
   }
   journey.appendChild(instPrimary('Открыть «Первый ноутбук»'));
 
-  const quiz = al('VERTICAL', 'Quiz');
-  quiz.itemSpacing = 10;
-  quiz.appendChild(txt('Основы hotkeys', outfit('SemiBold'), 18, INK));
-  quiz.appendChild(txt('Какое сочетание сохраняет файл?', outfit('Regular'), 14, MUTED, 680));
-  for (const [opt, on] of [
-    ['Ctrl + S', true],
-    ['Ctrl + P', false],
-    ['Alt + F4', false],
-  ]) {
-    const row = al('HORIZONTAL', opt);
-    row.paddingTop = row.paddingBottom = 10;
-    row.paddingLeft = row.paddingRight = 12;
-    row.cornerRadius = 12;
-    row.fills = [solid(on ? BRAND50 : WHITE)];
-    row.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.1)];
-    row.appendChild(txt(opt, outfit('Medium'), 14, INK));
-    quiz.appendChild(row);
+  const quizQ = 'Какая комбинация клавиш используется для копирования текста или файла?';
+  const quizOpts = ['Ctrl + X', 'Ctrl + C', 'Ctrl + V', 'Ctrl + Z'];
+
+  function quizStats(question, correct, xp) {
+    const row = al('HORIZONTAL', 'quiz stats');
+    row.itemSpacing = 12;
+    for (const [k, v] of [
+      ['ВОПРОС', question],
+      ['ВЕРНО', correct],
+      ['XP', xp],
+    ]) {
+      const c = al('VERTICAL', k);
+      c.itemSpacing = 4;
+      c.paddingTop = c.paddingBottom = 16;
+      c.paddingLeft = c.paddingRight = 16;
+      c.cornerRadius = 24;
+      c.fills = [solid(WHITE)];
+      c.resize(155, 10);
+      c.layoutSizingHorizontal = 'FIXED';
+      c.layoutSizingVertical = 'HUG';
+      c.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+      c.appendChild(txt(v, outfit('SemiBold'), 20, INK));
+      row.appendChild(c);
+    }
+    return row;
   }
 
+  function quizOption(label, state) {
+    const row = al('HORIZONTAL', label);
+    row.itemSpacing = 10;
+    row.counterAxisAlignItems = 'CENTER';
+    row.paddingTop = row.paddingBottom = 12;
+    row.paddingLeft = row.paddingRight = 14;
+    row.cornerRadius = 16;
+    row.fills = [
+      solid(state === 'correct' ? { r: 0.925, g: 0.99, b: 0.961 } : state === 'wrong' ? { r: 1, g: 0.941, b: 0.945 } : WHITE),
+    ];
+    row.strokes = [
+      solid(
+        state === 'correct' ? SUCCESS : state === 'wrong' ? SIGNAL : INK,
+        state === 'idle' ? 0.12 : 0.45,
+      ),
+    ];
+    row.appendChild(txt(state === 'correct' ? '✓' : state === 'wrong' ? '×' : '○', outfit('Bold'), 14, state === 'correct' ? SUCCESS : state === 'wrong' ? SIGNAL : MUTED));
+    row.appendChild(txt(label, outfit('Medium'), 14, INK));
+    return row;
+  }
+
+  const quiz = al('VERTICAL', 'Quiz');
+  quiz.itemSpacing = 12;
+  quiz.appendChild(txt('ОСНОВЫ HOTKEYS', outfit('Bold'), 11, BRAND800));
+  quiz.appendChild(txt('Основы hotkeys', fraunces('Bold'), 32, INK));
+  quiz.appendChild(txt('25 вопросов о горячих клавишах: копирование, навигация, окна и практика.', outfit('Regular'), 13, MUTED, 680));
+  quiz.appendChild(quizStats('1/25', '0', '0'));
+  const quizCard = al('VERTICAL', 'question');
+  quizCard.itemSpacing = 12;
+  quizCard.paddingTop = quizCard.paddingBottom = 24;
+  quizCard.paddingLeft = quizCard.paddingRight = 24;
+  quizCard.cornerRadius = 24;
+  quizCard.fills = [solid(WHITE)];
+  const qHead = al('HORIZONTAL', 'q head');
+  qHead.itemSpacing = 8;
+  qHead.counterAxisAlignItems = 'CENTER';
+  qHead.appendChild(txt('Вопрос 1', outfit('SemiBold'), 14, INK));
+  qHead.appendChild(pill('базовый', BRAND50, BRAND800));
+  quizCard.appendChild(qHead);
+  quizCard.appendChild(txt(quizQ, outfit('SemiBold'), 16, INK, 640));
+  for (const opt of quizOpts) quizCard.appendChild(quizOption(opt, 'idle'));
+  quiz.appendChild(quizCard);
+
   const quizPicked = al('VERTICAL', 'Quiz picked');
-  quizPicked.itemSpacing = 10;
-  quizPicked.appendChild(txt('Основы hotkeys', outfit('SemiBold'), 18, INK));
-  quizPicked.appendChild(txt('Правильно!', outfit('SemiBold'), 14, SUCCESS));
-  quizPicked.appendChild(txt('Ctrl + S — сохраняет текущий файл.', outfit('Regular'), 13, MUTED, 680));
-  quizPicked.appendChild(instPrimary('Дальше'));
+  quizPicked.itemSpacing = 12;
+  quizPicked.appendChild(txt('ОСНОВЫ HOTKEYS', outfit('Bold'), 11, BRAND800));
+  quizPicked.appendChild(txt('Основы hotkeys', fraunces('Bold'), 32, INK));
+  quizPicked.appendChild(quizStats('1/25', '0', '0'));
+  const pickedCard = al('VERTICAL', 'question');
+  pickedCard.itemSpacing = 12;
+  pickedCard.paddingTop = pickedCard.paddingBottom = 24;
+  pickedCard.paddingLeft = pickedCard.paddingRight = 24;
+  pickedCard.cornerRadius = 24;
+  pickedCard.fills = [solid(WHITE)];
+  pickedCard.appendChild(txt('Вопрос 1', outfit('SemiBold'), 14, INK));
+  pickedCard.appendChild(txt(quizQ, outfit('SemiBold'), 16, INK, 640));
+  pickedCard.appendChild(quizOption('Ctrl + X', 'wrong'));
+  pickedCard.appendChild(quizOption('Ctrl + C', 'correct'));
+  pickedCard.appendChild(quizOption('Ctrl + V', 'idle'));
+  pickedCard.appendChild(quizOption('Ctrl + Z', 'idle'));
+  quizPicked.appendChild(pickedCard);
+  const wrongToast = al('VERTICAL', 'Неправильно!');
+  wrongToast.itemSpacing = 8;
+  wrongToast.paddingTop = wrongToast.paddingBottom = 16;
+  wrongToast.paddingLeft = wrongToast.paddingRight = 16;
+  wrongToast.cornerRadius = 16;
+  wrongToast.fills = [solid(WHITE)];
+  wrongToast.strokes = [solid(SIGNAL, 0.4)];
+  wrongToast.appendChild(txt('Неправильно!', outfit('Bold'), 16, SIGNAL));
+  wrongToast.appendChild(txt('Ctrl+C копирует выделенное в буфер обмена.', outfit('Regular'), 13, MUTED, 360));
+  wrongToast.appendChild(instPrimary('Дальше ›'));
+  quizPicked.appendChild(wrongToast);
 
   const quizDone = al('VERTICAL', 'Quiz done');
-  quizDone.itemSpacing = 10;
-  quizDone.appendChild(txt('Основы hotkeys — готово', outfit('SemiBold'), 22, INK));
-  quizDone.appendChild(txt('18 из 25', outfit('SemiBold'), 18, BRAND));
-  quizDone.appendChild(txt('Лучшая серия: 7', outfit('Regular'), 13, MUTED));
-  quizDone.appendChild(instPrimary('Ещё раз'));
+  quizDone.itemSpacing = 12;
+  quizDone.appendChild(txt('ОСНОВЫ HOTKEYS', outfit('Bold'), 11, BRAND800));
+  quizDone.appendChild(txt('Основы hotkeys', fraunces('Bold'), 32, INK));
+  quizDone.appendChild(quizStats('1/25', '1', '5'));
+  const doneCard = al('VERTICAL', 'question');
+  doneCard.itemSpacing = 12;
+  doneCard.paddingTop = doneCard.paddingBottom = 24;
+  doneCard.paddingLeft = doneCard.paddingRight = 24;
+  doneCard.cornerRadius = 24;
+  doneCard.fills = [solid(WHITE)];
+  doneCard.appendChild(txt('Вопрос 1', outfit('SemiBold'), 14, INK));
+  doneCard.appendChild(txt(quizQ, outfit('SemiBold'), 16, INK, 640));
+  doneCard.appendChild(quizOption('Ctrl + X', 'idle'));
+  doneCard.appendChild(quizOption('Ctrl + C', 'correct'));
+  doneCard.appendChild(quizOption('Ctrl + V', 'idle'));
+  doneCard.appendChild(quizOption('Ctrl + Z', 'idle'));
+  quizDone.appendChild(doneCard);
+  const okToast = al('VERTICAL', 'Правильно!');
+  okToast.itemSpacing = 8;
+  okToast.paddingTop = okToast.paddingBottom = 16;
+  okToast.paddingLeft = okToast.paddingRight = 16;
+  okToast.cornerRadius = 16;
+  okToast.fills = [solid(WHITE)];
+  okToast.strokes = [solid(SUCCESS, 0.4)];
+  okToast.appendChild(txt('Правильно!', outfit('Bold'), 16, SUCCESS));
+  okToast.appendChild(txt('+5 XP', outfit('SemiBold'), 13, SUCCESS));
+  okToast.appendChild(instPrimary('Дальше ›'));
+  quizDone.appendChild(okToast);
 
   const exam = al('VERTICAL', 'Exam setup');
   exam.itemSpacing = 12;
@@ -3502,16 +3699,45 @@ async function buildUniqueScreens() {
 
   const review = al('VERTICAL', 'Review card');
   review.itemSpacing = 12;
-  review.paddingTop = review.paddingBottom = 32;
-  review.paddingLeft = review.paddingRight = 24;
-  review.cornerRadius = 24;
-  review.fills = [solid(WHITE)];
-  review.resize(320, 10);
-  review.layoutSizingHorizontal = 'FIXED';
-  review.layoutSizingVertical = 'HUG';
-  review.primaryAxisAlignItems = 'CENTER';
-  review.appendChild(txt('Ctrl + S', outfit('SemiBold'), 28, INK));
-  review.appendChild(txt('Нажмите, чтобы перевернуть', outfit('Regular'), 12, MUTED));
+  review.appendChild(txt('Повторение', fraunces('Bold'), 32, INK));
+  review.appendChild(txt('Выберите курс. На карточке видно, для какой программы сочетание.', outfit('Regular'), 13, MUTED, 520));
+  review.appendChild(field('КУРС', 'Основные горячие клавиши программиста', INK));
+  review.appendChild(txt('1 / 19', outfit('SemiBold'), 13, MUTED));
+  const reviewFace = al('VERTICAL', 'face');
+  reviewFace.itemSpacing = 12;
+  reviewFace.paddingTop = reviewFace.paddingBottom = 32;
+  reviewFace.paddingLeft = reviewFace.paddingRight = 24;
+  reviewFace.cornerRadius = 24;
+  reviewFace.fills = [solid(WHITE)];
+  reviewFace.resize(416, 10);
+  reviewFace.layoutSizingHorizontal = 'FIXED';
+  reviewFace.layoutSizingVertical = 'HUG';
+  reviewFace.primaryAxisAlignItems = 'CENTER';
+  reviewFace.appendChild(txt('ОСНОВНЫЕ ГОРЯЧИЕ КЛАВИШИ ПРОГРАММИСТА', outfit('Bold'), 11, BRAND800));
+  const reviewKeys = al('HORIZONTAL', 'combo');
+  reviewKeys.itemSpacing = 8;
+  reviewKeys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Ctrl', 'X']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      reviewKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(BRAND)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    reviewKeys.appendChild(box);
+  }
+  reviewFace.appendChild(reviewKeys);
+  reviewFace.appendChild(txt('Вырезать', outfit('SemiBold'), 22, INK));
+  reviewFace.appendChild(txt('Нажмите карточку — подробное объяснение на обороте', outfit('Regular'), 12, MUTED, 360));
+  reviewFace.appendChild(instSecondary('Объяснение'));
+  review.appendChild(reviewFace);
+  review.appendChild(txt('Свайп влево или вправо — следующая карточка', outfit('Regular'), 12, MUTED, 400));
 
   const VSCODE_BG = { r: 0.118, g: 0.118, b: 0.118 };
   const VSCODE_SIDE = { r: 0.145, g: 0.145, b: 0.145 };
@@ -3721,7 +3947,7 @@ async function buildUniqueScreens() {
   bnav.fills = [solid(WHITE)];
   bnav.strokes = [solid(INK, 0.08)];
   for (const [label, on] of [
-    ['Курсы', true],
+    ['Курсы', false],
     ['Мой путь', false],
     ['Практика', false],
     ['Рейтинг', false],
@@ -4006,33 +4232,54 @@ async function buildUniqueScreens() {
   typingProgress.appendChild(rec);
 
   const trainBody = al('VERTICAL', 'Training');
-  trainBody.itemSpacing = 10;
-  trainBody.primaryAxisAlignItems = 'CENTER';
-  trainBody.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 20, INK));
-  trainBody.appendChild(txt('Нажмите сочетание на клавиатуре', outfit('Regular'), 13, MUTED));
-  const trainKeys = al('HORIZONTAL', 'combo');
-  trainKeys.itemSpacing = 8;
-  for (const k of ['Ctrl', 'C']) {
-    const cap = instKeyCap(k);
-    if (cap) {
-      trainKeys.appendChild(cap);
-      continue;
-    }
-    const box = al('HORIZONTAL', k);
-    box.primaryAxisAlignItems = 'CENTER';
-    box.counterAxisAlignItems = 'CENTER';
-    box.minWidth = 40;
-    box.minHeight = 40;
-    box.paddingLeft = box.paddingRight = 12;
-    box.cornerRadius = 12;
-    box.fills = [solid(WHITE)];
-    box.strokes = [solid(INK)];
-    box.strokeWeight = 1;
-    box.strokeBottomWeight = 4;
-    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    trainKeys.appendChild(box);
-  }
-  trainBody.appendChild(trainKeys);
+  trainBody.itemSpacing = 12;
+  trainBody.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const trainMeta = al('HORIZONTAL', 'train meta');
+  trainMeta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  trainMeta.counterAxisAlignItems = 'CENTER';
+  trainMeta.resize(640, 10);
+  trainMeta.layoutSizingHorizontal = 'FIXED';
+  trainMeta.layoutSizingVertical = 'HUG';
+  const trainProg = al('VERTICAL', 'progress');
+  trainProg.itemSpacing = 6;
+  trainProg.appendChild(txt('Задание 1 из 13', outfit('Regular'), 13, MUTED));
+  trainProg.appendChild(instProgress('Value=Partial') || progressBar(220, 0.08, BRAND, 6));
+  trainMeta.appendChild(trainProg);
+  const trainStats = al('HORIZONTAL', 'train stats');
+  trainStats.itemSpacing = 16;
+  trainStats.appendChild(txt('Серия: 0', outfit('SemiBold'), 13, MUTED));
+  trainStats.appendChild(txt('Верно: 0', outfit('SemiBold'), 13, MUTED));
+  trainMeta.appendChild(trainStats);
+  trainBody.appendChild(trainMeta);
+  const trainCard = al('VERTICAL', 'train card');
+  trainCard.itemSpacing = 16;
+  trainCard.paddingTop = trainCard.paddingBottom = 24;
+  trainCard.paddingLeft = trainCard.paddingRight = 24;
+  trainCard.cornerRadius = 24;
+  trainCard.fills = [solid(WHITE)];
+  trainCard.strokes = [solid(BRAND, 0.18)];
+  trainCard.primaryAxisAlignItems = 'CENTER';
+  trainCard.resize(640, 10);
+  trainCard.layoutSizingHorizontal = 'FIXED';
+  trainCard.layoutSizingVertical = 'HUG';
+  trainCard.appendChild(txt('В начало строки', outfit('SemiBold'), 20, INK));
+  const qBox = al('VERTICAL', 'prompt');
+  qBox.itemSpacing = 8;
+  qBox.primaryAxisAlignItems = 'CENTER';
+  qBox.paddingTop = qBox.paddingBottom = 24;
+  qBox.paddingLeft = qBox.paddingRight = 24;
+  qBox.cornerRadius = 16;
+  qBox.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  qBox.appendChild(txt('?', outfit('Bold'), 28, INK));
+  qBox.appendChild(txt('Нажмите сочетание на клавиатуре', outfit('Regular'), 13, MUTED));
+  trainCard.appendChild(qBox);
+  const trainBtns = al('HORIZONTAL', 'train actions');
+  trainBtns.itemSpacing = 8;
+  trainBtns.appendChild(instSecondary('Подсказка'));
+  trainBtns.appendChild(ghostBtn('Объяснение'));
+  trainBtns.appendChild(ghostBtn('Пропустить'));
+  trainCard.appendChild(trainBtns);
+  trainBody.appendChild(trainCard);
 
   const speedBody = al('VERTICAL', 'Speed');
   speedBody.itemSpacing = 10;
@@ -4273,16 +4520,51 @@ async function buildUniqueScreens() {
 
   const reviewBack = al('VERTICAL', 'Review flipped');
   reviewBack.itemSpacing = 12;
-  reviewBack.paddingTop = reviewBack.paddingBottom = 32;
-  reviewBack.paddingLeft = reviewBack.paddingRight = 24;
-  reviewBack.cornerRadius = 24;
-  reviewBack.fills = [solid(BRAND50)];
-  reviewBack.resize(320, 10);
-  reviewBack.layoutSizingHorizontal = 'FIXED';
-  reviewBack.layoutSizingVertical = 'HUG';
-  reviewBack.appendChild(txt('Что делает', outfit('Bold'), 11, BRAND));
-  reviewBack.appendChild(txt('Сохраняет текущий файл в редакторе.', outfit('Regular'), 14, INK, 272));
-  reviewBack.appendChild(txt('На лицевую сторону', outfit('Regular'), 12, MUTED));
+  reviewBack.appendChild(txt('Повторение', fraunces('Bold'), 32, INK));
+  reviewBack.appendChild(txt('1 / 19', outfit('SemiBold'), 13, MUTED));
+  const reviewFlip = al('VERTICAL', 'back');
+  reviewFlip.itemSpacing = 12;
+  reviewFlip.paddingTop = reviewFlip.paddingBottom = 32;
+  reviewFlip.paddingLeft = reviewFlip.paddingRight = 24;
+  reviewFlip.cornerRadius = 24;
+  reviewFlip.fills = [solid(WHITE)];
+  reviewFlip.resize(416, 10);
+  reviewFlip.layoutSizingHorizontal = 'FIXED';
+  reviewFlip.layoutSizingVertical = 'HUG';
+  reviewFlip.primaryAxisAlignItems = 'CENTER';
+  reviewFlip.appendChild(txt('ОСНОВНЫЕ ГОРЯЧИЕ КЛАВИШИ ПРОГРАММИСТА', outfit('Bold'), 11, BRAND800));
+  reviewFlip.appendChild(txt('ЧТО ДЕЛАЕТ', outfit('Bold'), 11, MUTED));
+  const flipKeys = al('HORIZONTAL', 'combo');
+  flipKeys.itemSpacing = 8;
+  flipKeys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Alt', 'Tab']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      flipKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(BRAND)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    flipKeys.appendChild(box);
+  }
+  reviewFlip.appendChild(flipKeys);
+  reviewFlip.appendChild(txt('Окна', outfit('SemiBold'), 22, INK));
+  reviewFlip.appendChild(
+    txt(
+      'Переключает между открытыми окнами программ. Удерживайте Alt и нажимайте Tab, пока не выберете нужное окно.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      360,
+    ),
+  );
+  reviewFlip.appendChild(instSecondary('На лицевую сторону'));
+  reviewBack.appendChild(reviewFlip);
 
   const gate = al('VERTICAL', 'Keyboard gate');
   gate.itemSpacing = 0;
@@ -4398,32 +4680,60 @@ async function buildUniqueScreens() {
       marketingPage('Home /', 'Главная', true, homeBody),
       marketingPage('Home authed /', 'Главная', false, homeAuthed),
       marketingPage('Courses /courses', 'Курсы', true, [
-        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
-        txt('Каталог курсов', outfit('SemiBold'), 28, INK),
-        txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 860),
+        (() => {
+          const head = al('HORIZONTAL', 'catalog head');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'MAX';
+          head.resize(880, 10);
+          head.layoutSizingHorizontal = 'FIXED';
+          head.layoutSizingVertical = 'HUG';
+          const titles = al('VERTICAL', 'titles');
+          titles.itemSpacing = 6;
+          titles.appendChild(txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800));
+          titles.appendChild(txt('Каталог курсов', fraunces('Bold'), 32, INK));
+          titles.appendChild(txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 640));
+          head.appendChild(titles);
+          head.appendChild(secondaryBtn('Путь обучения'));
+          return head;
+        })(),
         field('Поиск', 'Название курса или инструмента', INK),
         filterRow,
-        txt('Один layout карточки · статусы Старт / В процессе / Готово / Обязательный старт', outfit('Regular'), 13, MUTED, 860),
+        txt('Один layout карточки · 20 курсов. Не дублировать каталог — статусы Старт / В процессе / Готово.', outfit('Regular'), 13, MUTED, 860),
         coursesRow,
       ]),
       marketingPage('Course detail /courses/:slug', 'Курсы', true, [
-        pill('Обязательный старт', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
-        txt('Первый ноутбук: файлы и папки', outfit('SemiBold'), 28, INK),
-        txt('1 layout × 20 slugs. Не дублировать каталог.', outfit('Regular'), 13, MUTED, 720),
+        pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+        txt('Первый ноутбук: файлы и папки', fraunces('Bold'), 32, INK, 800),
+        txt('Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».', outfit('Regular'), 14, MUTED, 720),
+        txt('Зарегистрируйтесь, чтобы открыть тренажёр и сохранять прогресс.', outfit('Regular'), 13, BRAND800, 720),
+        txt('Файлы и папки', outfit('SemiBold'), 18, INK),
         (() => {
-          const row = al('HORIZONTAL', 'Lesson 1 status');
-          row.itemSpacing = 8;
-          row.counterAxisAlignItems = 'CENTER';
-          row.appendChild(txt('Урок 1 · Горячие клавиши', outfit('Regular'), 14, INK));
-          row.appendChild(instLearn(true) || txt('Изучено', outfit('Bold'), 10, SUCCESS));
+          const row = al('HORIZONTAL', 'Lesson cards');
+          row.itemSpacing = 12;
+          for (const title of ['Файл и папка', 'Расширение файла', 'Где хранить']) {
+            const c = al('HORIZONTAL', title);
+            c.primaryAxisAlignItems = 'SPACE_BETWEEN';
+            c.counterAxisAlignItems = 'CENTER';
+            c.paddingTop = c.paddingBottom = 16;
+            c.paddingLeft = c.paddingRight = 16;
+            c.cornerRadius = 16;
+            c.fills = [solid(WHITE)];
+            c.strokes = [solid(INK, 0.1)];
+            c.resize(280, 10);
+            c.layoutSizingHorizontal = 'FIXED';
+            c.layoutSizingVertical = 'HUG';
+            c.appendChild(txt(title, outfit('SemiBold'), 14, INK, 180));
+            c.appendChild(txt('+15XP', outfit('Regular'), 12, MUTED));
+            row.appendChild(c);
+          }
           return row;
         })(),
+        txt('Не дублировать все 16 уроков — 1 секция покрывает layout карточки.', outfit('Regular'), 12, MUTED, 720),
         (() => {
-          const row = al('HORIZONTAL', 'Lesson 2 status');
+          const row = al('HORIZONTAL', 'course ctas');
           row.itemSpacing = 8;
-          row.counterAxisAlignItems = 'CENTER';
-          row.appendChild(txt('Урок 2 · Задание · симулятор', outfit('Regular'), 14, INK));
-          row.appendChild(instLearn(false) || txt('Не изучено', outfit('Bold'), 10, MUTED));
+          row.appendChild(secondaryBtn('Мой путь'));
+          row.appendChild(instPrimary('Рабочий стол'));
           return row;
         })(),
       ]),
@@ -4597,7 +4907,7 @@ async function buildUniqueScreens() {
     section('PracticeShell', [
       practicePage('Practice hub /practice', 'Тренировочный зал', [
         txt('Практика', outfit('Bold'), 11, BRAND800),
-        txt('Тренировочный зал', outfit('SemiBold'), 24, INK),
+        txt('Тренировочный зал', fraunces('Bold'), 32, INK),
         txt('Один вход — все режимы. Сначала навыки (печать и файлы), затем закрепление из курсов. Идите по рекомендуемому маршруту.', outfit('Regular'), 13, MUTED, 680),
         journey,
         sectionIntro('Навыки', 'Тренируйте пальцы, проводник и горячие клавиши — основа перед экзаменами.'),
