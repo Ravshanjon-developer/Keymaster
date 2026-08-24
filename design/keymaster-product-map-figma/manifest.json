@@ -1,0 +1,13 @@
+{
+  "name": "KeyMaster — Product Map (Current UI)",
+  "id": "keymaster-product-map-current-ui",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"],
+    "reasoning": "The plugin only reads screenshots bundled next to ui.html. It does not call the network."
+  }
+}

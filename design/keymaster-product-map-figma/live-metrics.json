@@ -1,0 +1,2724 @@
+[
+  {
+    "name": "home",
+    "path": "/",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 1141,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 149,
+      "h": 44,
+      "x": 747,
+      "y": 510,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": null,
+    "headings": [
+      "От первого ноутбука — до мастерства клавиатуры",
+      "С нуля до уверенности",
+      "Симулятор и печать",
+      "Hotkeys до автоматизма"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "login",
+    "path": "/login",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": null,
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 318,
+      "h": 48,
+      "x": 561,
+      "y": 311,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "14px 14px 14px 14px"
+    },
+    "card": {
+      "w": 416,
+      "h": 464,
+      "x": 512,
+      "y": 113,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Вход"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "register",
+    "path": "/register",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": null,
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 326,
+      "h": 48,
+      "x": 557,
+      "y": 264,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "14px 14px 14px 14px"
+    },
+    "card": {
+      "w": 416,
+      "h": 549,
+      "x": 512,
+      "y": 89,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Регистрация"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "verify-email",
+    "path": "/verify-email",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 132,
+      "h": 44,
+      "x": 654,
+      "y": 250,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 416,
+      "h": 190,
+      "x": 512,
+      "y": 129,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Подтверждение email"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "auth-callback",
+    "path": "/login",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": null,
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 318,
+      "h": 48,
+      "x": 561,
+      "y": 311,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "14px 14px 14px 14px"
+    },
+    "card": {
+      "w": 416,
+      "h": 464,
+      "x": 512,
+      "y": 113,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Вход"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "courses",
+    "path": "/courses",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 2447,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 170,
+      "h": 44,
+      "x": 1110,
+      "y": 183,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 1120,
+      "h": 42,
+      "x": 160,
+      "y": 263,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "10px 14px 10px 14px"
+    },
+    "card": {
+      "w": 363,
+      "h": 312,
+      "x": 160,
+      "y": 381,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Каталог курсов",
+      "Первый ноутбук: файлы и папки",
+      "Основные горячие клавиши программиста",
+      "VS Code",
+      "Windows",
+      "Google Chrome"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "course-detail",
+    "path": "/courses/computer-basics",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 1301,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 108,
+      "h": 44,
+      "x": 160,
+      "y": 1217,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 555,
+      "h": 56,
+      "x": 160,
+      "y": 356,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "16px 16px 16px 16px"
+    },
+    "rail": null,
+    "headings": [
+      "Первый ноутбук: файлы и папки",
+      "Файлы и папки",
+      "Практика в проводнике",
+      "Корзина и ZIP",
+      "Структура проекта"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "leaderboard",
+    "path": "/leaderboard",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 398,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 1162,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": null,
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": null,
+    "headings": [
+      "Рейтинг"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "mobile-home",
+    "path": "/",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 390,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 216,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 149,
+      "h": 44,
+      "x": 222,
+      "y": 504,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 22,
+      "h": 29,
+      "x": 56,
+      "y": 18,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 19.2px/28.8px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": null,
+    "headings": [
+      "От первого ноутбука — до мастерства клавиатуры",
+      "С нуля до уверенности",
+      "Симулятор и печать",
+      "Hotkeys до автоматизма"
+    ],
+    "hasBottomNav": false
+  },
+  {
+    "name": "mobile-login",
+    "path": "/login",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 390,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 216,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": null,
+    "hero": {
+      "w": 22,
+      "h": 29,
+      "x": 56,
+      "y": 18,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 19.2px/28.8px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 308,
+      "h": 48,
+      "x": 41,
+      "y": 284,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "14px 14px 14px 14px"
+    },
+    "card": {
+      "w": 358,
+      "h": 413,
+      "x": 16,
+      "y": 113,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "rail": null,
+    "headings": [
+      "Вход"
+    ],
+    "hasBottomNav": false
+  },
+  {
+    "name": "mobile-courses",
+    "path": "/courses",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 390,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 118,
+      "h": 44,
+      "x": 216,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 14px 6px 14px"
+    },
+    "secondaryBtn": {
+      "w": 170,
+      "h": 44,
+      "x": 16,
+      "y": 256,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "hero": {
+      "w": 22,
+      "h": 29,
+      "x": 56,
+      "y": 18,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 19.2px/28.8px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": {
+      "w": 358,
+      "h": 42,
+      "x": 16,
+      "y": 336,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "10px 14px 10px 14px"
+    },
+    "card": {
+      "w": 358,
+      "h": 282,
+      "x": 16,
+      "y": 506,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "20px 20px 20px 20px"
+    },
+    "rail": null,
+    "headings": [
+      "Каталог курсов",
+      "Первый ноутбук: файлы и папки",
+      "Основные горячие клавиши программиста",
+      "VS Code",
+      "Windows",
+      "Google Chrome"
+    ],
+    "hasBottomNav": false
+  },
+  {
+    "name": "path",
+    "path": "/path",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 4666,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 161,
+      "h": 44,
+      "x": 720,
+      "y": 4574,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 239,
+      "h": 127,
+      "x": 224,
+      "y": 269,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Developer Growth Path"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "dashboard",
+    "path": "/dashboard",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 1202,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 124,
+      "h": 44,
+      "x": 185,
+      "y": 338,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 1120,
+      "h": 224,
+      "x": 160,
+      "y": 211,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Привет, Анна!",
+      "Первый ноутбук: файлы и папки",
+      "Ближайшие этапы",
+      "Ежедневные задания",
+      "Последние достижения"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "achievements",
+    "path": "/achievements",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 1013,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 488,
+      "h": 100,
+      "x": 224,
+      "y": 177,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Достижения"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "stats",
+    "path": "/stats",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 277,
+      "h": 102,
+      "x": 288,
+      "y": 173,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": null,
+    "headings": [
+      "Статистика"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "practice",
+    "path": "/practice",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 233,
+      "h": 44,
+      "x": 369,
+      "y": 524,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 992,
+      "h": 334,
+      "x": 344,
+      "y": 259,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Тренировочный зал",
+      "Рекомендуемый маршрут",
+      "Навыки",
+      "Закрепление"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "typing",
+    "path": "/typing",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 864,
+      "h": 258,
+      "x": 408,
+      "y": 424,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "28px 28px 28px 28px"
+    },
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Тренажёр печати"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "training",
+    "path": "/training",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Тренировка горячих клавиш",
+      "Слово вправо",
+      "Слово вправо"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "speed",
+    "path": "/speed",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Режим скорости"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "review",
+    "path": "/review?course=programmer-basics",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 416,
+      "h": 328,
+      "x": 632,
+      "y": 391,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Повторение"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "quiz",
+    "path": "/quiz",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 155,
+      "h": 88,
+      "x": 600,
+      "y": 233,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 14px/20px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Основы hotkeys"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "exam",
+    "path": "/exam",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 901,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 494,
+      "h": 44,
+      "x": 593,
+      "y": 780,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 544,
+      "h": 580,
+      "x": 568,
+      "y": 269,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "24px 24px 24px 24px"
+    },
+    "rail": {
+      "w": 240,
+      "h": 836,
+      "x": 0,
+      "y": 65,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Настройка сессии"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "simulator-code",
+    "path": "/simulator",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": null,
+    "footer": null,
+    "bottomNav": null,
+    "primaryBtn": null,
+    "secondaryBtn": null,
+    "hero": null,
+    "input": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(204, 204, 204)",
+      "font": "400 16px/24px Segoe UI",
+      "padding": "0px 0px 0px 0px"
+    },
+    "card": null,
+    "rail": null,
+    "headings": [],
+    "hasBottomNav": false
+  },
+  {
+    "name": "simulator-desktop",
+    "path": "/simulator?mode=desktop",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": null,
+    "footer": null,
+    "bottomNav": null,
+    "primaryBtn": null,
+    "secondaryBtn": null,
+    "hero": null,
+    "input": null,
+    "card": null,
+    "rail": null,
+    "headings": [],
+    "hasBottomNav": false
+  },
+  {
+    "name": "admin-forbidden",
+    "path": "/admin",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 403,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": null,
+    "rail": null,
+    "headings": [
+      "Доступ только для администраторов"
+    ],
+    "hasBottomNav": true
+  },
+  {
+    "name": "mobile-practice",
+    "path": "/practice",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 390,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 233,
+      "h": 44,
+      "x": 37,
+      "y": 630,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 261,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 97,
+      "h": 29,
+      "x": 56,
+      "y": 18,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 19.2px/28.8px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 358,
+      "h": 382,
+      "x": 16,
+      "y": 313,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "20px 20px 20px 20px"
+    },
+    "rail": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgb(20, 24, 32)",
+      "color": "rgb(225, 226, 236)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "headings": [
+      "Тренировочный зал",
+      "Рекомендуемый маршрут",
+      "Навыки",
+      "Закрепление"
+    ],
+    "hasBottomNav": false
+  },
+  {
+    "name": "mobile-path",
+    "path": "/path",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 390,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 0,
+      "h": 0,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": {
+      "w": 161,
+      "h": 44,
+      "x": 195,
+      "y": 6196,
+      "radius": "16px",
+      "bg": "rgb(37, 99, 235)",
+      "color": "rgb(255, 255, 255)",
+      "font": "600 14px/20px Outfit",
+      "padding": "10px 20px 10px 20px"
+    },
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 261,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 97,
+      "h": 29,
+      "x": 56,
+      "y": 18,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 19.2px/28.8px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 358,
+      "h": 82,
+      "x": 16,
+      "y": 286,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "16px 16px 16px 16px"
+    },
+    "rail": null,
+    "headings": [
+      "Developer Growth Path"
+    ],
+    "hasBottomNav": false
+  },
+  {
+    "name": "admin-overview",
+    "path": "/admin",
+    "title": "KeyMaster — тренажёр горячих клавиш и компьютерных навыков",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "tokens": {
+      "brand600": "#2563eb",
+      "accent500": "#06b6d4",
+      "ink": "#0f172a",
+      "paper": "",
+      "radiusButton": "16px",
+      "radiusCard": "24px",
+      "fontSans": "Outfit",
+      "fontDisplay": "Fraunces",
+      "bgPrimary": "#e9edf3"
+    },
+    "nav": {
+      "w": 1440,
+      "h": 65,
+      "x": 0,
+      "y": 0,
+      "radius": "0px",
+      "bg": "rgba(255, 255, 255, 0.78)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "footer": {
+      "w": 1440,
+      "h": 105,
+      "x": 0,
+      "y": 796,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.446 0.043 257.281)",
+      "font": "400 13px/19.5px Outfit",
+      "padding": "36px 0px 48px 0px"
+    },
+    "bottomNav": {
+      "w": 476,
+      "h": 39,
+      "x": 338,
+      "y": 13,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "0px 0px 0px 0px"
+    },
+    "primaryBtn": null,
+    "secondaryBtn": {
+      "w": 73,
+      "h": 44,
+      "x": 1207,
+      "y": 10,
+      "radius": "16px",
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 14px/20px Outfit",
+      "padding": "6px 12px 6px 12px"
+    },
+    "hero": {
+      "w": 115,
+      "h": 34,
+      "x": 206,
+      "y": 15,
+      "radius": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "600 22.4px/33.6px Fraunces",
+      "padding": "0px 0px 0px 0px"
+    },
+    "input": null,
+    "card": {
+      "w": 365,
+      "h": 102,
+      "x": 160,
+      "y": 265,
+      "radius": "24px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "font": "400 16px/24px Outfit",
+      "padding": "20px 20px 20px 20px"
+    },
+    "rail": null,
+    "headings": [
+      "Админ-панель"
+    ],
+    "hasBottomNav": true
+  }
+]
