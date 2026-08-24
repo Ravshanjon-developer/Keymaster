@@ -388,6 +388,87 @@ await run('code-lab-manage', desk, async (page) => {
   return { file: 'desktop-learner-simulator-code-manage.jpg', w, h };
 });
 
+await run('code-lab-editmenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-editmenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.getByText('Replace', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-editmenu.jpg', w, h };
+});
+
+await run('code-lab-gomenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-gomenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Go', exact: true }).click();
+  await page.getByText('Reopen Closed Tab', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-gomenu.jpg', w, h };
+});
+
+await run('code-lab-runmenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-runmenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Run', exact: true }).click();
+  await page.getByText('Start First Task', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-runmenu.jpg', w, h };
+});
+
+await run('code-lab-termmenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-termmenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Terminal', exact: true }).click();
+  await page.getByText('Clear Terminal', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-termmenu.jpg', w, h };
+});
+
+await run('code-lab-helpmenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-helpmenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Help', exact: true }).click();
+  await page.getByText('Show Hint', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-helpmenu.jpg', w, h };
+});
+
+await run('code-lab-light', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-light.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Manage').click();
+  await page.getByText('Color Theme', { exact: true }).click();
+  await page.locator('.bolt-theme-light').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-light.jpg', w, h };
+});
+
+await run('desktop-light', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-light.jpg');
+  await openDesktop(page);
+  await page.getByTitle('Тема').click();
+  await page.waitForFunction(() => {
+    const root = document.querySelector('.bolt-desktop-root');
+    return root && getComputedStyle(root).backgroundColor === 'rgb(232, 232, 232)';
+  }, { timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-light.jpg', w, h };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

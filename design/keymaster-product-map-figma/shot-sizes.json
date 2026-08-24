@@ -526,5 +526,33 @@
   "desktop-learner-simulator-code-viewmenu.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-simulator-code-editmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-gomenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-runmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-termmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-helpmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-light.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-light.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }
