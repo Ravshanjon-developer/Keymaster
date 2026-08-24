@@ -385,6 +385,10 @@ if (!names.includes('Ваш прогресс')) fail.push('no live typing progre
 if (!names.includes('Уроки пути: 0%')) fail.push('no live typing path unique screen');
 if (!names.includes('Старт 60 сек')) fail.push('no live speed start unique screen');
 if (!names.includes('Время практики: 0:00')) fail.push('no live typing practice-time unique screen');
+if (!names.includes('nobody@example.com')) fail.push('no live login-error email unique screen');
+if (!names.includes('Mobile Training 390')) fail.push('no mobile training unique screen');
+if (!names.includes('Отменить')) fail.push('no live mobile training prompt unique screen');
+if (!names.includes('МОЙ ПУТЬ РАЗВИТИЯ')) fail.push('no live mobile path eyebrow unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));

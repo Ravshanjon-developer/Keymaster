@@ -3313,7 +3313,7 @@ async function buildUniqueScreens() {
     'Вход',
     'Добро пожаловать в KeyMaster',
     [
-      floatOrInst('State=Floated', 'Email', { value: 'learner@example.com' }),
+      floatingField('Email', 'nobody@example.com'),
       floatOrInst('State=PasswordFilled', 'Пароль', { password: true, value: '••••••••' }),
       (() => {
         const alert = al('HORIZONTAL', 'error');
@@ -5226,10 +5226,13 @@ async function buildUniqueScreens() {
   const mobileCourses = mobileFrame(
     'Mobile Courses 390',
     [
-      txt('Каталог курсов', outfit('SemiBold'), 22, INK, 358),
+      txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+      txt('Каталог курсов', fraunces('Bold'), 28, INK, 358),
+      txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 358),
+      secondaryBtn('Путь обучения'),
       field('Поиск', 'Название курса или инструмента', INK),
-      txt('Все · Старт · ОС · Редакторы', outfit('Regular'), 12, MUTED, 358),
-      instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true),
+      txt('Все · Старт · ОС · Редакторы · Браузеры · Офис · Git', outfit('Regular'), 12, MUTED, 358),
+      instCourse('Status=Start') || courseCard('Первый ноутбук: файлы и папки', 'Старт', 'brand', true),
     ],
     'Курсы',
   );
@@ -5246,11 +5249,64 @@ async function buildUniqueScreens() {
   const mobilePath = mobileFrame(
     'Mobile Path 390',
     [
-      txt('Developer Growth Path', outfit('SemiBold'), 20, INK, 358),
+      txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
+      txt('Developer Growth Path', fraunces('Bold'), 28, INK, 358),
+      txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.', outfit('Regular'), 13, MUTED, 358),
+      txt('ТЕКУЩИЙ УРОВЕНЬ', outfit('Bold'), 10, MUTED),
+      txt('Novice Operator', fraunces('SemiBold'), 18, INK),
+      txt('0/20 курсов', outfit('SemiBold'), 16, INK),
+      txt('First Laptop', fraunces('SemiBold'), 16, INK),
       instPath('Status=Start') || pathNode('Start', 'Начать', false),
-      instPath('Status=Progress') || pathNode('Первый ноутбук', 'Продолжается', false),
     ],
     'Мой путь',
+  );
+  const mobileTraining = mobileFrame(
+    'Mobile Training 390',
+    [
+      txt('Тренировка горячих клавиш', outfit('SemiBold'), 20, INK, 358),
+      txt('Задание 1 из 13', outfit('Regular'), 13, MUTED),
+      instProgress('Value=Partial') || progressBar(358, 0.08, BRAND, 6),
+      txt('Серия: 0  ·  Верно: 0', outfit('SemiBold'), 13, MUTED),
+      (() => {
+        const card = al('VERTICAL', 'train card');
+        card.itemSpacing = 12;
+        card.paddingTop = card.paddingBottom = 20;
+        card.paddingLeft = card.paddingRight = 16;
+        card.cornerRadius = 24;
+        card.fills = [solid(WHITE)];
+        card.strokes = [solid(BRAND, 0.18)];
+        card.resize(358, 10);
+        card.layoutSizingHorizontal = 'FIXED';
+        card.layoutSizingVertical = 'HUG';
+        card.appendChild(txt('Отменить', outfit('SemiBold'), 18, INK));
+        const demo = al('VERTICAL', 'Учебное поле');
+        demo.itemSpacing = 8;
+        demo.paddingTop = demo.paddingBottom = 12;
+        demo.paddingLeft = demo.paddingRight = 12;
+        demo.cornerRadius = 16;
+        demo.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+        demo.appendChild(txt('Учебное поле', outfit('Bold'), 11, MUTED));
+        demo.appendChild(txt('Выделенный текст для тренировки', outfit('Regular'), 13, INK, 310));
+        card.appendChild(demo);
+        const qRow = al('HORIZONTAL', 'prompt');
+        qRow.itemSpacing = 8;
+        qRow.primaryAxisAlignItems = 'CENTER';
+        qRow.appendChild(txt('?', outfit('Bold'), 22, INK));
+        qRow.appendChild(txt('+', outfit('Regular'), 16, MUTED));
+        qRow.appendChild(txt('?', outfit('Bold'), 22, INK));
+        card.appendChild(qRow);
+        card.appendChild(txt('Нажмите сочетание на клавиатуре', outfit('Regular'), 12, MUTED, 310));
+        const btns = al('HORIZONTAL', 'actions');
+        btns.itemSpacing = 8;
+        btns.appendChild(instSecondary('Подсказка'));
+        btns.appendChild(ghostBtn('Объяснение'));
+        card.appendChild(btns);
+        card.appendChild(txt('Пропустить', outfit('SemiBold'), 13, MUTED));
+        return card;
+      })(),
+    ],
+    'Практика',
+    { chips: 'Hotkeys' },
   );
   const mobileReview = mobileFrame(
     'Mobile Review 390',
@@ -5390,6 +5446,7 @@ async function buildUniqueScreens() {
       mobilePath,
       mobileReview,
       mobileQuiz,
+      mobileTraining,
       gate,
       txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard. Practice rail becomes compact chips < lg.', outfit('Regular'), 12, MUTED, 390),
     ]),
