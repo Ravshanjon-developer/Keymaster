@@ -385,6 +385,7 @@ if (!names.includes('Mobile Desktop 390')) fail.push('no mobile desktop unique s
 if (!names.includes('Mobile Desktop tasks 390')) fail.push('no mobile desktop-tasks unique screen');
 if (!names.includes('Mobile Code Lab gate 390')) fail.push('no mobile code-lab gate unique screen');
 if (!names.includes('Mobile Speed gate 390')) fail.push('no mobile speed-gate unique screen');
+if (!names.includes('Mobile Lesson gate 390')) fail.push('no mobile lesson-gate unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -420,6 +421,7 @@ if (!names.includes('Mobile / Desktop sim')) fail.push('no mobile desktop captur
 if (!names.includes('Mobile / Desktop tasks')) fail.push('no mobile desktop-tasks capture');
 if (!names.includes('Mobile / Code Lab gate')) fail.push('no mobile code-lab gate capture');
 if (!names.includes('Mobile / Speed gate')) fail.push('no mobile speed-gate capture');
+if (!names.includes('Mobile / Lesson gate')) fail.push('no mobile lesson-gate capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1348,6 +1350,7 @@ let mobileDesktopUnique = null;
 let mobileDesktopTasksUnique = null;
 let mobileCodeGateUnique = null;
 let mobileSpeedGateUnique = null;
+let mobileLessonGateUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1399,6 +1402,7 @@ for (const p of pages) {
   mobileDesktopTasksUnique = mobileDesktopTasksUnique || findByName(p, 'Mobile Desktop tasks 390');
   mobileCodeGateUnique = mobileCodeGateUnique || findByName(p, 'Mobile Code Lab gate 390');
   mobileSpeedGateUnique = mobileSpeedGateUnique || findByName(p, 'Mobile Speed gate 390');
+  mobileLessonGateUnique = mobileLessonGateUnique || findByName(p, 'Mobile Lesson gate 390');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1517,6 +1521,9 @@ if (!mobileCodeGateUnique || !namesUnder(mobileCodeGateUnique).includes('Пра�
 }
 if (!mobileSpeedGateUnique || !namesUnder(mobileSpeedGateUnique).includes('Режим скорости') || !namesUnder(mobileSpeedGateUnique).includes('⏱ 1:00') || !namesUnder(mobileSpeedGateUnique).includes('Практика требует физической клавиатуры') || !namesUnder(mobileSpeedGateUnique).includes('Скорость') || namesUnder(mobileSpeedGateUnique).includes('ВСЕ КУРСЫ') || namesUnder(mobileSpeedGateUnique).includes('Завершить') || namesUnder(mobileSpeedGateUnique).includes('Нажмите сочетание на клавиатуре')) {
   fail.push('mobile speed-gate unique missing PracticeShell chips + speed HUD + keyboard gate');
+}
+if (!mobileLessonGateUnique || !namesUnder(mobileLessonGateUnique).includes('НЕ ИЗУЧЕНО') || !namesUnder(mobileLessonGateUnique).includes('← К каталогу') || !namesUnder(mobileLessonGateUnique).includes('Практика требует физической клавиатуры') || namesUnder(mobileLessonGateUnique).includes('⏱ 1:00') || namesUnder(mobileLessonGateUnique).includes('ВСЕ КУРСЫ') || namesUnder(mobileLessonGateUnique).includes('Тренировочный зал')) {
+  fail.push('mobile lesson-gate unique missing MarketingShell LearnStatus + gate without practice chips');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');

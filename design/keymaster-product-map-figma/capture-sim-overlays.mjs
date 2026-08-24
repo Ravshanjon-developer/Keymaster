@@ -1383,6 +1383,39 @@ await run(
   { touch: true, noKeyboard: true },
 );
 
+await run(
+  'mobile-lesson-gate',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-19-lesson-gate.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    const token = await page.evaluate(() => localStorage.getItem('km_token') || '');
+    const lessonId = await page.evaluate(async (t) => {
+      const res = await fetch('/api/courses/programmer-basics', {
+        headers: { Authorization: 'Bearer ' + t },
+      });
+      const data = await res.json();
+      for (const cat of data.categories || []) {
+        for (const les of cat.lessons || []) {
+          const key = Array.isArray(les.keys) ? les.keys[0] : '';
+          if (key && !String(key).startsWith('desktop:')) return les.id;
+        }
+      }
+      return '';
+    }, token);
+    if (!lessonId) throw new Error('no hotkey lesson id');
+    await page.goto(BASE + '/lessons/' + lessonId, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByText('Практика требует физической клавиатуры', { exact: true }).waitFor({ timeout: 15000 });
+    await page.getByText('← К каталогу', { exact: true }).waitFor({ timeout: 8000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-19-lesson-gate.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true, noKeyboard: true },
+);
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

@@ -9928,6 +9928,63 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Скорость', authed: true },
   );
+  const mobileLessonGate = mobileFrame(
+    'Mobile Lesson gate 390',
+    [
+      (() => {
+        const badge = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
+        badge.itemSpacing = 6;
+        badge.paddingLeft = badge.paddingRight = 10;
+        badge.paddingTop = badge.paddingBottom = 4;
+        badge.cornerRadius = 99;
+        badge.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+        badge.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+        return badge;
+      })(),
+      (() => {
+        const gcard = al('VERTICAL', 'Lesson gate card');
+        gcard.itemSpacing = 12;
+        gcard.primaryAxisAlignItems = 'CENTER';
+        gcard.paddingTop = gcard.paddingBottom = 24;
+        gcard.paddingLeft = gcard.paddingRight = 16;
+        gcard.cornerRadius = 24;
+        gcard.fills = [solid(WHITE)];
+        gcard.resize(358, 10);
+        gcard.layoutSizingHorizontal = 'FIXED';
+        gcard.layoutSizingVertical = 'HUG';
+        gcard.appendChild(keyboardIllustration());
+        gcard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 22, INK, 326));
+        gcard.appendChild(
+          txt(
+            'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
+            outfit('Regular'),
+            13,
+            MUTED,
+            326,
+          ),
+        );
+        gcard.appendChild(
+          txt(
+            'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
+            outfit('Regular'),
+            11,
+            MUTED,
+            326,
+          ),
+        );
+        const gctas = al('VERTICAL', 'lesson gate CTAs');
+        gctas.itemSpacing = 10;
+        gctas.appendChild(instPrimary('Изучить комбинации'));
+        gctas.appendChild(secondaryBtn('Основы hotkeys'));
+        gcard.appendChild(gctas);
+        gctas.layoutSizingHorizontal = 'FILL';
+        return gcard;
+      })(),
+      txt('← К каталогу', outfit('SemiBold'), 13, BRAND800),
+    ],
+    'Курсы',
+    { authed: true },
+  );
 
   function mobileNavOpen(name, guest) {
     const frame = al('VERTICAL', name);
@@ -10603,6 +10660,7 @@ async function buildUniqueScreens() {
       mobileDesktopTasks,
       mobileCodeGate,
       mobileSpeedGate,
+      mobileLessonGate,
       mobileNavGuest,
       mobileNavAuthed,
       mobilePath,

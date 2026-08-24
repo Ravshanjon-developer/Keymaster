@@ -172,5 +172,6 @@
   {"file":"mobile-authed-15-simulator-desktop.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop sim","layout":"ImmersiveSimulator — FileManager 390 no BottomNav","group":"Mobile 390"},
   {"file":"mobile-authed-16-simulator-desktop-tasks.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop tasks","layout":"ImmersiveSimulator — FileManager 390 + ЗАДАЧИ overlay","group":"Mobile 390"},
   {"file":"mobile-authed-17-simulator-code-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Code Lab gate","layout":"ImmersiveSimulator — PracticeKeyboardGate no exam chrome","group":"Mobile 390"},
-  {"file":"mobile-authed-18-speed-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed gate","layout":"PracticeShell chips + ⏱ HUD + PracticeKeyboardGate","group":"Mobile 390"}
+  {"file":"mobile-authed-18-speed-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed gate","layout":"PracticeShell chips + ⏱ HUD + PracticeKeyboardGate","group":"Mobile 390"},
+  {"file":"mobile-authed-19-lesson-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Lesson gate","layout":"MarketingShell — LearnStatus + PracticeKeyboardGate","group":"Mobile 390"}
 ]
