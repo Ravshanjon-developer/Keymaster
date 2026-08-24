@@ -1252,6 +1252,7 @@ async function buildVisualFlows() {
       ['desktop-learner-23-simulator-desktop.jpg', 'Desktop sim'],
       ['desktop-learner-simulator-desktop-menu.jpg', 'Desktop context menu'],
       ['desktop-learner-simulator-desktop-explorer.jpg', 'Explorer'],
+      ['desktop-learner-simulator-desktop-zip-extract.jpg', 'ZIP extract'],
       ['desktop-learner-simulator-desktop-explorer-filemenu.jpg', 'Explorer file menu'],
       ['desktop-learner-simulator-desktop-trash.jpg', 'Recycle bin'],
       ['desktop-learner-simulator-desktop-trash-full.jpg', 'Recycle bin with file'],
@@ -1307,8 +1308,11 @@ async function buildVisualFlows() {
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-training-hint.jpg', 'Training hint'],
       ['desktop-learner-training-hint2.jpg', 'Training hint 2'],
+      ['desktop-learner-training-hint3.jpg', 'Training hint 3'],
+      ['desktop-learner-training-retry.jpg', 'Training retry'],
       ['desktop-learner-training-explain.jpg', 'Training explain'],
       ['desktop-learner-training-correct.jpg', 'Training correct'],
+      ['desktop-learner-training-done-weak.jpg', 'Training done weak'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-run.jpg', 'Speed run'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1323,6 +1327,7 @@ async function buildVisualFlows() {
       ['desktop-learner-exam-feedback.jpg', 'Exam feedback'],
       ['desktop-learner-exam-done.jpg', 'Exam done'],
       ['desktop-learner-exam-timeout.jpg', 'Exam timeout'],
+      ['desktop-learner-exam-certificate.jpg', 'Exam certificate'],
       ['desktop-learner-exam-empty.jpg', 'Exam empty'],
     ]],
     ['F9 Social', [
@@ -4609,6 +4614,52 @@ async function buildUniqueScreens() {
   trainDone.appendChild(txt('Выполнено 13 из 13 заданий', outfit('Regular'), 13, MUTED));
   trainDone.appendChild(txt('Все сочетания дались уверенно. Отличная работа!', outfit('Regular'), 13, SUCCESS, 340));
   trainDone.appendChild(instPrimary('Пройти ещё раз'));
+  const trainDoneWeak = al('VERTICAL', 'Training done weak card');
+  trainDoneWeak.itemSpacing = 10;
+  trainDoneWeak.primaryAxisAlignItems = 'CENTER';
+  trainDoneWeak.paddingTop = trainDoneWeak.paddingBottom = 40;
+  trainDoneWeak.paddingLeft = trainDoneWeak.paddingRight = 32;
+  trainDoneWeak.cornerRadius = 24;
+  trainDoneWeak.fills = [solid(WHITE)];
+  trainDoneWeak.resize(420, 10);
+  trainDoneWeak.layoutSizingHorizontal = 'FIXED';
+  trainDoneWeak.layoutSizingVertical = 'HUG';
+  trainDoneWeak.appendChild(txt('Тренировка завершена', outfit('SemiBold'), 22, INK));
+  trainDoneWeak.appendChild(txt('Выполнено 2 из 2 заданий', outfit('Regular'), 13, MUTED));
+  trainDoneWeak.appendChild(txt('Лучшая серия: 2', outfit('Regular'), 12, MUTED));
+  trainDoneWeak.appendChild(txt('Стоит повторить:', outfit('SemiBold'), 14, INK));
+  const weakRow = al('HORIZONTAL', 'weak lesson');
+  weakRow.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  weakRow.counterAxisAlignItems = 'CENTER';
+  weakRow.paddingTop = weakRow.paddingBottom = 8;
+  weakRow.paddingLeft = weakRow.paddingRight = 12;
+  weakRow.cornerRadius = 12;
+  weakRow.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  weakRow.resize(356, 10);
+  weakRow.layoutSizingHorizontal = 'FIXED';
+  weakRow.layoutSizingVertical = 'HUG';
+  weakRow.appendChild(txt('Вырезать', outfit('Regular'), 13, INK));
+  const weakKeys = al('HORIZONTAL', 'weak KeyCombo');
+  weakKeys.itemSpacing = 6;
+  weakKeys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['Ctrl', 'X']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      weakKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 8;
+    box.paddingTop = box.paddingBottom = 4;
+    box.cornerRadius = 8;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 12, INK));
+    weakKeys.appendChild(box);
+  }
+  weakRow.appendChild(weakKeys);
+  trainDoneWeak.appendChild(weakRow);
+  trainDoneWeak.appendChild(instPrimary('Пройти ещё раз'));
   const reviewEmpty = instEmpty(
     'Нет карточек',
     'Сначала загрузите курсы или выберите другой курс в параметрах.',
@@ -5165,7 +5216,7 @@ async function buildUniqueScreens() {
     return sim;
   }
 
-  function deskWin(title, pathLabel, countLabel, empty, trashFile) {
+  function deskWin(title, pathLabel, countLabel, empty, trashFile, zipFile) {
     const win = al('VERTICAL', title + ' window');
     win.itemSpacing = 0;
     win.cornerRadius = 8;
@@ -5229,6 +5280,14 @@ async function buildUniqueScreens() {
       fileRow.appendChild(txt('17:17', outfit('Regular'), 11, VSCODE_MUTED));
       fileRow.appendChild(txt('24.08.2026', outfit('Regular'), 11, VSCODE_MUTED));
       main.appendChild(fileRow);
+    } else if (zipFile) {
+      main.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
+      const zipRow = al('HORIZONTAL', 'Welcome.zip row');
+      zipRow.itemSpacing = 12;
+      zipRow.counterAxisAlignItems = 'CENTER';
+      zipRow.appendChild(txt('ZIP', outfit('Bold'), 10, VSCODE_MUTED));
+      zipRow.appendChild(txt('Welcome.zip', outfit('Regular'), 12, WHITE));
+      main.appendChild(zipRow);
     } else main.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
     body.appendChild(side);
     body.appendChild(main);
@@ -5494,6 +5553,36 @@ async function buildUniqueScreens() {
         menu.appendChild(row);
       }
       deskWork.appendChild(menu);
+    } else if (overlay === 'zipmenu') {
+      deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '2 объектов', false, false, true));
+      const menu = al('VERTICAL', 'ZIP extract menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of [
+        'Открыть',
+        'Открыть с помощью Code',
+        'Переименовать',
+        'Копировать',
+        'Вырезать',
+        'Извлечь сюда',
+        'Сжать в ZIP',
+        'Удалить',
+        'Свойства',
+      ]) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Удалить' ? SIGNAL : WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
     } else if (overlay === 'trashrestore') {
       deskWork.appendChild(deskWin('Корзина', '/Корзина', '1 объектов', false, true));
       const menu = al('VERTICAL', 'Trash restore menu');
@@ -5681,6 +5770,7 @@ async function buildUniqueScreens() {
   const deskTrash = makeDesktopSim('Desktop recycle-bin /simulator?mode=desktop', 'trash');
   const deskTrashFull = makeDesktopSim('Desktop recycle-bin full /simulator?mode=desktop', 'trashfull');
   const deskExplorerFileMenu = makeDesktopSim('Desktop explorer file menu /simulator?mode=desktop', 'explorerfilemenu');
+  const deskZipExtract = makeDesktopSim('Desktop zip extract /simulator?mode=desktop', 'zipmenu');
   const deskTrashRestore = makeDesktopSim('Desktop recycle-bin restore /simulator?mode=desktop', 'trashrestore');
   const deskStart = makeDesktopSim('Desktop start menu /simulator?mode=desktop', 'start');
   const deskEditor = makeDesktopSim('Desktop editor /simulator?mode=desktop', 'editor');
@@ -6545,6 +6635,130 @@ async function buildUniqueScreens() {
   hint2Card.appendChild(hint2Btns);
   trainHint2.appendChild(hint2Card);
 
+  const trainHint3 = al('VERTICAL', 'Training hint 3');
+  trainHint3.itemSpacing = 12;
+  trainHint3.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const hint3Meta = al('HORIZONTAL', 'hint3 meta');
+  hint3Meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  hint3Meta.counterAxisAlignItems = 'CENTER';
+  hint3Meta.resize(640, 10);
+  hint3Meta.layoutSizingHorizontal = 'FIXED';
+  hint3Meta.layoutSizingVertical = 'HUG';
+  const hint3Prog = al('VERTICAL', 'hint3 progress');
+  hint3Prog.itemSpacing = 6;
+  hint3Prog.appendChild(txt('Задание 1 из 13', outfit('Regular'), 13, MUTED));
+  hint3Prog.appendChild(instProgress('Value=Partial') || progressBar(220, 0.08, BRAND, 6));
+  hint3Meta.appendChild(hint3Prog);
+  const hint3Stats = al('HORIZONTAL', 'hint3 stats');
+  hint3Stats.itemSpacing = 16;
+  hint3Stats.appendChild(txt('Серия: 0', outfit('SemiBold'), 13, MUTED));
+  hint3Stats.appendChild(txt('✓ Верно: 0', outfit('SemiBold'), 13, MUTED));
+  hint3Meta.appendChild(hint3Stats);
+  trainHint3.appendChild(hint3Meta);
+  const hint3Card = al('VERTICAL', 'hint3 trainer front');
+  hint3Card.itemSpacing = 16;
+  hint3Card.paddingTop = hint3Card.paddingBottom = 24;
+  hint3Card.paddingLeft = hint3Card.paddingRight = 24;
+  hint3Card.cornerRadius = 24;
+  hint3Card.fills = [solid(WHITE)];
+  hint3Card.strokes = [solid(BRAND, 0.18)];
+  hint3Card.primaryAxisAlignItems = 'CENTER';
+  hint3Card.resize(640, 10);
+  hint3Card.layoutSizingHorizontal = 'FIXED';
+  hint3Card.layoutSizingVertical = 'HUG';
+  hint3Card.appendChild(txt('В конец строки', outfit('SemiBold'), 20, INK));
+  const hint3Keys = al('HORIZONTAL', 'hint3 KeyCombo');
+  hint3Keys.itemSpacing = 8;
+  hint3Keys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['End']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      hint3Keys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    hint3Keys.appendChild(box);
+  }
+  hint3Card.appendChild(hint3Keys);
+  hint3Card.appendChild(txt('Нажмите: End', outfit('Regular'), 13, MUTED));
+  const hint3Btns = al('HORIZONTAL', 'hint3 actions');
+  hint3Btns.itemSpacing = 8;
+  hint3Btns.appendChild(ghostBtn('Объяснение'));
+  hint3Btns.appendChild(ghostBtn('Пропустить'));
+  hint3Card.appendChild(hint3Btns);
+  trainHint3.appendChild(hint3Card);
+
+  const trainRetry = al('VERTICAL', 'Training retry');
+  trainRetry.itemSpacing = 12;
+  trainRetry.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const retryMeta = al('HORIZONTAL', 'retry meta');
+  retryMeta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  retryMeta.counterAxisAlignItems = 'CENTER';
+  retryMeta.resize(640, 10);
+  retryMeta.layoutSizingHorizontal = 'FIXED';
+  retryMeta.layoutSizingVertical = 'HUG';
+  const retryProg = al('VERTICAL', 'retry progress');
+  retryProg.itemSpacing = 6;
+  const retryTask = al('HORIZONTAL', 'retry task');
+  retryTask.itemSpacing = 8;
+  retryTask.counterAxisAlignItems = 'CENTER';
+  retryTask.appendChild(txt('Задание 2 из 2', outfit('Regular'), 13, MUTED));
+  retryTask.appendChild(txt('повтор', outfit('Medium'), 12, BRAND800));
+  retryProg.appendChild(retryTask);
+  retryProg.appendChild(instProgress('Value=Partial') || progressBar(220, 0.5, BRAND, 6));
+  retryMeta.appendChild(retryProg);
+  const retryStats = al('HORIZONTAL', 'retry stats');
+  retryStats.itemSpacing = 16;
+  retryStats.appendChild(txt('Серия: 1', outfit('SemiBold'), 13, MUTED));
+  retryStats.appendChild(txt('✓ Верно: 1', outfit('SemiBold'), 13, MUTED));
+  retryMeta.appendChild(retryStats);
+  trainRetry.appendChild(retryMeta);
+  const retryCard = al('VERTICAL', 'retry trainer front');
+  retryCard.itemSpacing = 16;
+  retryCard.paddingTop = retryCard.paddingBottom = 24;
+  retryCard.paddingLeft = retryCard.paddingRight = 24;
+  retryCard.cornerRadius = 24;
+  retryCard.fills = [solid(WHITE)];
+  retryCard.strokes = [solid(BRAND, 0.18)];
+  retryCard.primaryAxisAlignItems = 'CENTER';
+  retryCard.resize(640, 10);
+  retryCard.layoutSizingHorizontal = 'FIXED';
+  retryCard.layoutSizingVertical = 'HUG';
+  retryCard.appendChild(txt('В конец строки', outfit('SemiBold'), 20, INK));
+  const retryKeys = al('HORIZONTAL', 'retry KeyCombo');
+  retryKeys.itemSpacing = 8;
+  retryKeys.counterAxisAlignItems = 'CENTER';
+  for (const k of ['End']) {
+    const cap = instKeyCap(k);
+    if (cap) {
+      retryKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    retryKeys.appendChild(box);
+  }
+  retryCard.appendChild(retryKeys);
+  retryCard.appendChild(txt('Нажмите сочетание на клавиатуре', outfit('Regular'), 13, MUTED));
+  const retryBtns = al('HORIZONTAL', 'retry actions');
+  retryBtns.itemSpacing = 8;
+  retryBtns.appendChild(instSecondary('Подсказка'));
+  retryBtns.appendChild(ghostBtn('Объяснение'));
+  retryBtns.appendChild(ghostBtn('Пропустить'));
+  retryCard.appendChild(retryBtns);
+  trainRetry.appendChild(retryCard);
+
   const trainExplain = al('VERTICAL', 'Training explain');
   trainExplain.itemSpacing = 12;
   trainExplain.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
@@ -7042,6 +7256,85 @@ async function buildUniqueScreens() {
   timeoutBtns.appendChild(instPrimary('Новый экзамен'));
   timeoutBtns.appendChild(secondaryBtn('К пути'));
   examTimeout.appendChild(timeoutBtns);
+
+  const examCert = al('VERTICAL', 'Exam certificate');
+  examCert.itemSpacing = 12;
+  examCert.paddingTop = examCert.paddingBottom = 24;
+  examCert.paddingLeft = examCert.paddingRight = 24;
+  examCert.cornerRadius = 24;
+  examCert.fills = [solid(WHITE)];
+  examCert.resize(520, 10);
+  examCert.layoutSizingHorizontal = 'FIXED';
+  examCert.layoutSizingVertical = 'HUG';
+  examCert.appendChild(txt('ИТОГИ ЭКЗАМЕНА', outfit('Bold'), 11, BRAND800));
+  examCert.appendChild(txt('Сессия завершена', fraunces('Bold'), 30, INK));
+  const certGradeRow = al('HORIZONTAL', 'cert grade');
+  certGradeRow.itemSpacing = 16;
+  certGradeRow.counterAxisAlignItems = 'CENTER';
+  const certGradeBox = al('HORIZONTAL', 'A');
+  certGradeBox.primaryAxisAlignItems = 'CENTER';
+  certGradeBox.counterAxisAlignItems = 'CENTER';
+  certGradeBox.resize(64, 64);
+  certGradeBox.layoutSizingHorizontal = 'FIXED';
+  certGradeBox.layoutSizingVertical = 'FIXED';
+  certGradeBox.cornerRadius = 16;
+  certGradeBox.strokes = [solid(SUCCESS)];
+  certGradeBox.appendChild(txt('A', outfit('Bold'), 24, SUCCESS));
+  certGradeRow.appendChild(certGradeBox);
+  const certGradeCopy = al('VERTICAL', 'cert pct');
+  certGradeCopy.itemSpacing = 4;
+  certGradeCopy.appendChild(txt('100%', outfit('Bold'), 30, INK));
+  certGradeCopy.appendChild(txt('Отличный результат', outfit('Regular'), 13, MUTED));
+  certGradeRow.appendChild(certGradeCopy);
+  examCert.appendChild(certGradeRow);
+  examCert.appendChild(progressBar(472, 1, SUCCESS, 8));
+  const certStats = al('HORIZONTAL', 'cert result stats');
+  certStats.itemSpacing = 8;
+  certStats.layoutWrap = 'WRAP';
+  certStats.resize(472, 10);
+  certStats.layoutSizingHorizontal = 'FIXED';
+  certStats.layoutSizingVertical = 'HUG';
+  for (const [k, v] of [
+    ['Верно', '1'],
+    ['Ошибок', '0'],
+    ['Точность ответов', '100%'],
+    ['Пройдено', '1/1'],
+    ['Время', '0:03'],
+  ]) {
+    const st = al('VERTICAL', k);
+    st.itemSpacing = 4;
+    st.paddingTop = st.paddingBottom = 12;
+    st.paddingLeft = st.paddingRight = 12;
+    st.cornerRadius = 16;
+    st.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    st.resize(228, 10);
+    st.layoutSizingHorizontal = 'FIXED';
+    st.layoutSizingVertical = 'HUG';
+    st.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    st.appendChild(txt(v, outfit('Bold'), 20, INK));
+    certStats.appendChild(st);
+  }
+  examCert.appendChild(certStats);
+  const certCard = al('VERTICAL', 'CertificateCard');
+  certCard.itemSpacing = 8;
+  certCard.primaryAxisAlignItems = 'CENTER';
+  certCard.paddingTop = certCard.paddingBottom = 24;
+  certCard.paddingLeft = certCard.paddingRight = 24;
+  certCard.cornerRadius = 16;
+  certCard.fills = [solid(BRAND50)];
+  certCard.strokes = [solid(BRAND, 0.3)];
+  certCard.resize(472, 10);
+  certCard.layoutSizingHorizontal = 'FIXED';
+  certCard.layoutSizingVertical = 'HUG';
+  certCard.appendChild(txt('СЕРТИФИКАТ', outfit('Bold'), 11, BRAND800));
+  certCard.appendChild(txt('KeyMaster', fraunces('Bold'), 18, INK));
+  certCard.appendChild(txt('Успешно сдан экзамен — 100%', outfit('Regular'), 13, MUTED));
+  examCert.appendChild(certCard);
+  const certBtns = al('HORIZONTAL', 'cert actions');
+  certBtns.itemSpacing = 8;
+  certBtns.appendChild(instPrimary('Новый экзамен'));
+  certBtns.appendChild(secondaryBtn('К пути'));
+  examCert.appendChild(certBtns);
 
   const reviewBack = al('VERTICAL', 'Review flipped');
   reviewBack.itemSpacing = 12;
@@ -8650,10 +8943,13 @@ async function buildUniqueScreens() {
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Training hint /training', 'Hotkeys', [trainHint]),
       practicePage('Training hint 2 /training', 'Hotkeys', [trainHint2]),
+      practicePage('Training hint 3 /training', 'Hotkeys', [trainHint3]),
+      practicePage('Training retry /training', 'Hotkeys', [trainRetry]),
       practicePage('Training explain /training', 'Hotkeys', [trainExplain]),
       practicePage('Training correct /training', 'Hotkeys', [trainCorrect]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
       practicePage('Training done /training', 'Hotkeys', [trainDone]),
+      practicePage('Training done weak /training', 'Hotkeys', [trainDoneWeak]),
       practicePage('Training loading /training', 'Hotkeys', [
         skelBlock(224, 40, 'Kind=Line'),
         skelBlock(680, 288, 'Kind=Card'),
@@ -8685,6 +8981,7 @@ async function buildUniqueScreens() {
       practicePage('Exam correct /exam', 'Экзамен', [examCorrect]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Exam timeout /exam', 'Экзамен', [examTimeout]),
+      practicePage('Exam certificate /exam', 'Экзамен', [examCert]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
       practicePage('Review empty /review', 'Повторение', [reviewEmpty]),
@@ -9899,7 +10196,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskExplorerFileMenu, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

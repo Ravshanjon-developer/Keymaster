@@ -638,5 +638,25 @@
   "desktop-learner-simulator-desktop-trash-restore.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-training-hint3.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-retry.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-done-weak.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-certificate.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-zip-extract.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

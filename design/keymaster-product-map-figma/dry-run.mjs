@@ -380,8 +380,18 @@ if (!names.includes('Learner / Typing result')) fail.push('no typing-result capt
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
+if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
+if (!names.includes('Training retry /training')) fail.push('no training-retry unique screen');
+if (!names.includes('Training done weak /training')) fail.push('no training-done-weak unique screen');
 if (!names.includes('Learner / Training hint')) fail.push('no training-hint capture');
 if (!names.includes('Learner / Training hint 2')) fail.push('no training-hint2 capture');
+if (!names.includes('Learner / Training hint 3')) fail.push('no training-hint3 capture');
+if (!names.includes('Learner / Training retry')) fail.push('no training-retry capture');
+if (!names.includes('Learner / Training done weak')) fail.push('no training-done-weak capture');
+if (!names.includes('Desktop zip extract /simulator?mode=desktop')) fail.push('no zip-extract unique screen');
+if (!names.includes('Learner / Desktop zip extract')) fail.push('no zip-extract capture');
+if (!names.includes('Exam certificate /exam')) fail.push('no exam-certificate unique screen');
+if (!names.includes('Learner / Exam certificate')) fail.push('no exam-certificate capture');
 if (!names.includes('Desktop explorer file menu /simulator?mode=desktop')) fail.push('no explorer file-menu unique screen');
 if (!names.includes('Learner / Desktop explorer file menu')) fail.push('no explorer file-menu capture');
 if (!names.includes('Desktop recycle-bin restore /simulator?mode=desktop')) fail.push('no trash-restore unique screen');
@@ -1316,12 +1326,17 @@ let deskNewFolderUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
+let trainHint3Unique = null;
+let trainRetryUnique = null;
+let trainDoneWeakUnique = null;
 let quizFinishedUnique = null;
 let deskTrashFullUnique = null;
 let deskExplorerFileMenuUnique = null;
+let deskZipExtractUnique = null;
 let deskTrashRestoreUnique = null;
 let trainCorrectUnique = null;
 let examTimeoutUnique = null;
+let examCertUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1353,12 +1368,17 @@ for (const p of pages) {
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
+  trainHint3Unique = trainHint3Unique || findByName(p, 'Training hint 3 /training');
+  trainRetryUnique = trainRetryUnique || findByName(p, 'Training retry /training');
+  trainDoneWeakUnique = trainDoneWeakUnique || findByName(p, 'Training done weak /training');
   quizFinishedUnique = quizFinishedUnique || findByName(p, 'Quiz finished /quiz');
   deskTrashFullUnique = deskTrashFullUnique || findByName(p, 'Desktop recycle-bin full /simulator?mode=desktop');
   deskExplorerFileMenuUnique = deskExplorerFileMenuUnique || findByName(p, 'Desktop explorer file menu /simulator?mode=desktop');
+  deskZipExtractUnique = deskZipExtractUnique || findByName(p, 'Desktop zip extract /simulator?mode=desktop');
   deskTrashRestoreUnique = deskTrashRestoreUnique || findByName(p, 'Desktop recycle-bin restore /simulator?mode=desktop');
   trainCorrectUnique = trainCorrectUnique || findByName(p, 'Training correct /training');
   examTimeoutUnique = examTimeoutUnique || findByName(p, 'Exam timeout /exam');
+  examCertUnique = examCertUnique || findByName(p, 'Exam certificate /exam');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1449,6 +1469,21 @@ if (!trainHintUnique || !namesUnder(trainHintUnique).includes('Начните с
 }
 if (!trainHint2Unique || !namesUnder(trainHint2Unique).includes('Зажмите Ctrl, затем нажмите H') || !namesUnder(trainHint2Unique).includes('Показать ответ') || !namesUnder(trainHint2Unique).includes('Замена') || namesUnder(trainHint2Unique).includes('Начните с Ctrl') || namesUnder(trainHint2Unique).includes('К упражнению')) {
   fail.push('training-hint2 unique missing live second-hint KeyboardTrainer front');
+}
+if (!trainHint3Unique || !namesUnder(trainHint3Unique).includes('Нажмите: End') || !namesUnder(trainHint3Unique).includes('В конец строки') || namesUnder(trainHint3Unique).includes('Показать ответ') || namesUnder(trainHint3Unique).includes('Подсказка') || namesUnder(trainHint3Unique).includes('К упражнению')) {
+  fail.push('training-hint3 unique missing live full-reveal KeyboardTrainer front');
+}
+if (!trainRetryUnique || !namesUnder(trainRetryUnique).includes('повтор') || !namesUnder(trainRetryUnique).includes('Задание 2 из 2') || namesUnder(trainRetryUnique).includes('Начните с Ctrl') || namesUnder(trainRetryUnique).includes('Тренировка завершена')) {
+  fail.push('training-retry unique missing live retryBadge chrome');
+}
+if (!trainDoneWeakUnique || !namesUnder(trainDoneWeakUnique).includes('Стоит повторить:') || !namesUnder(trainDoneWeakUnique).includes('Тренировка завершена') || namesUnder(trainDoneWeakUnique).includes('Все сочетания дались уверенно. Отличная работа!')) {
+  fail.push('training-done-weak unique missing live weak-lesson list');
+}
+if (!deskZipExtractUnique || !namesUnder(deskZipExtractUnique).includes('Извлечь сюда') || !namesUnder(deskZipExtractUnique).includes('Welcome.zip') || !namesUnder(deskZipExtractUnique).includes('Проводник') || namesUnder(deskZipExtractUnique).includes('Восстановить') || namesUnder(deskZipExtractUnique).includes('С чего начать')) {
+  fail.push('zip-extract unique missing live Извлечь сюда chrome');
+}
+if (!examCertUnique || !namesUnder(examCertUnique).includes('СЕРТИФИКАТ') || !namesUnder(examCertUnique).includes('Отличный результат') || !namesUnder(examCertUnique).includes('KeyMaster') || namesUnder(examCertUnique).includes('Стоит повторить материал') || namesUnder(examCertUnique).includes('Время вышло')) {
+  fail.push('exam-certificate unique missing live CertificateCard ≥90%');
 }
 if (!deskExplorerFileMenuUnique || !namesUnder(deskExplorerFileMenuUnique).includes('Сжать в ZIP') || !namesUnder(deskExplorerFileMenuUnique).includes('Свойства') || !namesUnder(deskExplorerFileMenuUnique).includes('Проводник') || namesUnder(deskExplorerFileMenuUnique).includes('Восстановить') || namesUnder(deskExplorerFileMenuUnique).includes('С чего начать')) {
   fail.push('explorer file-menu unique missing live Сжать в ZIP chrome');

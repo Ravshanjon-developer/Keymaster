@@ -1015,6 +1015,148 @@ await run('desktop-trash-restore', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-trash-restore.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
+await run('training-hint3', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-hint3.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Подсказка' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  await page.getByRole('button', { name: 'Показать ответ' }).waitFor({ timeout: 8000 });
+  await page.getByRole('button', { name: 'Показать ответ' }).click();
+  await page.locator('p.mt-4.text-center').filter({ hasText: 'Нажмите:' }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-training-hint3.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('training-retry', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-retry.jpg');
+  let lessons = [];
+  await page.route('**/training/random**', async (route) => {
+    const res = await route.fetch();
+    try {
+      lessons = await res.json();
+    } catch {
+      lessons = [];
+    }
+    const one = Array.isArray(lessons) && lessons[0] ? [lessons[0]] : lessons;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(one),
+    });
+  });
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Подсказка' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  const trainer = page.locator('[role="application"]');
+  await trainer.focus();
+  const keys = Array.isArray(lessons?.[0]?.keys) ? lessons[0].keys : [];
+  if (!keys.length) throw new Error('no random lesson keys');
+  await pressChord(page, keys);
+  await page.getByRole('button', { name: 'Далее →' }).waitFor({ timeout: 8000 });
+  await page.getByText('повтор', { exact: true }).waitFor({ timeout: 8000 });
+  await page.locator('[role="application"]').focus();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-training-retry.jpg', w, h, keys, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('training-done-weak', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-done-weak.jpg');
+  let lessons = [];
+  await page.route('**/training/random**', async (route) => {
+    const res = await route.fetch();
+    try {
+      lessons = await res.json();
+    } catch {
+      lessons = [];
+    }
+    const one = Array.isArray(lessons) && lessons[0] ? [lessons[0]] : lessons;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(one),
+    });
+  });
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Подсказка' }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Подсказка' }).click();
+  const trainer = page.locator('[role="application"]');
+  await trainer.focus();
+  const keys = Array.isArray(lessons?.[0]?.keys) ? lessons[0].keys : [];
+  if (!keys.length) throw new Error('no random lesson keys');
+  await pressChord(page, keys);
+  await page.getByText('повтор', { exact: true }).waitFor({ timeout: 8000 });
+  await page.locator('[role="application"]').focus();
+  await pressChord(page, keys);
+  await page.getByText('Стоит повторить:', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-training-done-weak.jpg', w, h, keys, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('exam-certificate', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-exam-certificate.jpg');
+  let lessons = [];
+  await page.route('**/training/random**', async (route) => {
+    const res = await route.fetch();
+    try {
+      lessons = await res.json();
+    } catch {
+      lessons = [];
+    }
+    const one = Array.isArray(lessons) && lessons[0] ? [lessons[0]] : lessons;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(one),
+    });
+  });
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/exam', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Начать экзамен' }).waitFor({ timeout: 20000 });
+  await page.getByRole('button', { name: 'Начать экзамен' }).click();
+  await page.locator('[role="application"]').waitFor({ timeout: 20000 });
+  await page.locator('[role="application"]').focus();
+  const keys = Array.isArray(lessons?.[0]?.keys) ? lessons[0].keys : [];
+  if (!keys.length) throw new Error('no exam lesson keys');
+  await pressChord(page, keys);
+  await page.getByText('Отличный результат', { exact: true }).waitFor({ timeout: 12000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-exam-certificate.jpg', w, h, keys, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('desktop-zip-extract', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-zip-extract.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Этот компьютер', { exact: true }).dblclick();
+  await page.getByText('Проводник', { exact: true }).waitFor({ timeout: 10000 });
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Welcome.txt', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Сжать в ZIP', { exact: true }).click();
+  await page.getByText('Welcome.zip', { exact: true }).last().waitFor({ timeout: 8000 });
+  await page.getByText('Welcome.zip', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Извлечь сюда', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-zip-extract.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');
