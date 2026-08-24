@@ -1205,9 +1205,15 @@ if (!names.includes('Desktop light /simulator?mode=desktop')) fail.push('no desk
 if (!names.includes('Code Lab toast /simulator')) fail.push('no code-lab toast unique screen');
 if (!names.includes('Desktop toast /simulator?mode=desktop')) fail.push('no desktop toast unique screen');
 if (!names.includes('Desktop all complete /simulator?mode=desktop')) fail.push('no desktop all-complete unique screen');
+if (!names.includes('Code Lab new file /simulator')) fail.push('no code-lab new-file unique screen');
+if (!names.includes('Code Lab hint /simulator')) fail.push('no code-lab hint unique screen');
+if (!names.includes('Desktop from lesson /simulator?mode=desktop')) fail.push('no desktop from-lesson unique screen');
 if (!names.includes('File saved')) fail.push('no live Code Lab File saved toast unique screen');
 if (!names.includes('Все задачи выполнены!')) fail.push('no live desktop all-complete unique screen');
 if (!names.includes('Вы заработали 160 XP. Отличная работа!')) fail.push('no live desktop all-complete XP copy');
+if (!names.includes('filename.js')) fail.push('no live Code Lab filename.js inline create unique screen');
+if (!names.includes('Подсказка 1: Папку нужно создать на верхнем уровне проекта.')) fail.push('no live Code Lab hint-1 unique screen');
+if (!names.includes('← К уроку')) fail.push('no live desktop from-lesson back link unique screen');
 if (!names.includes('Code Lab current task /simulator')) fail.push('no code-lab current-task unique screen');
 if (!names.includes('Code Lab task in progress /simulator')) fail.push('no code-lab in-progress task unique screen');
 if (!names.includes('Задача выполнена!')) fail.push('no live Code Lab task-completed unique screen');
@@ -1239,6 +1245,9 @@ if (!names.includes('Learner / Desktop light')) fail.push('no desktop light capt
 if (!names.includes('Learner / Code Lab toast')) fail.push('no code-lab toast capture');
 if (!names.includes('Learner / Desktop toast')) fail.push('no desktop toast capture');
 if (!names.includes('Learner / Desktop all complete')) fail.push('no desktop all-complete capture');
+if (!names.includes('Learner / Code Lab new file')) fail.push('no code-lab new-file capture');
+if (!names.includes('Learner / Code Lab hint')) fail.push('no code-lab hint capture');
+if (!names.includes('Learner / Desktop from lesson')) fail.push('no desktop from-lesson capture');
 if (!names.includes('Learner / Code Lab current task')) fail.push('no code-lab current-task capture');
 if (!names.includes('Learner / Code Lab task in progress')) fail.push('no code-lab in-progress task capture');
 if (!names.includes('Learner / Code Lab all tasks')) fail.push('no code-lab all-tasks capture');
@@ -1264,6 +1273,9 @@ let deskLightUnique = null;
 let simToastUnique = null;
 let deskTaskToastUnique = null;
 let deskAllCompleteUnique = null;
+let simNewFileUnique = null;
+let simHintUnique = null;
+let deskFromLessonUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1283,6 +1295,9 @@ for (const p of pages) {
   simToastUnique = simToastUnique || findByName(p, 'Code Lab toast /simulator');
   deskTaskToastUnique = deskTaskToastUnique || findByName(p, 'Desktop toast /simulator?mode=desktop');
   deskAllCompleteUnique = deskAllCompleteUnique || findByName(p, 'Desktop all complete /simulator?mode=desktop');
+  simNewFileUnique = simNewFileUnique || findByName(p, 'Code Lab new file /simulator');
+  simHintUnique = simHintUnique || findByName(p, 'Code Lab hint /simulator');
+  deskFromLessonUnique = deskFromLessonUnique || findByName(p, 'Desktop from lesson /simulator?mode=desktop');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1337,6 +1352,15 @@ if (!deskTaskToastUnique || !namesUnder(deskTaskToastUnique).includes('Зада�
 }
 if (!deskAllCompleteUnique || !namesUnder(deskAllCompleteUnique).includes('Все задачи выполнены!') || !namesUnder(deskAllCompleteUnique).includes('Вы заработали 160 XP. Отличная работа!') || !namesUnder(deskAllCompleteUnique).includes('12/12') || namesUnder(deskAllCompleteUnique).includes('ТЕКУЩАЯ · 1/12') || namesUnder(deskAllCompleteUnique).includes('С чего начать')) {
   fail.push('desktop all-complete unique missing live 12/12 panel copy');
+}
+if (!simNewFileUnique || !namesUnder(simNewFileUnique).includes('filename.js') || !namesUnder(simNewFileUnique).includes('Готовы к практике?') || namesUnder(simNewFileUnique).includes('File: New File')) {
+  fail.push('code lab new-file unique missing live filename.js inline create on idle workbench');
+}
+if (!simHintUnique || !namesUnder(simHintUnique).includes('Подсказка 1: Папку нужно создать на верхнем уровне проекта.') || !namesUnder(simHintUnique).includes('Подсказка (1/3)') || !namesUnder(simHintUnique).includes('Создать папку') || namesUnder(simHintUnique).includes('Готовы к практике?')) {
+  fail.push('code lab hint unique missing live first Create Folder hint');
+}
+if (!deskFromLessonUnique || !namesUnder(deskFromLessonUnique).includes('← К уроку') || !namesUnder(deskFromLessonUnique).includes('Этот компьютер') || namesUnder(deskFromLessonUnique).includes('С чего начать')) {
+  fail.push('desktop from-lesson unique missing live ← К уроку chrome');
 }
 
 console.log(JSON.stringify(report, null, 2));

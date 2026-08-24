@@ -4937,6 +4937,7 @@ async function buildUniqueScreens() {
     } else {
       explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, mutedC));
       explorer.appendChild(txt('KEYMASTER-PROJECT', outfit('Bold'), 10, inkC));
+      if (overlay === 'newfile') explorer.appendChild(txt('filename.js', outfit('Regular'), 12, mutedC));
       explorer.appendChild(txt('src', outfit('Regular'), 12, inkC));
       explorer.appendChild(txt('README.md', outfit('Regular'), 12, inkC));
       explorer.appendChild(txt('package.json', outfit('Regular'), 12, inkC));
@@ -4988,7 +4989,7 @@ async function buildUniqueScreens() {
     tasks.resize(280, 10);
     tasks.layoutSizingHorizontal = 'FIXED';
     tasks.layoutSizingVertical = 'HUG';
-    tasks.appendChild(txt(overlay === 'task' || overlay === 'taskrun' ? 'ЗАДАЧИ · 15 XP' : 'ЗАДАЧИ · 0 XP', outfit('Bold'), 11, inkC));
+    tasks.appendChild(txt(overlay === 'task' || overlay === 'taskrun' || overlay === 'hint' ? 'ЗАДАЧИ · 15 XP' : 'ЗАДАЧИ · 0 XP', outfit('Bold'), 11, inkC));
     if (overlay === 'task') {
       tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
       tasks.appendChild(txt('Задача выполнена!', outfit('SemiBold'), 14, { r: 0.086, g: 0.639, b: 0.29 }));
@@ -5009,7 +5010,7 @@ async function buildUniqueScreens() {
       tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, inkC));
       tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, mutedC));
       tasks.appendChild(txt('Задача выполнена: Создать новый файл', outfit('Regular'), 12, inkC, 248));
-    } else if (overlay === 'taskrun') {
+    } else if (overlay === 'taskrun' || overlay === 'hint') {
       tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
       tasks.appendChild(txt('НАЧАЛЬНЫЙ', outfit('Bold'), 10, { r: 0.086, g: 0.639, b: 0.29 }));
       tasks.appendChild(txt('проводник', outfit('Regular'), 11, mutedC));
@@ -5019,7 +5020,12 @@ async function buildUniqueScreens() {
       tasks.appendChild(txt('0%', outfit('Regular'), 11, mutedC));
       tasks.appendChild(txt('ШАГИ', outfit('Bold'), 10, mutedC));
       tasks.appendChild(txt('В корне есть папка «assets»', outfit('Regular'), 12, inkC, 248));
-      tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, inkC));
+      tasks.appendChild(txt(overlay === 'hint' ? 'Подсказка (1/3)' : 'Подсказка (0/3)', outfit('Regular'), 12, inkC));
+      if (overlay === 'hint') {
+        tasks.appendChild(
+          txt('Подсказка 1: Папку нужно создать на верхнем уровне проекта.', outfit('Regular'), 11, mutedC, 248),
+        );
+      }
       tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, mutedC));
     } else if (overlay === 'tasklist') {
       tasks.appendChild(txt('Все задачи', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
@@ -5222,6 +5228,15 @@ async function buildUniqueScreens() {
       ic.appendChild(box);
       ic.appendChild(txt(label, outfit('Regular'), 11, deskInk, 120));
       icons.appendChild(ic);
+    }
+    if (overlay === 'fromlesson') {
+      const back = al('HORIZONTAL', '← К уроку');
+      back.paddingTop = back.paddingBottom = 6;
+      back.paddingLeft = back.paddingRight = 12;
+      back.cornerRadius = 8;
+      back.fills = [solid({ r: 0, g: 0, b: 0 }, 0.55)];
+      back.appendChild(txt('← К уроку', outfit('SemiBold'), 12, WHITE));
+      deskWork.appendChild(back);
     }
     deskWork.appendChild(icons);
     if (!overlay) {
@@ -5508,6 +5523,8 @@ async function buildUniqueScreens() {
   const simPreview = makeCodeLab('Code Lab preview /simulator', 'preview');
   const simKbViz = makeCodeLab('Code Lab keyboard /simulator', 'kbviz');
   const simToast = makeCodeLab('Code Lab toast /simulator', 'toast');
+  const simNewFile = makeCodeLab('Code Lab new file /simulator', 'newfile');
+  const simHint = makeCodeLab('Code Lab hint /simulator', 'hint');
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
@@ -5520,6 +5537,7 @@ async function buildUniqueScreens() {
   const deskLight = makeDesktopSim('Desktop light /simulator?mode=desktop', 'light');
   const deskDone = makeDesktopSim('Desktop all complete /simulator?mode=desktop', 'done');
   const deskToast = makeDesktopSim('Desktop toast /simulator?mode=desktop', 'toast');
+  const deskFromLesson = makeDesktopSim('Desktop from lesson /simulator?mode=desktop', 'fromlesson');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -9194,7 +9212,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

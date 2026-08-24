@@ -566,5 +566,17 @@
   "desktop-learner-simulator-desktop-done.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-simulator-code-newfile.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-fromlesson.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-hint.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

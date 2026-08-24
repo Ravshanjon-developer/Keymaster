@@ -526,6 +526,50 @@ await run('desktop-done', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-done.jpg', w, h };
 });
 
+await run('code-lab-newfile', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-newfile.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('New File', { exact: true }).click();
+  await page.getByPlaceholder('filename.js').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-newfile.jpg', w, h };
+});
+
+await run('code-lab-hint', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-hint.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Начать первую задачу' }).click();
+  await page.getByRole('button', { name: 'Следующая задача' }).click();
+  await page.getByText('Создайте в корне проекта папку с именем «assets».', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByRole('button', { name: /Подсказка/ }).click();
+  await page
+    .getByText('Подсказка 1: Папку нужно создать на верхнем уровне проекта.', { exact: true })
+    .waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-hint.jpg', w, h };
+});
+
+await run('desktop-fromlesson', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-fromlesson.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(
+    BASE + '/simulator?mode=desktop&task=1&fromLesson=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+    { waitUntil: 'domcontentloaded', timeout: 20000 },
+  );
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 20000 });
+  const ok = page.getByRole('button', { name: 'Понятно' });
+  if (await ok.isVisible().catch(() => false)) await ok.click();
+  await page.getByText('← К уроку', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-fromlesson.jpg', w, h };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');
