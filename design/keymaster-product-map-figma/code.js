@@ -1380,11 +1380,11 @@ async function buildSitemap() {
       'MarketingShell',
       [
         ['/', 'Home', 'Guest + learner'],
-        ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty'],
+        ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty · filter start'],
         ['/courses/:slug', 'Course detail', 'guest CTA · authed progress · vscode exam · not found'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study | desktop-task'],
         ['/path', 'Learning path', 'protected'],
-        ['/leaderboard', 'Leaderboard', 'public'],
+        ['/leaderboard', 'Leaderboard', 'public · authed Вы'],
         ['/achievements', 'Achievements', 'locked / unlocked'],
         ['/dashboard', 'Dashboard', 'XP · streak'],
         ['/stats', 'Stats', 'protected'],
@@ -5403,6 +5403,59 @@ async function buildUniqueScreens() {
           return row;
         })(),
       ]),
+      marketingPage('Courses filter start /courses', 'Курсы', true, [
+        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+        txt('Каталог курсов', fraunces('Bold'), 32, INK),
+        searchField(880),
+        (() => {
+          const row = al('HORIZONTAL', 'Filters start');
+          row.itemSpacing = 8;
+          for (const [label, on] of [
+            ['Все', false],
+            ['Старт', true],
+            ['ОС', false],
+            ['Редакторы', false],
+            ['Браузеры', false],
+            ['Офис', false],
+            ['Git', false],
+          ]) {
+            const chip = al('HORIZONTAL', label);
+            chip.paddingLeft = chip.paddingRight = 14;
+            chip.paddingTop = chip.paddingBottom = 10;
+            chip.minHeight = 44;
+            chip.cornerRadius = 99;
+            chip.fills = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : WHITE)];
+            chip.strokes = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : INK, on ? 1 : 0.12)];
+            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+            row.appendChild(chip);
+          }
+          return row;
+        })(),
+        txt('COURSE_GROUPS.start — computer-basics + programmer-basics only. Not a third layout.', outfit('Regular'), 12, MUTED, 860),
+        (() => {
+          const row = al('HORIZONTAL', 'Start filter cards');
+          row.itemSpacing = 12;
+          row.appendChild(
+            catalogCard({
+              title: 'Первый ноутбук: файлы и папки',
+              desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+              meta: '16 уроков · 4 категории',
+              start: true,
+              iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+            }),
+          );
+          row.appendChild(
+            catalogCard({
+              title: 'Основные горячие клавиши программиста',
+              desc: 'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний. Системные клавиши (Alt+Tab, Win, F) — в разделе изучения и в режиме «Повторение».',
+              meta: '19 уроков · 2 категории',
+              start: true,
+              iconFill: { r: 0.35, g: 0.42, b: 0.55 },
+            }),
+          );
+          return row;
+        })(),
+      ]),
       marketingPage('Course detail /courses/:slug', 'Курсы', true, [
         pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
         txt('Первый ноутбук: файлы и папки', fraunces('Bold'), 32, INK, 800),
@@ -5585,10 +5638,28 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
-        txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800),
-        txt('Рейтинг', fraunces('Bold'), 32, INK),
-        txt('Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.', outfit('Regular'), 13, MUTED, 800),
         (() => {
+          const hero = al('VERTICAL', 'Leaderboard hero');
+          hero.itemSpacing = 8;
+          hero.paddingTop = hero.paddingBottom = 32;
+          hero.paddingLeft = hero.paddingRight = 32;
+          hero.cornerRadius = 24;
+          hero.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+          hero.strokes = [solid(BRAND, 0.2)];
+          hero.resize(880, 10);
+          hero.layoutSizingHorizontal = 'FIXED';
+          hero.layoutSizingVertical = 'HUG';
+          hero.appendChild(txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800));
+          hero.appendChild(txt('Рейтинг', fraunces('Bold'), 32, INK));
+          hero.appendChild(
+            txt(
+              'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              720,
+            ),
+          );
           const periods = al('HORIZONTAL', 'Period filter');
           periods.itemSpacing = 4;
           periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
@@ -5608,9 +5679,106 @@ async function buildUniqueScreens() {
             chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
             periods.appendChild(chip);
           }
-          return periods;
+          hero.appendChild(periods);
+          return hero;
         })(),
         podium,
+      ]),
+      marketingPage('Leaderboard authed /leaderboard', 'Рейтинг', false, [
+        (() => {
+          const hero = al('VERTICAL', 'Leaderboard hero authed');
+          hero.itemSpacing = 8;
+          hero.paddingTop = hero.paddingBottom = 32;
+          hero.paddingLeft = hero.paddingRight = 32;
+          hero.cornerRadius = 24;
+          hero.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+          hero.strokes = [solid(BRAND, 0.2)];
+          hero.resize(880, 10);
+          hero.layoutSizingHorizontal = 'FIXED';
+          hero.layoutSizingVertical = 'HUG';
+          hero.appendChild(txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800));
+          hero.appendChild(txt('Рейтинг', fraunces('Bold'), 32, INK));
+          hero.appendChild(
+            txt(
+              'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              720,
+            ),
+          );
+          const periods = al('HORIZONTAL', 'Period filter authed');
+          periods.itemSpacing = 4;
+          periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
+          periods.cornerRadius = 12;
+          periods.fills = [solid(WHITE)];
+          periods.strokes = [solid(INK, 0.1)];
+          for (const [label, on] of [
+            ['Всё время', true],
+            ['Неделя', false],
+            ['Месяц', false],
+          ]) {
+            const chip = al('HORIZONTAL', label);
+            chip.paddingLeft = chip.paddingRight = 14;
+            chip.paddingTop = chip.paddingBottom = 6;
+            chip.cornerRadius = 8;
+            chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+            periods.appendChild(chip);
+          }
+          hero.appendChild(periods);
+          return hero;
+        })(),
+        (() => {
+          const wrap = al('VERTICAL', 'Podium authed');
+          wrap.itemSpacing = 16;
+          wrap.primaryAxisAlignItems = 'CENTER';
+          const card = al('VERTICAL', '#1 Анна you');
+          card.itemSpacing = 6;
+          card.primaryAxisAlignItems = 'CENTER';
+          card.paddingTop = card.paddingBottom = 20;
+          card.paddingLeft = card.paddingRight = 16;
+          card.cornerRadius = 16;
+          card.fills = [solid(WHITE)];
+          card.strokes = [solid(BRAND, 0.5)];
+          card.resize(220, 10);
+          card.layoutSizingHorizontal = 'FIXED';
+          card.layoutSizingVertical = 'HUG';
+          const crown = figma.createEllipse();
+          crown.resize(40, 40);
+          crown.fills = [solid({ r: 0.961, g: 0.769, b: 0.157 })];
+          card.appendChild(crown);
+          card.appendChild(txt('#1', outfit('Bold'), 11, MUTED));
+          card.appendChild(txt('Анна', outfit('SemiBold'), 16, INK));
+          card.appendChild(txt('@learner', outfit('Regular'), 12, MUTED));
+          const xpPill = al('HORIZONTAL', '0 XP you');
+          xpPill.itemSpacing = 4;
+          xpPill.paddingLeft = xpPill.paddingRight = 10;
+          xpPill.paddingTop = xpPill.paddingBottom = 4;
+          xpPill.cornerRadius = 8;
+          xpPill.fills = [solid(SUCCESS, 0.12)];
+          xpPill.appendChild(txt('0 XP', outfit('Bold'), 13, SUCCESS));
+          card.appendChild(xpPill);
+          card.appendChild(txt('Новичок', outfit('Medium'), 12, BRAND800));
+          const you = al('HORIZONTAL', 'ВЫ');
+          you.paddingLeft = you.paddingRight = 8;
+          you.paddingTop = you.paddingBottom = 2;
+          you.cornerRadius = 6;
+          you.fills = [solid(BRAND)];
+          you.appendChild(txt('ВЫ', outfit('Bold'), 10, WHITE));
+          card.appendChild(you);
+          wrap.appendChild(card);
+          wrap.appendChild(
+            txt(
+              'Пройдите ещё уроки — таблица расширится, когда появятся новые игроки.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              640,
+            ),
+          );
+          return wrap;
+        })(),
       ]),
       marketingPage('Achievements /achievements', '', false, [
         txt('Достижения', fraunces('Bold'), 32, INK),
