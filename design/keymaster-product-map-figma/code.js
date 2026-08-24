@@ -2920,11 +2920,18 @@ async function buildUniqueScreens() {
   lessonTask.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const lessonStudy = al('VERTICAL', 'Study-only lesson');
-  lessonStudy.itemSpacing = 10;
-  lessonStudy.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
-  lessonStudy.appendChild(txt('Переключение окон', outfit('SemiBold'), 20, INK));
+  lessonStudy.itemSpacing = 16;
+  const studyCard = al('VERTICAL', 'study card');
+  studyCard.itemSpacing = 12;
+  studyCard.paddingTop = studyCard.paddingBottom = 28;
+  studyCard.paddingLeft = studyCard.paddingRight = 28;
+  studyCard.cornerRadius = 24;
+  studyCard.fills = [solid(WHITE)];
+  studyCard.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
+  studyCard.appendChild(txt('Переключение окон', fraunces('Bold'), 28, INK));
   const studyKeys = al('HORIZONTAL', 'combo');
   studyKeys.itemSpacing = 8;
+  studyKeys.counterAxisAlignItems = 'CENTER';
   for (const k of ['Alt', 'Tab']) {
     const cap = instKeyCap(k);
     if (cap) {
@@ -2940,14 +2947,14 @@ async function buildUniqueScreens() {
     box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
     studyKeys.appendChild(box);
   }
-  lessonStudy.appendChild(studyKeys);
-  lessonStudy.appendChild(
+  studyCard.appendChild(studyKeys);
+  studyCard.appendChild(
     txt(
       'Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».',
       outfit('Regular'),
       13,
       MUTED,
-      720,
+      640,
     ),
   );
   const studyCta = al('VERTICAL', 'register gate');
@@ -2955,15 +2962,26 @@ async function buildUniqueScreens() {
   studyCta.paddingTop = studyCta.paddingBottom = 16;
   studyCta.paddingLeft = studyCta.paddingRight = 16;
   studyCta.cornerRadius = 16;
-  studyCta.strokes = [solid(INK, 0.12)];
+  studyCta.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
   studyCta.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
   studyCta.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
+  studyCta.appendChild(
+    txt(
+      'Тренажёр клавиш, XP и путь обучения доступны после регистрации. Каталог и теория уроков — без аккаунта.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      560,
+    ),
+  );
   const studyBtns = al('HORIZONTAL', 'ctas');
   studyBtns.itemSpacing = 8;
   studyBtns.appendChild(instPrimary('Регистрация'));
   studyBtns.appendChild(instSecondary('Уже есть аккаунт'));
   studyCta.appendChild(studyBtns);
-  lessonStudy.appendChild(studyCta);
+  studyCard.appendChild(studyCta);
+  lessonStudy.appendChild(studyCard);
+  lessonStudy.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const pathRow = al('HORIZONTAL', 'Path nodes');
   pathRow.itemSpacing = 12;
@@ -4967,7 +4985,7 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
-      marketingPage('Lesson study-only /lessons/:id', 'Курсы', false, [lessonStudy]),
+      marketingPage('Lesson study-only /lessons/:id', 'Курсы', true, [lessonStudy]),
       marketingPage('Path /path', 'Мой путь', false, pathBody),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [

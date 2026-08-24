@@ -459,6 +459,14 @@ if (!mobileLogin || !namesUnder(mobileLogin).includes('Добро пожалов
 if (mobileLogin && namesUnder(mobileLogin).includes('BottomNav')) {
   fail.push('mobile login unique screen still has BottomNav');
 }
+let studyUnique = null;
+for (const p of pages) studyUnique = studyUnique || findByName(p, 'Lesson study-only /lessons/:id');
+if (!studyUnique || !namesUnder(studyUnique).some((n) => String(n).includes('без аккаунта'))) {
+  fail.push('no live study-only practice-gate body unique screen');
+}
+if (!studyUnique || !namesUnder(studyUnique).includes('Вход') || namesUnder(studyUnique).includes('Анна')) {
+  fail.push('study-only unique screen is not guest chrome like the live capture');
+}
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
