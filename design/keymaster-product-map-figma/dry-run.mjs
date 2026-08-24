@@ -470,6 +470,9 @@ if (!names.includes('Courses authed /courses')) fail.push('no authed catalog uni
 if (!names.includes('Courses loading /courses')) fail.push('no catalog loading unique screen');
 if (!names.includes('Courses API error /courses')) fail.push('no catalog API-error unique screen');
 if (!names.includes('Course detail authed /courses/:slug')) fail.push('no authed course-detail unique screen');
+if (!names.includes('Course detail authed computer-basics /courses/:slug')) fail.push('no authed computer-basics course-detail unique screen');
+if (!names.includes('Learner / Course detail (computer-basics)')) fail.push('no authed computer-basics course-detail capture');
+if (!names.includes('0/3 изучено')) fail.push('no live computer-basics category learned-count unique screen');
 if (!names.includes('Course not found /courses/:slug')) fail.push('no course-not-found unique screen');
 if (!names.includes('Auth callback error /auth/callback')) fail.push('no auth-callback error unique screen');
 if (!names.includes('SkeletonCardGrid')) fail.push('no SkeletonCardGrid unique screen');
@@ -623,6 +626,17 @@ if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('Трени�
 }
 if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('LearnStatus instance')) {
   fail.push('authed vscode course-detail unique missing LearnStatus instance');
+}
+let courseDetailBasicsAuthed = null;
+for (const p of pages) courseDetailBasicsAuthed = courseDetailBasicsAuthed || findByName(p, 'Course detail authed computer-basics /courses/:slug');
+if (!courseDetailBasicsAuthed || !namesUnder(courseDetailBasicsAuthed).includes('Рабочий стол') || namesUnder(courseDetailBasicsAuthed).includes('Тренировка') || namesUnder(courseDetailBasicsAuthed).includes('Экзамен')) {
+  fail.push('authed computer-basics course-detail unique should use Desktop CTA without Training/Exam');
+}
+if (!courseDetailBasicsAuthed || !namesUnder(courseDetailBasicsAuthed).includes('0/16 сочетаний') || !namesUnder(courseDetailBasicsAuthed).includes('+15 XP') || !namesUnder(courseDetailBasicsAuthed).includes('Папка Practice')) {
+  fail.push('authed computer-basics course-detail unique missing live 0/16, +15 XP, or Папка Practice');
+}
+if (courseDetailBasicsAuthed && namesUnder(courseDetailBasicsAuthed).includes('Ctrl + P')) {
+  fail.push('authed computer-basics course-detail unique should not show vscode shortcut lines');
 }
 let courseNotFoundUnique = null;
 for (const p of pages) courseNotFoundUnique = courseNotFoundUnique || findByName(p, 'Course not found /courses/:slug');

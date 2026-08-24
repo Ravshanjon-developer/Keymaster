@@ -1368,7 +1368,7 @@ async function buildSitemap() {
   board.appendChild(txt('Information architecture (current product)', fraunces('Bold'), 28, INK, 1720));
   board.appendChild(
     txt(
-      'One node per unique page. /courses/:slug is one Course Detail layout × 20 slugs. /lessons/:id is three kinds, not N lessons.',
+      'One node per unique page. /courses/:slug is two authed layouts (vscode Training/Exam vs computer-basics Desktop) × 20 slugs. /lessons/:id is four kinds, not N lessons.',
       outfit('Regular'),
       13,
       MUTED,
@@ -1383,7 +1383,7 @@ async function buildSitemap() {
       [
         ['/', 'Home', 'Guest + learner'],
         ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty · filter start'],
-        ['/courses/:slug', 'Course detail', 'guest CTA · authed progress · vscode exam · not found'],
+        ['/courses/:slug', 'Course detail', 'guest CTA · authed vscode Training/Exam · authed computer-basics Desktop · not found'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study | desktop-task'],
         ['/path', 'Learning path', 'protected'],
         ['/leaderboard', 'Leaderboard', 'public · authed Вы'],
@@ -5597,13 +5597,109 @@ async function buildUniqueScreens() {
           }
           return row;
         })(),
-        txt('Authed vscode — LearnStatus + Training/Exam. computer-basics guest covers Desktop CTA. Do not duplicate 42 lessons.', outfit('Regular'), 12, MUTED, 860),
+        txt('Authed vscode — LearnStatus + Training/Exam. Authed computer-basics is a separate unique (Desktop CTA, no Training/Exam, no shortcut on desktop-task cards).', outfit('Regular'), 12, MUTED, 860),
         (() => {
           const row = al('HORIZONTAL', 'vscode ctas');
           row.itemSpacing = 8;
           row.appendChild(secondaryBtn('Мой путь'));
           row.appendChild(instPrimary('Тренировка'));
           row.appendChild(secondaryBtn('Экзамен'));
+          return row;
+        })(),
+      ]),
+      marketingPage('Course detail authed computer-basics /courses/:slug', 'Курсы', false, [
+        pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
+        txt('Первый ноутбук: файлы и папки', fraunces('Bold'), 32, INK, 800),
+        txt('Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».', outfit('Regular'), 14, MUTED, 720),
+        (() => {
+          const prog = al('VERTICAL', 'computer-basics progress');
+          prog.itemSpacing = 6;
+          const meta = al('HORIZONTAL', 'progress meta basics');
+          meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          meta.resize(400, 10);
+          meta.layoutSizingHorizontal = 'FIXED';
+          meta.layoutSizingVertical = 'HUG';
+          meta.appendChild(txt('0/16 сочетаний', outfit('Regular'), 13, MUTED));
+          meta.appendChild(txt('0%', outfit('SemiBold'), 13, BRAND800));
+          prog.appendChild(meta);
+          prog.appendChild(instProgress('Value=Empty') || progressBar(400, 0, BRAND, 10));
+          return prog;
+        })(),
+        (() => {
+          const sec = al('HORIZONTAL', 'Файлы и папки head');
+          sec.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          sec.counterAxisAlignItems = 'MAX';
+          sec.resize(880, 10);
+          sec.layoutSizingHorizontal = 'FIXED';
+          sec.layoutSizingVertical = 'HUG';
+          sec.appendChild(txt('Файлы и папки', outfit('SemiBold'), 18, INK));
+          sec.appendChild(txt('0/3 изучено', outfit('Medium'), 12, MUTED));
+          return sec;
+        })(),
+        (() => {
+          const row = al('HORIZONTAL', 'Authed basics lesson cards');
+          row.itemSpacing = 12;
+          for (const title of ['Файл и папка', 'Расширение файла', 'Где хранить']) {
+            const c = al('HORIZONTAL', title);
+            c.primaryAxisAlignItems = 'SPACE_BETWEEN';
+            c.counterAxisAlignItems = 'CENTER';
+            c.paddingTop = c.paddingBottom = 16;
+            c.paddingLeft = c.paddingRight = 16;
+            c.cornerRadius = 16;
+            c.fills = [solid(WHITE)];
+            c.strokes = [solid(INK, 0.1)];
+            c.resize(280, 10);
+            c.layoutSizingHorizontal = 'FIXED';
+            c.layoutSizingVertical = 'HUG';
+            c.appendChild(txt(title, outfit('SemiBold'), 14, INK, 140));
+            const right = al('VERTICAL', 'basics lesson meta');
+            right.itemSpacing = 4;
+            right.primaryAxisAlignItems = 'MAX';
+            right.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+            right.appendChild(txt('+15 XP', outfit('Regular'), 11, MUTED));
+            c.appendChild(right);
+            row.appendChild(c);
+          }
+          return row;
+        })(),
+        (() => {
+          const sec = al('HORIZONTAL', 'Практика в проводнике head');
+          sec.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          sec.counterAxisAlignItems = 'MAX';
+          sec.resize(880, 10);
+          sec.layoutSizingHorizontal = 'FIXED';
+          sec.layoutSizingVertical = 'HUG';
+          sec.appendChild(txt('Практика в проводнике', outfit('SemiBold'), 18, INK));
+          sec.appendChild(txt('0/6 изучено', outfit('Medium'), 12, MUTED));
+          return sec;
+        })(),
+        (() => {
+          const c = al('HORIZONTAL', 'Папка Practice card');
+          c.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          c.counterAxisAlignItems = 'CENTER';
+          c.paddingTop = c.paddingBottom = 16;
+          c.paddingLeft = c.paddingRight = 16;
+          c.cornerRadius = 16;
+          c.fills = [solid(WHITE)];
+          c.strokes = [solid(INK, 0.1)];
+          c.resize(280, 10);
+          c.layoutSizingHorizontal = 'FIXED';
+          c.layoutSizingVertical = 'HUG';
+          c.appendChild(txt('Папка Practice', outfit('SemiBold'), 14, INK, 140));
+          const right = al('VERTICAL', 'practice lesson meta');
+          right.itemSpacing = 4;
+          right.primaryAxisAlignItems = 'MAX';
+          right.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+          right.appendChild(txt('+15 XP', outfit('Regular'), 11, MUTED));
+          c.appendChild(right);
+          return c;
+        })(),
+        txt('Authed computer-basics — LearnStatus +15 XP, no shortcut line on desktop-task cards, Desktop CTA (not Training/Exam).', outfit('Regular'), 12, MUTED, 860),
+        (() => {
+          const row = al('HORIZONTAL', 'basics authed ctas');
+          row.itemSpacing = 8;
+          row.appendChild(secondaryBtn('Мой путь'));
+          row.appendChild(instPrimary('Рабочий стол'));
           return row;
         })(),
       ]),
