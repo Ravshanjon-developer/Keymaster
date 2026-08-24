@@ -508,16 +508,16 @@ if (!darkCoursesUnique || namesUnder(darkCoursesUnique).includes('В проце�
 if (!darkCoursesUnique || !namesUnder(darkCoursesUnique).includes('0/16 сочетаний') || !namesUnder(darkCoursesUnique).includes('Начните здесь')) {
   fail.push('dark catalog unique screen missing live 0 XP progress / start-here');
 }
-if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начните здесь') || !namesUnder(mobileCoursesUnique).includes('Регистрация')) {
+if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начните здесь') || !namesUnder(mobileCoursesUnique).includes('☰')) {
   fail.push('mobile courses unique screen missing live guest chrome or start-here card');
 }
-if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти')) {
-  fail.push('mobile practice unique screen is not authed chrome like the live capture');
+if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Тренировочный зал') || namesUnder(mobilePracticeUnique).includes('Анна')) {
+  fail.push('mobile practice unique screen should use live <lg navbar (logo · theme · menu), not desktop Анна/Выйти');
 }
 let gateUnique = null;
 for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');
-if (!gateUnique || !namesUnder(gateUnique).includes('Выйти') || !namesUnder(gateUnique).includes('Keyboard illustration')) {
-  fail.push('keyboard-gate unique screen missing authed chrome or live keyboard illustration');
+if (!gateUnique || !namesUnder(gateUnique).includes('☰') || !namesUnder(gateUnique).includes('Keyboard illustration')) {
+  fail.push('keyboard-gate unique screen missing live <lg navbar or keyboard illustration');
 }
 if (!gateUnique || !namesUnder(gateUnique).includes('Экзамен')) {
   fail.push('keyboard-gate unique screen is not PracticeShell exam chips like live /exam gate');

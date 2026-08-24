@@ -4262,8 +4262,6 @@ async function buildUniqueScreens() {
   mnavRight.itemSpacing = 6;
   mnavRight.counterAxisAlignItems = 'CENTER';
   mnavRight.appendChild(themeToggle(false));
-  mnavRight.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
-  mnavRight.appendChild(primaryBtn('Регистрация', true));
   mnavRight.appendChild(txt('☰', outfit('Bold'), 16, INK));
   mnav.appendChild(mnavRight);
   const mbody = al('VERTICAL', 'body');
@@ -5088,8 +5086,6 @@ async function buildUniqueScreens() {
   mlright.itemSpacing = 6;
   mlright.counterAxisAlignItems = 'CENTER';
   mlright.appendChild(themeToggle(false));
-  mlright.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
-  mlright.appendChild(primaryBtn('Регистрация', true));
   mlright.appendChild(txt('☰', outfit('Bold'), 16, INK));
   mlnav.appendChild(mlright);
   const mlbody = al('VERTICAL', 'login');
@@ -5618,7 +5614,7 @@ async function buildUniqueScreens() {
     return bnav;
   }
 
-  function mobileHeader(guest) {
+  function mobileHeader(_guest) {
     const mnav = al('HORIZONTAL', 'Mobile header');
     mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
     mnav.counterAxisAlignItems = 'CENTER';
@@ -5632,13 +5628,6 @@ async function buildUniqueScreens() {
     right.itemSpacing = 6;
     right.counterAxisAlignItems = 'CENTER';
     right.appendChild(themeToggle(false));
-    if (guest) {
-      right.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
-      right.appendChild(primaryBtn('Регистрация', true));
-    } else {
-      right.appendChild(txt('Анна', outfit('SemiBold'), 13, INK));
-      right.appendChild(ghostBtn('Выйти'));
-    }
     right.appendChild(txt('☰', outfit('Bold'), 16, INK));
     mnav.appendChild(right);
     return mnav;

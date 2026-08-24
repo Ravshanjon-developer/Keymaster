@@ -27,7 +27,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
 | `05 — Components` | Button (incl. focus), Input, Badge, KeyCap, Nav, Navbar (default/scrolled/mobile/authed), Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, PasswordStrength, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
-| `07 — Mobile Screens` | 390 captures (BottomNav, keyboard gate). Unique screens include hamburger-open drawer (guest vs authed). |
+| `07 — Mobile Screens` | 390 captures. Closed navbar is logo · theme · ☰ (`lg:hidden` auth actions live in the hamburger drawer uniques). |
 
 Do **not** duplicate 20 courses or every lesson. One course detail + hotkey + task + study-only lesson cover the catalog.
 
