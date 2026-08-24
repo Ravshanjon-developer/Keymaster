@@ -2153,7 +2153,8 @@ function themeToggle(dark) {
   return b;
 }
 
-function makeNavbar(active, guest, dark, admin) {
+function makeNavbar(active, guest, dark, admin, locale) {
+  const tg = locale === 'tg';
   const ink = dark ? DARK_TEXT : INK;
   const nav = al('HORIZONTAL', 'Navbar');
   nav.primaryAxisAlignItems = 'SPACE_BETWEEN';
@@ -2177,16 +2178,22 @@ function makeNavbar(active, guest, dark, admin) {
   const links = al('HORIZONTAL', 'Nav links');
   links.itemSpacing = 4;
   links.counterAxisAlignItems = 'CENTER';
-  const groups = [
-    ['Главная', 'Курсы', 'Мой путь'],
-    ['Практика'],
-    ['Рейтинг'],
-  ];
+  const groups = tg
+    ? [
+        ['Асосӣ', 'Курсҳо', 'Роҳи ман'],
+        ['Машқ'],
+        ['Рейтинг'],
+      ]
+    : [
+        ['Главная', 'Курсы', 'Мой путь'],
+        ['Практика'],
+        ['Рейтинг'],
+      ];
   groups.forEach((group, gi) => {
     if (gi > 0) links.appendChild(navDivider());
     for (const item of group) {
       const on = item === active;
-      if (!dark) {
+      if (!dark && !tg) {
         const linkInst = instNavLink(on, item);
         if (linkInst) {
           links.appendChild(linkInst);
@@ -2218,7 +2225,7 @@ function makeNavbar(active, guest, dark, admin) {
   const actions = al('HORIZONTAL', 'Actions');
   actions.itemSpacing = 6;
   actions.counterAxisAlignItems = 'CENTER';
-  const langInst = !dark ? inst('LanguageSwitcher', 'Selected=RU') : null;
+  const langInst = !dark ? inst('LanguageSwitcher', tg ? 'Selected=TJ' : 'Selected=RU') : null;
   if (langInst) {
     langInst.name = 'LanguageSwitcher instance';
     actions.appendChild(langInst);
@@ -2231,27 +2238,27 @@ function makeNavbar(active, guest, dark, admin) {
     ru.paddingLeft = ru.paddingRight = 10;
     ru.paddingTop = ru.paddingBottom = 4;
     ru.cornerRadius = 6;
-    ru.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 })];
-    ru.appendChild(txt('RU', outfit('Bold'), 12, WHITE));
-    const tj = al('HORIZONTAL', 'TJ');
-    tj.paddingLeft = tj.paddingRight = 10;
-    tj.paddingTop = tj.paddingBottom = 4;
-    tj.cornerRadius = 6;
-    tj.fills = [TRANSPARENT];
-    tj.appendChild(txt('TJ', outfit('Bold'), 12, dark ? DARK_TEXT : INK));
+    ru.fills = tg ? [TRANSPARENT] : [solid({ r: 0.114, g: 0.306, b: 0.847 })];
+    ru.appendChild(txt('RU', outfit('Bold'), 12, tg ? (dark ? DARK_TEXT : INK) : WHITE));
+    const tjChip = al('HORIZONTAL', 'TJ');
+    tjChip.paddingLeft = tjChip.paddingRight = 10;
+    tjChip.paddingTop = tjChip.paddingBottom = 4;
+    tjChip.cornerRadius = 6;
+    tjChip.fills = tg ? [solid({ r: 0.114, g: 0.306, b: 0.847 })] : [TRANSPARENT];
+    tjChip.appendChild(txt('TJ', outfit('Bold'), 12, tg ? WHITE : dark ? DARK_TEXT : INK));
     lang.appendChild(ru);
-    lang.appendChild(tj);
+    lang.appendChild(tjChip);
     actions.appendChild(lang);
   }
   actions.appendChild(themeToggle(dark));
   if (guest) {
-    const login = al('HORIZONTAL', 'Вход');
+    const login = al('HORIZONTAL', tg ? 'Даромадан' : 'Вход');
     login.paddingLeft = login.paddingRight = 10;
     login.paddingTop = login.paddingBottom = 8;
     login.cornerRadius = 8;
-    login.appendChild(txt('Вход', outfit('SemiBold'), 14, ink));
+    login.appendChild(txt(tg ? 'Даромадан' : 'Вход', outfit('SemiBold'), 14, ink));
     actions.appendChild(login);
-    actions.appendChild(primaryBtn('Регистрация', true));
+    actions.appendChild(primaryBtn(tg ? 'Сабти ном' : 'Регистрация', true));
   } else {
     const user = al('HORIZONTAL', 'User');
     user.itemSpacing = 8;
@@ -2275,14 +2282,14 @@ function makeNavbar(active, guest, dark, admin) {
       adm.appendChild(txt('Админ', outfit('SemiBold'), 14, dark ? BRAND500 : BRAND800));
       actions.appendChild(adm);
     }
-    const logout = al('HORIZONTAL', 'Выйти');
+    const logout = al('HORIZONTAL', tg ? 'Баромадан' : 'Выйти');
     logout.paddingLeft = logout.paddingRight = 12;
     logout.paddingTop = logout.paddingBottom = 6;
     logout.minHeight = 44;
     logout.cornerRadius = 16;
     logout.fills = [solid(dark ? DARK_CARD : WHITE)];
     logout.strokes = [solid(dark ? WHITE : INK, 0.12)];
-    logout.appendChild(txt('Выйти', outfit('SemiBold'), 14, ink));
+    logout.appendChild(txt(tg ? 'Баромадан' : 'Выйти', outfit('SemiBold'), 14, ink));
     actions.appendChild(logout);
   }
   nav.appendChild(actions);
@@ -2292,7 +2299,7 @@ function makeNavbar(active, guest, dark, admin) {
   return nav;
 }
 
-function makeFooter(dark) {
+function makeFooter(dark, locale) {
   const ink = dark ? DARK_TEXT : INK;
   const muted = dark ? DARK_MUTED : MUTED;
   const f = al('HORIZONTAL', 'Footer');
@@ -2310,11 +2317,18 @@ function makeFooter(dark) {
   f.appendChild(txt('·', outfit('Regular'), 13, { r: 0.8, g: 0.82, b: 0.84 }));
   f.appendChild(txt('© 2026', outfit('Regular'), 13, muted));
   f.appendChild(txt('·', outfit('Regular'), 13, { r: 0.8, g: 0.82, b: 0.84 }));
-  f.appendChild(txt('от первого ноутбука до Shortcut Legend', outfit('Regular'), 13, muted));
+  f.appendChild(
+    txt(
+      locale === 'tg' ? 'аз ноутбуки аввал то Shortcut Legend' : 'от первого ноутбука до Shortcut Legend',
+      outfit('Regular'),
+      13,
+      muted,
+    ),
+  );
   return f;
 }
 
-function marketingPage(name, active, guest, body, dark, admin) {
+function marketingPage(name, active, guest, body, dark, admin, locale) {
   const page = al('VERTICAL', name);
   page.itemSpacing = 0;
   page.fills = [solid(dark ? DARK_BG : PAPER)];
@@ -2323,7 +2337,7 @@ function marketingPage(name, active, guest, body, dark, admin) {
   page.resize(960, 10);
   page.layoutSizingHorizontal = 'FIXED';
   page.layoutSizingVertical = 'HUG';
-  page.appendChild(makeNavbar(active, guest, dark, admin));
+  page.appendChild(makeNavbar(active, guest, dark, admin, locale));
   const main = al('VERTICAL', 'main');
   main.itemSpacing = 16;
   main.paddingTop = main.paddingBottom = 32;
@@ -2334,7 +2348,7 @@ function marketingPage(name, active, guest, body, dark, admin) {
   main.layoutSizingVertical = 'HUG';
   for (const child of body) main.appendChild(child);
   page.appendChild(main);
-  page.appendChild(makeFooter(dark));
+  page.appendChild(makeFooter(dark, locale));
   return page;
 }
 
@@ -3143,6 +3157,60 @@ async function buildUniqueScreens() {
   taskCard.appendChild(taskPanel);
   lessonTask.appendChild(taskCard);
   lessonTask.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+
+  const lessonDesktop = al('VERTICAL', 'Desktop-task lesson');
+  lessonDesktop.itemSpacing = 12;
+  const deskNotLearned = al('HORIZONTAL', 'НЕ ИЗУЧЕНО');
+  deskNotLearned.itemSpacing = 6;
+  deskNotLearned.paddingLeft = deskNotLearned.paddingRight = 10;
+  deskNotLearned.paddingTop = deskNotLearned.paddingBottom = 4;
+  deskNotLearned.cornerRadius = 99;
+  deskNotLearned.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  deskNotLearned.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+  lessonDesktop.appendChild(deskNotLearned);
+  const deskCard = al('VERTICAL', 'desktop-task card');
+  deskCard.itemSpacing = 16;
+  deskCard.paddingTop = deskCard.paddingBottom = 24;
+  deskCard.paddingLeft = deskCard.paddingRight = 24;
+  deskCard.cornerRadius = 24;
+  deskCard.fills = [solid(WHITE)];
+  deskCard.strokes = [solid(INK, 0.08)];
+  deskCard.resize(720, 10);
+  deskCard.layoutSizingHorizontal = 'FIXED';
+  deskCard.layoutSizingVertical = 'HUG';
+  deskCard.appendChild(txt('Создайте папку «Practice»', fraunces('Bold'), 28, INK, 672));
+  const deskPrompt = al('VERTICAL', 'prompt');
+  deskPrompt.paddingTop = deskPrompt.paddingBottom = 14;
+  deskPrompt.paddingLeft = deskPrompt.paddingRight = 16;
+  deskPrompt.cornerRadius = 16;
+  deskPrompt.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  deskPrompt.appendChild(txt('Создайте папку «Practice» на рабочем столе', outfit('SemiBold'), 14, BRAND800, 640));
+  deskCard.appendChild(deskPrompt);
+  const deskPanel = al('VERTICAL', 'ЗАДАНИЕ');
+  deskPanel.itemSpacing = 12;
+  deskPanel.paddingTop = deskPanel.paddingBottom = 20;
+  deskPanel.paddingLeft = deskPanel.paddingRight = 20;
+  deskPanel.cornerRadius = 16;
+  deskPanel.fills = [solid(WHITE)];
+  deskPanel.strokes = [solid(BRAND, 0.2)];
+  deskPanel.appendChild(txt('ЗАДАНИЕ', outfit('Bold'), 11, BRAND800));
+  deskPanel.appendChild(txt('Создайте папку «Practice»', outfit('SemiBold'), 16, INK));
+  deskPanel.appendChild(txt('Создайте папку «Practice» на рабочем столе', outfit('Regular'), 13, MUTED, 640));
+  const deskSteps = al('VERTICAL', 'Шаги');
+  deskSteps.itemSpacing = 6;
+  deskSteps.paddingTop = deskSteps.paddingBottom = 12;
+  deskSteps.paddingLeft = deskSteps.paddingRight = 14;
+  deskSteps.cornerRadius = 12;
+  deskSteps.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  deskSteps.appendChild(txt('Шаги', outfit('SemiBold'), 13, INK));
+  deskSteps.appendChild(txt('• Правый клик на рабочем столе', outfit('Regular'), 13, MUTED, 600));
+  deskSteps.appendChild(txt('• Создать → Папка → Practice', outfit('Regular'), 13, MUTED, 600));
+  deskPanel.appendChild(deskSteps);
+  deskPanel.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  deskPanel.appendChild(txt('Симулятор сам засчитает урок и XP, когда шаг будет выполнен.', outfit('Regular'), 12, MUTED, 600));
+  deskCard.appendChild(deskPanel);
+  lessonDesktop.appendChild(deskCard);
+  lessonDesktop.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const lessonStudy = al('VERTICAL', 'Study-only lesson');
   lessonStudy.itemSpacing = 16;
@@ -5133,6 +5201,32 @@ async function buildUniqueScreens() {
     section('MarketingShell', [
       marketingPage('Home /', 'Главная', true, homeBody),
       marketingPage('Home authed /', 'Главная', false, homeAuthed),
+      marketingPage(
+        'Home TJ /',
+        'Асосӣ',
+        true,
+        [
+          txt('Аз ноутбуки аввал — то устодии клавиатура', fraunces('Bold'), 40, INK, 800),
+          txt(
+            'Файлҳо ва папкаҳо, чопи ноаён, тугмаҳои тез ва симулятори мизи корӣ — роҳи фаҳмо аз сифр.',
+            outfit('Regular'),
+            16,
+            MUTED,
+            720,
+          ),
+          (() => {
+            const row = al('HORIZONTAL', 'TJ CTAs');
+            row.itemSpacing = 8;
+            row.appendChild(instPrimary('Ройгон оғоз кунед →'));
+            row.appendChild(secondaryBtn('Феҳристи курсҳо'));
+            return row;
+          })(),
+          txt('F12 locale tg — chrome from frontend/src/shared/i18n/tg.ts. One Home covers the switcher; do not duplicate every Tajik string.', outfit('Regular'), 12, MUTED, 800),
+        ],
+        false,
+        false,
+        'tg',
+      ),
       marketingPage('Courses /courses', 'Курсы', true, [
         (() => {
           const head = al('HORIZONTAL', 'catalog head');
@@ -5203,6 +5297,7 @@ async function buildUniqueScreens() {
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', true, [lessonStudy]),
+      marketingPage('Lesson desktop-task /lessons/:id', 'Курсы', false, [lessonDesktop]),
       marketingPage('Path /path', 'Мой путь', false, pathBody),
       marketingPage('Path guest /path', 'Мой путь', true, [
         txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),

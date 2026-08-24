@@ -299,7 +299,14 @@ if (!names.includes('User flows — screens')) fail.push('no visual flows');
 if (!names.includes('Leaderboard /leaderboard')) fail.push('no leaderboard unique screen');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
-if (!names.includes('Lesson study-only /lessons/:id')) fail.push('no study-only lesson unique screen');
+if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
+if (!names.includes('Симулятор сам засчитает урок и XP, когда шаг будет выполнен.')) {
+  fail.push('no live desktop-task sim-only honesty unique screen');
+}
+if (!names.includes('Home TJ /')) fail.push('no TJ locale home unique screen');
+if (!names.includes('Аз ноутбуки аввал — то устодии клавиатура')) fail.push('no live Tajik home headline unique screen');
+if (!names.includes('Асосӣ')) fail.push('no live Tajik nav home unique screen');
+if (!names.includes('аз ноутбуки аввал то Shortcut Legend')) fail.push('no live Tajik footer unique screen');
 if (!names.includes('Auth callback /auth/callback')) fail.push('no auth callback unique screen');
 if (!names.includes('Typing path /typing')) fail.push('no typing path unique screen');
 if (!names.includes('Typing progress /typing')) fail.push('no typing progress unique screen');
