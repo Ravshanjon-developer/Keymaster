@@ -1377,9 +1377,9 @@ async function buildSitemap() {
       'MarketingShell',
       [
         ['/', 'Home', 'Guest + learner'],
-        ['/courses', 'Catalog', 'filters · 0 XP cards · empty search'],
-        ['/courses/:slug', 'Course detail', '1 layout × 20 slugs'],
-        ['/lessons/:id', 'Lesson', 'hotkey | task | study'],
+        ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty'],
+        ['/courses/:slug', 'Course detail', 'guest CTA · authed progress · vscode exam · not found'],
+        ['/lessons/:id', 'Lesson', 'hotkey | task | study | desktop-task'],
         ['/path', 'Learning path', 'protected'],
         ['/leaderboard', 'Leaderboard', 'public'],
         ['/achievements', 'Achievements', 'locked / unlocked'],
@@ -1394,7 +1394,7 @@ async function buildSitemap() {
         ['/login', 'Login', 'OTP if unverified'],
         ['/register', 'Register', 'OTP nested'],
         ['/verify-email', 'Verify email', 'link + error'],
-        ['/auth/callback', 'OAuth callback', 'transient'],
+        ['/auth/callback', 'OAuth callback', 'skeleton · error'],
       ],
     ],
     [
@@ -1801,6 +1801,13 @@ function instProgress(kind) {
   const n = inst('ProgressBar', kind || 'Value=Empty');
   if (!n) return null;
   n.name = 'ProgressBar instance';
+  return n;
+}
+
+function instSkeleton(kind) {
+  const n = inst('Skeleton', kind || 'Kind=Card');
+  if (!n) return null;
+  n.name = 'Skeleton instance';
   return n;
 }
 
@@ -2645,7 +2652,7 @@ async function buildProductComponents(page) {
     c.cornerRadius = 6;
     c.fills = [solid(learned ? { r: 0.941, g: 0.992, b: 0.957 } : { r: 0.941, g: 0.945, b: 0.953 })];
     c.strokes = [solid(learned ? SUCCESS : INK, learned ? 0.25 : 0.1)];
-    c.appendChild(txt(learned ? 'Изучено' : 'Не изучено', outfit('Bold'), 10, learned ? { r: 0.082, g: 0.502, b: 0.239 } : MUTED));
+    c.appendChild(txt(learned ? 'ИЗУЧЕНО' : 'НЕ ИЗУЧЕНО', outfit('Bold'), 10, learned ? { r: 0.082, g: 0.502, b: 0.239 } : MUTED));
     c.layoutSizingHorizontal = 'HUG';
     c.layoutSizingVertical = 'HUG';
     return c;
@@ -4578,6 +4585,20 @@ async function buildUniqueScreens() {
   callbackCard.appendChild(skel);
   callbackCard.appendChild(txt('Local auth: /auth/callback redirects to /login', outfit('Regular'), 11, MUTED, 344));
 
+  const callbackError = al('VERTICAL', 'Auth callback error');
+  callbackError.itemSpacing = 12;
+  callbackError.paddingTop = callbackError.paddingBottom = 28;
+  callbackError.paddingLeft = callbackError.paddingRight = 28;
+  callbackError.cornerRadius = 24;
+  callbackError.fills = [solid(WHITE)];
+  callbackError.strokes = [solid(INK, 0.1)];
+  callbackError.resize(400, 10);
+  callbackError.layoutSizingHorizontal = 'FIXED';
+  callbackError.layoutSizingVertical = 'HUG';
+  callbackError.appendChild(txt('Подтверждение email', fraunces('Bold'), 22, INK));
+  callbackError.appendChild(txt('Ссылка недействительна или устарела', outfit('Regular'), 14, SIGNAL, 344));
+  callbackError.appendChild(instPrimary('Войти'));
+
   function typingSeg(active) {
     const wrap = al('HORIZONTAL', 'views');
     wrap.itemSpacing = 12;
@@ -5262,11 +5283,135 @@ async function buildUniqueScreens() {
         instEmpty('Ничего не нашлось. Снимите фильтр или измените запрос.', '') ||
           txt('Ничего не нашлось. Снимите фильтр или измените запрос.', outfit('SemiBold'), 17, INK, 640),
       ]),
+      marketingPage('Courses loading /courses', 'Курсы', true, [
+        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+        txt('Каталог курсов', fraunces('Bold'), 32, INK),
+        txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 640),
+        (() => {
+          const grid = al('HORIZONTAL', 'SkeletonCardGrid');
+          grid.itemSpacing = 16;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(880, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          for (let i = 0; i < 6; i++) {
+            const card = instSkeleton('Kind=Card');
+            if (card) {
+              card.resize(280, 192);
+              grid.appendChild(card);
+            } else {
+              const r = figma.createRectangle();
+              r.name = 'Skeleton instance';
+              r.resize(280, 192);
+              r.cornerRadius = 24;
+              r.fills = [solid(INK, 0.08)];
+              grid.appendChild(r);
+            }
+          }
+          return grid;
+        })(),
+        txt('live SkeletonCardGrid count={9} — 6 cards cover the 3-col loading grid.', outfit('Regular'), 12, MUTED, 860),
+      ]),
+      marketingPage('Courses API error /courses', 'Курсы', true, [
+        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
+        txt('Каталог курсов', fraunces('Bold'), 32, INK),
+        instEmpty('API недоступен', 'Запустите backend: uvicorn app.main:app --reload --port 8000') ||
+          txt('API недоступен', outfit('SemiBold'), 17, INK, 640),
+      ]),
+      marketingPage('Courses authed /courses', 'Курсы', false, [
+        (() => {
+          const head = al('HORIZONTAL', 'catalog head authed');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'MAX';
+          head.resize(880, 10);
+          head.layoutSizingHorizontal = 'FIXED';
+          head.layoutSizingVertical = 'HUG';
+          const titles = al('VERTICAL', 'titles authed');
+          titles.itemSpacing = 6;
+          titles.appendChild(txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800));
+          titles.appendChild(txt('Каталог курсов', fraunces('Bold'), 32, INK));
+          titles.appendChild(txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 640));
+          head.appendChild(titles);
+          head.appendChild(secondaryBtn('Путь обучения'));
+          return head;
+        })(),
+        searchField(880),
+        (() => {
+          const row = al('HORIZONTAL', 'Filters authed');
+          row.itemSpacing = 8;
+          for (const [label, on] of [
+            ['Все', true],
+            ['Старт', false],
+            ['ОС', false],
+            ['Редакторы', false],
+            ['Браузеры', false],
+            ['Офис', false],
+            ['Git', false],
+          ]) {
+            const chip = al('HORIZONTAL', label);
+            chip.paddingLeft = chip.paddingRight = 14;
+            chip.paddingTop = chip.paddingBottom = 10;
+            chip.minHeight = 44;
+            chip.cornerRadius = 99;
+            chip.fills = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : WHITE)];
+            chip.strokes = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : INK, on ? 1 : 0.12)];
+            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+            row.appendChild(chip);
+          }
+          return row;
+        })(),
+        txt('Authed 0 XP · LearnProgressBar compact. Guest catalog uses a spacer instead of 0/N.', outfit('Regular'), 13, MUTED, 860),
+        (() => {
+          const row = al('HORIZONTAL', 'Authed course cards');
+          row.itemSpacing = 12;
+          row.appendChild(
+            catalogCard({
+              title: 'Первый ноутбук: файлы и папки',
+              desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+              meta: '16 уроков · 4 категории',
+              start: true,
+              progress: '0/16 сочетаний',
+              percent: '0%',
+              iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+            }),
+          );
+          row.appendChild(
+            catalogCard({
+              title: 'Основные горячие клавиши программиста',
+              desc: 'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний.',
+              meta: '19 уроков · 2 категории',
+              start: true,
+              progress: '0/19 сочетаний',
+              percent: '0%',
+              iconFill: { r: 0.35, g: 0.42, b: 0.55 },
+            }),
+          );
+          row.appendChild(
+            catalogCard({
+              title: 'VS Code',
+              desc: 'Visual Studio Code — редактор кода от Microsoft.',
+              meta: '42 урока · 7 категорий',
+              start: false,
+              progress: '0/42 сочетаний',
+              percent: '0%',
+              iconFill: { r: 0.13, g: 0.48, b: 0.78 },
+            }),
+          );
+          return row;
+        })(),
+      ]),
       marketingPage('Course detail /courses/:slug', 'Курсы', true, [
         pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
         txt('Первый ноутбук: файлы и папки', fraunces('Bold'), 32, INK, 800),
         txt('Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».', outfit('Regular'), 14, MUTED, 720),
-        txt('Зарегистрируйтесь, чтобы открыть тренажёр и сохранять прогресс.', outfit('Regular'), 13, BRAND800, 720),
+        (() => {
+          const line = al('HORIZONTAL', 'guest course CTA');
+          line.itemSpacing = 0;
+          line.layoutWrap = 'WRAP';
+          line.appendChild(txt('Зарегистрируйтесь', outfit('SemiBold'), 14, BRAND800));
+          line.appendChild(txt(', чтобы открыть тренажёр и сохранять прогресс.', outfit('Regular'), 14, MUTED, 520));
+          return line;
+        })(),
         txt('Файлы и папки', outfit('SemiBold'), 18, INK),
         (() => {
           const row = al('HORIZONTAL', 'Lesson cards');
@@ -5297,6 +5442,98 @@ async function buildUniqueScreens() {
           row.appendChild(instPrimary('Рабочий стол'));
           return row;
         })(),
+      ]),
+      marketingPage('Course detail authed /courses/:slug', 'Курсы', false, [
+        (() => {
+          const head = al('HORIZONTAL', 'vscode detail head');
+          head.itemSpacing = 20;
+          head.counterAxisAlignItems = 'MIN';
+          const icon = figma.createRectangle();
+          icon.name = 'CourseBrandIcon';
+          icon.resize(56, 56);
+          icon.cornerRadius = 14;
+          icon.fills = [solid({ r: 0.13, g: 0.48, b: 0.78 })];
+          head.appendChild(icon);
+          const copy = al('VERTICAL', 'vscode copy');
+          copy.itemSpacing = 8;
+          copy.appendChild(txt('VS Code', fraunces('Bold'), 32, INK, 720));
+          copy.appendChild(txt('Visual Studio Code — редактор кода от Microsoft.', outfit('Regular'), 14, MUTED, 640));
+          const prog = al('VERTICAL', 'course progress');
+          prog.itemSpacing = 6;
+          const meta = al('HORIZONTAL', 'progress meta');
+          meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          meta.resize(400, 10);
+          meta.layoutSizingHorizontal = 'FIXED';
+          meta.layoutSizingVertical = 'HUG';
+          meta.appendChild(txt('0/42 сочетаний', outfit('Regular'), 13, MUTED));
+          meta.appendChild(txt('0%', outfit('SemiBold'), 13, BRAND800));
+          prog.appendChild(meta);
+          prog.appendChild(instProgress('Value=Empty') || progressBar(400, 0, BRAND, 10));
+          copy.appendChild(prog);
+          head.appendChild(copy);
+          return head;
+        })(),
+        (() => {
+          const sec = al('HORIZONTAL', 'Навигация head');
+          sec.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          sec.counterAxisAlignItems = 'MAX';
+          sec.resize(880, 10);
+          sec.layoutSizingHorizontal = 'FIXED';
+          sec.layoutSizingVertical = 'HUG';
+          sec.appendChild(txt('Навигация', outfit('SemiBold'), 18, INK));
+          sec.appendChild(txt('0/10 изучено', outfit('Medium'), 12, MUTED));
+          return sec;
+        })(),
+        (() => {
+          const row = al('HORIZONTAL', 'Authed lesson cards');
+          row.itemSpacing = 12;
+          for (const [title, chord] of [
+            ['Быстрое открытие файла', 'Ctrl+P'],
+            ['Перейти к строке', 'Ctrl+G'],
+            ['Перейти к символу', 'Ctrl+Shift+O'],
+          ]) {
+            const c = al('VERTICAL', title);
+            c.itemSpacing = 6;
+            c.paddingTop = c.paddingBottom = 16;
+            c.paddingLeft = c.paddingRight = 16;
+            c.cornerRadius = 16;
+            c.fills = [solid(WHITE)];
+            c.strokes = [solid(INK, 0.1)];
+            c.resize(280, 10);
+            c.layoutSizingHorizontal = 'FIXED';
+            c.layoutSizingVertical = 'HUG';
+            const top = al('HORIZONTAL', 'lesson top');
+            top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+            top.counterAxisAlignItems = 'MIN';
+            const left = al('VERTICAL', 'lesson copy');
+            left.itemSpacing = 4;
+            left.appendChild(txt(title, outfit('SemiBold'), 14, INK, 180));
+            left.appendChild(txt(chord, outfit('Medium'), 13, BRAND800));
+            top.appendChild(left);
+            const right = al('VERTICAL', 'lesson meta');
+            right.itemSpacing = 6;
+            right.primaryAxisAlignItems = 'MAX';
+            right.appendChild(instLearn(false) || txt('НЕ ИЗУЧЕНО', outfit('Bold'), 10, MUTED));
+            right.appendChild(txt('+10 XP', outfit('Regular'), 11, MUTED));
+            top.appendChild(right);
+            c.appendChild(top);
+            top.layoutSizingHorizontal = 'FILL';
+            row.appendChild(c);
+          }
+          return row;
+        })(),
+        txt('Authed vscode — LearnStatus + Training/Exam. computer-basics guest covers Desktop CTA. Do not duplicate 42 lessons.', outfit('Regular'), 12, MUTED, 860),
+        (() => {
+          const row = al('HORIZONTAL', 'vscode ctas');
+          row.itemSpacing = 8;
+          row.appendChild(secondaryBtn('Мой путь'));
+          row.appendChild(instPrimary('Тренировка'));
+          row.appendChild(secondaryBtn('Экзамен'));
+          return row;
+        })(),
+      ]),
+      marketingPage('Course not found /courses/:slug', 'Курсы', true, [
+        instEmpty('Курс не найден', '') || txt('Курс не найден', fraunces('Bold'), 32, INK, 640),
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
@@ -5542,6 +5779,7 @@ async function buildUniqueScreens() {
       marketingPage('Register OTP /register', '', true, [registerOtp]),
       marketingPage('Verify email /verify-email', '', false, [verifyCard]),
       marketingPage('Auth callback /auth/callback', '', true, [callbackCard]),
+      marketingPage('Auth callback error /auth/callback', '', true, [callbackError]),
     ]),
   );
   board.appendChild(

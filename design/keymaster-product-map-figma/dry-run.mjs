@@ -437,6 +437,22 @@ if (!names.includes('Keyboard illustration')) fail.push('no live PracticeKeyboar
 if (!names.includes('Path timeline line')) fail.push('no live path spine unique screen');
 if (!names.includes('Следующий курс')) fail.push('no live path next-course CTA unique screen');
 if (!names.includes('CourseBrandIcon')) fail.push('no live path course brand icon unique screen');
+if (!names.includes('Courses authed /courses')) fail.push('no authed catalog unique screen');
+if (!names.includes('Courses loading /courses')) fail.push('no catalog loading unique screen');
+if (!names.includes('Courses API error /courses')) fail.push('no catalog API-error unique screen');
+if (!names.includes('Course detail authed /courses/:slug')) fail.push('no authed course-detail unique screen');
+if (!names.includes('Course not found /courses/:slug')) fail.push('no course-not-found unique screen');
+if (!names.includes('Auth callback error /auth/callback')) fail.push('no auth-callback error unique screen');
+if (!names.includes('SkeletonCardGrid')) fail.push('no SkeletonCardGrid unique screen');
+if (!names.includes('API недоступен')) fail.push('no live catalog API-down unique screen');
+if (!names.includes('Курс не найден')) fail.push('no live course-not-found unique screen');
+if (!names.includes('Ссылка недействительна или устарела')) fail.push('no live auth-callback verifyFail unique screen');
+if (!names.includes('Быстрое открытие файла')) fail.push('no live vscode lesson card unique screen');
+if (!names.includes('0/10 изучено')) fail.push('no live authed course learned-count unique screen');
+if (!names.includes('Ctrl+Shift+O')) fail.push('no live vscode chord unique screen');
+if (!names.includes('+10 XP')) fail.push('no live vscode xp_reward unique screen');
+if (!names.includes('ИЗУЧЕНО')) fail.push('no live status-chip ИЗУЧЕНО unique screen');
+if (!names.includes('Authed course cards')) fail.push('no light authed catalog cards unique screen');
 if (!names.includes('Мы отправили ссылку на anna@example.com. Перейдите по ней, затем войдите в аккаунт.')) {
   fail.push('no live register OTP check-email unique screen');
 }
@@ -500,11 +516,17 @@ let examFbUnique = null;
 let darkCoursesUnique = null;
 let mobileCoursesUnique = null;
 let mobilePracticeUnique = null;
+let coursesAuthedUnique = null;
+let guestCoursesUnique = null;
+let courseDetailAuthed = null;
 for (const p of pages) {
   examFbUnique = examFbUnique || findByName(p, 'Exam feedback /exam');
   darkCoursesUnique = darkCoursesUnique || findByName(p, 'Dark Courses / html.dark');
   mobileCoursesUnique = mobileCoursesUnique || findByName(p, 'Mobile Courses 390');
   mobilePracticeUnique = mobilePracticeUnique || findByName(p, 'Mobile Practice 390');
+  coursesAuthedUnique = coursesAuthedUnique || findByName(p, 'Courses authed /courses');
+  guestCoursesUnique = guestCoursesUnique || findByName(p, 'Courses /courses');
+  courseDetailAuthed = courseDetailAuthed || findByName(p, 'Course detail authed /courses/:slug');
 }
 if (!examFbUnique || !namesUnder(examFbUnique).includes('9:59') || !namesUnder(examFbUnique).includes('Откройте замену')) {
   fail.push('exam-feedback unique screen does not match live Неверно capture');
@@ -520,6 +542,18 @@ if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начн�
 }
 if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти') || namesUnder(mobilePracticeUnique).includes('Анна')) {
   fail.push('mobile practice unique should show live Выйти (btn-secondary) without desktop Анна chip');
+}
+if (!coursesAuthedUnique || !namesUnder(coursesAuthedUnique).includes('0/16 сочетаний') || !namesUnder(coursesAuthedUnique).includes('0/42 сочетаний')) {
+  fail.push('authed catalog unique screen missing live 0/N LearnProgressBar');
+}
+if (!guestCoursesUnique || namesUnder(guestCoursesUnique).includes('0/16 сочетаний')) {
+  fail.push('guest catalog unique screen should not show authed LearnProgressBar');
+}
+if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('Тренировка') || !namesUnder(courseDetailAuthed).includes('Экзамен')) {
+  fail.push('authed vscode course-detail unique missing Training/Exam CTAs');
+}
+if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('LearnStatus instance')) {
+  fail.push('authed vscode course-detail unique missing LearnStatus instance');
 }
 let gateUnique = null;
 for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');

@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | Unique as-is recreations. Includes guest `/path`, path spine, keyboard gate, hamburger drawers, desktop-task lesson (`desktop:` keys, sim-only XP), and Home TJ (locale tg chrome from `tg.ts`). |
+| `01 — Product Map` | Unique as-is recreations. Includes guest `/path`, path spine, keyboard gate, hamburger drawers, desktop-task lesson (`desktop:` keys, sim-only XP), Home TJ, authed catalog `0/N`, catalog loading/API-down, authed VS Code course detail (Training/Exam), course not found, and auth-callback error. |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures (59), including path full-scroll |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
