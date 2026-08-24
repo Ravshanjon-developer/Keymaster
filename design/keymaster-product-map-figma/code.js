@@ -1525,8 +1525,8 @@ function floatingField(label, value, opts) {
   } else {
     inner.appendChild(txt(label, outfit('Regular'), 14, dark ? DARK_MUTED : MUTED));
   }
-  inner.layoutSizingHorizontal = 'FILL';
   box.appendChild(inner);
+  inner.layoutSizingHorizontal = 'FILL';
   if (password) box.appendChild(iconEyeOff(dark ? DARK_MUTED : MUTED));
   wrap.appendChild(box);
   if (opts.hint) wrap.appendChild(txt(opts.hint, outfit('Regular'), 11, dark ? DARK_MUTED : MUTED, w));
@@ -1687,9 +1687,9 @@ function featureTile(num, title, desc, variant, dark) {
   chrome.fills = [solid(dark ? DARK_ELEVATED : { r: 0.937, g: 0.965, b: 1 }, dark ? 0.6 : 0.8)];
   chrome.strokes = [solid(dark ? WHITE : INK, 0.06)];
   chrome.appendChild(homeFeatureVisual(variant, dark));
+  tile.appendChild(chrome);
   chrome.layoutSizingHorizontal = 'FILL';
   chrome.layoutSizingVertical = 'HUG';
-  tile.appendChild(chrome);
   tile.appendChild(txt(num, outfit('SemiBold'), 11, dark ? BRAND500 : BRAND800));
   tile.appendChild(txt(title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, 224));
   tile.appendChild(txt(desc, outfit('Regular'), 12, dark ? DARK_MUTED : MUTED, 224));
@@ -2304,8 +2304,8 @@ function courseCard(title, statusLabel, tone, required) {
       tone === 'brand' ? WHITE : tone === 'success' ? { r: 0.082, g: 0.502, b: 0.239 } : { r: 0.2, g: 0.255, b: 0.333 },
     ),
   );
-  top.layoutSizingHorizontal = 'FILL';
   c.appendChild(top);
+  top.layoutSizingHorizontal = 'FILL';
   c.appendChild(txt(title, outfit('SemiBold'), 16, INK, 240));
   c.appendChild(txt('Каталог · 1 layout на все курсы', outfit('Regular'), 12, MUTED, 240));
   return c;
@@ -3164,8 +3164,8 @@ async function buildUniqueScreens() {
     chip.fills = [solid(locked ? { r: 0.941, g: 0.945, b: 0.953 } : INK)];
     chip.appendChild(txt(status, outfit('Bold'), 9, locked ? MUTED : WHITE));
     top.appendChild(chip);
-    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(top);
+    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(txt(title, outfit('SemiBold'), 12, INK, 182));
     stageStrip.appendChild(c);
   }
@@ -3426,8 +3426,8 @@ async function buildUniqueScreens() {
         tone === 'brand' ? WHITE : dark ? DARK_MUTED : MUTED,
       ),
     );
-    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(top);
+    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(txt(title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, w - 48));
     c.appendChild(txt(desc, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED, w - 48));
     c.appendChild(txt('↗', outfit('SemiBold'), 14, dark ? BRAND500 : BRAND800));
@@ -3600,6 +3600,7 @@ async function buildUniqueScreens() {
   quizPicked.itemSpacing = 12;
   quizPicked.appendChild(txt('ОСНОВЫ HOTKEYS', outfit('Bold'), 11, BRAND800));
   quizPicked.appendChild(txt('Основы hotkeys', fraunces('Bold'), 32, INK));
+  quizPicked.appendChild(txt('25 вопросов о горячих клавишах: копирование, навигация, окна и практика.', outfit('Regular'), 13, MUTED, 680));
   quizPicked.appendChild(quizStats('1/25', '0', '0'));
   const pickedCard = al('VERTICAL', 'question');
   pickedCard.itemSpacing = 12;
@@ -3607,7 +3608,12 @@ async function buildUniqueScreens() {
   pickedCard.paddingLeft = pickedCard.paddingRight = 24;
   pickedCard.cornerRadius = 24;
   pickedCard.fills = [solid(WHITE)];
-  pickedCard.appendChild(txt('Вопрос 1', outfit('SemiBold'), 14, INK));
+  const pickedHead = al('HORIZONTAL', 'q head');
+  pickedHead.itemSpacing = 8;
+  pickedHead.counterAxisAlignItems = 'CENTER';
+  pickedHead.appendChild(txt('Вопрос 1', outfit('SemiBold'), 14, INK));
+  pickedHead.appendChild(pill('базовый', BRAND50, BRAND800));
+  pickedCard.appendChild(pickedHead);
   pickedCard.appendChild(txt(quizQ, outfit('SemiBold'), 16, INK, 640));
   pickedCard.appendChild(quizOption('Ctrl + X', 'wrong'));
   pickedCard.appendChild(quizOption('Ctrl + C', 'correct'));
@@ -3621,7 +3627,12 @@ async function buildUniqueScreens() {
   wrongToast.cornerRadius = 16;
   wrongToast.fills = [solid(WHITE)];
   wrongToast.strokes = [solid(SIGNAL, 0.4)];
-  wrongToast.appendChild(txt('Неправильно!', outfit('Bold'), 16, SIGNAL));
+  const wrongHead = al('HORIZONTAL', 'wrong head');
+  wrongHead.itemSpacing = 8;
+  wrongHead.counterAxisAlignItems = 'CENTER';
+  wrongHead.appendChild(txt('Неправильно!', outfit('Bold'), 16, SIGNAL));
+  wrongHead.appendChild(txt('Ctrl + C', outfit('Bold'), 14, INK));
+  wrongToast.appendChild(wrongHead);
   wrongToast.appendChild(txt('Ctrl+C копирует выделенное в буфер обмена.', outfit('Regular'), 13, MUTED, 360));
   wrongToast.appendChild(instPrimary('Дальше ›'));
   quizPicked.appendChild(wrongToast);
@@ -5146,8 +5157,8 @@ async function buildUniqueScreens() {
             top.counterAxisAlignItems = 'CENTER';
             top.appendChild(txt(title, outfit('SemiBold'), 15, INK, 680));
             top.appendChild(txt('✎  ⌫', outfit('Regular'), 13, MUTED));
-            top.layoutSizingHorizontal = 'FILL';
             card.appendChild(top);
+            top.layoutSizingHorizontal = 'FILL';
             card.appendChild(txt(meta, outfit('Regular'), 11, MUTED, 800));
             card.appendChild(txt(desc, outfit('Regular'), 13, MUTED, 800));
             list.appendChild(card);
@@ -5649,8 +5660,8 @@ async function buildUniqueScreens() {
     top.counterAxisAlignItems = 'CENTER';
     top.appendChild(txt(num, outfit('Bold'), 11, DARK_MUTED));
     top.appendChild(txt(status, outfit('Bold'), 9, locked ? DARK_MUTED : BRAND500));
-    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(top);
+    top.layoutSizingHorizontal = 'FILL';
     c.appendChild(txt(title, outfit('SemiBold'), 12, DARK_TEXT, 182));
     darkStageStrip.appendChild(c);
   }

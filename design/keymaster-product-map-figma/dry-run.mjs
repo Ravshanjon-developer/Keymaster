@@ -467,6 +467,7 @@ if (!studyUnique || !namesUnder(studyUnique).some((n) => String(n).includes('б�
 if (!studyUnique || !namesUnder(studyUnique).includes('Вход') || namesUnder(studyUnique).includes('Анна')) {
   fail.push('study-only unique screen is not guest chrome like the live capture');
 }
+if (!names.includes('wrong head')) fail.push('no live quiz-picked wrong-toast unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
