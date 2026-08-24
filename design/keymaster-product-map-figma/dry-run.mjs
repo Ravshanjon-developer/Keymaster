@@ -289,6 +289,12 @@ if (!sets.includes('Exam')) fail.push('no Exam set');
 if (!sets.includes('Navbar')) fail.push('no Navbar set');
 if (!sets.includes('PasswordStrength')) fail.push('no PasswordStrength set');
 if (!names.includes('Dark Home / html.dark')) fail.push('no dark home unique screen');
+if (!names.includes('Dark Login / html.dark')) fail.push('no dark login unique screen');
+if (!names.includes('Dark Courses / html.dark')) fail.push('no dark courses unique screen');
+if (!names.includes('Mobile Practice 390')) fail.push('no mobile practice unique screen');
+if (!names.includes('Mobile Courses 390')) fail.push('no mobile courses unique screen');
+if (!names.includes('Exam feedback /exam')) fail.push('no exam feedback unique screen');
+if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {

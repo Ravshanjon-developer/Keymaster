@@ -27,6 +27,13 @@ const RAIL_ACTIVE_TEXT = { r: 0.678431, g: 0.776471, b: 1 };
 const RAIL_IDLE_TEXT = { r: 0.658824, g: 0.690196, b: 0.764706 };
 const RAIL_TICK = { r: 0.537255, g: 0.807843, b: 1 };
 const RAIL_MUTED = { r: 0.435294, g: 0.470588, b: 0.54902 };
+const DARK_BG = { r: 0.007843, g: 0.023529, b: 0.090196 };
+const DARK_SURFACE = { r: 0.027451, g: 0.05098, b: 0.101961 };
+const DARK_ELEVATED = { r: 0.058824, g: 0.090196, b: 0.164706 };
+const DARK_CARD = { r: 0.07451, g: 0.109804, b: 0.192157 };
+const DARK_TEXT = { r: 0.972549, g: 0.980392, b: 0.988235 };
+const DARK_SECONDARY = { r: 0.886275, g: 0.909804, b: 0.941176 };
+const DARK_MUTED = { r: 0.721569, g: 0.760784, b: 0.831373 };
 
 let outfit = (style) => ({ family: 'Inter', style: style === 'SemiBold' ? 'Semi Bold' : style });
 let fraunces = (style) => outfit(style);
@@ -1371,7 +1378,7 @@ async function buildSitemap() {
         ['/speed', 'Speed', '60s'],
         ['/review', 'Review', 'front / flipped'],
         ['/quiz', 'Quiz', 'play + done'],
-        ['/exam', 'Exam', 'setup | run | done'],
+        ['/exam', 'Exam', 'setup | run | feedback | done | empty'],
       ],
     ],
     [
@@ -1405,23 +1412,25 @@ async function buildSitemap() {
   }
 }
 
-function field(label, value, border, hint) {
+function field(label, value, border, hint, theme) {
+  const dark = theme === 'dark';
   const wrap = al('VERTICAL', label);
   wrap.itemSpacing = 4;
-  wrap.appendChild(txt(label, outfit('Medium'), 11, MUTED));
+  wrap.appendChild(txt(label, outfit('Medium'), 11, dark ? DARK_MUTED : MUTED));
   const box = al('HORIZONTAL', 'field');
   box.paddingLeft = box.paddingRight = 14;
   box.paddingTop = box.paddingBottom = 10;
   box.cornerRadius = 16;
-  box.fills = [solid(WHITE)];
-  box.strokes = [solid(border || { r: 0.059, g: 0.09, b: 0.165 }, border ? 1 : 0.18)];
+  box.fills = [solid(dark ? DARK_ELEVATED : WHITE)];
+  box.strokes = [solid(border || (dark ? WHITE : { r: 0.059, g: 0.09, b: 0.165 }), border ? 1 : dark ? 0.1 : 0.18)];
   box.strokeWeight = 1;
   box.resize(320, 44);
   box.layoutSizingHorizontal = 'FIXED';
   box.layoutSizingVertical = 'FIXED';
-  box.appendChild(txt(value, outfit('Regular'), 14, value === label || !value ? MUTED : INK));
+  const empty = value === label || !value;
+  box.appendChild(txt(value, outfit('Regular'), 14, empty ? (dark ? DARK_MUTED : MUTED) : dark ? DARK_TEXT : INK));
   wrap.appendChild(box);
-  if (hint) wrap.appendChild(txt(hint, outfit('Regular'), 11, MUTED, 320));
+  if (hint) wrap.appendChild(txt(hint, outfit('Regular'), 11, dark ? DARK_MUTED : MUTED, 320));
   wrap.layoutSizingHorizontal = 'HUG';
   wrap.layoutSizingVertical = 'HUG';
   return wrap;
@@ -1442,7 +1451,8 @@ function primaryBtn(label, compact) {
   return b;
 }
 
-function secondaryBtn(label) {
+function secondaryBtn(label, theme) {
+  const dark = theme === 'dark';
   const b = al('HORIZONTAL', 'Button');
   b.primaryAxisAlignItems = 'CENTER';
   b.counterAxisAlignItems = 'CENTER';
@@ -1450,13 +1460,44 @@ function secondaryBtn(label) {
   b.paddingTop = b.paddingBottom = 10;
   b.minHeight = 44;
   b.cornerRadius = 16;
-  b.fills = [solid(WHITE)];
-  b.strokes = [solid(INK, 0.12)];
+  b.fills = [solid(dark ? DARK_ELEVATED : WHITE)];
+  b.strokes = [solid(dark ? WHITE : INK, 0.12)];
   b.strokeWeight = 1;
-  b.appendChild(txt(label, outfit('SemiBold'), 14, INK));
+  b.appendChild(txt(label, outfit('SemiBold'), 14, dark ? DARK_TEXT : INK));
   b.layoutSizingHorizontal = 'HUG';
   b.layoutSizingVertical = 'HUG';
   return b;
+}
+
+function ghostBtn(label) {
+  const b = al('HORIZONTAL', 'Button ghost');
+  b.primaryAxisAlignItems = 'CENTER';
+  b.counterAxisAlignItems = 'CENTER';
+  b.paddingLeft = b.paddingRight = 12;
+  b.paddingTop = b.paddingBottom = 6;
+  b.minHeight = 36;
+  b.cornerRadius = 12;
+  b.fills = [TRANSPARENT];
+  b.appendChild(txt(label, outfit('SemiBold'), 12, MUTED));
+  b.layoutSizingHorizontal = 'HUG';
+  b.layoutSizingVertical = 'HUG';
+  return b;
+}
+
+function progressBar(width, pct, fill, height) {
+  const h = height || 8;
+  const track = al('HORIZONTAL', 'ProgressBar');
+  track.resize(width, h);
+  track.layoutSizingHorizontal = 'FIXED';
+  track.layoutSizingVertical = 'FIXED';
+  track.cornerRadius = 99;
+  track.fills = [solid(INK, 0.08)];
+  const fillN = figma.createRectangle();
+  fillN.resize(Math.max(4, Math.round(width * pct)), h);
+  fillN.cornerRadius = 99;
+  fillN.fills = [solid(fill || BRAND)];
+  track.appendChild(fillN);
+  return track;
 }
 
 function navDivider() {
@@ -1483,7 +1524,8 @@ function themeToggle() {
   return b;
 }
 
-function makeNavbar(active, guest) {
+function makeNavbar(active, guest, dark) {
+  const ink = dark ? DARK_TEXT : INK;
   const nav = al('HORIZONTAL', 'Navbar');
   nav.primaryAxisAlignItems = 'SPACE_BETWEEN';
   nav.counterAxisAlignItems = 'CENTER';
@@ -1491,8 +1533,8 @@ function makeNavbar(active, guest) {
   nav.resize(960, 65);
   nav.layoutSizingHorizontal = 'FIXED';
   nav.layoutSizingVertical = 'FIXED';
-  nav.fills = [solid(WHITE, 0.78)];
-  nav.strokes = [solid(INK, 0.06)];
+  nav.fills = [solid(dark ? DARK_ELEVATED : WHITE, 0.78)];
+  nav.strokes = [solid(dark ? WHITE : INK, 0.06)];
   const brand = al('HORIZONTAL', 'Brand');
   brand.itemSpacing = 10;
   brand.counterAxisAlignItems = 'CENTER';
@@ -1501,7 +1543,7 @@ function makeNavbar(active, guest) {
   mark.cornerRadius = 10;
   mark.fills = [solid(BRAND)];
   brand.appendChild(mark);
-  brand.appendChild(txt('KeyMaster', fraunces('SemiBold'), 22, INK));
+  brand.appendChild(txt('KeyMaster', fraunces('SemiBold'), 22, ink));
   nav.appendChild(brand);
   const links = al('HORIZONTAL', 'Nav links');
   links.itemSpacing = 4;
@@ -1520,9 +1562,9 @@ function makeNavbar(active, guest) {
       l.paddingLeft = l.paddingRight = 12;
       l.paddingTop = l.paddingBottom = 8;
       l.cornerRadius = 8;
-      l.fills = on ? [solid(BRAND50)] : [TRANSPARENT];
-      const label = txt(item, outfit('SemiBold'), 15, on ? BRAND800 : INK);
-      if (!on) label.fills = [solid(INK, 0.72)];
+      l.fills = on ? [solid(dark ? BRAND : BRAND50, dark ? 0.22 : 1)] : [TRANSPARENT];
+      const label = txt(item, outfit('SemiBold'), 15, on ? (dark ? BRAND500 : BRAND800) : ink);
+      if (!on) label.fills = [solid(ink, 0.72)];
       l.appendChild(label);
       if (on) {
         const bar = figma.createRectangle();
@@ -1543,7 +1585,7 @@ function makeNavbar(active, guest) {
   const lang = al('HORIZONTAL', 'LanguageSwitcher');
   lang.paddingLeft = lang.paddingRight = lang.paddingTop = lang.paddingBottom = 2;
   lang.cornerRadius = 8;
-  lang.strokes = [solid(INK, 0.1)];
+  lang.strokes = [solid(dark ? WHITE : INK, 0.1)];
   const ru = al('HORIZONTAL', 'RU');
   ru.paddingLeft = ru.paddingRight = 10;
   ru.paddingTop = ru.paddingBottom = 4;
@@ -1555,7 +1597,7 @@ function makeNavbar(active, guest) {
   tj.paddingTop = tj.paddingBottom = 4;
   tj.cornerRadius = 6;
   tj.fills = [TRANSPARENT];
-  tj.appendChild(txt('TJ', outfit('Bold'), 12, INK));
+  tj.appendChild(txt('TJ', outfit('Bold'), 12, dark ? DARK_TEXT : INK));
   lang.appendChild(ru);
   lang.appendChild(tj);
   actions.appendChild(lang);
@@ -1565,7 +1607,7 @@ function makeNavbar(active, guest) {
     login.paddingLeft = login.paddingRight = 10;
     login.paddingTop = login.paddingBottom = 8;
     login.cornerRadius = 8;
-    login.appendChild(txt('Вход', outfit('SemiBold'), 14, INK));
+    login.appendChild(txt('Вход', outfit('SemiBold'), 14, ink));
     actions.appendChild(login);
     actions.appendChild(primaryBtn('Регистрация', true));
   } else {
@@ -1575,13 +1617,13 @@ function makeNavbar(active, guest) {
     user.paddingLeft = user.paddingRight = 10;
     user.paddingTop = user.paddingBottom = 8;
     user.cornerRadius = 8;
-    user.appendChild(txt('Анна', outfit('SemiBold'), 14, INK));
+    user.appendChild(txt('Анна', outfit('SemiBold'), 14, ink));
     const xp = al('HORIZONTAL', 'XP');
     xp.paddingLeft = xp.paddingRight = 6;
     xp.paddingTop = xp.paddingBottom = 2;
     xp.cornerRadius = 6;
-    xp.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 }, 0.12)];
-    xp.appendChild(txt('120 XP', outfit('Bold'), 12, BRAND800));
+    xp.fills = [solid({ r: 0.114, g: 0.306, b: 0.847 }, dark ? 0.22 : 0.12)];
+    xp.appendChild(txt('120 XP', outfit('Bold'), 12, dark ? BRAND500 : BRAND800));
     user.appendChild(xp);
     actions.appendChild(user);
     const logout = al('HORIZONTAL', 'Выйти');
@@ -1589,9 +1631,9 @@ function makeNavbar(active, guest) {
     logout.paddingTop = logout.paddingBottom = 6;
     logout.minHeight = 44;
     logout.cornerRadius = 16;
-    logout.fills = [solid(WHITE)];
-    logout.strokes = [solid(INK, 0.12)];
-    logout.appendChild(txt('Выйти', outfit('SemiBold'), 14, INK));
+    logout.fills = [solid(dark ? DARK_CARD : WHITE)];
+    logout.strokes = [solid(dark ? WHITE : INK, 0.12)];
+    logout.appendChild(txt('Выйти', outfit('SemiBold'), 14, ink));
     actions.appendChild(logout);
   }
   nav.appendChild(actions);
@@ -1601,7 +1643,9 @@ function makeNavbar(active, guest) {
   return nav;
 }
 
-function makeFooter() {
+function makeFooter(dark) {
+  const ink = dark ? DARK_TEXT : INK;
+  const muted = dark ? DARK_MUTED : MUTED;
   const f = al('HORIZONTAL', 'Footer');
   f.primaryAxisAlignItems = 'CENTER';
   f.counterAxisAlignItems = 'CENTER';
@@ -1612,36 +1656,36 @@ function makeFooter() {
   f.layoutSizingHorizontal = 'FIXED';
   f.layoutSizingVertical = 'FIXED';
   f.fills = [TRANSPARENT];
-  f.strokes = [solid(INK, 0.06)];
-  f.appendChild(txt('KeyMaster', fraunces('SemiBold'), 13, INK));
+  f.strokes = [solid(dark ? WHITE : INK, 0.06)];
+  f.appendChild(txt('KeyMaster', fraunces('SemiBold'), 13, ink));
   f.appendChild(txt('·', outfit('Regular'), 13, { r: 0.8, g: 0.82, b: 0.84 }));
-  f.appendChild(txt('© 2026', outfit('Regular'), 13, MUTED));
+  f.appendChild(txt('© 2026', outfit('Regular'), 13, muted));
   f.appendChild(txt('·', outfit('Regular'), 13, { r: 0.8, g: 0.82, b: 0.84 }));
-  f.appendChild(txt('от первого ноутбука до Shortcut Legend', outfit('Regular'), 13, MUTED));
+  f.appendChild(txt('от первого ноутбука до Shortcut Legend', outfit('Regular'), 13, muted));
   return f;
 }
 
-function marketingPage(name, active, guest, body) {
+function marketingPage(name, active, guest, body, dark) {
   const page = al('VERTICAL', name);
   page.itemSpacing = 0;
-  page.fills = [solid(PAPER)];
-  page.strokes = [solid(INK, 0.08)];
+  page.fills = [solid(dark ? DARK_BG : PAPER)];
+  page.strokes = [solid(dark ? WHITE : INK, 0.08)];
   page.strokeWeight = 1;
   page.resize(960, 10);
   page.layoutSizingHorizontal = 'FIXED';
   page.layoutSizingVertical = 'HUG';
-  page.appendChild(makeNavbar(active, guest));
+  page.appendChild(makeNavbar(active, guest, dark));
   const main = al('VERTICAL', 'main');
   main.itemSpacing = 16;
   main.paddingTop = main.paddingBottom = 32;
   main.paddingLeft = main.paddingRight = 40;
-  main.fills = [solid(PAPER)];
+  main.fills = [solid(dark ? DARK_BG : PAPER)];
   main.resize(960, 10);
   main.layoutSizingHorizontal = 'FIXED';
   main.layoutSizingVertical = 'HUG';
   for (const child of body) main.appendChild(child);
   page.appendChild(main);
-  page.appendChild(makeFooter());
+  page.appendChild(makeFooter(dark));
   return page;
 }
 
@@ -2299,39 +2343,43 @@ async function buildUniqueScreens() {
   dash.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
   dash.appendChild(txt('Последние достижения', outfit('SemiBold'), 16, INK));
 
-  function authScreen(title, subtitle, bodyNodes, footerText) {
-    const card = al('VERTICAL', 'AuthCard');
+  function authScreen(title, subtitle, bodyNodes, footerText, opts) {
+    const compact = !!(opts && opts.compact);
+    const dark = !!(opts && opts.dark);
+    const padX = compact ? 20 : 24;
+    const padY = compact ? 16 : 24;
+    const card = al('VERTICAL', compact ? 'AuthCard compact' : 'AuthCard');
     card.itemSpacing = 0;
     card.cornerRadius = 24;
-    card.fills = [solid(WHITE)];
-    card.strokes = [solid(INK, 0.1)];
+    card.fills = [solid(dark ? DARK_CARD : WHITE)];
+    card.strokes = [solid(dark ? WHITE : INK, 0.1)];
     card.resize(400, 10);
     card.layoutSizingHorizontal = 'FIXED';
     card.layoutSizingVertical = 'HUG';
     const head = al('VERTICAL', 'header');
     head.itemSpacing = 8;
-    head.paddingTop = head.paddingBottom = 24;
-    head.paddingLeft = head.paddingRight = 24;
-    head.fills = [solid(BRAND50)];
-    const km = txt('KEYMASTER', outfit('Bold'), 10, BRAND800);
+    head.paddingTop = head.paddingBottom = padY;
+    head.paddingLeft = head.paddingRight = padX;
+    head.fills = [solid(dark ? { r: 0.09, g: 0.145, b: 0.329 } : BRAND50)];
+    const km = txt('KEYMASTER', outfit('Bold'), 10, dark ? BRAND500 : BRAND800);
     km.textCase = 'UPPER';
     head.appendChild(km);
-    head.appendChild(txt(title, fraunces('Bold'), 26, INK));
-    if (subtitle) head.appendChild(txt(subtitle, outfit('Regular'), 13, MUTED, 352));
+    head.appendChild(txt(title, fraunces('Bold'), compact ? 20 : 26, dark ? DARK_TEXT : INK));
+    if (subtitle) head.appendChild(txt(subtitle, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED, 352));
     card.appendChild(head);
     const body = al('VERTICAL', 'body');
-    body.itemSpacing = 12;
-    body.paddingTop = body.paddingBottom = 24;
-    body.paddingLeft = body.paddingRight = 24;
+    body.itemSpacing = compact ? 10 : 12;
+    body.paddingTop = body.paddingBottom = padY;
+    body.paddingLeft = body.paddingRight = padX;
     for (const n of bodyNodes) body.appendChild(n);
     card.appendChild(body);
     if (footerText) {
       const foot = al('HORIZONTAL', 'footer');
       foot.primaryAxisAlignItems = 'CENTER';
-      foot.paddingTop = foot.paddingBottom = 16;
-      foot.paddingLeft = foot.paddingRight = 24;
-      foot.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
-      foot.appendChild(txt(footerText, outfit('Regular'), 13, MUTED));
+      foot.paddingTop = foot.paddingBottom = compact ? 12 : 16;
+      foot.paddingLeft = foot.paddingRight = padX;
+      foot.fills = [solid(dark ? { r: 0.09, g: 0.145, b: 0.329 } : { r: 0.976, g: 0.98, b: 0.984 }, dark ? 0.55 : 1)];
+      foot.appendChild(txt(footerText, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED));
       card.appendChild(foot);
     }
     return card;
@@ -2378,7 +2426,16 @@ async function buildUniqueScreens() {
     [
       field('Email', 'learner@example.com', SIGNAL),
       field('Пароль', '••••••••', SIGNAL),
-      txt('Неверный email или пароль', outfit('Medium'), 13, SIGNAL, 352),
+      (() => {
+        const alert = al('HORIZONTAL', 'error');
+        alert.paddingLeft = alert.paddingRight = 12;
+        alert.paddingTop = alert.paddingBottom = 8;
+        alert.cornerRadius = 12;
+        alert.fills = [solid(SIGNAL, 0.1)];
+        alert.strokes = [solid(SIGNAL, 0.3)];
+        alert.appendChild(txt('Неверный email или пароль', outfit('Medium'), 13, SIGNAL, 296));
+        return alert;
+      })(),
       primaryBtn('Войти'),
     ],
     'Нет аккаунта? Регистрация',
@@ -2397,7 +2454,7 @@ async function buildUniqueScreens() {
   );
   const registerCard = authScreen(
     'Регистрация',
-    'Создайте аккаунт — на email придёт код подтверждения',
+    'Добро пожаловать в KeyMaster',
     [
       field('Имя', 'Анна', INK),
       field('username', 'anna', INK),
@@ -2407,6 +2464,7 @@ async function buildUniqueScreens() {
       primaryBtn('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
+    { compact: true },
   );
   const registerOtp = authScreen(
     'Код из письма',
@@ -2522,7 +2580,7 @@ async function buildUniqueScreens() {
     chip.paddingLeft = chip.paddingRight = 14;
     chip.paddingTop = chip.paddingBottom = 10;
     chip.minHeight = 44;
-    chip.cornerRadius = 99;
+    chip.cornerRadius = 12;
     chip.fills = [solid(n === 20 ? BRAND : WHITE)];
     chip.strokes = [solid(n === 20 ? BRAND : INK, n === 20 ? 1 : 0.12)];
     chip.appendChild(txt(String(n), outfit('SemiBold'), 13, n === 20 ? WHITE : INK));
@@ -2537,7 +2595,7 @@ async function buildUniqueScreens() {
     chip.paddingLeft = chip.paddingRight = 14;
     chip.paddingTop = chip.paddingBottom = 10;
     chip.minHeight = 44;
-    chip.cornerRadius = 99;
+    chip.cornerRadius = 12;
     chip.fills = [solid(n === 10 ? BRAND : WHITE)];
     chip.strokes = [solid(n === 10 ? BRAND : INK, n === 10 ? 1 : 0.12)];
     chip.appendChild(txt(n + ' мин', outfit('SemiBold'), 13, n === 10 ? WHITE : INK));
@@ -2560,7 +2618,7 @@ async function buildUniqueScreens() {
   examEmpty.itemSpacing = 10;
   examEmpty.primaryAxisAlignItems = 'CENTER';
   examEmpty.appendChild(txt('Нет вопросов', outfit('SemiBold'), 22, INK));
-  examEmpty.appendChild(txt('В выбранном курсе нет горячих клавиш для экзамена.', outfit('Regular'), 13, MUTED, 520));
+  examEmpty.appendChild(txt('Выберите другой курс или запустите backend.', outfit('Regular'), 13, MUTED, 520));
   examEmpty.appendChild(primaryBtn('Назад к настройке'));
 
   const review = al('VERTICAL', 'Review card');
@@ -2942,18 +3000,146 @@ async function buildUniqueScreens() {
   speedBody.appendChild(primaryBtn('Старт 60 сек'));
 
   const examRun = al('VERTICAL', 'Exam run');
-  examRun.itemSpacing = 10;
-  examRun.appendChild(txt('Экзамен · 3/20', outfit('SemiBold'), 18, INK));
-  examRun.appendChild(txt('Осталось 8:12', outfit('Regular'), 13, MUTED));
-  examRun.appendChild(txt('Сохраните файл', outfit('SemiBold'), 16, INK));
-  examRun.appendChild(txt('Нажмите сочетание · без подсказок', outfit('Regular'), 13, MUTED));
+  examRun.itemSpacing = 12;
+  const examRunHead = al('HORIZONTAL', 'run head');
+  examRunHead.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  examRunHead.counterAxisAlignItems = 'CENTER';
+  examRunHead.resize(680, 10);
+  examRunHead.layoutSizingHorizontal = 'FIXED';
+  examRunHead.layoutSizingVertical = 'HUG';
+  const examRunMeta = al('HORIZONTAL', 'meta');
+  examRunMeta.itemSpacing = 8;
+  examRunMeta.counterAxisAlignItems = 'CENTER';
+  examRunMeta.appendChild(txt('Экзамен · 3/20', outfit('Medium'), 13, MUTED));
+  examRunMeta.appendChild(pill('Все курсы', { r: 0.976, g: 0.98, b: 0.984 }, MUTED));
+  examRunHead.appendChild(examRunMeta);
+  const timerChip = al('HORIZONTAL', 'timer');
+  timerChip.paddingLeft = timerChip.paddingRight = 12;
+  timerChip.paddingTop = timerChip.paddingBottom = 6;
+  timerChip.cornerRadius = 12;
+  timerChip.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+  timerChip.appendChild(txt('8:12', outfit('Bold'), 13, INK));
+  examRunHead.appendChild(timerChip);
+  examRun.appendChild(examRunHead);
+  examRun.appendChild(progressBar(680, 0.82, BRAND, 4));
+  examRun.appendChild(progressBar(680, 0.15, BRAND, 8));
+  const scoreRow = al('HORIZONTAL', 'score');
+  scoreRow.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  scoreRow.counterAxisAlignItems = 'CENTER';
+  scoreRow.resize(680, 10);
+  scoreRow.layoutSizingHorizontal = 'FIXED';
+  scoreRow.layoutSizingVertical = 'HUG';
+  const counts = al('HORIZONTAL', 'counts');
+  counts.itemSpacing = 16;
+  counts.appendChild(txt('2', outfit('SemiBold'), 14, SUCCESS));
+  counts.appendChild(txt('1', outfit('SemiBold'), 14, SIGNAL));
+  scoreRow.appendChild(counts);
+  scoreRow.appendChild(ghostBtn('Завершить'));
+  examRun.appendChild(scoreRow);
+  examRun.appendChild(txt('Вопрос 3', outfit('Bold'), 11, BRAND800));
+  examRun.appendChild(txt('Сохраните файл', outfit('SemiBold'), 20, INK));
+  examRun.appendChild(txt('Вспомните сочетание сами — без подсказок.', outfit('Regular'), 13, MUTED, 680));
+
+  const examFeedback = al('VERTICAL', 'Exam feedback');
+  examFeedback.itemSpacing = 10;
+  examFeedback.paddingTop = examFeedback.paddingBottom = 32;
+  examFeedback.paddingLeft = examFeedback.paddingRight = 24;
+  examFeedback.cornerRadius = 24;
+  examFeedback.fills = [solid({ r: 0.925, g: 0.99, b: 0.961 })];
+  examFeedback.strokes = [solid(SUCCESS, 0.4)];
+  examFeedback.primaryAxisAlignItems = 'CENTER';
+  examFeedback.resize(680, 10);
+  examFeedback.layoutSizingHorizontal = 'FIXED';
+  examFeedback.layoutSizingVertical = 'HUG';
+  examFeedback.appendChild(txt('Верно!', outfit('Bold'), 24, SUCCESS));
+  examFeedback.appendChild(txt('Сохраните файл', outfit('Regular'), 13, MUTED));
+  examFeedback.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
+  const fbKeys = al('HORIZONTAL', 'combo');
+  fbKeys.itemSpacing = 8;
+  for (const k of ['Ctrl', 'S']) {
+    const cap = al('HORIZONTAL', k);
+    cap.primaryAxisAlignItems = 'CENTER';
+    cap.counterAxisAlignItems = 'CENTER';
+    cap.minWidth = 40;
+    cap.minHeight = 40;
+    cap.paddingLeft = cap.paddingRight = 12;
+    cap.cornerRadius = 12;
+    cap.fills = [solid(WHITE)];
+    cap.strokes = [solid(INK)];
+    cap.strokeWeight = 1;
+    cap.strokeBottomWeight = 4;
+    cap.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    fbKeys.appendChild(cap);
+  }
+  examFeedback.appendChild(fbKeys);
+  examFeedback.appendChild(txt('Ctrl + S', outfit('SemiBold'), 18, INK));
+  examFeedback.appendChild(txt('Следующий вопрос через 2…', outfit('Regular'), 13, MUTED));
+  examFeedback.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
 
   const examDone = al('VERTICAL', 'Exam done');
-  examDone.itemSpacing = 10;
-  examDone.appendChild(txt('Сессия завершена', outfit('SemiBold'), 22, INK));
-  examDone.appendChild(txt('Оценка D · 0/20 без ответа', outfit('Regular'), 14, MUTED));
-  examDone.appendChild(pill('Итоги экзамена', BRAND50, BRAND));
-  examDone.appendChild(primaryBtn('Новый экзамен'));
+  examDone.itemSpacing = 12;
+  examDone.paddingTop = examDone.paddingBottom = 24;
+  examDone.paddingLeft = examDone.paddingRight = 24;
+  examDone.cornerRadius = 24;
+  examDone.fills = [solid(WHITE)];
+  examDone.resize(520, 10);
+  examDone.layoutSizingHorizontal = 'FIXED';
+  examDone.layoutSizingVertical = 'HUG';
+  examDone.appendChild(txt('ИТОГИ ЭКЗАМЕНА', outfit('Bold'), 11, BRAND800));
+  examDone.appendChild(txt('Сессия завершена', fraunces('Bold'), 30, INK));
+  const gradeRow = al('HORIZONTAL', 'grade');
+  gradeRow.itemSpacing = 16;
+  gradeRow.counterAxisAlignItems = 'CENTER';
+  const gradeBox = al('HORIZONTAL', 'D');
+  gradeBox.primaryAxisAlignItems = 'CENTER';
+  gradeBox.counterAxisAlignItems = 'CENTER';
+  gradeBox.resize(64, 64);
+  gradeBox.layoutSizingHorizontal = 'FIXED';
+  gradeBox.layoutSizingVertical = 'FIXED';
+  gradeBox.cornerRadius = 16;
+  gradeBox.strokes = [solid(INK, 0.16)];
+  gradeBox.appendChild(txt('D', outfit('Bold'), 24, MUTED));
+  gradeRow.appendChild(gradeBox);
+  const gradeCopy = al('VERTICAL', 'pct');
+  gradeCopy.itemSpacing = 4;
+  gradeCopy.appendChild(txt('0%', outfit('Bold'), 30, INK));
+  gradeCopy.appendChild(txt('Стоит повторить материал', outfit('Regular'), 13, MUTED));
+  gradeRow.appendChild(gradeCopy);
+  examDone.appendChild(gradeRow);
+  examDone.appendChild(progressBar(472, 0.02, MUTED, 8));
+  const statsGrid = al('HORIZONTAL', 'result stats');
+  statsGrid.itemSpacing = 8;
+  statsGrid.layoutWrap = 'WRAP';
+  statsGrid.resize(472, 10);
+  statsGrid.layoutSizingHorizontal = 'FIXED';
+  statsGrid.layoutSizingVertical = 'HUG';
+  for (const [k, v] of [
+    ['Верно', '0'],
+    ['Ошибок', '0'],
+    ['Точность ответов', '0%'],
+    ['Пройдено', '0/20'],
+    ['Без ответа', '20'],
+    ['Время', '0:08'],
+  ]) {
+    const st = al('VERTICAL', k);
+    st.itemSpacing = 4;
+    st.paddingTop = st.paddingBottom = 12;
+    st.paddingLeft = st.paddingRight = 12;
+    st.cornerRadius = 16;
+    st.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    st.resize(228, 10);
+    st.layoutSizingHorizontal = 'FIXED';
+    st.layoutSizingVertical = 'HUG';
+    st.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    st.appendChild(txt(v, outfit('Bold'), 20, INK));
+    statsGrid.appendChild(st);
+  }
+  examDone.appendChild(statsGrid);
+  const doneBtns = al('HORIZONTAL', 'done actions');
+  doneBtns.itemSpacing = 8;
+  doneBtns.appendChild(primaryBtn('Новый экзамен'));
+  doneBtns.appendChild(secondaryBtn('К пути'));
+  examDone.appendChild(doneBtns);
 
   const reviewBack = al('VERTICAL', 'Review flipped');
   reviewBack.itemSpacing = 12;
@@ -2994,6 +3180,15 @@ async function buildUniqueScreens() {
       'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
       outfit('Regular'),
       13,
+      MUTED,
+      350,
+    ),
+  );
+  gbody.appendChild(
+    txt(
+      'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
+      outfit('Regular'),
+      11,
       MUTED,
       350,
     ),
@@ -3149,47 +3344,243 @@ async function buildUniqueScreens() {
       practicePage('Exam setup /exam', 'Экзамен', [exam]),
       practicePage('Exam empty /exam', 'Экзамен', [examEmpty]),
       practicePage('Exam run /exam', 'Экзамен', [examRun]),
+      practicePage('Exam feedback /exam', 'Экзамен', [examFeedback]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
     ]),
   );
-  const darkHome = al('VERTICAL', 'Dark Home / html.dark');
-  darkHome.itemSpacing = 0;
-  darkHome.fills = [solid({ r: 0.008, g: 0.024, b: 0.09 })];
-  darkHome.strokes = [solid(WHITE, 0.1)];
-  darkHome.resize(960, 10);
-  darkHome.layoutSizingHorizontal = 'FIXED';
-  darkHome.layoutSizingVertical = 'HUG';
-  const dnav = al('HORIZONTAL', 'Navbar');
-  dnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
-  dnav.counterAxisAlignItems = 'CENTER';
-  dnav.paddingLeft = dnav.paddingRight = 24;
-  dnav.resize(960, 64);
-  dnav.layoutSizingHorizontal = 'FIXED';
-  dnav.layoutSizingVertical = 'FIXED';
-  dnav.fills = [solid({ r: 0.008, g: 0.024, b: 0.09 }, 0.82)];
-  dnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 18, { r: 0.973, g: 0.98, b: 0.988 }));
-  dnav.appendChild(txt('Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('SemiBold'), 12, { r: 0.973, g: 0.98, b: 0.988 }));
-  const dmain = al('VERTICAL', 'main');
-  dmain.itemSpacing = 12;
-  dmain.paddingTop = dmain.paddingBottom = 40;
-  dmain.paddingLeft = dmain.paddingRight = 40;
-  dmain.primaryAxisAlignItems = 'CENTER';
-  dmain.appendChild(txt('KeyMaster', fraunces('Bold'), 48, { r: 0.973, g: 0.98, b: 0.988 }));
-  dmain.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 18, { r: 0.886, g: 0.91, b: 0.941 }, 640));
-  dmain.appendChild(primaryBtn('Начать бесплатно'));
-  darkHome.appendChild(dnav);
-  darkHome.appendChild(dmain);
+  const darkLogo = figma.createRectangle();
+  darkLogo.resize(72, 72);
+  darkLogo.cornerRadius = 16;
+  darkLogo.fills = [solid(BRAND)];
+  const darkHero = al('VERTICAL', 'Dark hero');
+  darkHero.itemSpacing = 12;
+  darkHero.primaryAxisAlignItems = 'CENTER';
+  darkHero.counterAxisAlignItems = 'CENTER';
+  darkHero.appendChild(darkLogo);
+  darkHero.appendChild(txt('KeyMaster', fraunces('SemiBold'), 72, DARK_TEXT));
+  darkHero.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 24, DARK_SECONDARY, 640));
+  const darkCtas = al('HORIZONTAL', 'CTAs');
+  darkCtas.itemSpacing = 12;
+  darkCtas.appendChild(primaryBtn('Начать бесплатно'));
+  darkCtas.appendChild(secondaryBtn('Каталог курсов', 'dark'));
+  darkHero.appendChild(darkCtas);
+
+  const darkFilterRow = al('HORIZONTAL', 'Filters');
+  darkFilterRow.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Все', true],
+    ['Старт', false],
+    ['ОС', false],
+    ['Редакторы', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 10;
+    chip.minHeight = 44;
+    chip.cornerRadius = 99;
+    chip.fills = [solid(on ? BRAND : DARK_CARD)];
+    chip.strokes = [solid(on ? BRAND : WHITE, on ? 1 : 0.1)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : DARK_MUTED));
+    darkFilterRow.appendChild(chip);
+  }
+  const darkCoursesRow = al('HORIZONTAL', 'Course cards');
+  darkCoursesRow.itemSpacing = 12;
+  for (const [title, tag] of [
+    ['Первый ноутбук', 'Старт'],
+    ['VS Code', 'В процессе'],
+    ['Git', 'Готово'],
+  ]) {
+    const c = al('VERTICAL', title);
+    c.itemSpacing = 8;
+    c.paddingTop = c.paddingBottom = 16;
+    c.paddingLeft = c.paddingRight = 16;
+    c.cornerRadius = 24;
+    c.fills = [solid(DARK_CARD)];
+    c.strokes = [solid(WHITE, 0.1)];
+    c.resize(220, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(pill(tag, BRAND50, BRAND800));
+    c.appendChild(txt(title, outfit('SemiBold'), 16, DARK_TEXT, 180));
+    darkCoursesRow.appendChild(c);
+  }
+
+  const darkLoginCard = authScreen(
+    'Вход',
+    'Добро пожаловать в KeyMaster',
+    [
+      field('Email', 'learner@example.com', null, null, 'dark'),
+      field('Пароль', '••••••••', null, null, 'dark'),
+      primaryBtn('Войти'),
+    ],
+    'Нет аккаунта? Регистрация',
+    { dark: true },
+  );
+
+  function bottomNav390(active) {
+    const bnav = al('HORIZONTAL', 'BottomNav');
+    bnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    bnav.paddingLeft = bnav.paddingRight = 8;
+    bnav.paddingTop = 6;
+    bnav.paddingBottom = 10;
+    bnav.resize(390, 56);
+    bnav.layoutSizingHorizontal = 'FIXED';
+    bnav.layoutSizingVertical = 'FIXED';
+    bnav.fills = [solid(WHITE)];
+    bnav.strokes = [solid(INK, 0.08)];
+    for (const [label, key] of [
+      ['Курсы', 'Курсы'],
+      ['Мой путь', 'Мой путь'],
+      ['Практика', 'Практика'],
+      ['Рейтинг', 'Рейтинг'],
+    ]) {
+      const on = key === active;
+      const it = al('VERTICAL', label);
+      it.primaryAxisAlignItems = 'CENTER';
+      it.itemSpacing = 2;
+      it.resize(80, 44);
+      it.layoutSizingHorizontal = 'FIXED';
+      it.layoutSizingVertical = 'FIXED';
+      it.appendChild(txt('•', outfit('Bold'), 14, on ? BRAND : MUTED));
+      it.appendChild(txt(label, outfit('SemiBold'), 10, on ? BRAND : MUTED));
+      bnav.appendChild(it);
+    }
+    return bnav;
+  }
+
+  function mobileHeader() {
+    const mnav = al('HORIZONTAL', 'Mobile header');
+    mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    mnav.counterAxisAlignItems = 'CENTER';
+    mnav.paddingLeft = mnav.paddingRight = 16;
+    mnav.resize(390, 56);
+    mnav.layoutSizingHorizontal = 'FIXED';
+    mnav.layoutSizingVertical = 'FIXED';
+    mnav.fills = [solid(WHITE)];
+    mnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
+    mnav.appendChild(txt('☰', outfit('Bold'), 16, INK));
+    return mnav;
+  }
+
+  function mobileFrame(name, nodes, navActive, opts) {
+    const frame = al('VERTICAL', name);
+    frame.itemSpacing = 0;
+    frame.fills = [solid(PAPER)];
+    frame.strokes = [solid(INK, 0.1)];
+    frame.resize(390, 10);
+    frame.layoutSizingHorizontal = 'FIXED';
+    frame.layoutSizingVertical = 'HUG';
+    frame.appendChild(mobileHeader());
+    if (opts && opts.chips) {
+      const strip = al('HORIZONTAL', 'Practice chips');
+      strip.itemSpacing = 8;
+      strip.paddingLeft = strip.paddingRight = 12;
+      strip.paddingTop = strip.paddingBottom = 8;
+      strip.fills = [solid(RAIL_BG)];
+      strip.resize(390, 10);
+      strip.layoutSizingHorizontal = 'FIXED';
+      strip.layoutSizingVertical = 'HUG';
+      for (const label of [
+        'Тренировочный зал',
+        'Слепая печать',
+        'Рабочий стол',
+        'VS Code симулятор',
+        'Hotkeys',
+        'Скорость',
+        'Повторение',
+        'Основы hotkeys',
+        'Экзамен',
+      ]) {
+        const on = label === opts.chips;
+        const chip = al('HORIZONTAL', label);
+        chip.paddingLeft = chip.paddingRight = 12;
+        chip.paddingTop = chip.paddingBottom = 6;
+        chip.cornerRadius = 99;
+        chip.fills = on ? [solid(RAIL_ACTIVE_BG)] : [TRANSPARENT];
+        chip.appendChild(txt(label, outfit('SemiBold'), 11, on ? RAIL_ACTIVE_TEXT : RAIL_IDLE_TEXT));
+        strip.appendChild(chip);
+      }
+      frame.appendChild(strip);
+    }
+    const body = al('VERTICAL', 'body');
+    body.paddingTop = body.paddingBottom = 20;
+    body.paddingLeft = body.paddingRight = 16;
+    body.itemSpacing = 10;
+    for (const n of nodes) body.appendChild(n);
+    frame.appendChild(body);
+    if (!(opts && opts.hideNav)) frame.appendChild(bottomNav390(navActive));
+    return frame;
+  }
+
+  const mobileCourses = mobileFrame(
+    'Mobile Courses 390',
+    [
+      txt('Каталог курсов', outfit('SemiBold'), 22, INK, 358),
+      field('Поиск', 'Название курса или инструмента', INK),
+      txt('Все · Старт · ОС · Редакторы', outfit('Regular'), 12, MUTED, 358),
+      courseCard('Первый ноутбук', 'Старт', 'brand', true),
+    ],
+    'Курсы',
+  );
+  const mobilePractice = mobileFrame(
+    'Mobile Practice 390',
+    [
+      txt('Тренировочный зал', outfit('SemiBold'), 20, INK, 358),
+      txt('Навыки и закрепление. Rail hidden; chips replace 240px rail.', outfit('Regular'), 12, MUTED, 358),
+      txt('Рекомендуемый маршрут', fraunces('SemiBold'), 16, INK, 358),
+    ],
+    'Практика',
+    { chips: 'Тренировочный зал' },
+  );
+  const mobilePath = mobileFrame(
+    'Mobile Path 390',
+    [
+      txt('Developer Growth Path', outfit('SemiBold'), 20, INK, 358),
+      pathNode('Start', 'Начать', false),
+      pathNode('Первый ноутбук', 'Продолжается', false),
+    ],
+    'Мой путь',
+  );
+  const mobileReview = mobileFrame(
+    'Mobile Review 390',
+    [review],
+    'Практика',
+    { chips: 'Повторение' },
+  );
+  const mobileQuiz = mobileFrame(
+    'Mobile Quiz 390',
+    [quiz],
+    'Практика',
+    { chips: 'Основы hotkeys' },
+  );
 
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
-  board.appendChild(section('Dark · html.dark (same layouts, semantic tokens)', [darkHome]));
+  board.appendChild(
+    section('Dark · html.dark (same layouts, semantic tokens)', [
+      marketingPage('Dark Home / html.dark', 'Главная', true, [darkHero], true),
+      marketingPage('Dark Login / html.dark', 'Главная', true, [darkLoginCard], true),
+      marketingPage('Dark Courses / html.dark', 'Курсы', true, [
+        txt('Каталог курсов', outfit('SemiBold'), 28, DARK_TEXT),
+        txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, DARK_MUTED, 860),
+        field('Поиск', 'Название курса или инструмента', null, null, 'dark'),
+        darkFilterRow,
+        darkCoursesRow,
+      ], true),
+    ]),
+  );
   board.appendChild(
     section('Mobile 390 · BottomNav', [
       mobile,
+      mobileCourses,
       mobileLogin,
+      mobilePractice,
+      mobilePath,
+      mobileReview,
+      mobileQuiz,
       gate,
-      txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard.', outfit('Regular'), 12, MUTED, 390),
+      txt('BottomNav hidden on /login and /register. PracticeKeyboardGate when no physical keyboard. Practice rail becomes compact chips < lg.', outfit('Regular'), 12, MUTED, 390),
     ]),
   );
   const root = page.findOne((n) => n.name === 'KM Product Map — as-is');
