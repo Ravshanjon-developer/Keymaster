@@ -270,6 +270,10 @@ for (const p of pages) walkNames(p);
 if (!names.includes('IA — unique pages by layout')) fail.push('no IA sitemap');
 if (!names.includes('Unique screens — editable as-is')) fail.push('no unique screen recreations');
 if (!names.includes('User flows — screens')) fail.push('no visual flows');
+if (!names.includes('Leaderboard /leaderboard')) fail.push('no leaderboard unique screen');
+if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
+if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
+if (!sets.includes('Exam')) fail.push('no Exam set');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
