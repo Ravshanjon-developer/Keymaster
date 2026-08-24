@@ -13,7 +13,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 
 Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter).
 
-Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 58 as-is shots.
+Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 59 as-is shots.
 
 Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
 
@@ -21,9 +21,9 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog, course, lessons, review, quiz, exam run (1/20 · 10:00 · «В начало строки»), typing (home-row RU), and speed idle unique screens match live RU copy. Path unique screen matches live viewport (Novice Operator, 0/20, First Laptop + START node). ImmersiveSimulator unique screens match Code Lab empty state and desktop first-task. Guest + authed Home CTAs, live leaderboard, admin 2/20/193/13/0/1, PathNode 5 statuses, dark + mobile 390 |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog unique screens match live 0 XP cards (СТАРТ + «Начните здесь», 16/19/42 lessons — not fake InProgress/Done). Stats unique matches empty Ответы chart. Exam feedback unique matches live Неверно · 9:59 · Ctrl+H. Guest + authed Home, live leaderboard, admin 2/20/193/13/0/1, dark + mobile 390 |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
-| `03 — Existing Screens` | As-is desktop, dark, and state captures |
+| `03 — Existing Screens` | As-is desktop, dark, and state captures (59), including path full-scroll |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
 | `05 — Components` | Button (incl. focus), Input, Badge, KeyCap, Nav, Navbar (default/scrolled/mobile/authed), Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, PasswordStrength, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |

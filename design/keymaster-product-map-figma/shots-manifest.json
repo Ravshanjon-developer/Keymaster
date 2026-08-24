@@ -10,6 +10,7 @@
   {"file":"desktop-guest-07-leaderboard.jpg","page":"03 — Existing Screens","name":"Guest / Leaderboard","layout":"MarketingShell","group":"Guest"},
   {"file":"desktop-learner-08-dashboard.jpg","page":"03 — Existing Screens","name":"Learner / Dashboard","layout":"MarketingShell","group":"Learner"},
   {"file":"desktop-learner-09-path-viewport.jpg","page":"03 — Existing Screens","name":"Learner / Path","layout":"MarketingShell","group":"Learner"},
+  {"file":"desktop-learner-09-path.jpg","page":"03 — Existing Screens","name":"Learner / Path (full scroll)","layout":"MarketingShell — long path map","group":"Learner"},
   {"file":"desktop-learner-10-practice.jpg","page":"03 — Existing Screens","name":"Learner / Practice hub","layout":"PracticeShell","group":"Learner"},
   {"file":"desktop-learner-11-typing.jpg","page":"03 — Existing Screens","name":"Learner / Typing train","layout":"PracticeShell","group":"Learner"},
   {"file":"desktop-learner-typing-path.jpg","page":"03 — Existing Screens","name":"Learner / Typing path","layout":"PracticeShell","group":"Learner"},

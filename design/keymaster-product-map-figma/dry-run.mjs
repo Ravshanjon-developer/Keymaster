@@ -316,6 +316,14 @@ if (!names.includes('Dark Courses / html.dark')) fail.push('no dark courses uniq
 if (!names.includes('Mobile Practice 390')) fail.push('no mobile practice unique screen');
 if (!names.includes('Mobile Courses 390')) fail.push('no mobile courses unique screen');
 if (!names.includes('Exam wrong /exam')) fail.push('no exam wrong unique screen');
+if (!names.includes('Exam correct /exam')) fail.push('no exam correct unique screen');
+if (!names.includes('9:59')) fail.push('no live exam-feedback timer unique screen');
+if (!names.includes('Начните здесь')) fail.push('no live catalog start-here unique screen');
+if (!names.includes('0/16 сочетаний')) fail.push('no live authed catalog progress unique screen');
+if (!names.includes('16 уроков · 4 категории')) fail.push('no live catalog lesson-count unique screen');
+if (!names.includes('Основные горячие клавиши программиста')) fail.push('no live programmer-basics catalog card unique screen');
+if (!names.includes('empty bar')) fail.push('no live stats empty-chart unique screen');
+if (!names.includes('chart y-axis')) fail.push('no live stats chart y-axis unique screen');
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
 if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
@@ -468,7 +476,32 @@ if (!studyUnique || !namesUnder(studyUnique).includes('Вход') || namesUnder(
   fail.push('study-only unique screen is not guest chrome like the live capture');
 }
 if (!names.includes('wrong head')) fail.push('no live quiz-picked wrong-toast unique screen');
-if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
+let examFbUnique = null;
+let darkCoursesUnique = null;
+let mobileCoursesUnique = null;
+let mobilePracticeUnique = null;
+for (const p of pages) {
+  examFbUnique = examFbUnique || findByName(p, 'Exam feedback /exam');
+  darkCoursesUnique = darkCoursesUnique || findByName(p, 'Dark Courses / html.dark');
+  mobileCoursesUnique = mobileCoursesUnique || findByName(p, 'Mobile Courses 390');
+  mobilePracticeUnique = mobilePracticeUnique || findByName(p, 'Mobile Practice 390');
+}
+if (!examFbUnique || !namesUnder(examFbUnique).includes('9:59') || !namesUnder(examFbUnique).includes('Откройте замену')) {
+  fail.push('exam-feedback unique screen does not match live Неверно capture');
+}
+if (!darkCoursesUnique || namesUnder(darkCoursesUnique).includes('В процессе') || namesUnder(darkCoursesUnique).includes('Готово')) {
+  fail.push('dark catalog unique screen still uses InProgress/Done instead of live 0 XP СТАРТ cards');
+}
+if (!darkCoursesUnique || !namesUnder(darkCoursesUnique).includes('0/16 сочетаний') || !namesUnder(darkCoursesUnique).includes('Начните здесь')) {
+  fail.push('dark catalog unique screen missing live 0 XP progress / start-here');
+}
+if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начните здесь') || !namesUnder(mobileCoursesUnique).includes('Регистрация')) {
+  fail.push('mobile courses unique screen missing live guest chrome or start-here card');
+}
+if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти')) {
+  fail.push('mobile practice unique screen is not authed chrome like the live capture');
+}
+if (shots.length < 59) fail.push('expected at least 59 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {

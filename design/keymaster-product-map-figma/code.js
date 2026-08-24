@@ -1235,6 +1235,7 @@ async function buildVisualFlows() {
     ]],
     ['F4 Learning path', [
       ['desktop-learner-09-path-viewport.jpg', 'Path'],
+      ['desktop-learner-09-path.jpg', 'Path full scroll'],
       ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
       ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
     ]],
@@ -1921,12 +1922,102 @@ function progressBar(width, pct, fill, height) {
   track.layoutSizingVertical = 'FIXED';
   track.cornerRadius = 99;
   track.fills = [solid(INK, 0.08)];
-  const fillN = figma.createRectangle();
-  fillN.resize(Math.max(4, Math.round(width * pct)), h);
-  fillN.cornerRadius = 99;
-  fillN.fills = [solid(fill || BRAND)];
-  track.appendChild(fillN);
+  if (pct > 0) {
+    const fillN = figma.createRectangle();
+    fillN.resize(Math.max(4, Math.round(width * pct)), h);
+    fillN.cornerRadius = 99;
+    fillN.fills = [solid(fill || BRAND)];
+    track.appendChild(fillN);
+  }
   return track;
+}
+
+function searchField(width, theme) {
+  const dark = theme === 'dark';
+  const box = al('HORIZONTAL', 'search');
+  box.itemSpacing = 8;
+  box.counterAxisAlignItems = 'CENTER';
+  box.paddingLeft = box.paddingRight = 14;
+  box.cornerRadius = 16;
+  box.fills = [solid(dark ? DARK_ELEVATED : WHITE)];
+  box.strokes = [solid(dark ? WHITE : INK, dark ? 0.1 : 0.12)];
+  box.resize(width, 44);
+  box.layoutSizingHorizontal = 'FIXED';
+  box.layoutSizingVertical = 'FIXED';
+  const mag = figma.createEllipse();
+  mag.resize(14, 14);
+  mag.fills = [TRANSPARENT];
+  mag.strokes = [solid(dark ? DARK_MUTED : MUTED)];
+  mag.strokeWeight = 1.5;
+  box.appendChild(mag);
+  box.appendChild(txt('Название курса или инструмента', outfit('Regular'), 14, dark ? DARK_MUTED : MUTED));
+  return box;
+}
+
+function catalogCard(opts) {
+  const dark = !!opts.dark;
+  const w = opts.width || 280;
+  const inner = w - 40;
+  const c = al('VERTICAL', opts.title);
+  c.itemSpacing = 8;
+  c.paddingTop = c.paddingBottom = 20;
+  c.paddingLeft = c.paddingRight = 20;
+  c.cornerRadius = 24;
+  c.fills = opts.start ? (dark ? [solid(BRAND, 0.14)] : [solid(BRAND50)]) : [solid(dark ? DARK_CARD : WHITE)];
+  c.strokes = [solid(opts.start ? BRAND : dark ? WHITE : INK, opts.start ? 0.22 : 0.1)];
+  c.resize(w, 10);
+  c.layoutSizingHorizontal = 'FIXED';
+  c.layoutSizingVertical = 'HUG';
+  const top = al('HORIZONTAL', 'top');
+  top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  top.counterAxisAlignItems = 'MIN';
+  const icon = figma.createRectangle();
+  icon.resize(42, 42);
+  icon.cornerRadius = 12;
+  icon.fills = [solid(opts.iconFill || BRAND50)];
+  top.appendChild(icon);
+  if (opts.start) top.appendChild(pill('Старт', { r: 0.114, g: 0.306, b: 0.847 }, WHITE));
+  c.appendChild(top);
+  top.layoutSizingHorizontal = 'FILL';
+  c.appendChild(txt(opts.title, outfit('SemiBold'), 16, dark ? DARK_TEXT : INK, inner));
+  c.appendChild(txt(opts.desc, outfit('Regular'), 13, dark ? DARK_MUTED : MUTED, inner));
+  if (opts.progress) {
+    const prog = al('VERTICAL', 'progress');
+    prog.itemSpacing = 6;
+    const meta = al('HORIZONTAL', 'progress meta');
+    meta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    meta.appendChild(txt(opts.progress, outfit('Regular'), 12, dark ? DARK_MUTED : MUTED));
+    meta.appendChild(txt(opts.percent || '0%', outfit('SemiBold'), 12, dark ? BRAND500 : BRAND800));
+    prog.appendChild(meta);
+    meta.layoutSizingHorizontal = 'FILL';
+    const bar = progressBar(inner, 0, BRAND, 8);
+    if (dark) bar.fills = [solid(WHITE, 0.1)];
+    prog.appendChild(bar);
+    c.appendChild(prog);
+    prog.layoutSizingHorizontal = 'FILL';
+  } else {
+    const spacer = figma.createRectangle();
+    spacer.resize(inner, 8);
+    spacer.fills = [TRANSPARENT];
+    c.appendChild(spacer);
+  }
+  const foot = al('HORIZONTAL', 'footer');
+  foot.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  foot.counterAxisAlignItems = 'CENTER';
+  foot.paddingTop = 12;
+  foot.appendChild(txt(opts.meta, outfit('Medium'), 12, dark ? DARK_MUTED : MUTED, inner - 110));
+  const cta = al('HORIZONTAL', opts.start ? 'Начните здесь' : 'open');
+  cta.itemSpacing = 4;
+  cta.paddingLeft = cta.paddingRight = 10;
+  cta.paddingTop = cta.paddingBottom = 4;
+  cta.cornerRadius = 8;
+  cta.fills = [solid(dark ? BRAND : { r: 0.88, g: 0.93, b: 1 })];
+  if (opts.start) cta.appendChild(txt('Начните здесь', outfit('SemiBold'), 11, dark ? WHITE : BRAND800));
+  cta.appendChild(txt('↗', outfit('SemiBold'), 11, dark ? WHITE : BRAND800));
+  foot.appendChild(cta);
+  c.appendChild(foot);
+  foot.layoutSizingHorizontal = 'FILL';
+  return c;
 }
 
 function navDivider() {
@@ -2758,9 +2849,38 @@ async function buildUniqueScreens() {
 
   const coursesRow = al('HORIZONTAL', 'Course cards');
   coursesRow.itemSpacing = 12;
-  coursesRow.appendChild(instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true));
-  coursesRow.appendChild(instCourse('Status=InProgress') || courseCard('VS Code', 'В процессе', 'neutral', false));
-  coursesRow.appendChild(instCourse('Status=Completed') || courseCard('Git', 'Готово', 'success', false));
+  coursesRow.appendChild(
+    catalogCard({
+      title: 'Первый ноутбук: файлы и папки',
+      desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+      meta: '16 уроков · 4 категории',
+      start: true,
+      iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+    }),
+  );
+  coursesRow.appendChild(
+    catalogCard({
+      title: 'Основные горячие клавиши программиста',
+      desc: 'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний.',
+      meta: '19 уроков · 2 категории',
+      start: true,
+      iconFill: { r: 0.35, g: 0.42, b: 0.55 },
+    }),
+  );
+  coursesRow.appendChild(
+    catalogCard({
+      title: 'VS Code',
+      desc: 'Visual Studio Code — редактор кода от Microsoft.',
+      meta: '42 урока · 7 категорий',
+      start: false,
+      iconFill: { r: 0.13, g: 0.48, b: 0.78 },
+    }),
+  );
+  const statusStrip = al('HORIZONTAL', 'CourseCard statuses');
+  statusStrip.itemSpacing = 12;
+  statusStrip.appendChild(instCourse('Status=Start') || courseCard('Первый ноутбук', 'Старт', 'brand', true));
+  statusStrip.appendChild(instCourse('Status=InProgress') || courseCard('VS Code', 'В процессе', 'neutral', false));
+  statusStrip.appendChild(instCourse('Status=Completed') || courseCard('Git', 'Готово', 'success', false));
   const filterRow = al('HORIZONTAL', 'Filters');
   filterRow.itemSpacing = 8;
   for (const [label, on] of [
@@ -4177,26 +4297,37 @@ async function buildUniqueScreens() {
   answersChart.paddingLeft = answersChart.paddingRight = 24;
   answersChart.cornerRadius = 24;
   answersChart.fills = [solid(WHITE)];
-  answersChart.resize(860, 10);
+  answersChart.resize(860, 288);
   answersChart.layoutSizingHorizontal = 'FIXED';
-  answersChart.layoutSizingVertical = 'HUG';
-  answersChart.appendChild(txt('Ответы', outfit('SemiBold'), 16, INK));
-  const bars = al('HORIZONTAL', 'chart');
-  bars.itemSpacing = 48;
-  bars.counterAxisAlignItems = 'MAX';
+  answersChart.layoutSizingVertical = 'FIXED';
+  answersChart.appendChild(txt('Ответы', outfit('Medium'), 16, INK));
+  const chart = al('HORIZONTAL', 'empty chart');
+  chart.itemSpacing = 24;
+  chart.counterAxisAlignItems = 'MAX';
+  chart.resize(812, 200);
+  chart.layoutSizingHorizontal = 'FIXED';
+  chart.layoutSizingVertical = 'FIXED';
+  const yAxis = al('VERTICAL', 'chart y-axis');
+  yAxis.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  yAxis.resize(16, 176);
+  yAxis.layoutSizingHorizontal = 'FIXED';
+  yAxis.layoutSizingVertical = 'FIXED';
+  for (const n of ['4', '3', '2', '1', '0']) yAxis.appendChild(txt(n, outfit('Regular'), 11, MUTED));
+  chart.appendChild(yAxis);
   for (const label of ['Верно', 'Ошибки']) {
     const col = al('VERTICAL', label);
     col.itemSpacing = 8;
     col.primaryAxisAlignItems = 'CENTER';
-    const bar = figma.createRectangle();
-    bar.resize(64, 8);
-    bar.cornerRadius = 8;
-    bar.fills = [solid({ r: 0.388, g: 0.4, b: 0.945 }, 0.35)];
-    col.appendChild(bar);
+    const plot = figma.createRectangle();
+    plot.name = 'empty bar';
+    plot.resize(72, 160);
+    plot.fills = [TRANSPARENT];
+    plot.strokes = [solid(INK, 0.08)];
+    col.appendChild(plot);
     col.appendChild(txt(label, outfit('Regular'), 12, MUTED));
-    bars.appendChild(col);
+    chart.appendChild(col);
   }
-  answersChart.appendChild(bars);
+  answersChart.appendChild(chart);
 
   function adminTabBar(active) {
     const tabs = al('HORIZONTAL', 'Admin tabs ' + active);
@@ -4590,85 +4721,108 @@ async function buildUniqueScreens() {
   examQ.appendChild(examPrompt);
   examRun.appendChild(examQ);
 
-  const examFeedback = al('VERTICAL', 'Exam feedback');
-  examFeedback.itemSpacing = 10;
-  examFeedback.paddingTop = examFeedback.paddingBottom = 32;
-  examFeedback.paddingLeft = examFeedback.paddingRight = 24;
-  examFeedback.cornerRadius = 24;
-  examFeedback.fills = [solid({ r: 0.925, g: 0.99, b: 0.961 })];
-  examFeedback.strokes = [solid(SUCCESS, 0.4)];
-  examFeedback.primaryAxisAlignItems = 'CENTER';
-  examFeedback.resize(680, 10);
-  examFeedback.layoutSizingHorizontal = 'FIXED';
-  examFeedback.layoutSizingVertical = 'HUG';
-  examFeedback.appendChild(txt('Верно!', outfit('Bold'), 24, SUCCESS));
-  examFeedback.appendChild(txt('В начало строки', outfit('Regular'), 13, MUTED));
-  examFeedback.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
-  const fbKeys = al('HORIZONTAL', 'combo');
-  fbKeys.itemSpacing = 8;
-  for (const k of ['Home']) {
-    const cap = instKeyCap(k);
-    if (cap) {
-      fbKeys.appendChild(cap);
-      continue;
-    }
-    const box = al('HORIZONTAL', k);
-    box.primaryAxisAlignItems = 'CENTER';
-    box.counterAxisAlignItems = 'CENTER';
-    box.minWidth = 40;
-    box.minHeight = 40;
-    box.paddingLeft = box.paddingRight = 12;
-    box.cornerRadius = 12;
-    box.fills = [solid(WHITE)];
-    box.strokes = [solid(INK)];
-    box.strokeWeight = 1;
-    box.strokeBottomWeight = 4;
-    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    fbKeys.appendChild(box);
+  function keyCaps(keys) {
+    const row = al('HORIZONTAL', 'combo');
+    row.itemSpacing = 8;
+    row.counterAxisAlignItems = 'CENTER';
+    keys.forEach((k, i) => {
+      if (i) row.appendChild(txt('+', outfit('Regular'), 16, MUTED));
+      const cap = instKeyCap(k);
+      if (cap) {
+        row.appendChild(cap);
+        return;
+      }
+      const box = al('HORIZONTAL', k);
+      box.primaryAxisAlignItems = 'CENTER';
+      box.counterAxisAlignItems = 'CENTER';
+      box.minWidth = 40;
+      box.minHeight = 40;
+      box.paddingLeft = box.paddingRight = 12;
+      box.cornerRadius = 12;
+      box.fills = [solid(WHITE)];
+      box.strokes = [solid(INK)];
+      box.strokeWeight = 1;
+      box.strokeBottomWeight = 4;
+      box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+      row.appendChild(box);
+    });
+    return row;
   }
-  examFeedback.appendChild(fbKeys);
-  examFeedback.appendChild(txt('Home', outfit('SemiBold'), 18, INK));
-  examFeedback.appendChild(txt('Следующий вопрос через 2…', outfit('Regular'), 13, MUTED));
-  examFeedback.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
 
-  const examWrong = al('VERTICAL', 'Exam wrong');
-  examWrong.itemSpacing = 10;
-  examWrong.paddingTop = examWrong.paddingBottom = 32;
-  examWrong.paddingLeft = examWrong.paddingRight = 24;
-  examWrong.cornerRadius = 24;
-  examWrong.fills = [solid(SIGNAL, 0.08)];
-  examWrong.strokes = [solid(SIGNAL, 0.4)];
-  examWrong.primaryAxisAlignItems = 'CENTER';
-  examWrong.resize(680, 10);
-  examWrong.layoutSizingHorizontal = 'FIXED';
-  examWrong.layoutSizingVertical = 'HUG';
-  examWrong.appendChild(txt('Неверно', outfit('Bold'), 24, SIGNAL));
-  examWrong.appendChild(txt('Откройте замену', outfit('Regular'), 13, MUTED));
-  examWrong.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
-  const wrongKeys = al('HORIZONTAL', 'combo');
-  wrongKeys.itemSpacing = 8;
-  for (const k of ['Ctrl', 'H']) {
-    const cap = instKeyCap(k);
-    if (cap) {
-      wrongKeys.appendChild(cap);
-      continue;
-    }
-    const box = al('HORIZONTAL', k);
-    box.primaryAxisAlignItems = 'CENTER';
-    box.counterAxisAlignItems = 'CENTER';
-    box.minWidth = 40;
-    box.minHeight = 40;
-    box.paddingLeft = box.paddingRight = 12;
-    box.cornerRadius = 12;
-    box.fills = [solid(WHITE)];
-    box.strokes = [solid(INK)];
-    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    wrongKeys.appendChild(box);
+  function examOverlay(ok, prompt, keys, countdown) {
+    const card = al('VERTICAL', ok ? 'Exam correct overlay' : 'Exam wrong overlay');
+    card.itemSpacing = 10;
+    card.paddingTop = card.paddingBottom = 32;
+    card.paddingLeft = card.paddingRight = 24;
+    card.cornerRadius = 24;
+    card.fills = [solid(ok ? { r: 0.925, g: 0.99, b: 0.961 } : SIGNAL, ok ? 1 : 0.08)];
+    card.strokes = [solid(ok ? SUCCESS : SIGNAL, 0.4)];
+    card.primaryAxisAlignItems = 'CENTER';
+    card.resize(680, 10);
+    card.layoutSizingHorizontal = 'FIXED';
+    card.layoutSizingVertical = 'HUG';
+    card.appendChild(txt(ok ? 'Верно!' : 'Неверно', outfit('Bold'), 24, ok ? SUCCESS : SIGNAL));
+    card.appendChild(txt(prompt, outfit('Regular'), 13, MUTED));
+    card.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
+    card.appendChild(keyCaps(keys));
+    card.appendChild(txt(keys.join(' + '), outfit('SemiBold'), 18, INK));
+    card.appendChild(txt('Следующий вопрос через ' + countdown + '…', outfit('Regular'), 13, MUTED));
+    card.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
+    return card;
   }
-  examWrong.appendChild(wrongKeys);
-  examWrong.appendChild(txt('Ctrl + H', outfit('SemiBold'), 18, INK));
-  examWrong.appendChild(txt('Следующий вопрос через 3…', outfit('Regular'), 13, MUTED));
-  examWrong.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
+
+  function examChrome(timer, right, wrong) {
+    const wrap = al('VERTICAL', 'exam chrome');
+    wrap.itemSpacing = 12;
+    const head = al('HORIZONTAL', 'run head');
+    head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    head.counterAxisAlignItems = 'CENTER';
+    head.resize(680, 10);
+    head.layoutSizingHorizontal = 'FIXED';
+    head.layoutSizingVertical = 'HUG';
+    const meta = al('HORIZONTAL', 'meta');
+    meta.itemSpacing = 8;
+    meta.counterAxisAlignItems = 'CENTER';
+    meta.appendChild(txt('Экзамен · 1/20', outfit('Medium'), 13, MUTED));
+    meta.appendChild(pill('ВСЕ КУРСЫ', { r: 0.976, g: 0.98, b: 0.984 }, MUTED));
+    head.appendChild(meta);
+    const timerChip = al('HORIZONTAL', 'timer');
+    timerChip.paddingLeft = timerChip.paddingRight = 12;
+    timerChip.paddingTop = timerChip.paddingBottom = 6;
+    timerChip.cornerRadius = 12;
+    timerChip.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    timerChip.appendChild(txt(timer, outfit('Bold'), 13, INK));
+    head.appendChild(timerChip);
+    wrap.appendChild(head);
+    wrap.appendChild(instProgress('Value=Partial') || progressBar(680, 0.05, BRAND, 8));
+    const scoreRow = al('HORIZONTAL', 'score');
+    scoreRow.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    scoreRow.counterAxisAlignItems = 'CENTER';
+    scoreRow.resize(680, 10);
+    scoreRow.layoutSizingHorizontal = 'FIXED';
+    scoreRow.layoutSizingVertical = 'HUG';
+    const counts = al('HORIZONTAL', 'counts');
+    counts.itemSpacing = 16;
+    counts.appendChild(txt(String(right), outfit('SemiBold'), 14, SUCCESS));
+    counts.appendChild(txt(String(wrong), outfit('SemiBold'), 14, SIGNAL));
+    scoreRow.appendChild(counts);
+    scoreRow.appendChild(ghostBtn('Завершить'));
+    wrap.appendChild(scoreRow);
+    return wrap;
+  }
+
+  const examFeedback = al('VERTICAL', 'Exam feedback');
+  examFeedback.itemSpacing = 12;
+  examFeedback.appendChild(examChrome('9:59', 0, 1));
+  examFeedback.appendChild(examOverlay(false, 'Откройте замену', ['Ctrl', 'H'], 3));
+
+  const examWrong = examOverlay(false, 'Откройте замену', ['Ctrl', 'H'], 3);
+  examWrong.name = 'Exam wrong';
+
+  const examCorrect = al('VERTICAL', 'Exam correct');
+  examCorrect.itemSpacing = 12;
+  examCorrect.appendChild(examChrome('9:59', 1, 0));
+  examCorrect.appendChild(examOverlay(true, 'В начало строки', ['Home'], 2));
 
   const examDone = al('VERTICAL', 'Exam done');
   examDone.itemSpacing = 12;
@@ -4953,10 +5107,12 @@ async function buildUniqueScreens() {
           head.appendChild(secondaryBtn('Путь обучения'));
           return head;
         })(),
-        field('Поиск', 'Название курса или инструмента', INK),
+        searchField(880),
         filterRow,
-        txt('Один layout карточки · 20 курсов. Не дублировать каталог — статусы Старт / В процессе / Готово.', outfit('Regular'), 13, MUTED, 860),
+        txt('0 XP live catalog · 3 of 20 cards. Do not duplicate remaining slugs. InProgress/Completed live on page 05 when percent > 0.', outfit('Regular'), 13, MUTED, 860),
         coursesRow,
+        txt('getCourseStatus variants (not the empty learner catalog)', outfit('Regular'), 12, MUTED, 860),
+        statusStrip,
       ]),
       marketingPage('Course detail /courses/:slug', 'Курсы', true, [
         pill('ОБЯЗАТЕЛЬНЫЙ СТАРТ', { r: 0.114, g: 0.306, b: 0.847 }, WHITE),
@@ -5226,6 +5382,7 @@ async function buildUniqueScreens() {
       practicePage('Exam run /exam', 'Экзамен', [examRun]),
       practicePage('Exam feedback /exam', 'Экзамен', [examFeedback]),
       practicePage('Exam wrong /exam', 'Экзамен', [examWrong]),
+      practicePage('Exam correct /exam', 'Экзамен', [examCorrect]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
@@ -5266,6 +5423,9 @@ async function buildUniqueScreens() {
     ['Старт', false],
     ['ОС', false],
     ['Редакторы', false],
+    ['Браузеры', false],
+    ['Офис', false],
+    ['Git', false],
   ]) {
     const chip = al('HORIZONTAL', label);
     chip.paddingLeft = chip.paddingRight = 14;
@@ -5279,25 +5439,42 @@ async function buildUniqueScreens() {
   }
   const darkCoursesRow = al('HORIZONTAL', 'Course cards');
   darkCoursesRow.itemSpacing = 12;
-  for (const [title, tag] of [
-    ['Первый ноутбук', 'Старт'],
-    ['VS Code', 'В процессе'],
-    ['Git', 'Готово'],
-  ]) {
-    const c = al('VERTICAL', title);
-    c.itemSpacing = 8;
-    c.paddingTop = c.paddingBottom = 16;
-    c.paddingLeft = c.paddingRight = 16;
-    c.cornerRadius = 24;
-    c.fills = [solid(DARK_CARD)];
-    c.strokes = [solid(WHITE, 0.1)];
-    c.resize(220, 10);
-    c.layoutSizingHorizontal = 'FIXED';
-    c.layoutSizingVertical = 'HUG';
-    c.appendChild(pill(tag, BRAND50, BRAND800));
-    c.appendChild(txt(title, outfit('SemiBold'), 16, DARK_TEXT, 180));
-    darkCoursesRow.appendChild(c);
-  }
+  darkCoursesRow.appendChild(
+    catalogCard({
+      title: 'Первый ноутбук: файлы и папки',
+      desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+      meta: '16 уроков · 4 категории',
+      start: true,
+      dark: true,
+      progress: '0/16 сочетаний',
+      percent: '0%',
+      iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+    }),
+  );
+  darkCoursesRow.appendChild(
+    catalogCard({
+      title: 'Основные горячие клавиши программиста',
+      desc: 'Короткие уроки: копирование, сохранение, поиск и ещё несколько важных сочетаний.',
+      meta: '19 уроков · 2 категории',
+      start: true,
+      dark: true,
+      progress: '0/19 сочетаний',
+      percent: '0%',
+      iconFill: { r: 0.35, g: 0.42, b: 0.55 },
+    }),
+  );
+  darkCoursesRow.appendChild(
+    catalogCard({
+      title: 'VS Code',
+      desc: 'Visual Studio Code — редактор кода от Microsoft.',
+      meta: '42 урока · 7 категорий',
+      start: false,
+      dark: true,
+      progress: '0/42 сочетаний',
+      percent: '0%',
+      iconFill: { r: 0.13, g: 0.48, b: 0.78 },
+    }),
+  );
 
   const darkLoginCard = authScreen(
     'Вход',
@@ -5347,17 +5524,29 @@ async function buildUniqueScreens() {
     return bnav;
   }
 
-  function mobileHeader() {
+  function mobileHeader(guest) {
     const mnav = al('HORIZONTAL', 'Mobile header');
     mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
     mnav.counterAxisAlignItems = 'CENTER';
-    mnav.paddingLeft = mnav.paddingRight = 16;
+    mnav.paddingLeft = mnav.paddingRight = 12;
     mnav.resize(390, 56);
     mnav.layoutSizingHorizontal = 'FIXED';
     mnav.layoutSizingVertical = 'FIXED';
     mnav.fills = [solid(WHITE)];
     mnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
-    mnav.appendChild(txt('☰', outfit('Bold'), 16, INK));
+    const right = al('HORIZONTAL', 'mobile actions');
+    right.itemSpacing = 6;
+    right.counterAxisAlignItems = 'CENTER';
+    right.appendChild(themeToggle(false));
+    if (guest) {
+      right.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+      right.appendChild(primaryBtn('Регистрация', true));
+    } else {
+      right.appendChild(txt('Анна', outfit('SemiBold'), 13, INK));
+      right.appendChild(ghostBtn('Выйти'));
+    }
+    right.appendChild(txt('☰', outfit('Bold'), 16, INK));
+    mnav.appendChild(right);
     return mnav;
   }
 
@@ -5369,7 +5558,7 @@ async function buildUniqueScreens() {
     frame.resize(390, 10);
     frame.layoutSizingHorizontal = 'FIXED';
     frame.layoutSizingVertical = 'HUG';
-    frame.appendChild(mobileHeader());
+    frame.appendChild(mobileHeader(!(opts && opts.authed)));
     if (opts && opts.chips) {
       const strip = al('HORIZONTAL', 'Practice chips');
       strip.itemSpacing = 8;
@@ -5418,9 +5607,39 @@ async function buildUniqueScreens() {
       txt('Каталог курсов', fraunces('Bold'), 28, INK, 358),
       txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 358),
       secondaryBtn('Путь обучения'),
-      field('Поиск', 'Название курса или инструмента', INK),
-      txt('Все · Старт · ОС · Редакторы · Браузеры · Офис · Git', outfit('Regular'), 12, MUTED, 358),
-      instCourse('Status=Start') || courseCard('Первый ноутбук: файлы и папки', 'Старт', 'brand', true),
+      searchField(358),
+      (() => {
+        const chips = al('HORIZONTAL', 'Filters');
+        chips.itemSpacing = 8;
+        for (const [label, on] of [
+          ['Все', true],
+          ['Старт', false],
+          ['ОС', false],
+          ['Редакторы', false],
+          ['Браузеры', false],
+          ['Офис', false],
+          ['Git', false],
+        ]) {
+          const chip = al('HORIZONTAL', label);
+          chip.paddingLeft = chip.paddingRight = 14;
+          chip.paddingTop = chip.paddingBottom = 10;
+          chip.minHeight = 44;
+          chip.cornerRadius = 99;
+          chip.fills = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : WHITE)];
+          chip.strokes = [solid(on ? { r: 0.114, g: 0.306, b: 0.847 } : INK, on ? 1 : 0.12)];
+          chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+          chips.appendChild(chip);
+        }
+        return chips;
+      })(),
+      catalogCard({
+        title: 'Первый ноутбук: файлы и папки',
+        desc: 'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+        meta: '16 уроков · 4 категории',
+        start: true,
+        width: 358,
+        iconFill: { r: 0.96, g: 0.55, b: 0.2 },
+      }),
     ],
     'Курсы',
   );
@@ -5453,7 +5672,7 @@ async function buildUniqueScreens() {
       txt('Навыки', outfit('SemiBold'), 16, INK),
     ],
     'Практика',
-    { chips: 'Тренировочный зал' },
+    { chips: 'Тренировочный зал', authed: true },
   );
   const mobilePath = mobileFrame(
     'Mobile Path 390',
@@ -5468,6 +5687,7 @@ async function buildUniqueScreens() {
       instPath('Status=Start') || pathNode('Start', 'Начать', false),
     ],
     'Мой путь',
+    { authed: true },
   );
   const mobileTraining = mobileFrame(
     'Mobile Training 390',
@@ -5515,7 +5735,7 @@ async function buildUniqueScreens() {
       })(),
     ],
     'Практика',
-    { chips: 'Hotkeys' },
+    { chips: 'Hotkeys', authed: true },
   );
   const mobileReview = mobileFrame(
     'Mobile Review 390',
@@ -5555,7 +5775,7 @@ async function buildUniqueScreens() {
       })(),
     ],
     'Практика',
-    { chips: 'Повторение' },
+    { chips: 'Повторение', authed: true },
   );
   const mobileQuiz = mobileFrame(
     'Mobile Quiz 390',
@@ -5586,7 +5806,7 @@ async function buildUniqueScreens() {
       })(),
     ],
     'Практика',
-    { chips: 'Основы hotkeys' },
+    { chips: 'Основы hotkeys', authed: true },
   );
 
   const darkRegisterCard = authScreen(
@@ -5855,8 +6075,9 @@ async function buildUniqueScreens() {
           head.appendChild(secondaryBtn('Путь обучения', 'dark'));
           return head;
         })(),
-        field('Поиск', 'Название курса или инструмента', null, null, 'dark'),
+        searchField(880, 'dark'),
         darkFilterRow,
+        txt('0 XP live catalog · 3 of 20. СТАРТ on computer-basics + programmer-basics; VS Code has no badge.', outfit('Regular'), 12, DARK_MUTED, 860),
         darkCoursesRow,
       ], true),
       practicePage(
