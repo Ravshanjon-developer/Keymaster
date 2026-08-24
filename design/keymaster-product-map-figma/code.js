@@ -4493,11 +4493,11 @@ async function buildUniqueScreens() {
   examFeedback.layoutSizingHorizontal = 'FIXED';
   examFeedback.layoutSizingVertical = 'HUG';
   examFeedback.appendChild(txt('Верно!', outfit('Bold'), 24, SUCCESS));
-  examFeedback.appendChild(txt('Сохраните файл', outfit('Regular'), 13, MUTED));
+  examFeedback.appendChild(txt('В начало строки', outfit('Regular'), 13, MUTED));
   examFeedback.appendChild(txt('Правильное сочетание', outfit('Medium'), 13, MUTED));
   const fbKeys = al('HORIZONTAL', 'combo');
   fbKeys.itemSpacing = 8;
-  for (const k of ['Ctrl', 'S']) {
+  for (const k of ['Home']) {
     const cap = instKeyCap(k);
     if (cap) {
       fbKeys.appendChild(cap);
@@ -4518,7 +4518,7 @@ async function buildUniqueScreens() {
     fbKeys.appendChild(box);
   }
   examFeedback.appendChild(fbKeys);
-  examFeedback.appendChild(txt('Ctrl + S', outfit('SemiBold'), 18, INK));
+  examFeedback.appendChild(txt('Home', outfit('SemiBold'), 18, INK));
   examFeedback.appendChild(txt('Следующий вопрос через 2…', outfit('Regular'), 13, MUTED));
   examFeedback.appendChild(txt('Перейти сразу', outfit('SemiBold'), 13, BRAND800));
 
@@ -4889,7 +4889,7 @@ async function buildUniqueScreens() {
         answersChart,
       ]),
       marketingPage('Admin /admin', '', false, [
-        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Админ-панель', fraunces('Bold'), 32, INK),
         txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
         adminTabs,
         (() => {
@@ -4924,7 +4924,7 @@ async function buildUniqueScreens() {
         })(),
       ], false, true),
       marketingPage('Admin courses /admin', '', false, [
-        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Админ-панель', fraunces('Bold'), 32, INK),
         txt('Курсы, уроки, пользователи и достижения · вкладка Курсы, тот же layout.', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Курсы'),
         field('Поиск…', 'computer-basics', INK),
@@ -4934,16 +4934,17 @@ async function buildUniqueScreens() {
         instPrimary('Создать'),
       ], false, true),
       marketingPage('Admin users /admin', '', false, [
-        txt('Админ-панель', outfit('SemiBold'), 28, INK),
-        txt('Курсы, уроки, пользователи и достижения · вкладка Пользователи.', outfit('Regular'), 13, MUTED, 800),
+        txt('Админ-панель', fraunces('Bold'), 32, INK),
+        txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Пользователи'),
         field('Поиск…', 'Поиск…', INK),
-        txt('EMAIL                 USERNAME     ИМЯ               XP   УРОВЕНЬ  АДМИН', outfit('Regular'), 11, MUTED, 860),
-        txt('learner@example.com   learner      Анна              0    1        ☐', outfit('Regular'), 13, INK, 860),
-        txt('admin@example.com     siteadmin    KeyMaster Admin   0    1        ☑', outfit('Regular'), 13, INK, 860),
+        txt('EMAIL · USERNAME · ИМЯ · XP · УРОВЕНЬ · АДМИН', outfit('Bold'), 10, MUTED, 860),
+        txt('learner@example.com  ·  learner  ·  Анна  ·  0  ·  1  ·  ☐', outfit('Regular'), 13, INK, 860),
+        txt('admin@example.com  ·  siteadmin  ·  KeyMaster Admin  ·  0  ·  1  ·  ☑', outfit('Regular'), 13, INK, 860),
+        txt('Имя и XP редактируются на месте. Админ не удаляет сам себя.', outfit('Regular'), 12, MUTED, 860),
       ], false, true),
       marketingPage('Admin achievements /admin', '', false, [
-        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Админ-панель', fraunces('Bold'), 32, INK),
         txt('Вкладка Достижения · тот же layout. Не дублировать каждый бейдж.', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Достижения'),
         instPrimary('Создать'),
@@ -5056,8 +5057,8 @@ async function buildUniqueScreens() {
   darkHero.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 24, DARK_SECONDARY, 640));
   const darkCtas = al('HORIZONTAL', 'CTAs');
   darkCtas.itemSpacing = 12;
-  darkCtas.appendChild(instPrimary('Начать бесплатно'));
-  darkCtas.appendChild(secondaryBtn('Каталог курсов', 'dark'));
+  darkCtas.appendChild(instPrimary('Мой путь развития'));
+  darkCtas.appendChild(secondaryBtn('Практика', 'dark'));
   darkHero.appendChild(darkCtas);
   const darkFeats = al('HORIZONTAL', 'Dark features');
   darkFeats.itemSpacing = 12;
@@ -5406,7 +5407,7 @@ async function buildUniqueScreens() {
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
-      marketingPage('Dark Home / html.dark', 'Главная', true, [darkHero, darkFeats], true),
+      marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
       marketingPage('Dark Login / html.dark', '', true, [darkLoginCard], true),
       marketingPage('Dark Register / html.dark', '', true, [darkRegisterCard], true),
       marketingPage('Dark Courses / html.dark', 'Курсы', true, [

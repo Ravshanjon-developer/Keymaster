@@ -389,6 +389,7 @@ if (!names.includes('nobody@example.com')) fail.push('no live login-error email 
 if (!names.includes('Mobile Training 390')) fail.push('no mobile training unique screen');
 if (!names.includes('Отменить')) fail.push('no live mobile training prompt unique screen');
 if (!names.includes('МОЙ ПУТЬ РАЗВИТИЯ')) fail.push('no live mobile path eyebrow unique screen');
+if (!names.some((n) => String(n).includes('siteadmin'))) fail.push('no live admin users unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
