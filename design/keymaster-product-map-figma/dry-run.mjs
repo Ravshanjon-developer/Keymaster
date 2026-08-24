@@ -289,6 +289,7 @@ if (!String(figma._closed || '').includes('KeyMaster')) fail.push('did not close
 const names = [];
 function walkNames(n) {
   names.push(n.name);
+  if (n.characters) names.push(n.characters);
   for (const c of n.children || []) walkNames(c);
 }
 for (const p of pages) walkNames(p);
@@ -350,6 +351,12 @@ if (!names.includes('EmptyState instance')) fail.push('no EmptyState instances o
 if (!names.includes('Register password /register')) fail.push('no register password-strength unique screen');
 if (!names.includes('NextStepCard')) fail.push('no dashboard NextStepCard unique screen');
 if (!names.includes('Ответы')) fail.push('no stats answers chart unique screen');
+if (!names.includes('Home authed /')) fail.push('no authed home unique screen');
+if (!names.includes('@learner')) fail.push('no live leaderboard @learner unique screen');
+if (!names.includes('Пройдите ещё уроки — таблица расширится, когда появятся новые игроки.')) {
+  fail.push('no live leaderboard climb-hint unique screen');
+}
+if (!names.includes('193')) fail.push('admin overview lessons count does not match live capture');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
