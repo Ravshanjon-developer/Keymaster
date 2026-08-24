@@ -570,6 +570,133 @@ await run('desktop-fromlesson', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-fromlesson.jpg', w, h };
 });
 
+await run('desktop-hint', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-hint.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.route('**/progress/lessons**', async (route) => {
+    const res = await route.fetch();
+    let json = [];
+    try {
+      json = await res.json();
+    } catch {
+      json = [];
+    }
+    const body = (Array.isArray(json) ? json : []).map((row) => {
+      const key = Array.isArray(row.keys) ? row.keys[0] : '';
+      if (typeof key === 'string' && key.startsWith('desktop:')) {
+        return { ...row, completed: false };
+      }
+      return row;
+    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  await page.evaluate(() => {
+    localStorage.setItem('km_desktop_tasks_v1', JSON.stringify({ completed: [], xp: 0 }));
+    localStorage.removeItem('km-desktop-vfs-v1');
+    localStorage.setItem('km-desktop-firstrun-v1', '1');
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Этот компьютер', { exact: true }).waitFor({ timeout: 20000 });
+  const ok = page.getByRole('button', { name: 'Понятно' });
+  if (await ok.isVisible().catch(() => false)) await ok.click();
+  await page.getByText('Создайте папку «Practice»', { exact: true }).first().waitFor({ timeout: 8000 });
+  await page.getByRole('button', { name: 'Подсказка', exact: true }).click();
+  await page.getByText('Скрыть подсказку', { exact: true }).waitFor({ timeout: 8000 });
+  await page
+    .getByText(
+      'Правый клик по пустому месту на обоях (не по панели браузера). Альтернатива: «Этот компьютер» → правый клик в пустой области → «Новая папка». Горячие клавиши: Ctrl+Shift+N.',
+      { exact: true },
+    )
+    .waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-hint.jpg', w, h };
+});
+
+await run('speed-run', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-speed-run.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/speed', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.getByRole('button', { name: 'Старт 60 сек' }).click();
+  await page.getByText('🔥 x0', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Нажмите сочетание на клавиатуре', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-speed-run.jpg', w, h };
+});
+
+async function openTyping(page) {
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/typing', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByText('Тренажёр печати', { exact: true }).waitFor({ timeout: 15000 });
+  await page.locator('textarea[aria-label="Нажмите сюда и печатайте"]').waitFor({ timeout: 8000 });
+}
+
+await run('typing-busy', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-typing-busy.jpg');
+  await openTyping(page);
+  const input = page.locator('textarea[aria-label="Нажмите сюда и печатайте"]');
+  await input.click();
+  await page.keyboard.type('ф');
+  await page.getByRole('heading', { name: 'Практика', exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const heading = await page.getByRole('heading', { level: 1 }).innerText();
+  return { file: 'desktop-learner-typing-busy.jpg', w, h, snippet: heading };
+});
+
+await run('typing-paused', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-typing-paused.jpg');
+  await openTyping(page);
+  const input = page.locator('textarea[aria-label="Нажмите сюда и печатайте"]');
+  await input.click();
+  await page.keyboard.type('ф');
+  await page.getByRole('heading', { name: 'Практика', exact: true }).waitFor({ timeout: 8000 });
+  await page.keyboard.press('Escape');
+  await page.getByText('Пауза', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Esc — продолжить', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-typing-paused.jpg', w, h };
+});
+
+await run('typing-result', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-typing-result.jpg');
+  await openTyping(page);
+  const input = page.locator('textarea[aria-label="Нажмите сюда и печатайте"]');
+  await input.click();
+  const typed = await input.evaluate((ta) => {
+    const el = ta.parentElement?.querySelector('.relative.z-0');
+    if (!el) return '';
+    return [...el.querySelectorAll('span')]
+      .map((s) => {
+        const t = s.textContent || '';
+        if (t === '\u00A0') return ' ';
+        if (t === '↵') return '\n';
+        if (t === '⇥') return '\t';
+        return t;
+      })
+      .join('');
+  });
+  await input.evaluate((ta, text) => {
+    ta.focus();
+    for (const ch of text) {
+      ta.value = ch;
+      ta.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    }
+  }, typed);
+  await page.getByText('Подход завершён', { exact: true }).waitFor({ timeout: 20000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-typing-result.jpg', w, h, snippet: String(snippet).slice(0, 900), typedLen: typed.length };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

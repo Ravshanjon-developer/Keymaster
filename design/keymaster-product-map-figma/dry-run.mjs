@@ -364,7 +364,19 @@ if (!names.some((n) => String(n).includes('Системные клавиши (Al
 if (!names.includes('empty bar')) fail.push('no live stats empty-chart unique screen');
 if (!names.includes('chart y-axis')) fail.push('no live stats chart y-axis unique screen');
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
-if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen');
+if (!names.includes('Speed run /speed')) fail.push('no speed-run unique screen');
+if (!names.includes('⏱ 1:00')) fail.push('no live speed-run timer unique screen');
+if (!names.includes('🔥 x0')) fail.push('no live speed-run combo unique screen');
+if (!names.includes('Desktop hint /simulator?mode=desktop')) fail.push('no desktop hint unique screen');
+if (!names.includes('Скрыть подсказку')) fail.push('no live desktop hide-hint unique screen');
+if (!names.includes('Learner / Speed run')) fail.push('no speed-run capture');
+if (!names.includes('Learner / Desktop hint')) fail.push('no desktop hint capture');
+if (!names.includes('Typing busy /typing')) fail.push('no typing-busy unique screen');
+if (!names.includes('Typing paused /typing')) fail.push('no typing-paused unique screen');
+if (!names.includes('Typing result /typing')) fail.push('no typing-result unique screen');
+if (!names.includes('Learner / Typing busy')) fail.push('no typing-busy capture');
+if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capture');
+if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
 if (!names.includes('Admin users /admin')) fail.push('no admin users unique screen');
 if (!names.includes('Admin achievements /admin')) fail.push('no admin achievements unique screen');
@@ -1276,6 +1288,11 @@ let deskAllCompleteUnique = null;
 let simNewFileUnique = null;
 let simHintUnique = null;
 let deskFromLessonUnique = null;
+let deskHintUnique = null;
+let speedRunUnique = null;
+let typingBusyUnique = null;
+let typingPausedUnique = null;
+let typingResultUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1298,6 +1315,11 @@ for (const p of pages) {
   simNewFileUnique = simNewFileUnique || findByName(p, 'Code Lab new file /simulator');
   simHintUnique = simHintUnique || findByName(p, 'Code Lab hint /simulator');
   deskFromLessonUnique = deskFromLessonUnique || findByName(p, 'Desktop from lesson /simulator?mode=desktop');
+  deskHintUnique = deskHintUnique || findByName(p, 'Desktop hint /simulator?mode=desktop');
+  speedRunUnique = speedRunUnique || findByName(p, 'Speed run /speed');
+  typingBusyUnique = typingBusyUnique || findByName(p, 'Typing busy /typing');
+  typingPausedUnique = typingPausedUnique || findByName(p, 'Typing paused /typing');
+  typingResultUnique = typingResultUnique || findByName(p, 'Typing result /typing');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1361,6 +1383,21 @@ if (!simHintUnique || !namesUnder(simHintUnique).includes('Подсказка 1:
 }
 if (!deskFromLessonUnique || !namesUnder(deskFromLessonUnique).includes('← К уроку') || !namesUnder(deskFromLessonUnique).includes('Этот компьютер') || namesUnder(deskFromLessonUnique).includes('С чего начать')) {
   fail.push('desktop from-lesson unique missing live ← К уроку chrome');
+}
+if (!deskHintUnique || !namesUnder(deskHintUnique).includes('Скрыть подсказку') || !namesUnder(deskHintUnique).includes('Правый клик по пустому месту на обоях (не по панели браузера). Альтернатива: «Этот компьютер» → правый клик в пустой области → «Новая папка». Горячие клавиши: Ctrl+Shift+N.') || namesUnder(deskHintUnique).includes('С чего начать') || namesUnder(deskHintUnique).includes('Все задачи выполнены!')) {
+  fail.push('desktop hint unique missing live expanded first-task hint');
+}
+if (!speedRunUnique || !namesUnder(speedRunUnique).includes('⏱ 1:00') || !namesUnder(speedRunUnique).includes('🔥 x0') || !namesUnder(speedRunUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(speedRunUnique).includes('Старт 60 сек') || namesUnder(speedRunUnique).includes('Время вышло!')) {
+  fail.push('speed-run unique missing live running HUD without start/done chrome');
+}
+if (!typingBusyUnique || !namesUnder(typingBusyUnique).includes('Практика') || namesUnder(typingBusyUnique).includes('СЛЕПАЯ ПЕЧАТЬ') || namesUnder(typingBusyUnique).includes('Домашний ряд') || namesUnder(typingBusyUnique).includes('Тренажёр печати') || namesUnder(typingBusyUnique).includes('Пауза') || namesUnder(typingBusyUnique).includes('ПОДХОД ЗАВЕРШЁН')) {
+  fail.push('typing-busy unique missing live in-session Практика chrome without idle eyebrow/chips');
+}
+if (!typingPausedUnique || !namesUnder(typingPausedUnique).includes('Пауза') || !namesUnder(typingPausedUnique).includes('Esc — продолжить') || !namesUnder(typingPausedUnique).includes('Продолжить') || namesUnder(typingPausedUnique).includes('СЛЕПАЯ ПЕЧАТЬ') || namesUnder(typingPausedUnique).includes('Тренажёр печати') || namesUnder(typingPausedUnique).includes('ПОДХОД ЗАВЕРШЁН')) {
+  fail.push('typing-paused unique missing live Пауза overlay');
+}
+if (!typingResultUnique || !namesUnder(typingResultUnique).includes('ПОДХОД ЗАВЕРШЁН') || !namesUnder(typingResultUnique).includes('личный рекорд') || !namesUnder(typingResultUnique).includes('Новое достижение: Первая тренировка') || !namesUnder(typingResultUnique).includes('Точность уже хорошая — добавьте чуть темпа.') || !namesUnder(typingResultUnique).includes('Тренажёр печати') || namesUnder(typingResultUnique).includes('Пауза') || namesUnder(typingResultUnique).includes('Esc — продолжить')) {
+  fail.push('typing-result unique missing live ResultCard copy');
 }
 
 console.log(JSON.stringify(report, null, 2));

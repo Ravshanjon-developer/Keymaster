@@ -1259,6 +1259,10 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-filemenu.jpg', 'File menu'],
       ['desktop-learner-simulator-desktop-properties.jpg', 'Properties'],
       ['desktop-learner-simulator-desktop-light.jpg', 'Light theme'],
+      ['desktop-learner-simulator-desktop-hint.jpg', 'Desktop hint'],
+      ['desktop-learner-simulator-desktop-toast.jpg', 'Task toast'],
+      ['desktop-learner-simulator-desktop-done.jpg', 'All complete'],
+      ['desktop-learner-simulator-desktop-fromlesson.jpg', 'From lesson'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
     ['F6 Hotkey learn', [
@@ -1267,6 +1271,9 @@ async function buildVisualFlows() {
     ['F7 Practice hub', [
       ['desktop-learner-10-practice.jpg', 'Hub'],
       ['desktop-learner-11-typing.jpg', 'Typing'],
+      ['desktop-learner-typing-busy.jpg', 'Typing busy'],
+      ['desktop-learner-typing-paused.jpg', 'Typing paused'],
+      ['desktop-learner-typing-result.jpg', 'Typing result'],
       ['desktop-learner-22-simulator-code.jpg', 'Code Lab'],
       ['desktop-learner-simulator-code-palette.jpg', 'Command palette'],
       ['desktop-learner-simulator-code-quickopen.jpg', 'Quick Open'],
@@ -1290,8 +1297,12 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-tasklist.jpg', 'All tasks'],
       ['desktop-learner-simulator-code-preview.jpg', 'Preview'],
       ['desktop-learner-simulator-code-keyboard.jpg', 'Keyboard visualizer'],
+      ['desktop-learner-simulator-code-toast.jpg', 'File saved toast'],
+      ['desktop-learner-simulator-code-newfile.jpg', 'New file'],
+      ['desktop-learner-simulator-code-hint.jpg', 'Create folder hint'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
+      ['desktop-learner-speed-run.jpg', 'Speed run'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
     ]],
     ['F8 Reinforce', [
@@ -5458,6 +5469,29 @@ async function buildUniqueScreens() {
     } else {
       deskTasks.appendChild(txt('ТЕКУЩАЯ · 1/12', outfit('Bold'), 10, { r: 0.53, g: 0.81, b: 1 }));
       deskTasks.appendChild(txt('Создайте папку «Practice»', outfit('SemiBold'), 14, WHITE, 280));
+      deskTasks.appendChild(
+        txt(
+          'Щёлкните правой кнопкой по фону рабочего стола → «Новая папка». Или дважды щёлкните «Этот компьютер» и создайте папку в проводнике.',
+          outfit('Regular'),
+          12,
+          VSCODE_MUTED,
+          280,
+        ),
+      );
+      if (overlay === 'deskhint') {
+        deskTasks.appendChild(txt('Скрыть подсказку', outfit('SemiBold'), 12, WHITE));
+        deskTasks.appendChild(
+          txt(
+            'Правый клик по пустому месту на обоях (не по панели браузера). Альтернатива: «Этот компьютер» → правый клик в пустой области → «Новая папка». Горячие клавиши: Ctrl+Shift+N.',
+            outfit('Regular'),
+            12,
+            WHITE,
+            280,
+          ),
+        );
+      } else {
+        deskTasks.appendChild(txt('Подсказка', outfit('SemiBold'), 12, WHITE));
+      }
       deskTasks.appendChild(txt('Прогресс', outfit('Regular'), 11, VSCODE_MUTED));
       deskTasks.appendChild(txt('0/12', outfit('Regular'), 11, VSCODE_MUTED));
       deskTasks.appendChild(txt('Заработано 0 XP', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
@@ -5538,6 +5572,7 @@ async function buildUniqueScreens() {
   const deskDone = makeDesktopSim('Desktop all complete /simulator?mode=desktop', 'done');
   const deskToast = makeDesktopSim('Desktop toast /simulator?mode=desktop', 'toast');
   const deskFromLesson = makeDesktopSim('Desktop from lesson /simulator?mode=desktop', 'fromlesson');
+  const deskHint = makeDesktopSim('Desktop hint /simulator?mode=desktop', 'deskhint');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -5900,6 +5935,68 @@ async function buildUniqueScreens() {
     return wrap;
   }
 
+  function typingLiveStats(record) {
+    const metrics = al('HORIZONTAL', 'metrics');
+    metrics.itemSpacing = 12;
+    for (const [k, v] of [
+      ['WPM', '0'],
+      ['ТОЧНОСТЬ', '100%'],
+      ['ОШИБКИ', '0'],
+      ['РЕКОРД', record],
+    ]) {
+      const m = al('VERTICAL', k);
+      m.itemSpacing = 4;
+      m.paddingTop = m.paddingBottom = 16;
+      m.paddingLeft = m.paddingRight = 16;
+      m.cornerRadius = 16;
+      m.fills = [solid(WHITE)];
+      m.resize(155, 10);
+      m.layoutSizingHorizontal = 'FIXED';
+      m.layoutSizingVertical = 'HUG';
+      m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+      m.appendChild(txt(v, outfit('SemiBold'), 20, INK));
+      metrics.appendChild(m);
+    }
+    return metrics;
+  }
+
+  function typingPromptBox(overlay) {
+    const typeBox = al('VERTICAL', overlay ? 'paused prompt' : 'prompt');
+    typeBox.itemSpacing = 8;
+    typeBox.paddingTop = typeBox.paddingBottom = 20;
+    typeBox.paddingLeft = typeBox.paddingRight = 20;
+    typeBox.cornerRadius = 24;
+    typeBox.fills = [solid(WHITE)];
+    if (overlay === 'pause') {
+      typeBox.primaryAxisAlignItems = 'CENTER';
+      typeBox.appendChild(txt('Пауза', outfit('SemiBold'), 18, INK));
+      typeBox.appendChild(txt('Esc — продолжить', outfit('Regular'), 13, MUTED));
+      typeBox.appendChild(instPrimary('Продолжить'));
+    } else {
+      typeBox.appendChild(txt('фыва олдж фыва олдж ваол джфы аовы лджф', outfit('Regular'), 18, INK, 640));
+    }
+    return typeBox;
+  }
+
+  function typingControls() {
+    const typeCtl = al('HORIZONTAL', 'typing controls');
+    typeCtl.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    typeCtl.resize(680, 10);
+    typeCtl.layoutSizingHorizontal = 'FIXED';
+    typeCtl.layoutSizingVertical = 'HUG';
+    typeCtl.appendChild(instSecondary('Ещё раз'));
+    typeCtl.appendChild(txt('Скрыть клавиатуру', outfit('SemiBold'), 13, BRAND800));
+    return typeCtl;
+  }
+
+  function typingBusyHead() {
+    const head = al('VERTICAL', 'typing busy head');
+    head.itemSpacing = 8;
+    head.appendChild(txt('Практика', fraunces('Bold'), 32, INK));
+    head.appendChild(typingSeg('Тренировка'));
+    return head;
+  }
+
   function typingHead(active) {
     const head = al('VERTICAL', 'typing head');
     head.itemSpacing = 8;
@@ -6047,6 +6144,116 @@ async function buildUniqueScreens() {
   progCard.appendChild(txt('WPM ЗА НЕДЕЛЮ', outfit('Bold'), 10, MUTED));
   typingProgress.appendChild(progCard);
 
+  const typingBusy = al('VERTICAL', 'Typing busy');
+  typingBusy.itemSpacing = 12;
+  typingBusy.appendChild(typingBusyHead());
+  typingBusy.appendChild(typingLiveStats('—'));
+  const busyBar = al('VERTICAL', 'busy progress');
+  busyBar.itemSpacing = 6;
+  const busyTrack = figma.createRectangle();
+  busyTrack.resize(680, 6);
+  busyTrack.cornerRadius = 99;
+  busyTrack.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  busyBar.appendChild(busyTrack);
+  busyBar.appendChild(txt('0:00', outfit('Regular'), 12, MUTED));
+  typingBusy.appendChild(busyBar);
+  typingBusy.appendChild(typingPromptBox());
+  typingBusy.appendChild(typingControls());
+  typingBusy.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
+
+  const typingPaused = al('VERTICAL', 'Typing paused');
+  typingPaused.itemSpacing = 12;
+  typingPaused.appendChild(typingBusyHead());
+  typingPaused.appendChild(typingLiveStats('—'));
+  const pauseBar = al('VERTICAL', 'paused progress');
+  pauseBar.itemSpacing = 6;
+  const pauseTrack = figma.createRectangle();
+  pauseTrack.resize(680, 6);
+  pauseTrack.cornerRadius = 99;
+  pauseTrack.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  pauseBar.appendChild(pauseTrack);
+  pauseBar.appendChild(txt('0:00', outfit('Regular'), 12, MUTED));
+  typingPaused.appendChild(pauseBar);
+  typingPaused.appendChild(typingPromptBox('pause'));
+  typingPaused.appendChild(typingControls());
+  typingPaused.appendChild(txt('СЛЕДУЮЩАЯ КЛАВИША', outfit('Bold'), 10, MUTED));
+
+  const typingResult = al('VERTICAL', 'Typing result');
+  typingResult.itemSpacing = 12;
+  typingResult.appendChild(typingHead('Тренировка'));
+  const resultModes = al('HORIZONTAL', 'result modes');
+  resultModes.itemSpacing = 8;
+  for (const [label, on] of [
+    ['Домашний ряд', true],
+    ['Все буквы', false],
+    ['Слова', false],
+    ['Фразы', false],
+    ['Код', false],
+  ]) {
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 8;
+    chip.cornerRadius = 99;
+    chip.fills = on ? [solid(BRAND)] : [solid(WHITE)];
+    chip.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.12)];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+    resultModes.appendChild(chip);
+  }
+  typingResult.appendChild(resultModes);
+  typingResult.appendChild(typingLiveStats('0'));
+  const resultCard = al('VERTICAL', 'ResultCard');
+  resultCard.itemSpacing = 8;
+  resultCard.paddingTop = resultCard.paddingBottom = 24;
+  resultCard.paddingLeft = resultCard.paddingRight = 24;
+  resultCard.cornerRadius = 24;
+  resultCard.fills = [solid(WHITE)];
+  resultCard.primaryAxisAlignItems = 'CENTER';
+  resultCard.resize(680, 10);
+  resultCard.layoutSizingHorizontal = 'FIXED';
+  resultCard.layoutSizingVertical = 'HUG';
+  resultCard.appendChild(txt('ПОДХОД ЗАВЕРШЁН', outfit('SemiBold'), 12, MUTED));
+  resultCard.appendChild(txt('0 WPM', fraunces('Bold'), 48, INK));
+  resultCard.appendChild(txt('100% Точность', outfit('Regular'), 16, INK));
+  resultCard.appendChild(txt('личный рекорд', outfit('SemiBold'), 12, BRAND800));
+  const resultStats = al('HORIZONTAL', 'result stats');
+  resultStats.itemSpacing = 8;
+  for (const [k, v] of [
+    ['ОШИБКИ', '0'],
+    ['ВРЕМЯ', '0:00'],
+    ['ВЕРНЫЕ СИМВОЛЫ', '52'],
+    ['ОШИБКИ ВВОДА', '0'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 4;
+    m.paddingTop = m.paddingBottom = 8;
+    m.paddingLeft = m.paddingRight = 12;
+    m.cornerRadius = 12;
+    m.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+    m.resize(150, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    m.appendChild(txt(v, outfit('SemiBold'), 16, INK));
+    resultStats.appendChild(m);
+  }
+  resultCard.appendChild(resultStats);
+  resultCard.appendChild(txt('Рекорд: 0', outfit('Regular'), 12, MUTED));
+  resultCard.appendChild(txt('Что улучшить', outfit('SemiBold'), 14, INK));
+  resultCard.appendChild(txt('Точность уже хорошая — добавьте чуть темпа.', outfit('Regular'), 13, MUTED, 600));
+  resultCard.appendChild(txt('Пока нет устойчивых слабых клавиш — продолжайте.', outfit('Regular'), 13, MUTED, 600));
+  resultCard.appendChild(txt('Новое достижение: Первая тренировка', outfit('SemiBold'), 12, BRAND800, 600));
+  resultCard.appendChild(txt('Новое достижение: 95% точности', outfit('SemiBold'), 12, BRAND800, 600));
+  resultCard.appendChild(txt('Новое достижение: 98% точности', outfit('SemiBold'), 12, BRAND800, 600));
+  resultCard.appendChild(txt('Новое достижение: Личный рекорд', outfit('SemiBold'), 12, BRAND800, 600));
+  const resultBtns = al('HORIZONTAL', 'result actions');
+  resultBtns.itemSpacing = 8;
+  resultBtns.appendChild(instPrimary('Ещё раз'));
+  resultBtns.appendChild(instSecondary('Тренировать слабые клавиши'));
+  resultBtns.appendChild(instSecondary('К симулятору'));
+  resultCard.appendChild(resultBtns);
+  typingResult.appendChild(resultCard);
+  typingResult.appendChild(typingControls());
+
   const trainBody = al('VERTICAL', 'Training');
   trainBody.itemSpacing = 12;
   trainBody.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
@@ -6108,6 +6315,50 @@ async function buildUniqueScreens() {
   speedHead.appendChild(txt('Режим скорости', fraunces('Bold'), 32, INK));
   speedHead.appendChild(instPrimary('Старт 60 сек'));
   speedBody.appendChild(speedHead);
+
+  const speedRun = al('VERTICAL', 'Speed run');
+  speedRun.itemSpacing = 16;
+  const speedRunHead = al('HORIZONTAL', 'speed run head');
+  speedRunHead.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  speedRunHead.counterAxisAlignItems = 'CENTER';
+  speedRunHead.resize(680, 10);
+  speedRunHead.layoutSizingHorizontal = 'FIXED';
+  speedRunHead.layoutSizingVertical = 'HUG';
+  speedRunHead.appendChild(txt('Режим скорости', fraunces('Bold'), 32, INK));
+  const speedHud = al('HORIZONTAL', 'speed hud');
+  speedHud.itemSpacing = 16;
+  speedHud.appendChild(txt('⏱ 1:00', outfit('Medium'), 14, INK));
+  speedHud.appendChild(txt('⭐ 0', outfit('Medium'), 14, INK));
+  speedHud.appendChild(txt('🔥 x0', outfit('Medium'), 14, INK));
+  speedRunHead.appendChild(speedHud);
+  speedRun.appendChild(speedRunHead);
+  const speedCard = al('VERTICAL', 'speed trainer');
+  speedCard.itemSpacing = 12;
+  speedCard.paddingTop = speedCard.paddingBottom = 20;
+  speedCard.paddingLeft = speedCard.paddingRight = 20;
+  speedCard.cornerRadius = 24;
+  speedCard.fills = [solid(WHITE)];
+  speedCard.resize(680, 10);
+  speedCard.layoutSizingHorizontal = 'FIXED';
+  speedCard.layoutSizingVertical = 'HUG';
+  speedCard.appendChild(txt('Скорость', outfit('Bold'), 16, INK));
+  const speedBox = al('VERTICAL', 'speed prompt');
+  speedBox.itemSpacing = 8;
+  speedBox.paddingTop = speedBox.paddingBottom = 20;
+  speedBox.paddingLeft = speedBox.paddingRight = 16;
+  speedBox.cornerRadius = 16;
+  speedBox.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  speedBox.primaryAxisAlignItems = 'CENTER';
+  speedBox.appendChild(txt('?', outfit('Bold'), 28, INK));
+  speedBox.appendChild(txt('Нажмите сочетание на клавиатуре', outfit('Regular'), 13, MUTED));
+  speedCard.appendChild(speedBox);
+  const speedBtns = al('HORIZONTAL', 'speed trainer actions');
+  speedBtns.itemSpacing = 8;
+  speedBtns.appendChild(instSecondary('Подсказка'));
+  speedBtns.appendChild(ghostBtn('Объяснение'));
+  speedBtns.appendChild(ghostBtn('Пропустить'));
+  speedCard.appendChild(speedBtns);
+  speedRun.appendChild(speedCard);
 
   const speedDone = al('VERTICAL', 'Speed done');
   speedDone.itemSpacing = 12;
@@ -7967,6 +8218,9 @@ async function buildUniqueScreens() {
       practicePage('Typing /typing', 'Слепая печать', [typingBody]),
       practicePage('Typing path /typing', 'Слепая печать', [typingPath]),
       practicePage('Typing progress /typing', 'Слепая печать', [typingProgress]),
+      practicePage('Typing busy /typing', 'Слепая печать', [typingBusy]),
+      practicePage('Typing paused /typing', 'Слепая печать', [typingPaused]),
+      practicePage('Typing result /typing', 'Слепая печать', [typingResult]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
       practicePage('Training done /training', 'Hotkeys', [trainDone]),
@@ -7976,6 +8230,7 @@ async function buildUniqueScreens() {
         txt('Training loading — PracticeShell + SkeletonBlock h-10 w-56 + h-72.', outfit('Regular'), 12, MUTED, 680),
       ]),
       practicePage('Speed /speed', 'Скорость', [speedBody]),
+      practicePage('Speed run /speed', 'Скорость', [speedRun]),
       practicePage('Speed done /speed', 'Скорость', [speedDone]),
       practicePage('Speed loading /speed', 'Скорость', [
         skelBlock(192, 40, 'Kind=Line'),
@@ -9212,7 +9467,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
