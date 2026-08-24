@@ -1236,8 +1236,11 @@ async function buildVisualFlows() {
     ['F4 Learning path', [
       ['desktop-learner-09-path-viewport.jpg', 'Path'],
       ['desktop-learner-09-path.jpg', 'Path full scroll'],
+      ['desktop-learner-courses.jpg', 'Authed catalog'],
+      ['desktop-learner-course-vscode.jpg', 'Authed vscode'],
       ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
       ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
+      ['desktop-guest-course-not-found.jpg', 'Not found'],
     ]],
     ['F5 First laptop', [
       ['desktop-guest-05-course-computer-basics.jpg', 'Computer basics'],
@@ -1820,7 +1823,7 @@ function instEmpty(title, desc) {
   n.name = 'EmptyState instance';
   const texts = findAll(n, (x) => x.type === 'TEXT');
   if (texts[0] && title) texts[0].characters = title;
-  if (texts[1] && desc) texts[1].characters = desc;
+  if (texts[1] && typeof desc === 'string') texts[1].characters = desc;
   return n;
 }
 
@@ -5488,9 +5491,9 @@ async function buildUniqueScreens() {
           const row = al('HORIZONTAL', 'Authed lesson cards');
           row.itemSpacing = 12;
           for (const [title, chord] of [
-            ['Быстрое открытие файла', 'Ctrl+P'],
-            ['Перейти к строке', 'Ctrl+G'],
-            ['Перейти к символу', 'Ctrl+Shift+O'],
+            ['Быстрое открытие файла', 'Ctrl + P'],
+            ['Перейти к строке', 'Ctrl + G'],
+            ['Перейти к символу', 'Ctrl + Shift + O'],
           ]) {
             const c = al('VERTICAL', title);
             c.itemSpacing = 6;

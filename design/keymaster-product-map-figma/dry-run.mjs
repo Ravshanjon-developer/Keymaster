@@ -449,10 +449,13 @@ if (!names.includes('Курс не найден')) fail.push('no live course-not
 if (!names.includes('Ссылка недействительна или устарела')) fail.push('no live auth-callback verifyFail unique screen');
 if (!names.includes('Быстрое открытие файла')) fail.push('no live vscode lesson card unique screen');
 if (!names.includes('0/10 изучено')) fail.push('no live authed course learned-count unique screen');
-if (!names.includes('Ctrl+Shift+O')) fail.push('no live vscode chord unique screen');
+if (!names.includes('Ctrl + Shift + O')) fail.push('no live vscode chord unique screen');
 if (!names.includes('+10 XP')) fail.push('no live vscode xp_reward unique screen');
 if (!names.includes('ИЗУЧЕНО')) fail.push('no live status-chip ИЗУЧЕНО unique screen');
 if (!names.includes('Authed course cards')) fail.push('no light authed catalog cards unique screen');
+if (!names.includes('Learner / Courses')) fail.push('no authed catalog capture');
+if (!names.includes('Learner / Course detail (vscode)')) fail.push('no authed vscode capture');
+if (!names.includes('Guest / Course not found')) fail.push('no course-not-found capture');
 if (!names.includes('Мы отправили ссылку на anna@example.com. Перейдите по ней, затем войдите в аккаунт.')) {
   fail.push('no live register OTP check-email unique screen');
 }
@@ -554,6 +557,14 @@ if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('Трени�
 }
 if (!courseDetailAuthed || !namesUnder(courseDetailAuthed).includes('LearnStatus instance')) {
   fail.push('authed vscode course-detail unique missing LearnStatus instance');
+}
+let courseNotFoundUnique = null;
+for (const p of pages) courseNotFoundUnique = courseNotFoundUnique || findByName(p, 'Course not found /courses/:slug');
+if (!courseNotFoundUnique || !namesUnder(courseNotFoundUnique).includes('Курс не найден')) {
+  fail.push('course-not-found unique missing live EmptyState title');
+}
+if (courseNotFoundUnique && namesUnder(courseNotFoundUnique).includes('Здесь появятся элементы, когда будет прогресс.')) {
+  fail.push('course-not-found unique still shows default EmptyState description');
 }
 let gateUnique = null;
 for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');

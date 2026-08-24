@@ -13,7 +13,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 
 Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter).
 
-Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 59 as-is shots.
+Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 62 as-is shots.
 
 Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
 
@@ -23,7 +23,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 |---|---|
 | `01 — Product Map` | Unique as-is recreations. Includes guest `/path`, path spine, keyboard gate, hamburger drawers, desktop-task lesson (`desktop:` keys, sim-only XP), Home TJ, authed catalog `0/N`, catalog loading/API-down, authed VS Code course detail (Training/Exam), course not found, and auth-callback error. |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
-| `03 — Existing Screens` | As-is desktop, dark, and state captures (59), including path full-scroll |
+| `03 — Existing Screens` | As-is desktop, dark, and state captures (62), including path full-scroll, authed catalog, authed vscode, and course not found |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
 | `05 — Components` | Button (incl. focus), Input, Badge, KeyCap, Nav, Navbar (default/scrolled/mobile/authed), Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, PasswordStrength, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |
