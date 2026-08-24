@@ -6256,6 +6256,34 @@ async function buildUniqueScreens() {
     ],
     'Курсы',
   );
+
+  const mobileHomeAuthed = mobileFrame(
+    'Mobile Home authed 390',
+    [
+      txt('KeyMaster', fraunces('Bold'), 32, INK),
+      txt('От первого ноутбука — до мастерства клавиатуры', outfit('Regular'), 13, MUTED, 358),
+      txt(
+        'Файлы и папки, слепая печать, горячие клавиши и симулятор рабочего стола — понятный путь без скуки, с нуля.',
+        outfit('Regular'),
+        13,
+        MUTED,
+        358,
+      ),
+      (() => {
+        const row = al('HORIZONTAL', 'mobile authed CTAs');
+        row.itemSpacing = 8;
+        row.layoutWrap = 'WRAP';
+        row.primaryAxisAlignItems = 'CENTER';
+        row.counterAxisAlignItems = 'CENTER';
+        row.appendChild(instPrimary('Мой путь развития →'));
+        row.appendChild(secondaryBtn('Практика'));
+        return row;
+      })(),
+      txt('Home / — BottomNav all inactive. Authed header shows Выйти (btn-secondary vs hidden).', outfit('Regular'), 11, MUTED, 358),
+    ],
+    '',
+    { authed: true },
+  );
   const mobilePractice = mobileFrame(
     'Mobile Practice 390',
     [
@@ -6946,6 +6974,7 @@ async function buildUniqueScreens() {
   board.appendChild(
     section('Mobile 390 · BottomNav', [
       mobile,
+      mobileHomeAuthed,
       mobileCourses,
       mobileLogin,
       mobilePractice,

@@ -62,5 +62,6 @@
   {"file":"mobile-authed-05-review.jpg","page":"07 — Mobile Screens","name":"Mobile / Review","layout":"swipe cards","group":"Mobile 390"},
   {"file":"mobile-authed-06-quiz.jpg","page":"07 — Mobile Screens","name":"Mobile / Quiz","layout":"question","group":"Mobile 390"},
   {"file":"mobile-authed-07-path.jpg","page":"07 — Mobile Screens","name":"Mobile / Path","layout":"nodes","group":"Mobile 390"},
-  {"file":"mobile-authed-08-training-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Training gate","layout":"PracticeKeyboardGate","group":"Mobile 390"}
+  {"file":"mobile-authed-08-training-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Training gate","layout":"PracticeKeyboardGate","group":"Mobile 390"},
+  {"file":"mobile-authed-09-home.jpg","page":"07 — Mobile Screens","name":"Mobile / Home authed","layout":"BottomNav all inactive + Выйти","group":"Mobile 390"}
 ]

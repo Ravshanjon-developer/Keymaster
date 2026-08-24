@@ -303,6 +303,7 @@ if (!names.includes('ВЫ')) fail.push('no live authed leaderboard Вы badge un
 if (!names.includes('Courses filter start /courses')) fail.push('no catalog start-filter unique screen');
 if (!names.includes('Guest / Courses filter start')) fail.push('no catalog start-filter capture');
 if (!names.includes('Learner / Leaderboard')) fail.push('no authed leaderboard capture');
+if (!names.includes('Mobile / Home authed')) fail.push('no authed mobile home capture');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
@@ -508,6 +509,16 @@ if (!reviewUnique || !namesUnder(reviewUnique).includes('Вырезать')) {
 }
 if (!mobileHome || !namesUnder(mobileHome).includes('Каталог курсов')) {
   fail.push('mobile home unique screen missing catalog CTA');
+}
+if (!names.includes('Mobile Home authed 390')) fail.push('no authed mobile home unique screen');
+if (!names.includes('Мой путь развития →')) fail.push('no live authed home CTA unique screen');
+let mobileHomeAuthedUnique = null;
+for (const p of pages) mobileHomeAuthedUnique = mobileHomeAuthedUnique || findByName(p, 'Mobile Home authed 390');
+if (!mobileHomeAuthedUnique || !namesUnder(mobileHomeAuthedUnique).includes('Выйти') || namesUnder(mobileHomeAuthedUnique).includes('Регистрация')) {
+  fail.push('authed mobile home unique should show Выйти without guest Регистрация');
+}
+if (mobileHomeAuthedUnique && namesUnder(mobileHomeAuthedUnique).includes('Начать бесплатно →')) {
+  fail.push('authed mobile home unique still uses guest CTA');
 }
 if (!mobileLogin || !namesUnder(mobileLogin).includes('Добро пожаловать в KeyMaster')) {
   fail.push('mobile login unique screen missing AuthCard subtitle');
