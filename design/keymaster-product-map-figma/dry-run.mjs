@@ -515,19 +515,19 @@ if (!darkCoursesUnique || namesUnder(darkCoursesUnique).includes('В проце�
 if (!darkCoursesUnique || !namesUnder(darkCoursesUnique).includes('0/16 сочетаний') || !namesUnder(darkCoursesUnique).includes('Начните здесь')) {
   fail.push('dark catalog unique screen missing live 0 XP progress / start-here');
 }
-if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начните здесь') || !namesUnder(mobileCoursesUnique).includes('☰')) {
+if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начните здесь') || !namesUnder(mobileCoursesUnique).includes('Регистрация')) {
   fail.push('mobile courses unique screen missing live guest chrome or start-here card');
 }
-if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Тренировочный зал') || namesUnder(mobilePracticeUnique).includes('Анна')) {
-  fail.push('mobile practice unique screen should use live <lg navbar (logo · theme · menu), not desktop Анна/Выйти');
+if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти') || namesUnder(mobilePracticeUnique).includes('Анна')) {
+  fail.push('mobile practice unique should show live Выйти (btn-secondary) without desktop Анна chip');
 }
 let gateUnique = null;
 for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');
-if (!gateUnique || !namesUnder(gateUnique).includes('☰') || !namesUnder(gateUnique).includes('Keyboard illustration')) {
-  fail.push('keyboard-gate unique screen missing live <lg navbar or keyboard illustration');
+if (!gateUnique || !namesUnder(gateUnique).includes('Выйти') || !namesUnder(gateUnique).includes('Keyboard illustration')) {
+  fail.push('keyboard-gate unique screen missing live Выйти chrome or keyboard illustration');
 }
-if (!gateUnique || !namesUnder(gateUnique).includes('Экзамен')) {
-  fail.push('keyboard-gate unique screen is not PracticeShell exam chips like live /exam gate');
+if (!gateUnique || !namesUnder(gateUnique).includes('ВСЕ КУРСЫ') || !namesUnder(gateUnique).includes('Завершить')) {
+  fail.push('keyboard-gate unique missing live exam-run chrome around PracticeKeyboardGate');
 }
 if (!names.includes('Начать бесплатно →')) fail.push('no live home CTA arrow unique screen');
 if (!names.includes('Нет аккаунта?')) fail.push('no live auth footer question unique screen');

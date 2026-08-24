@@ -4330,6 +4330,8 @@ async function buildUniqueScreens() {
   mnavRight.itemSpacing = 6;
   mnavRight.counterAxisAlignItems = 'CENTER';
   mnavRight.appendChild(themeToggle(false));
+  mnavRight.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+  mnavRight.appendChild(primaryBtn('Регистрация', true));
   mnavRight.appendChild(txt('☰', outfit('Bold'), 16, INK));
   mnav.appendChild(mnavRight);
   const mbody = al('VERTICAL', 'body');
@@ -5154,6 +5156,8 @@ async function buildUniqueScreens() {
   mlright.itemSpacing = 6;
   mlright.counterAxisAlignItems = 'CENTER';
   mlright.appendChild(themeToggle(false));
+  mlright.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+  mlright.appendChild(primaryBtn('Регистрация', true));
   mlright.appendChild(txt('☰', outfit('Bold'), 16, INK));
   mlnav.appendChild(mlright);
   const mlbody = al('VERTICAL', 'login');
@@ -5709,7 +5713,7 @@ async function buildUniqueScreens() {
     return bnav;
   }
 
-  function mobileHeader(_guest) {
+  function mobileHeader(guest) {
     const mnav = al('HORIZONTAL', 'Mobile header');
     mnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
     mnav.counterAxisAlignItems = 'CENTER';
@@ -5723,6 +5727,12 @@ async function buildUniqueScreens() {
     right.itemSpacing = 6;
     right.counterAxisAlignItems = 'CENTER';
     right.appendChild(themeToggle(false));
+    if (guest) {
+      right.appendChild(txt('Вход', outfit('SemiBold'), 13, INK));
+      right.appendChild(primaryBtn('Регистрация', true));
+    } else {
+      right.appendChild(secondaryBtn('Выйти'));
+    }
     right.appendChild(txt('☰', outfit('Bold'), 16, INK));
     mnav.appendChild(right);
     return mnav;
@@ -6011,6 +6021,37 @@ async function buildUniqueScreens() {
   const gate = mobileFrame(
     'Keyboard gate',
     [
+      (() => {
+        const chrome = al('VERTICAL', 'exam run chrome');
+        chrome.itemSpacing = 8;
+        const top = al('HORIZONTAL', 'exam top');
+        top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        top.counterAxisAlignItems = 'CENTER';
+        top.resize(358, 10);
+        top.layoutSizingHorizontal = 'FIXED';
+        top.layoutSizingVertical = 'HUG';
+        top.appendChild(txt('Экзамен · 1/20', outfit('Medium'), 13, MUTED));
+        const badge = al('HORIZONTAL', 'ВСЕ КУРСЫ');
+        badge.paddingLeft = badge.paddingRight = 10;
+        badge.paddingTop = badge.paddingBottom = 4;
+        badge.cornerRadius = 99;
+        badge.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+        badge.appendChild(txt('ВСЕ КУРСЫ', outfit('Bold'), 10, INK));
+        top.appendChild(badge);
+        top.appendChild(txt('10:00', outfit('Bold'), 13, INK));
+        chrome.appendChild(top);
+        chrome.appendChild(instProgress('Value=Empty') || progressBar(358, 0, BRAND, 4));
+        const stats = al('HORIZONTAL', 'exam stats');
+        stats.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        stats.counterAxisAlignItems = 'CENTER';
+        stats.resize(358, 10);
+        stats.layoutSizingHorizontal = 'FIXED';
+        stats.layoutSizingVertical = 'HUG';
+        stats.appendChild(txt('0  ·  0', outfit('SemiBold'), 13, MUTED));
+        stats.appendChild(txt('Завершить', outfit('SemiBold'), 13, BRAND800));
+        chrome.appendChild(stats);
+        return chrome;
+      })(),
       (() => {
         const gcard = al('VERTICAL', 'Keyboard gate card');
         gcard.itemSpacing = 12;
