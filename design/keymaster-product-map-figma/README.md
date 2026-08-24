@@ -13,7 +13,7 @@ Figma Desktop plugin that builds the as-is product map from live screenshots. **
 
 Install **Outfit** and **Fraunces** in Figma (or the plugin falls back to Inter).
 
-Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 96 as-is shots. Recapture: `node capture-catalog-states.mjs`, `node capture-leaderboard-filter.mjs`, `node capture-mobile-home-authed.mjs`, `node capture-mobile-leaderboard.mjs`, `node capture-mobile-register-catalog.mjs`, `node capture-desktop-task-dashboard.mjs`, `node capture-authed-computer-basics.mjs`, `node capture-course-detail-layouts.mjs`, `node capture-training-empty-done.mjs`, `node capture-empty-learned-loading.mjs`, `node capture-verify-loading-unlocked.mjs`.
+Plugin self-check (no Figma required): `node dry-run.mjs` — expects pages 01–07, tokens, components, and 100 as-is shots. Recapture: `node capture-catalog-states.mjs`, `node capture-leaderboard-filter.mjs`, `node capture-mobile-home-authed.mjs`, `node capture-mobile-leaderboard.mjs`, `node capture-mobile-register-catalog.mjs`, `node capture-desktop-task-dashboard.mjs`, `node capture-authed-computer-basics.mjs`, `node capture-course-detail-layouts.mjs`, `node capture-training-empty-done.mjs`, `node capture-empty-learned-loading.mjs`, `node capture-verify-loading-unlocked.mjs`, `node capture-admin-editor-exam.mjs`.
 
 Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` writes `live-metrics.json`. Current UI: Outfit + Fraunces, navbar 65px glass, footer 105px (`py-9 pb-12`), primary button 44×16 radius, practice rail 240px `#141820`.
 
@@ -21,9 +21,9 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | Unique as-is recreations. Includes verify-email loading/ok/error, achievements locked/empty/loading/unlocked mix, PracticeShell loading (training/speed/review), mobile week-empty leaderboard, leaderboard empty/period-empty/API-down/loading, lesson loading/study-only/done, training empty/done, review empty, six `/courses/:slug` layouts, desktop-task lesson (`Папка Practice`), path spine, keyboard gate, authed catalog `0/N`, and mobile Home/Leaderboard/catalog/Register/Dashboard. |
+| `01 — Product Map` | Unique as-is recreations. Includes admin CourseEditor / create / empty / editor-loading, exam-run loading, leaderboard outside-top `#12`, verify-email loading/ok/error, achievements locked/empty/loading/unlocked mix, PracticeShell loading (training/speed/review), mobile week-empty leaderboard, leaderboard empty/period-empty/API-down/loading, lesson loading/study-only/done, training empty/done, review empty, six `/courses/:slug` layouts, desktop-task lesson (`Папка Practice`), path spine, keyboard gate, authed catalog `0/N`, and mobile Home/Leaderboard/catalog/Register/Dashboard. |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
-| `03 — Existing Screens` | As-is desktop, dark, and state captures (96) |
+| `03 — Existing Screens` | As-is desktop, dark, and state captures (100) |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
 | `05 — Components` | Button (incl. focus), Input, Badge, KeyCap, Nav, Navbar (default/scrolled/mobile/authed), Progress, Card, OTP, rail, BottomNav, CourseCard, PathNode, Achievement, LearnStatus, FloatingLabelInput, PasswordStrength, Skeleton, Exam |
 | `06 — Improved Screens` | Placeholder only: «Этап 2 — не улучшать на этапе 1» |

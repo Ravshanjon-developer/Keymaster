@@ -1266,6 +1266,7 @@ async function buildVisualFlows() {
       ['desktop-learner-14-review.jpg', 'Review'],
       ['desktop-learner-15-quiz.jpg', 'Quiz'],
       ['desktop-learner-16-exam.jpg', 'Exam setup'],
+      ['desktop-learner-exam-loading.jpg', 'Exam loading'],
       ['desktop-learner-exam-run.jpg', 'Exam run'],
       ['desktop-learner-exam-feedback.jpg', 'Exam feedback'],
       ['desktop-learner-exam-done.jpg', 'Exam done'],
@@ -1274,6 +1275,7 @@ async function buildVisualFlows() {
     ['F9 Social', [
       ['desktop-guest-07-leaderboard.jpg', 'Leaderboard guest'],
       ['desktop-learner-leaderboard.jpg', 'Leaderboard authed Вы'],
+      ['desktop-learner-leaderboard-outside-top.jpg', 'Outside top #12'],
       ['desktop-guest-leaderboard-empty.jpg', 'Leaderboard empty'],
       ['desktop-learner-leaderboard-period-empty.jpg', 'Period empty'],
       ['desktop-guest-leaderboard-api-down.jpg', 'Leaderboard API down'],
@@ -1289,6 +1291,8 @@ async function buildVisualFlows() {
     ['F11 Admin', [
       ['desktop-admin-24-admin.jpg', 'Overview'],
       ['desktop-admin-courses.jpg', 'Courses'],
+      ['desktop-admin-course-create.jpg', 'Create course'],
+      ['desktop-admin-course-editor.jpg', 'Course editor'],
       ['desktop-admin-users.jpg', 'Users'],
       ['desktop-admin-achievements.jpg', 'Achievements'],
       ['desktop-learner-21-admin-forbidden.jpg', 'Forbidden'],
@@ -1395,11 +1399,11 @@ async function buildSitemap() {
         ['/courses/:slug', 'Course detail', 'guest/authed × Desktop vs start+Training vs vscode Training · not found'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study guest/authed/learned | desktop-task · loading · done'],
         ['/path', 'Learning path', 'protected'],
-        ['/leaderboard', 'Leaderboard', 'public · authed Вы · empty · period empty · api down · loading'],
+        ['/leaderboard', 'Leaderboard', 'public · authed Вы · empty · period empty · api down · loading · outside top'],
         ['/achievements', 'Achievements', 'locked / empty / loading / unlocked mix'],
         ['/dashboard', 'Dashboard', 'XP · streak'],
         ['/stats', 'Stats', 'protected'],
-        ['/admin', 'Admin', 'overview · courses · users · achievements · forbidden'],
+        ['/admin', 'Admin', 'overview · courses · create · editor · empty · editor loading · users · achievements · forbidden'],
       ],
     ],
     [
@@ -1420,7 +1424,7 @@ async function buildSitemap() {
         ['/speed', 'Speed', '60s | done | loading'],
         ['/review', 'Review', 'front / flipped / empty / loading'],
         ['/quiz', 'Quiz', 'play + done'],
-        ['/exam', 'Exam', 'setup | run | feedback | done | empty'],
+        ['/exam', 'Exam', 'setup | loading | run | feedback | done | empty'],
       ],
     ],
     [
@@ -4991,6 +4995,14 @@ async function buildUniqueScreens() {
     return tabs;
   }
 
+  function adminHeader(active) {
+    return [
+      txt('Админ-панель', fraunces('Bold'), 32, INK),
+      txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
+      adminTabBar(active),
+    ];
+  }
+
   const adminTabs = adminTabBar('Обзор');
 
   const verifyCard = al('VERTICAL', 'Verify email');
@@ -6416,6 +6428,77 @@ async function buildUniqueScreens() {
           return wrap;
         })(),
       ]),
+      marketingPage('Leaderboard outside top /leaderboard', 'Рейтинг', false, [
+        makeLbHero('Leaderboard hero outside top', 'all'),
+        (() => {
+          const banner = al('HORIZONTAL', 'outside top');
+          banner.paddingTop = banner.paddingBottom = 12;
+          banner.paddingLeft = banner.paddingRight = 16;
+          banner.cornerRadius = 16;
+          banner.fills = [solid(BRAND50)];
+          banner.strokes = [solid(BRAND, 0.25)];
+          banner.resize(880, 10);
+          banner.layoutSizingHorizontal = 'FIXED';
+          banner.layoutSizingVertical = 'HUG';
+          banner.appendChild(txt('Ваше место: #12 · 40 XP', outfit('SemiBold'), 13, BRAND800));
+          return banner;
+        })(),
+        (() => {
+          const wrap = al('VERTICAL', 'Podium outside top');
+          wrap.itemSpacing = 16;
+          wrap.primaryAxisAlignItems = 'CENTER';
+          const row = al('HORIZONTAL', 'Podium 2-1-3');
+          row.itemSpacing = 12;
+          row.counterAxisAlignItems = 'MAX';
+          for (const [rank, name, handle, xp, title, tall] of [
+            ['#2', 'Боб', '@bob', '700 XP', 'Junior+', false],
+            ['#1', 'Алиса', '@alice', '900 XP', 'Middle', true],
+            ['#3', 'Кара', '@cara', '500 XP', 'Junior', false],
+          ]) {
+            const card = al('VERTICAL', rank + ' ' + name);
+            card.itemSpacing = 6;
+            card.primaryAxisAlignItems = 'CENTER';
+            card.paddingTop = card.paddingBottom = tall ? 28 : 20;
+            card.paddingLeft = card.paddingRight = 16;
+            card.cornerRadius = 16;
+            card.fills = [solid(WHITE)];
+            card.strokes = [solid(tall ? BRAND : INK, tall ? 0.5 : 0.08)];
+            card.resize(200, 10);
+            card.layoutSizingHorizontal = 'FIXED';
+            card.layoutSizingVertical = 'HUG';
+            if (tall) {
+              const crown = figma.createEllipse();
+              crown.resize(40, 40);
+              crown.fills = [solid({ r: 0.961, g: 0.769, b: 0.157 })];
+              card.appendChild(crown);
+            }
+            card.appendChild(txt(rank, outfit('Bold'), 11, MUTED));
+            card.appendChild(txt(name, outfit('SemiBold'), 16, INK));
+            card.appendChild(txt(handle, outfit('Regular'), 12, MUTED));
+            const xpPill = al('HORIZONTAL', xp);
+            xpPill.itemSpacing = 4;
+            xpPill.paddingLeft = xpPill.paddingRight = 10;
+            xpPill.paddingTop = xpPill.paddingBottom = 4;
+            xpPill.cornerRadius = 8;
+            xpPill.fills = [solid(SUCCESS, 0.12)];
+            xpPill.appendChild(txt(xp, outfit('Bold'), 13, SUCCESS));
+            card.appendChild(xpPill);
+            card.appendChild(txt(title, outfit('Medium'), 12, BRAND800));
+            row.appendChild(card);
+          }
+          wrap.appendChild(row);
+          wrap.appendChild(
+            txt(
+              'Пройдите ещё уроки — таблица расширится, когда появятся новые игроки.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              640,
+            ),
+          );
+          return wrap;
+        })(),
+      ]),
       marketingPage('Leaderboard empty /leaderboard', 'Рейтинг', true, [
         makeLbHero('Leaderboard hero empty', 'all'),
         instEmpty('Рейтинг пуст', 'Пройдите уроки и наберите XP — вы появитесь в таблице') ||
@@ -6647,6 +6730,169 @@ async function buildUniqueScreens() {
           return list;
         })(),
       ], false, true),
+      marketingPage('Admin course editor /admin', '', false, [
+        ...adminHeader('Курсы'),
+        (() => {
+          const back = al('HORIZONTAL', 'back');
+          back.itemSpacing = 8;
+          back.counterAxisAlignItems = 'CENTER';
+          back.appendChild(txt('←', outfit('SemiBold'), 13, BRAND800));
+          back.appendChild(txt('Назад к курсам', outfit('SemiBold'), 13, BRAND800));
+          return back;
+        })(),
+        (() => {
+          const form = al('VERTICAL', 'Course editor form');
+          form.itemSpacing = 12;
+          form.paddingTop = form.paddingBottom = 20;
+          form.paddingLeft = form.paddingRight = 20;
+          form.cornerRadius = 16;
+          form.fills = [solid(WHITE)];
+          form.strokes = [solid(INK, 0.08)];
+          form.resize(860, 10);
+          form.layoutSizingHorizontal = 'FIXED';
+          form.layoutSizingVertical = 'HUG';
+          const row = al('HORIZONTAL', 'slug title');
+          row.itemSpacing = 12;
+          row.appendChild(field('Slug', 'computer-basics', INK));
+          row.appendChild(field('Название', 'Первый ноутбук: файлы и папки', INK));
+          form.appendChild(row);
+          form.appendChild(field('Иконка', 'folder', INK));
+          form.appendChild(
+            field(
+              'Описание',
+              'Создание папок и файлов, проводник, корзина и ZIP. Выполняйте задания в симуляторе «Рабочий стол».',
+              INK,
+            ),
+          );
+          form.appendChild(instPrimary('Сохранить'));
+          return form;
+        })(),
+        txt('Категории', outfit('SemiBold'), 18, INK),
+        (() => {
+          const add = al('HORIZONTAL', 'Add category');
+          add.itemSpacing = 8;
+          add.counterAxisAlignItems = 'MAX';
+          add.paddingTop = add.paddingBottom = 16;
+          add.paddingLeft = add.paddingRight = 16;
+          add.cornerRadius = 16;
+          add.fills = [solid(WHITE)];
+          add.strokes = [solid(INK, 0.08)];
+          add.appendChild(field('Slug', '', INK));
+          add.appendChild(field('Название', '', INK));
+          add.appendChild(field('Порядок', '0', INK));
+          add.appendChild(instSecondary('Категория'));
+          return add;
+        })(),
+        (() => {
+          const cat = al('VERTICAL', 'Category card');
+          cat.itemSpacing = 10;
+          cat.paddingTop = cat.paddingBottom = 16;
+          cat.paddingLeft = cat.paddingRight = 16;
+          cat.cornerRadius = 16;
+          cat.fills = [solid(WHITE)];
+          cat.strokes = [solid(INK, 0.08)];
+          cat.resize(860, 10);
+          cat.layoutSizingHorizontal = 'FIXED';
+          cat.layoutSizingVertical = 'HUG';
+          const head = al('HORIZONTAL', 'cat head');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'CENTER';
+          const copy = al('VERTICAL', 'cat copy');
+          copy.itemSpacing = 4;
+          copy.appendChild(txt('Файлы и папки', outfit('SemiBold'), 15, INK));
+          copy.appendChild(txt('basics · 3 Уроки', outfit('Regular'), 12, MUTED));
+          head.appendChild(copy);
+          head.appendChild(instSecondary('Урок'));
+          cat.appendChild(head);
+          head.layoutSizingHorizontal = 'FILL';
+          for (const [title, prompt] of [
+            ['Файл и папка', 'Поймите разницу между файлом и папкой'],
+            ['Расширение файла', 'Узнайте, зачем нужно .txt, .jpg, .zip'],
+            ['Где хранить', 'Решите, что на рабочем столе, а что в папках'],
+          ]) {
+            const lesson = al('VERTICAL', title);
+            lesson.itemSpacing = 2;
+            lesson.paddingTop = lesson.paddingBottom = 8;
+            lesson.paddingLeft = lesson.paddingRight = 12;
+            lesson.cornerRadius = 8;
+            lesson.strokes = [solid(INK, 0.08)];
+            lesson.appendChild(txt(title, outfit('Medium'), 14, INK));
+            lesson.appendChild(txt('· +15 XP', outfit('Regular'), 11, BRAND800));
+            lesson.appendChild(txt(prompt, outfit('Regular'), 11, MUTED, 720));
+            cat.appendChild(lesson);
+          }
+          cat.appendChild(
+            txt(
+              'Не дублировать все 16 уроков — 1 категория + 3 урока покрывают CourseEditor layout.',
+              outfit('Regular'),
+              12,
+              MUTED,
+              800,
+            ),
+          );
+          return cat;
+        })(),
+      ], false, true),
+      marketingPage('Admin course create /admin', '', false, [
+        ...adminHeader('Курсы'),
+        (() => {
+          const row = al('HORIZONTAL', 'search row create');
+          row.itemSpacing = 8;
+          row.counterAxisAlignItems = 'CENTER';
+          row.appendChild(field('Поиск…', 'Поиск…', INK));
+          row.appendChild(instPrimary('+ Создать'));
+          return row;
+        })(),
+        (() => {
+          const form = al('VERTICAL', 'Course create form');
+          form.itemSpacing = 12;
+          form.paddingTop = form.paddingBottom = 20;
+          form.paddingLeft = form.paddingRight = 20;
+          form.cornerRadius = 16;
+          form.fills = [solid(WHITE)];
+          form.strokes = [solid(INK, 0.08)];
+          form.resize(860, 10);
+          form.layoutSizingHorizontal = 'FIXED';
+          form.layoutSizingVertical = 'HUG';
+          const grid = al('HORIZONTAL', 'create grid');
+          grid.itemSpacing = 12;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(820, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          grid.appendChild(field('Slug', '', INK));
+          grid.appendChild(field('Название', '', INK));
+          grid.appendChild(field('Иконка', 'keyboard', INK));
+          grid.appendChild(field('Порядок', '0', INK));
+          form.appendChild(grid);
+          form.appendChild(field('Описание', '', INK));
+          const actions = al('HORIZONTAL', 'create actions');
+          actions.itemSpacing = 8;
+          actions.appendChild(instPrimary('Сохранить'));
+          actions.appendChild(instSecondary('Отмена'));
+          form.appendChild(actions);
+          return form;
+        })(),
+        txt('Форма создания поверх списка. Не дублировать все 20 курсов.', outfit('Regular'), 12, MUTED, 800),
+      ], false, true),
+      marketingPage('Admin courses empty /admin', '', false, [
+        ...adminHeader('Курсы'),
+        (() => {
+          const row = al('HORIZONTAL', 'search row empty');
+          row.itemSpacing = 8;
+          row.counterAxisAlignItems = 'CENTER';
+          row.appendChild(field('Поиск…', 'Поиск…', INK));
+          row.appendChild(instPrimary('+ Создать'));
+          return row;
+        })(),
+        txt('Пока пусто', outfit('Regular'), 13, MUTED),
+        txt('Admin courses empty — paragraph t(admin.empty), not EmptyState.', outfit('Regular'), 12, MUTED, 800),
+      ], false, true),
+      marketingPage('Admin course editor loading /admin', '', false, [
+        ...adminHeader('Курсы'),
+        skelBlock(860, 256, 'Kind=Card'),
+        txt('Admin course-editor loading — tabs stay, Skeleton h-64, no back control until course loads.', outfit('Regular'), 12, MUTED, 800),
+      ], false, true),
       marketingPage('Admin forbidden', '', false, [
         txt('Доступ только для администраторов', fraunces('Bold'), 32, INK, 800),
       ]),
@@ -6718,6 +6964,12 @@ async function buildUniqueScreens() {
       practicePage('Quiz done /quiz', 'Основы hotkeys', [quizDone]),
       practicePage('Exam setup /exam', 'Экзамен', [exam]),
       practicePage('Exam empty /exam', 'Экзамен', [examEmpty]),
+      practicePage('Exam loading /exam', 'Экзамен', [
+        skelBlock(160, 24, 'Kind=Line'),
+        skelBlock(680, 8, 'Kind=Line'),
+        skelBlock(680, 256, 'Kind=Card'),
+        txt('Exam loading — PracticeShell + Skeleton h-6 w-40 + h-2 bar + h-64 card.', outfit('Regular'), 12, MUTED, 680),
+      ]),
       practicePage('Exam run /exam', 'Экзамен', [examRun]),
       practicePage('Exam feedback /exam', 'Экзамен', [examFeedback]),
       practicePage('Exam wrong /exam', 'Экзамен', [examWrong]),

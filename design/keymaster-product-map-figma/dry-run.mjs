@@ -917,6 +917,56 @@ if (!mobileLbPeriodUnique || !namesUnder(mobileLbPeriodUnique).includes('За э
   fail.push('mobile period-empty unique should keep authed chrome + week empty copy');
 }
 
+if (!names.includes('Admin course editor /admin')) fail.push('no admin course-editor unique screen');
+if (!names.includes('Admin course create /admin')) fail.push('no admin course-create unique screen');
+if (!names.includes('Admin courses empty /admin')) fail.push('no admin courses-empty unique screen');
+if (!names.includes('Admin course editor loading /admin')) fail.push('no admin course-editor loading unique screen');
+if (!names.includes('Exam loading /exam')) fail.push('no exam loading unique screen');
+if (!names.includes('Leaderboard outside top /leaderboard')) fail.push('no leaderboard outside-top unique screen');
+if (!names.includes('Назад к курсам')) fail.push('no live admin editor back unique screen');
+if (!names.includes('Ваше место: #12 · 40 XP')) fail.push('no live leaderboard outside-top banner unique screen');
+if (!names.includes('Пока пусто')) fail.push('no live admin empty copy unique screen');
+if (!names.includes('Admin / Course editor')) fail.push('no admin course-editor capture');
+if (!names.includes('Admin / Course create')) fail.push('no admin course-create capture');
+if (!names.includes('Learner / Exam loading')) fail.push('no exam loading capture');
+if (!names.includes('Learner / Leaderboard outside top')) fail.push('no leaderboard outside-top capture');
+
+let adminEditorUnique = null;
+let adminCreateUnique = null;
+let adminEmptyUnique = null;
+let adminEditorLoadUnique = null;
+let examLoadUnique = null;
+let lbOutsideUnique = null;
+for (const p of pages) {
+  adminEditorUnique = adminEditorUnique || findByName(p, 'Admin course editor /admin');
+  adminCreateUnique = adminCreateUnique || findByName(p, 'Admin course create /admin');
+  adminEmptyUnique = adminEmptyUnique || findByName(p, 'Admin courses empty /admin');
+  adminEditorLoadUnique = adminEditorLoadUnique || findByName(p, 'Admin course editor loading /admin');
+  examLoadUnique = examLoadUnique || findByName(p, 'Exam loading /exam');
+  lbOutsideUnique = lbOutsideUnique || findByName(p, 'Leaderboard outside top /leaderboard');
+}
+if (!adminEditorUnique || !namesUnder(adminEditorUnique).includes('Назад к курсам') || !namesUnder(adminEditorUnique).includes('Файлы и папки') || !namesUnder(adminEditorUnique).includes('Файл и папка')) {
+  fail.push('admin course-editor unique missing live back + first category/lessons');
+}
+if (adminEditorUnique && namesUnder(adminEditorUnique).includes('Папка Practice')) {
+  fail.push('admin course-editor unique should not duplicate all 16 lessons');
+}
+if (!adminCreateUnique || !namesUnder(adminCreateUnique).includes('keyboard') || !namesUnder(adminCreateUnique).includes('Отмена') || !namesUnder(adminCreateUnique).includes('Сохранить')) {
+  fail.push('admin course-create unique missing live default icon keyboard + save/cancel');
+}
+if (!adminEmptyUnique || !namesUnder(adminEmptyUnique).includes('Пока пусто') || namesUnder(adminEmptyUnique).includes('EmptyState instance')) {
+  fail.push('admin courses empty unique should be a paragraph, not EmptyState');
+}
+if (!adminEditorLoadUnique || !namesUnder(adminEditorLoadUnique).includes('Skeleton instance') || namesUnder(adminEditorLoadUnique).includes('Назад к курсам')) {
+  fail.push('admin course-editor loading unique should keep tabs + skeleton without back control');
+}
+if (!examLoadUnique || !namesUnder(examLoadUnique).includes('Skeleton instance') || !namesUnder(examLoadUnique).includes('Rail')) {
+  fail.push('exam loading unique should keep PracticeShell rail + run-phase skeletons');
+}
+if (!lbOutsideUnique || !namesUnder(lbOutsideUnique).includes('Ваше место: #12 · 40 XP') || !namesUnder(lbOutsideUnique).includes('Алиса') || !namesUnder(lbOutsideUnique).includes('@alice')) {
+  fail.push('leaderboard outside-top unique missing live #12 banner + 2-1-3 podium');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));
