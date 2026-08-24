@@ -119,6 +119,7 @@ const figma = {
       for (const child of n.children) inst.appendChild(child.clone());
       return inst;
     };
+    currentPage.appendChild(n);
     return n;
   },
   createTextStyle: () => {
@@ -322,6 +323,8 @@ if (!names.includes('Admin achievements /admin')) fail.push('no admin achievemen
 if (!names.includes('Админ')) fail.push('no admin navbar link on unique screens');
 if (!names.includes('Dark Register / html.dark')) fail.push('no dark register unique screen');
 if (!names.includes('Dark Practice / html.dark')) fail.push('no dark practice unique screen');
+if (!names.includes('Dark Path / html.dark')) fail.push('no dark path unique screen');
+if (!names.includes('Dark Dashboard / html.dark')) fail.push('no dark dashboard unique screen');
 if (!names.includes('Speed challenge')) fail.push('no practice speed challenge row');
 if (!names.includes('HomeFeatureVisual / path')) fail.push('no home path feature visual');
 if (!names.includes('HomeFeatureVisual / keyboard')) fail.push('no home keyboard feature visual');
@@ -341,6 +344,12 @@ if (!names.includes('LanguageSwitcher instance')) fail.push('no LanguageSwitcher
 if (!names.includes('PathNode instance')) fail.push('no PathNode instances on unique screens');
 if (!names.includes('Achievement instance')) fail.push('no Achievement instances on unique screens');
 if (!names.includes('LearnStatus instance')) fail.push('no LearnStatus instances on unique screens');
+if (!names.includes('PasswordStrength instance')) fail.push('no PasswordStrength instances on unique screens');
+if (!names.includes('ProgressBar instance')) fail.push('no ProgressBar instances on unique screens');
+if (!names.includes('EmptyState instance')) fail.push('no EmptyState instances on unique screens');
+if (!names.includes('Register password /register')) fail.push('no register password-strength unique screen');
+if (!names.includes('NextStepCard')) fail.push('no dashboard NextStepCard unique screen');
+if (!names.includes('Ответы')) fail.push('no stats answers chart unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));

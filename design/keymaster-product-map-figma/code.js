@@ -899,6 +899,7 @@ async function buildComponents() {
   empty.appendChild(txt('Здесь появятся элементы, когда будет прогресс.', outfit('Regular'), 14, MUTED, 280));
   empty.x = 80;
   empty.y = 1340;
+  page.appendChild(empty);
 
   const cardDef = figma.createComponent();
   cardDef.name = 'State=Default';
@@ -1783,6 +1784,36 @@ function floatOrInst(state, label, opts) {
     if (n) return n;
   }
   return floatingField(label, opts.value != null ? opts.value : '', opts);
+}
+
+function instStrength(level) {
+  const n = inst('PasswordStrength', 'Level=' + String(level));
+  if (!n) return null;
+  n.name = 'PasswordStrength instance';
+  n.resize(352, 3);
+  n.layoutSizingHorizontal = 'FIXED';
+  n.layoutSizingVertical = 'FIXED';
+  return n;
+}
+
+function instProgress(kind) {
+  const n = inst('ProgressBar', kind || 'Value=Empty');
+  if (!n) return null;
+  n.name = 'ProgressBar instance';
+  return n;
+}
+
+function instEmpty(title, desc) {
+  const page = pageByName('05 — Components');
+  if (!page) return null;
+  const c = page.findOne((n) => n.type === 'COMPONENT' && n.name === 'EmptyState');
+  if (!c || typeof c.createInstance !== 'function') return null;
+  const n = c.createInstance();
+  n.name = 'EmptyState instance';
+  const texts = findAll(n, (x) => x.type === 'TEXT');
+  if (texts[0] && title) texts[0].characters = title;
+  if (texts[1] && desc) texts[1].characters = desc;
+  return n;
 }
 
 function instCourse(status) {
@@ -2810,18 +2841,93 @@ async function buildUniqueScreens() {
   pathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
   const dash = al('VERTICAL', 'Dashboard body');
-  dash.itemSpacing = 12;
-  dash.appendChild(txt('Привет, Анна!', fraunces('Bold'), 28, INK));
-  dash.appendChild(txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED));
-  dash.appendChild(secondaryBtn('Мой путь развития'));
-  dash.appendChild(txt('Первый ноутбук: файлы и папки', outfit('SemiBold'), 16, INK));
+  dash.itemSpacing = 16;
+  const dashHead = al('HORIZONTAL', 'header');
+  dashHead.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  dashHead.counterAxisAlignItems = 'CENTER';
+  dashHead.resize(880, 10);
+  dashHead.layoutSizingHorizontal = 'FIXED';
+  dashHead.layoutSizingVertical = 'HUG';
+  const dashTitles = al('VERTICAL', 'titles');
+  dashTitles.itemSpacing = 4;
+  dashTitles.appendChild(txt('Привет, Анна!', fraunces('Bold'), 28, INK));
+  dashTitles.appendChild(txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED));
+  dashHead.appendChild(dashTitles);
+  dashHead.appendChild(secondaryBtn('Мой путь развития'));
+  dash.appendChild(dashHead);
+  const nextCard = al('VERTICAL', 'NextStepCard');
+  nextCard.itemSpacing = 10;
+  nextCard.paddingTop = nextCard.paddingBottom = 24;
+  nextCard.paddingLeft = nextCard.paddingRight = 24;
+  nextCard.cornerRadius = 24;
+  nextCard.fills = [solid(BRAND50, 0.8)];
+  nextCard.strokes = [solid(BRAND, 0.25)];
+  nextCard.appendChild(txt('СЕГОДНЯ', outfit('Bold'), 11, BRAND800));
+  nextCard.appendChild(txt('Первый ноутбук: файлы и папки', fraunces('SemiBold'), 24, INK, 800));
+  nextCard.appendChild(txt('XP 0 · пройдено 0/20 · дальше: First Laptop', outfit('Regular'), 13, MUTED, 800));
+  const nextBtns = al('HORIZONTAL', 'next ctas');
+  nextBtns.itemSpacing = 8;
+  nextBtns.appendChild(instPrimary('Приступить'));
+  nextBtns.appendChild(secondaryBtn('Открыть путь обучения'));
+  nextCard.appendChild(nextBtns);
+  nextCard.appendChild(txt('Novice Operator', outfit('Regular'), 12, MUTED));
+  dash.appendChild(nextCard);
   dash.appendChild(txt('Ближайшие этапы', outfit('SemiBold'), 16, INK));
+  const stageStrip = al('HORIZONTAL', 'PathStageStrip');
+  stageStrip.itemSpacing = 12;
+  for (const [num, title, status, locked] of [
+    ['01', 'Первый ноутбук: файлы и папки', 'НАЧАТЬ', false],
+    ['02', 'Основные горячие клавиши программиста', 'ЗАБЛОКИРОВАНО', true],
+    ['03', 'Windows', 'ЗАБЛОКИРОВАНО', true],
+    ['04', 'VS Code', 'ЗАБЛОКИРОВАНО', true],
+  ]) {
+    const c = al('VERTICAL', title);
+    c.itemSpacing = 6;
+    c.paddingTop = c.paddingBottom = 14;
+    c.paddingLeft = c.paddingRight = 14;
+    c.cornerRadius = 16;
+    c.fills = [solid(locked ? WHITE : BRAND50)];
+    c.strokes = [solid(locked ? INK : BRAND, locked ? 0.1 : 0.35)];
+    c.opacity = locked ? 0.7 : 1;
+    c.resize(210, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    const top = al('HORIZONTAL', 'stage top');
+    top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    top.counterAxisAlignItems = 'CENTER';
+    top.appendChild(txt(num, outfit('Bold'), 11, MUTED));
+    const chip = al('HORIZONTAL', status);
+    chip.itemSpacing = 2;
+    chip.paddingLeft = chip.paddingRight = 8;
+    chip.paddingTop = chip.paddingBottom = 2;
+    chip.cornerRadius = 6;
+    chip.fills = [solid(locked ? { r: 0.941, g: 0.945, b: 0.953 } : INK)];
+    chip.appendChild(txt(status, outfit('Bold'), 9, locked ? MUTED : WHITE));
+    top.appendChild(chip);
+    top.layoutSizingHorizontal = 'FILL';
+    c.appendChild(top);
+    c.appendChild(txt(title, outfit('SemiBold'), 12, INK, 182));
+    stageStrip.appendChild(c);
+  }
+  dash.appendChild(stageStrip);
   const tiles = al('HORIZONTAL', 'Stat tiles');
   tiles.itemSpacing = 12;
+  const levelTile = al('VERTICAL', 'Уровень');
+  levelTile.itemSpacing = 8;
+  levelTile.paddingTop = levelTile.paddingBottom = 16;
+  levelTile.paddingLeft = levelTile.paddingRight = 16;
+  levelTile.cornerRadius = 16;
+  levelTile.fills = [solid(WHITE)];
+  levelTile.resize(280, 10);
+  levelTile.layoutSizingHorizontal = 'FIXED';
+  levelTile.layoutSizingVertical = 'HUG';
+  levelTile.appendChild(txt('Уровень', outfit('Regular'), 12, MUTED));
+  levelTile.appendChild(txt('Новичок', outfit('SemiBold'), 22, INK));
+  levelTile.appendChild(instProgress('Value=Empty') || progressBar(240, 0.02, BRAND, 8));
+  tiles.appendChild(levelTile);
   for (const [k, v] of [
-    ['Уровень', 'Novice Operator'],
     ['XP', '0'],
-    ['Ежедневная серия', '4 дн.'],
+    ['Ежедневная серия', '1 дн.'],
   ]) {
     const t = al('VERTICAL', k);
     t.itemSpacing = 4;
@@ -2829,7 +2935,7 @@ async function buildUniqueScreens() {
     t.paddingLeft = t.paddingRight = 16;
     t.cornerRadius = 16;
     t.fills = [solid(WHITE)];
-    t.resize(200, 10);
+    t.resize(280, 10);
     t.layoutSizingHorizontal = 'FIXED';
     t.layoutSizingVertical = 'HUG';
     t.appendChild(txt(k, outfit('Regular'), 12, MUTED));
@@ -2848,8 +2954,10 @@ async function buildUniqueScreens() {
   dailyCard.layoutSizingVertical = 'HUG';
   dailyCard.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
   for (const [title, prog] of [
-    ['Пройти урок', '1/1'],
-    ['Тренировка печати', '0/1'],
+    ['Получить XP', '0/200'],
+    ['Закончить урок', '0/1'],
+    ['Выучить новые комбинации', '0/10'],
+    ['Пройти тренировку', '0/1'],
   ]) {
     const row = al('HORIZONTAL', title);
     row.primaryAxisAlignItems = 'SPACE_BETWEEN';
@@ -2860,8 +2968,8 @@ async function buildUniqueScreens() {
     row.resize(388, 10);
     row.layoutSizingHorizontal = 'FIXED';
     row.layoutSizingVertical = 'HUG';
-    row.appendChild(txt(title, outfit('Regular'), 13, MUTED));
-    row.appendChild(txt(prog, outfit('SemiBold'), 13, BRAND800));
+    row.appendChild(txt(title, outfit('Regular'), 13, MUTED, 260));
+    row.appendChild(txt(prog, outfit('SemiBold'), 13, MUTED));
     dailyCard.appendChild(row);
   }
   const achCard = al('VERTICAL', 'Recent achievements');
@@ -2874,7 +2982,13 @@ async function buildUniqueScreens() {
   achCard.layoutSizingHorizontal = 'FIXED';
   achCard.layoutSizingVertical = 'HUG';
   achCard.appendChild(txt('Последние достижения', outfit('SemiBold'), 16, INK));
-  achCard.appendChild(txt('Первый урок', outfit('Regular'), 13, INK));
+  achCard.appendChild(
+    instEmpty(
+      'Пройдите первый урок, чтобы открыть достижения',
+      'Учитесь и тренируйтесь — бейджи откроются автоматически.',
+    ) ||
+      txt('Пройдите первый урок, чтобы открыть достижения', outfit('Regular'), 13, MUTED, 380),
+  );
   const dashCols = al('HORIZONTAL', 'dash cols');
   dashCols.itemSpacing = 12;
   dashCols.appendChild(dailyCard);
@@ -2993,6 +3107,20 @@ async function buildUniqueScreens() {
       floatOrInst('State=Default', 'username', { width: 360 }),
       floatOrInst('State=Default', 'Email', { width: 360 }),
       floatOrInst('State=Password', 'Пароль', { password: true, width: 360 }),
+      instPrimary('Создать аккаунт'),
+    ],
+    'Уже есть аккаунт? Войти',
+    { compact: true },
+  );
+  const registerPassword = authScreen(
+    'Регистрация',
+    'Добро пожаловать в KeyMaster',
+    [
+      floatOrInst('State=Default', 'Имя', { width: 360 }),
+      floatOrInst('State=Default', 'username', { width: 360 }),
+      floatOrInst('State=Default', 'Email', { width: 360 }),
+      floatOrInst('State=PasswordFilled', 'Пароль', { password: true, width: 360, value: '••••••••' }),
+      instStrength(1) || txt('km-password-strength', outfit('Regular'), 10, MUTED),
       instPrimary('Создать аккаунт'),
     ],
     'Уже есть аккаунт? Войти',
@@ -3414,10 +3542,17 @@ async function buildUniqueScreens() {
 
   const statTiles = al('HORIZONTAL', 'Stats tiles');
   statTiles.itemSpacing = 12;
+  statTiles.layoutWrap = 'WRAP';
+  statTiles.resize(860, 10);
+  statTiles.layoutSizingHorizontal = 'FIXED';
+  statTiles.layoutSizingVertical = 'HUG';
   for (const [k, v] of [
-    ['Изучено комбинаций', '42'],
-    ['Точность', '91%'],
-    ['Серия', '4'],
+    ['Изучено комбинаций', '0'],
+    ['Средняя точность', '0%'],
+    ['Серия дней', '1'],
+    ['Среднее время ответа', '0 ms'],
+    ['Лучший speed score', '0'],
+    ['Лучший экзамен', '0%'],
   ]) {
     const t = al('VERTICAL', k);
     t.itemSpacing = 4;
@@ -3425,13 +3560,39 @@ async function buildUniqueScreens() {
     t.paddingLeft = t.paddingRight = 16;
     t.cornerRadius = 24;
     t.fills = [solid(WHITE)];
-    t.resize(220, 10);
+    t.resize(270, 10);
     t.layoutSizingHorizontal = 'FIXED';
     t.layoutSizingVertical = 'HUG';
     t.appendChild(txt(k, outfit('Regular'), 12, MUTED));
     t.appendChild(txt(v, outfit('SemiBold'), 22, INK));
     statTiles.appendChild(t);
   }
+  const answersChart = al('VERTICAL', 'Ответы');
+  answersChart.itemSpacing = 12;
+  answersChart.paddingTop = answersChart.paddingBottom = 24;
+  answersChart.paddingLeft = answersChart.paddingRight = 24;
+  answersChart.cornerRadius = 24;
+  answersChart.fills = [solid(WHITE)];
+  answersChart.resize(860, 10);
+  answersChart.layoutSizingHorizontal = 'FIXED';
+  answersChart.layoutSizingVertical = 'HUG';
+  answersChart.appendChild(txt('Ответы', outfit('SemiBold'), 16, INK));
+  const bars = al('HORIZONTAL', 'chart');
+  bars.itemSpacing = 48;
+  bars.counterAxisAlignItems = 'MAX';
+  for (const label of ['Верно', 'Ошибки']) {
+    const col = al('VERTICAL', label);
+    col.itemSpacing = 8;
+    col.primaryAxisAlignItems = 'CENTER';
+    const bar = figma.createRectangle();
+    bar.resize(64, 8);
+    bar.cornerRadius = 8;
+    bar.fills = [solid({ r: 0.388, g: 0.4, b: 0.945 }, 0.35)];
+    col.appendChild(bar);
+    col.appendChild(txt(label, outfit('Regular'), 12, MUTED));
+    bars.appendChild(col);
+  }
+  answersChart.appendChild(bars);
 
   function adminTabBar(active) {
     const tabs = al('HORIZONTAL', 'Admin tabs ' + active);
@@ -4001,12 +4162,12 @@ async function buildUniqueScreens() {
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', false, [lessonStudy]),
       marketingPage('Path /path', 'Мой путь', false, [
         txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
-        txt('Developer Growth Path', outfit('SemiBold'), 24, INK),
+        txt('Developer Growth Path', fraunces('Bold'), 32, INK),
         txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.', outfit('Regular'), 13, MUTED, 800),
         txt('Не дублировать каждый узел курса — 5 статусов покрывают карту.', outfit('Regular'), 12, MUTED, 800),
         pathRow,
       ]),
-      marketingPage('Dashboard /dashboard', 'Главная', false, [dash]),
+      marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
         txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800),
         txt('Рейтинг', fraunces('Bold'), 32, INK),
@@ -4035,16 +4196,17 @@ async function buildUniqueScreens() {
         })(),
         podium,
       ]),
-      marketingPage('Achievements /achievements', 'Главная', false, [
-        txt('Достижения', outfit('SemiBold'), 28, INK),
+      marketingPage('Achievements /achievements', '', false, [
+        txt('Достижения', fraunces('Bold'), 32, INK),
         txt('Locked = grayscale. Не дублировать каждый бейдж.', outfit('Regular'), 13, MUTED, 720),
         achRow,
       ]),
-      marketingPage('Stats /stats', 'Главная', false, [
-        txt('Статистика', outfit('SemiBold'), 28, INK),
+      marketingPage('Stats /stats', '', false, [
+        txt('Статистика', outfit('Bold'), 30, INK),
         statTiles,
+        answersChart,
       ]),
-      marketingPage('Admin /admin', 'Главная', false, [
+      marketingPage('Admin /admin', '', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
         txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
         adminTabs,
@@ -4079,7 +4241,7 @@ async function buildUniqueScreens() {
           return grid;
         })(),
       ], false, true),
-      marketingPage('Admin courses /admin', 'Главная', false, [
+      marketingPage('Admin courses /admin', '', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
         txt('Курсы, уроки, пользователи и достижения · вкладка Курсы, тот же layout.', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Курсы'),
@@ -4089,7 +4251,7 @@ async function buildUniqueScreens() {
         txt('programmer-basics     Основы программиста              18', outfit('Regular'), 13, INK, 800),
         instPrimary('Создать'),
       ], false, true),
-      marketingPage('Admin users /admin', 'Главная', false, [
+      marketingPage('Admin users /admin', '', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
         txt('Курсы, уроки, пользователи и достижения · вкладка Пользователи.', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Пользователи'),
@@ -4098,7 +4260,7 @@ async function buildUniqueScreens() {
         txt('learner@example.com   learner      Анна              0    1        ☐', outfit('Regular'), 13, INK, 860),
         txt('admin@example.com     siteadmin    KeyMaster Admin   0    1        ☑', outfit('Regular'), 13, INK, 860),
       ], false, true),
-      marketingPage('Admin achievements /admin', 'Главная', false, [
+      marketingPage('Admin achievements /admin', '', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
         txt('Вкладка Достижения · тот же layout. Не дублировать каждый бейдж.', outfit('Regular'), 13, MUTED, 800),
         adminTabBar('Достижения'),
@@ -4135,7 +4297,7 @@ async function buildUniqueScreens() {
           return list;
         })(),
       ], false, true),
-      marketingPage('Admin forbidden', 'Главная', false, [
+      marketingPage('Admin forbidden', '', false, [
         txt('Доступ только для администраторов', outfit('SemiBold'), 22, INK, 800),
       ]),
     ]),
@@ -4161,6 +4323,7 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Login OTP /login', 'Главная', true, [loginOtp]),
       marketingPage('Register /register', 'Главная', true, [registerCard]),
+      marketingPage('Register password /register', 'Главная', true, [registerPassword]),
       marketingPage('Register OTP /register', 'Главная', true, [registerOtp]),
       marketingPage('Verify email /verify-email', 'Главная', true, [verifyCard]),
       marketingPage('Auth callback /auth/callback', 'Главная', true, [callbackCard]),
@@ -4434,6 +4597,74 @@ async function buildUniqueScreens() {
     { compact: true, dark: true },
   );
 
+  const darkDash = al('VERTICAL', 'Dark Dashboard body');
+  darkDash.itemSpacing = 16;
+  darkDash.appendChild(txt('Привет, Анна!', fraunces('Bold'), 28, DARK_TEXT));
+  darkDash.appendChild(txt('Личный кабинет KeyMaster', outfit('Regular'), 14, DARK_MUTED));
+  const darkNext = al('VERTICAL', 'Dark NextStepCard');
+  darkNext.itemSpacing = 10;
+  darkNext.paddingTop = darkNext.paddingBottom = 24;
+  darkNext.paddingLeft = darkNext.paddingRight = 24;
+  darkNext.cornerRadius = 24;
+  darkNext.fills = [solid(DARK_CARD)];
+  darkNext.strokes = [solid(BRAND, 0.35)];
+  darkNext.appendChild(txt('СЕГОДНЯ', outfit('Bold'), 11, BRAND500));
+  darkNext.appendChild(txt('Первый ноутбук: файлы и папки', fraunces('SemiBold'), 24, DARK_TEXT, 800));
+  darkNext.appendChild(txt('XP 0 · пройдено 0/20 · дальше: First Laptop', outfit('Regular'), 13, DARK_MUTED, 800));
+  const darkNextBtns = al('HORIZONTAL', 'dark next ctas');
+  darkNextBtns.itemSpacing = 8;
+  darkNextBtns.appendChild(instPrimary('Приступить'));
+  darkNextBtns.appendChild(secondaryBtn('Открыть путь обучения', 'dark'));
+  darkNext.appendChild(darkNextBtns);
+  darkNext.appendChild(txt('Novice Operator', outfit('Regular'), 12, DARK_MUTED));
+  darkDash.appendChild(darkNext);
+  darkDash.appendChild(txt('Ближайшие этапы', outfit('SemiBold'), 16, DARK_TEXT));
+  darkDash.appendChild(txt('01 Начать · 02–04 Заблокировано', outfit('Regular'), 13, DARK_MUTED, 800));
+  const darkTiles = al('HORIZONTAL', 'Dark stat tiles');
+  darkTiles.itemSpacing = 12;
+  for (const [k, v] of [
+    ['Уровень', 'Новичок'],
+    ['XP', '0'],
+    ['Ежедневная серия', '1 дн.'],
+  ]) {
+    const t = al('VERTICAL', k);
+    t.itemSpacing = 4;
+    t.paddingTop = t.paddingBottom = 16;
+    t.paddingLeft = t.paddingRight = 16;
+    t.cornerRadius = 16;
+    t.fills = [solid(DARK_CARD)];
+    t.resize(280, 10);
+    t.layoutSizingHorizontal = 'FIXED';
+    t.layoutSizingVertical = 'HUG';
+    t.appendChild(txt(k, outfit('Regular'), 12, DARK_MUTED));
+    t.appendChild(txt(v, outfit('SemiBold'), 22, DARK_TEXT));
+    darkTiles.appendChild(t);
+  }
+  darkDash.appendChild(darkTiles);
+
+  const darkPathRow = al('HORIZONTAL', 'Dark Path nodes');
+  darkPathRow.itemSpacing = 12;
+  for (const [title, status, locked] of [
+    ['Start', 'Начать', false],
+    ['Первый ноутбук', 'Продолжается', false],
+    ['Shortcut Legend', 'Заблокировано', true],
+  ]) {
+    const c = al('VERTICAL', title);
+    c.itemSpacing = 8;
+    c.paddingTop = c.paddingBottom = 16;
+    c.paddingLeft = c.paddingRight = 16;
+    c.cornerRadius = 16;
+    c.fills = [solid(DARK_CARD)];
+    c.strokes = [solid(locked ? WHITE : BRAND, locked ? 0.12 : 0.4)];
+    c.opacity = locked ? 0.7 : 1;
+    c.resize(260, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(txt(status, outfit('Bold'), 11, locked ? DARK_MUTED : BRAND500));
+    c.appendChild(txt(title, outfit('SemiBold'), 14, DARK_TEXT, 228));
+    darkPathRow.appendChild(c);
+  }
+
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
@@ -4459,6 +4690,13 @@ async function buildUniqueScreens() {
         ],
         true,
       ),
+      marketingPage('Dark Path / html.dark', 'Мой путь', false, [
+        txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND500),
+        txt('Developer Growth Path', fraunces('Bold'), 32, DARK_TEXT),
+        txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше.', outfit('Regular'), 13, DARK_MUTED, 800),
+        darkPathRow,
+      ], true),
+      marketingPage('Dark Dashboard / html.dark', '', false, [darkDash], true),
     ]),
   );
   board.appendChild(
