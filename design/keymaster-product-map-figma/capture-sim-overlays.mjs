@@ -791,6 +791,41 @@ await run('desktop-newfolder', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-newfolder.jpg', w, h, snippet: value };
 });
 
+await run('desktop-newfile', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-newfile.jpg');
+  await resetDesktopFirstTask(page);
+  const root = page.locator('.bolt-desktop-root');
+  await root.waitFor({ timeout: 10000 });
+  const box = await root.boundingBox();
+  await page.mouse.click(box.x + box.width * 0.42, box.y + box.height * 0.38, { button: 'right' });
+  await page.getByText('Новый файл', { exact: true }).click();
+  const rename = page.locator('.bolt-desktop-root input');
+  await rename.waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const value = await rename.inputValue();
+  return { file: 'desktop-learner-simulator-desktop-newfile.jpg', w, h, snippet: value };
+});
+
+await run('desktop-menupaste', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-menupaste.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Welcome.txt', { exact: true }).click({ button: 'right' });
+  await page.getByText('Копировать', { exact: true }).click();
+  const root = page.locator('.bolt-desktop-root');
+  await root.waitFor({ timeout: 10000 });
+  const box = await root.boundingBox();
+  await page.mouse.click(box.x + box.width * 0.42, box.y + box.height * 0.38, { button: 'right' });
+  await page.getByText('Открыть проводник', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Вставить', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-menupaste.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await run('training-explain', desk, async (page) => {
   const dest = path.join(shotsDir, 'desktop-learner-training-explain.jpg');
   await login(page, 'learner@example.com', 'learn123');

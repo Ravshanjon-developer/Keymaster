@@ -378,6 +378,8 @@ if (!names.includes('Learner / Typing busy')) fail.push('no typing-busy capture'
 if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capture');
 if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
+if (!names.includes('Desktop new file /simulator?mode=desktop')) fail.push('no desktop new-file unique screen');
+if (!names.includes('Desktop paste menu /simulator?mode=desktop')) fail.push('no desktop paste-menu unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -406,6 +408,8 @@ if (!names.includes('Desktop recycle-bin full /simulator?mode=desktop')) fail.pu
 if (!names.includes('Learner / Desktop recycle-bin full')) fail.push('no desktop trash-full capture');
 if (!names.includes('Training correct /training')) fail.push('no training-correct unique screen');
 if (!names.includes('Learner / Desktop new folder')) fail.push('no desktop new-folder capture');
+if (!names.includes('Learner / Desktop new file')) fail.push('no desktop new-file capture');
+if (!names.includes('Learner / Desktop paste menu')) fail.push('no desktop paste-menu capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1112,7 +1116,7 @@ for (const p of pages) {
 if (!deskUnique || !namesUnder(deskUnique).includes('Этот компьютер') || !namesUnder(deskUnique).includes('С чего начать')) {
   fail.push('desktop unique missing live Этот компьютер icon + first-run hint');
 }
-if (!deskMenuUnique || !namesUnder(deskMenuUnique).includes('Новый файл') || !namesUnder(deskMenuUnique).includes('Открыть проводник') || namesUnder(deskMenuUnique).includes('С чего начать')) {
+if (!deskMenuUnique || !namesUnder(deskMenuUnique).includes('Новый файл') || !namesUnder(deskMenuUnique).includes('Открыть проводник') || namesUnder(deskMenuUnique).includes('С чего начать') || namesUnder(deskMenuUnique).includes('Вставить')) {
   fail.push('desktop context-menu unique should show wallpaper menu without first-run');
 }
 if (!deskExplUnique || !namesUnder(deskExplUnique).includes('/Рабочий стол') || !namesUnder(deskExplUnique).includes('1 объектов')) {
@@ -1327,6 +1331,8 @@ let typingBusyUnique = null;
 let typingPausedUnique = null;
 let typingResultUnique = null;
 let deskNewFolderUnique = null;
+let deskNewFileUnique = null;
+let deskMenuPasteUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1371,6 +1377,8 @@ for (const p of pages) {
   typingPausedUnique = typingPausedUnique || findByName(p, 'Typing paused /typing');
   typingResultUnique = typingResultUnique || findByName(p, 'Typing result /typing');
   deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
+  deskNewFileUnique = deskNewFileUnique || findByName(p, 'Desktop new file /simulator?mode=desktop');
+  deskMenuPasteUnique = deskMenuPasteUnique || findByName(p, 'Desktop paste menu /simulator?mode=desktop');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1466,8 +1474,14 @@ if (!typingPausedUnique || !namesUnder(typingPausedUnique).includes('Пауза'
 if (!typingResultUnique || !namesUnder(typingResultUnique).includes('ПОДХОД ЗАВЕРШЁН') || !namesUnder(typingResultUnique).includes('личный рекорд') || !namesUnder(typingResultUnique).includes('Новое достижение: Первая тренировка') || !namesUnder(typingResultUnique).includes('Точность уже хорошая — добавьте чуть темпа.') || !namesUnder(typingResultUnique).includes('Тренажёр печати') || namesUnder(typingResultUnique).includes('Пауза') || namesUnder(typingResultUnique).includes('Esc — продолжить')) {
   fail.push('typing-result unique missing live ResultCard copy');
 }
-if (!deskNewFolderUnique || !namesUnder(deskNewFolderUnique).includes('Новая папка') || !namesUnder(deskNewFolderUnique).includes('rename input') || namesUnder(deskNewFolderUnique).includes('С чего начать') || namesUnder(deskNewFolderUnique).includes('Открыть проводник')) {
+if (!deskNewFolderUnique || !namesUnder(deskNewFolderUnique).includes('Новая папка') || !namesUnder(deskNewFolderUnique).includes('rename input') || namesUnder(deskNewFolderUnique).includes('С чего начать') || namesUnder(deskNewFolderUnique).includes('Открыть проводник') || namesUnder(deskNewFolderUnique).includes('newfile.txt')) {
   fail.push('desktop new-folder unique missing live inline rename without context menu or first-run');
+}
+if (!deskNewFileUnique || !namesUnder(deskNewFileUnique).includes('newfile.txt') || !namesUnder(deskNewFileUnique).includes('newfile rename input') || namesUnder(deskNewFileUnique).includes('С чего начать') || namesUnder(deskNewFileUnique).includes('Открыть проводник') || namesUnder(deskNewFileUnique).includes('rename input')) {
+  fail.push('desktop new-file unique missing live inline rename newfile.txt without context menu or first-run');
+}
+if (!deskMenuPasteUnique || !namesUnder(deskMenuPasteUnique).includes('Вставить') || !namesUnder(deskMenuPasteUnique).includes('Открыть проводник') || namesUnder(deskMenuPasteUnique).includes('С чего начать') || namesUnder(deskMenuPasteUnique).includes('Обновить')) {
+  fail.push('desktop paste-menu unique missing live wallpaper ПКМ with Вставить');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');
