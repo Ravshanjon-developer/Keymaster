@@ -304,6 +304,10 @@ if (!names.includes('Courses filter start /courses')) fail.push('no catalog star
 if (!names.includes('Guest / Courses filter start')) fail.push('no catalog start-filter capture');
 if (!names.includes('Learner / Leaderboard')) fail.push('no authed leaderboard capture');
 if (!names.includes('Mobile / Home authed')) fail.push('no authed mobile home capture');
+if (!names.includes('Mobile Leaderboard 390')) fail.push('no guest mobile leaderboard unique screen');
+if (!names.includes('Mobile Leaderboard authed 390')) fail.push('no authed mobile leaderboard unique screen');
+if (!names.includes('Mobile / Leaderboard')) fail.push('no guest mobile leaderboard capture');
+if (!names.includes('Mobile / Leaderboard authed')) fail.push('no authed mobile leaderboard capture');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
@@ -519,6 +523,18 @@ if (!mobileHomeAuthedUnique || !namesUnder(mobileHomeAuthedUnique).includes('В�
 }
 if (mobileHomeAuthedUnique && namesUnder(mobileHomeAuthedUnique).includes('Начать бесплатно →')) {
   fail.push('authed mobile home unique still uses guest CTA');
+}
+let mobileLbGuestUnique = null;
+let mobileLbAuthedUnique = null;
+for (const p of pages) {
+  mobileLbGuestUnique = mobileLbGuestUnique || findByName(p, 'Mobile Leaderboard 390');
+  mobileLbAuthedUnique = mobileLbAuthedUnique || findByName(p, 'Mobile Leaderboard authed 390');
+}
+if (!mobileLbGuestUnique || !namesUnder(mobileLbGuestUnique).includes('Регистрация') || namesUnder(mobileLbGuestUnique).includes('ВЫ')) {
+  fail.push('guest mobile leaderboard unique should show Регистрация without ВЫ');
+}
+if (!mobileLbAuthedUnique || !namesUnder(mobileLbAuthedUnique).includes('Выйти') || !namesUnder(mobileLbAuthedUnique).includes('ВЫ') || namesUnder(mobileLbAuthedUnique).includes('Регистрация')) {
+  fail.push('authed mobile leaderboard unique should show Выйти + ВЫ without Регистрация');
 }
 if (!mobileLogin || !namesUnder(mobileLogin).includes('Добро пожаловать в KeyMaster')) {
   fail.push('mobile login unique screen missing AuthCard subtitle');
