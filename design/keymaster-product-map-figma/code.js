@@ -1238,6 +1238,7 @@ async function buildVisualFlows() {
     ]],
     ['F4 Learning path', [
       ['desktop-learner-09-path-viewport.jpg', 'Path'],
+      ['desktop-learner-path-loading.jpg', 'Path loading'],
       ['desktop-learner-09-path.jpg', 'Path full scroll'],
       ['desktop-learner-courses.jpg', 'Authed catalog'],
       ['desktop-learner-course-vscode.jpg', 'Authed vscode'],
@@ -1286,15 +1287,20 @@ async function buildVisualFlows() {
     ]],
     ['F10 Progress', [
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
+      ['desktop-learner-dashboard-daily-empty.jpg', 'Daily empty'],
+      ['desktop-learner-dashboard-loading.jpg', 'Dashboard loading'],
       ['desktop-learner-20-stats.jpg', 'Stats'],
+      ['desktop-learner-stats-loading.jpg', 'Stats loading'],
     ]],
     ['F11 Admin', [
       ['desktop-admin-24-admin.jpg', 'Overview'],
+      ['desktop-admin-overview-loading.jpg', 'Overview loading'],
       ['desktop-admin-courses.jpg', 'Courses'],
       ['desktop-admin-course-create.jpg', 'Create course'],
       ['desktop-admin-course-editor.jpg', 'Course editor'],
       ['desktop-admin-users.jpg', 'Users'],
       ['desktop-admin-achievements.jpg', 'Achievements'],
+      ['desktop-admin-achievement-create.jpg', 'Create achievement'],
       ['desktop-learner-21-admin-forbidden.jpg', 'Forbidden'],
     ]],
     ['F12 Theme + locale', [
@@ -1398,12 +1404,12 @@ async function buildSitemap() {
         ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty · filter start'],
         ['/courses/:slug', 'Course detail', 'guest/authed × Desktop vs start+Training vs vscode Training · not found'],
         ['/lessons/:id', 'Lesson', 'hotkey | task | study guest/authed/learned | desktop-task · loading · done'],
-        ['/path', 'Learning path', 'protected'],
+        ['/path', 'Learning path', 'protected · loading 5×h-36'],
         ['/leaderboard', 'Leaderboard', 'public · authed Вы · empty · period empty · api down · loading · outside top'],
         ['/achievements', 'Achievements', 'locked / empty / loading / unlocked mix'],
-        ['/dashboard', 'Dashboard', 'XP · streak'],
-        ['/stats', 'Stats', 'protected'],
-        ['/admin', 'Admin', 'overview · courses · create · editor · empty · editor loading · users · achievements · forbidden'],
+        ['/dashboard', 'Dashboard', 'XP · streak · daily empty · stages loading'],
+        ['/stats', 'Stats', 'protected · loading h-64'],
+        ['/admin', 'Admin', 'overview · courses · create · editor · empty · loadings · users · achievements create · forbidden'],
       ],
     ],
     [
@@ -6330,6 +6336,27 @@ async function buildUniqueScreens() {
       marketingPage('Lesson desktop-task done /lessons/:id', 'Курсы', false, [lessonDesktopDone]),
       marketingPage('Lesson loading /lessons/:id', 'Курсы', true, [lessonLoading]),
       marketingPage('Path /path', 'Мой путь', false, pathBody),
+      marketingPage('Path loading /path', 'Мой путь', false, [
+        txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
+        txt('Developer Growth Path', fraunces('Bold'), 32, INK),
+        txt(
+          'От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.',
+          outfit('Regular'),
+          13,
+          MUTED,
+          800,
+        ),
+        (() => {
+          const col = al('VERTICAL', 'Path skeletons');
+          col.itemSpacing = 24;
+          col.primaryAxisAlignItems = 'CENTER';
+          for (let i = 0; i < 5; i++) col.appendChild(skelBlock(384, 144, 'Kind=Card'));
+          col.appendChild(
+            txt('Path loading — hero stays, 5× Skeleton h-36 max-w-sm. Not dashboard PathStageStrip h-24.', outfit('Regular'), 12, MUTED, 720),
+          );
+          return col;
+        })(),
+      ]),
       marketingPage('Path guest /path', 'Мой путь', true, [
         txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
         txt('Developer Growth Path', fraunces('Bold'), 32, INK),
@@ -6371,6 +6398,75 @@ async function buildUniqueScreens() {
         txt('Гостевой /path — те же курсы, прогресс только после входа. Не дублировать всю карту.', outfit('Regular'), 12, MUTED, 800),
       ]),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
+      marketingPage('Dashboard daily empty /dashboard', '', false, [
+        txt('Привет, Анна!', fraunces('Bold'), 28, INK),
+        txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED),
+        (() => {
+          const nextCard = al('VERTICAL', 'NextStepCard');
+          nextCard.itemSpacing = 10;
+          nextCard.paddingTop = nextCard.paddingBottom = 24;
+          nextCard.paddingLeft = nextCard.paddingRight = 24;
+          nextCard.cornerRadius = 24;
+          nextCard.fills = [solid(BRAND50, 0.8)];
+          nextCard.strokes = [solid(BRAND, 0.25)];
+          nextCard.appendChild(txt('СЕГОДНЯ', outfit('Bold'), 11, BRAND800));
+          nextCard.appendChild(txt('Первый ноутбук: файлы и папки', fraunces('SemiBold'), 24, INK, 800));
+          nextCard.appendChild(txt('XP 0 · пройдено 0/20 · дальше: First Laptop', outfit('Regular'), 13, MUTED, 800));
+          return nextCard;
+        })(),
+        (() => {
+          const dailyCard = al('VERTICAL', 'Daily empty');
+          dailyCard.itemSpacing = 8;
+          dailyCard.paddingTop = dailyCard.paddingBottom = 16;
+          dailyCard.paddingLeft = dailyCard.paddingRight = 16;
+          dailyCard.cornerRadius = 24;
+          dailyCard.fills = [solid(WHITE)];
+          dailyCard.resize(420, 10);
+          dailyCard.layoutSizingHorizontal = 'FIXED';
+          dailyCard.layoutSizingVertical = 'HUG';
+          dailyCard.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
+          dailyCard.appendChild(
+            txt(
+              'Задания на сегодня появятся после следующей активности.',
+              outfit('Regular'),
+              13,
+              MUTED,
+              380,
+            ),
+          );
+          dailyCard.appendChild(
+            txt('Dashboard daily empty — paragraph, not EmptyState. Stages stay filled.', outfit('Regular'), 12, MUTED, 380),
+          );
+          return dailyCard;
+        })(),
+      ]),
+      marketingPage('Dashboard loading /dashboard', '', false, [
+        txt('Привет, Анна!', fraunces('Bold'), 28, INK),
+        txt('Личный кабинет KeyMaster', outfit('Regular'), 14, MUTED),
+        (() => {
+          const row = al('HORIZONTAL', 'PathStageStrip loading');
+          row.itemSpacing = 12;
+          for (let i = 0; i < 4; i++) row.appendChild(skelBlock(200, 96, 'Kind=Card'));
+          return row;
+        })(),
+        (() => {
+          const daily = al('VERTICAL', 'Daily loading');
+          daily.itemSpacing = 8;
+          daily.paddingTop = daily.paddingBottom = 16;
+          daily.paddingLeft = daily.paddingRight = 16;
+          daily.cornerRadius = 24;
+          daily.fills = [solid(WHITE)];
+          daily.resize(420, 10);
+          daily.layoutSizingHorizontal = 'FIXED';
+          daily.layoutSizingVertical = 'HUG';
+          daily.appendChild(txt('Ежедневные задания', outfit('SemiBold'), 16, INK));
+          for (let i = 0; i < 4; i++) daily.appendChild(skelBlock(380, 40, 'Kind=Line'));
+          daily.appendChild(
+            txt('Dashboard loading — PathStageStrip 4×h-24, no stages heading; daily 4×h-10.', outfit('Regular'), 12, MUTED, 380),
+          );
+          return daily;
+        })(),
+      ]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
         makeLbHero('Leaderboard hero', 'all'),
         podium,
@@ -6600,6 +6696,25 @@ async function buildUniqueScreens() {
         statTiles,
         answersChart,
       ]),
+      marketingPage('Stats loading /stats', '', false, [
+        txt('Статистика', outfit('Bold'), 30, INK),
+        skelBlock(800, 256, 'Kind=Card'),
+        txt('Stats loading — title + Skeleton h-64. Tiles and chart are not shown yet.', outfit('Regular'), 12, MUTED, 800),
+      ]),
+      marketingPage('Route fallback', '', true, [
+        skelBlock(320, 40, 'Kind=Line'),
+        (() => {
+          const grid = al('HORIZONTAL', 'Fallback skeleton grid');
+          grid.itemSpacing = 16;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(860, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          for (let i = 0; i < 3; i++) grid.appendChild(skelBlock(276, 192, 'Kind=Card'));
+          return grid;
+        })(),
+        txt('Route fallback — PageFallback Skeleton h-10 + SkeletonCardGrid count=3, not catalog 9.', outfit('Regular'), 12, MUTED, 800),
+      ]),
       marketingPage('Admin /admin', '', false, [
         txt('Админ-панель', fraunces('Bold'), 32, INK),
         txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
@@ -6634,6 +6749,11 @@ async function buildUniqueScreens() {
           }
           return grid;
         })(),
+      ], false, true),
+      marketingPage('Admin overview loading /admin', '', false, [
+        ...adminHeader('Обзор'),
+        skelBlock(860, 160, 'Kind=Card'),
+        txt('Admin overview loading — tabs stay, Skeleton h-40, no tiles.', outfit('Regular'), 12, MUTED, 800),
       ], false, true),
       marketingPage('Admin courses /admin', '', false, [
         txt('Админ-панель', fraunces('Bold'), 32, INK),
@@ -6692,6 +6812,11 @@ async function buildUniqueScreens() {
         txt('admin@example.com  ·  siteadmin  ·  KeyMaster Admin  ·  0  ·  1  ·  ☑', outfit('Regular'), 13, INK, 860),
         txt('Имя и XP редактируются на месте. Админ не удаляет сам себя.', outfit('Regular'), 12, MUTED, 860),
       ], false, true),
+      marketingPage('Admin users loading /admin', '', false, [
+        ...adminHeader('Пользователи'),
+        skelBlock(860, 192, 'Kind=Card'),
+        txt('Admin users loading — early return Skeleton h-48, no search field.', outfit('Regular'), 12, MUTED, 800),
+      ], false, true),
       marketingPage('Admin achievements /admin', '', false, [
         txt('Админ-панель', fraunces('Bold'), 32, INK),
         txt('Курсы, уроки, пользователи и достижения', outfit('Regular'), 13, MUTED, 800),
@@ -6729,6 +6854,52 @@ async function buildUniqueScreens() {
           list.appendChild(txt('Не дублировать все 13 бейджей — 3 строки покрывают CRUD layout.', outfit('Regular'), 12, MUTED, 800));
           return list;
         })(),
+      ], false, true),
+      marketingPage('Admin achievement create /admin', '', false, [
+        ...adminHeader('Достижения'),
+        instPrimary('+ Создать'),
+        (() => {
+          const form = al('VERTICAL', 'Achievement create form');
+          form.itemSpacing = 12;
+          form.paddingTop = form.paddingBottom = 20;
+          form.paddingLeft = form.paddingRight = 20;
+          form.cornerRadius = 16;
+          form.fills = [solid(WHITE)];
+          form.strokes = [solid(INK, 0.08)];
+          form.resize(860, 10);
+          form.layoutSizingHorizontal = 'FIXED';
+          form.layoutSizingVertical = 'HUG';
+          const grid = al('HORIZONTAL', 'ach create grid');
+          grid.itemSpacing = 12;
+          grid.layoutWrap = 'WRAP';
+          grid.resize(820, 10);
+          grid.layoutSizingHorizontal = 'FIXED';
+          grid.layoutSizingVertical = 'HUG';
+          grid.appendChild(field('Slug', '', INK));
+          grid.appendChild(field('Название', '', INK));
+          grid.appendChild(field('Иконка', 'trophy', INK));
+          grid.appendChild(field('Бонус XP', '50', INK));
+          grid.appendChild(field('Тип условия', 'correct_answers', INK));
+          grid.appendChild(field('Значение', '1', INK));
+          form.appendChild(grid);
+          form.appendChild(field('Описание', '', INK));
+          form.appendChild(
+            txt(
+              'correct_answers · total_xp · streak_days · combo · course_complete',
+              outfit('Regular'),
+              11,
+              MUTED,
+              800,
+            ),
+          );
+          const actions = al('HORIZONTAL', 'ach create actions');
+          actions.itemSpacing = 8;
+          actions.appendChild(instPrimary('Сохранить'));
+          actions.appendChild(instSecondary('Отмена'));
+          form.appendChild(actions);
+          return form;
+        })(),
+        txt('Форма создания достижения. Список бейджей не дублировать.', outfit('Regular'), 12, MUTED, 800),
       ], false, true),
       marketingPage('Admin course editor /admin', '', false, [
         ...adminHeader('Курсы'),

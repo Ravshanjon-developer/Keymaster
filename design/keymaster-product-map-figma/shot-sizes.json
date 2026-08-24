@@ -398,5 +398,33 @@
   "desktop-learner-leaderboard-outside-top.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-path-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-stats-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-dashboard-daily-empty.jpg": {
+    "w": 1440,
+    "h": 1306
+  },
+  "desktop-learner-dashboard-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-overview-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-users-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-achievement-create.jpg": {
+    "w": 1440,
+    "h": 2294
   }
 }

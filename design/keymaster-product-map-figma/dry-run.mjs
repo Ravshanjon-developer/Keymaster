@@ -967,6 +967,70 @@ if (!lbOutsideUnique || !namesUnder(lbOutsideUnique).includes('Ваше мест
   fail.push('leaderboard outside-top unique missing live #12 banner + 2-1-3 podium');
 }
 
+if (!names.includes('Path loading /path')) fail.push('no path loading unique screen');
+if (!names.includes('Stats loading /stats')) fail.push('no stats loading unique screen');
+if (!names.includes('Dashboard daily empty /dashboard')) fail.push('no dashboard daily-empty unique screen');
+if (!names.includes('Dashboard loading /dashboard')) fail.push('no dashboard loading unique screen');
+if (!names.includes('Route fallback')) fail.push('no App PageFallback unique screen');
+if (!names.includes('Admin overview loading /admin')) fail.push('no admin overview-loading unique screen');
+if (!names.includes('Admin users loading /admin')) fail.push('no admin users-loading unique screen');
+if (!names.includes('Admin achievement create /admin')) fail.push('no admin achievement-create unique screen');
+if (!names.includes('Задания на сегодня появятся после следующей активности.')) {
+  fail.push('no live dashboard dailyEmptyDesc unique screen');
+}
+if (!names.includes('trophy')) fail.push('no live admin achievement default icon unique screen');
+if (!names.includes('correct_answers')) fail.push('no live admin achievement condition_type unique screen');
+if (!names.includes('Learner / Path loading')) fail.push('no path loading capture');
+if (!names.includes('Learner / Stats loading')) fail.push('no stats loading capture');
+if (!names.includes('Learner / Dashboard daily empty')) fail.push('no dashboard daily-empty capture');
+if (!names.includes('Learner / Dashboard loading')) fail.push('no dashboard loading capture');
+if (!names.includes('Admin / Overview loading')) fail.push('no admin overview-loading capture');
+if (!names.includes('Admin / Users loading')) fail.push('no admin users-loading capture');
+if (!names.includes('Admin / Achievement create')) fail.push('no admin achievement-create capture');
+
+let pathLoadUnique = null;
+let statsLoadUnique = null;
+let dashEmptyUnique = null;
+let dashLoadUnique = null;
+let routeFallbackUnique = null;
+let adminOvLoadUnique = null;
+let adminUsersLoadUnique = null;
+let adminAchCreateUnique = null;
+for (const p of pages) {
+  pathLoadUnique = pathLoadUnique || findByName(p, 'Path loading /path');
+  statsLoadUnique = statsLoadUnique || findByName(p, 'Stats loading /stats');
+  dashEmptyUnique = dashEmptyUnique || findByName(p, 'Dashboard daily empty /dashboard');
+  dashLoadUnique = dashLoadUnique || findByName(p, 'Dashboard loading /dashboard');
+  routeFallbackUnique = routeFallbackUnique || findByName(p, 'Route fallback');
+  adminOvLoadUnique = adminOvLoadUnique || findByName(p, 'Admin overview loading /admin');
+  adminUsersLoadUnique = adminUsersLoadUnique || findByName(p, 'Admin users loading /admin');
+  adminAchCreateUnique = adminAchCreateUnique || findByName(p, 'Admin achievement create /admin');
+}
+if (!pathLoadUnique || !namesUnder(pathLoadUnique).includes('Developer Growth Path') || !namesUnder(pathLoadUnique).includes('Skeleton instance')) {
+  fail.push('path loading unique should keep hero + 5 course skeletons');
+}
+if (!statsLoadUnique || !namesUnder(statsLoadUnique).includes('Статистика') || !namesUnder(statsLoadUnique).includes('Skeleton instance') || namesUnder(statsLoadUnique).includes('Ответы')) {
+  fail.push('stats loading unique should be title + h-64 without the answers chart');
+}
+if (!dashEmptyUnique || !namesUnder(dashEmptyUnique).includes('Задания на сегодня появятся после следующей активности.') || namesUnder(dashEmptyUnique).includes('Получить XP')) {
+  fail.push('dashboard daily-empty unique missing live paragraph or still shows filled daily rows');
+}
+if (!dashLoadUnique || !namesUnder(dashLoadUnique).includes('PathStageStrip loading') || namesUnder(dashLoadUnique).includes('Ближайшие этапы')) {
+  fail.push('dashboard loading unique should use PathStageStrip skeletons without stages heading');
+}
+if (!routeFallbackUnique || !namesUnder(routeFallbackUnique).includes('Skeleton instance')) {
+  fail.push('route fallback unique missing Skeleton instance');
+}
+if (!adminOvLoadUnique || !namesUnder(adminOvLoadUnique).includes('Skeleton instance') || namesUnder(adminOvLoadUnique).includes('Уроков пройдено')) {
+  fail.push('admin overview loading unique should keep tabs without overview tiles');
+}
+if (!adminUsersLoadUnique || !namesUnder(adminUsersLoadUnique).includes('Skeleton instance') || namesUnder(adminUsersLoadUnique).includes('Поиск…')) {
+  fail.push('admin users loading unique should be Skeleton h-48 without search');
+}
+if (!adminAchCreateUnique || !namesUnder(adminAchCreateUnique).includes('trophy') || !namesUnder(adminAchCreateUnique).includes('correct_answers') || !namesUnder(adminAchCreateUnique).includes('Отмена')) {
+  fail.push('admin achievement-create unique missing live trophy / correct_answers defaults');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));
