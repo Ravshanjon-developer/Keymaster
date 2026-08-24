@@ -379,8 +379,12 @@ if (!names.includes('Learner / Typing paused')) fail.push('no typing-paused capt
 if (!names.includes('Learner / Typing result')) fail.push('no typing-result capture');
 if (!names.includes('Desktop new folder /simulator?mode=desktop')) fail.push('no desktop new-folder unique screen');
 if (!names.includes('Training explain /training')) fail.push('no training-explain unique screen');
+if (!names.includes('Training correct /training')) fail.push('no training-correct unique screen');
 if (!names.includes('Learner / Desktop new folder')) fail.push('no desktop new-folder capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
+if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
+if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
+if (!names.includes('Learner / Exam timeout')) fail.push('no exam-timeout capture');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
 if (!names.includes('Admin users /admin')) fail.push('no admin users unique screen');
 if (!names.includes('Admin achievements /admin')) fail.push('no admin achievements unique screen');
@@ -1299,6 +1303,8 @@ let typingPausedUnique = null;
 let typingResultUnique = null;
 let deskNewFolderUnique = null;
 let trainExplainUnique = null;
+let trainCorrectUnique = null;
+let examTimeoutUnique = null;
 for (const p of pages) {
   simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
   simViewMenuUnique = simViewMenuUnique || findByName(p, 'Code Lab view menu /simulator');
@@ -1328,6 +1334,8 @@ for (const p of pages) {
   typingResultUnique = typingResultUnique || findByName(p, 'Typing result /typing');
   deskNewFolderUnique = deskNewFolderUnique || findByName(p, 'Desktop new folder /simulator?mode=desktop');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
+  trainCorrectUnique = trainCorrectUnique || findByName(p, 'Training correct /training');
+  examTimeoutUnique = examTimeoutUnique || findByName(p, 'Exam timeout /exam');
 }
 if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
   fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
@@ -1412,6 +1420,12 @@ if (!deskNewFolderUnique || !namesUnder(deskNewFolderUnique).includes('Нова�
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');
+}
+if (!trainCorrectUnique || !namesUnder(trainCorrectUnique).includes('Верно!') || !namesUnder(trainCorrectUnique).includes('Далее →') || !namesUnder(trainCorrectUnique).includes('Автоматически через 2…') || !namesUnder(trainCorrectUnique).includes('Ctrl + H') || !namesUnder(trainCorrectUnique).includes('Серия: 1') || namesUnder(trainCorrectUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainCorrectUnique).includes('К упражнению') || namesUnder(trainCorrectUnique).includes('Тренировка завершена')) {
+  fail.push('training-correct unique missing live waitingNext card');
+}
+if (!examTimeoutUnique || !namesUnder(examTimeoutUnique).includes('Время вышло') || !namesUnder(examTimeoutUnique).includes('10:02') || !namesUnder(examTimeoutUnique).includes('Без ответа') || namesUnder(examTimeoutUnique).includes('Сессия завершена')) {
+  fail.push('exam-timeout unique missing live Время вышло result card');
 }
 
 console.log(JSON.stringify(report, null, 2));

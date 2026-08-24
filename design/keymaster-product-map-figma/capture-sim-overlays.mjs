@@ -40,6 +40,57 @@ async function login(page, email, password) {
   await page.waitForFunction(() => (localStorage.getItem('km_token') || '').length > 20, { timeout: 20000 });
 }
 
+function playwrightKey(token) {
+  const map = {
+    Control: 'Control',
+    Ctrl: 'Control',
+    Shift: 'Shift',
+    Alt: 'Alt',
+    Meta: 'Meta',
+    Win: 'Meta',
+    Cmd: 'Meta',
+    Home: 'Home',
+    End: 'End',
+    Enter: 'Enter',
+    Tab: 'Tab',
+    Escape: 'Escape',
+    Esc: 'Escape',
+    Backspace: 'Backspace',
+    Delete: 'Delete',
+    Space: 'Space',
+    Slash: '/',
+    Backquote: '`',
+    ArrowUp: 'ArrowUp',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    PageUp: 'PageUp',
+    PageDown: 'PageDown',
+    Insert: 'Insert',
+  };
+  if (map[token]) return map[token];
+  if (/^F\d{1,2}$/.test(token)) return token;
+  if (/^Key[A-Z]$/.test(token)) return token.slice(-1).toLowerCase();
+  if (/^Digit\d$/.test(token)) return token.slice(-1);
+  if (token.length === 1) return token;
+  return token;
+}
+
+async function pressChord(page, keys) {
+  const modSet = new Set(['Control', 'Shift', 'Alt', 'Meta']);
+  const normalized = keys.map((k) => {
+    if (k === 'Ctrl') return 'Control';
+    if (k === 'Win' || k === 'Cmd' || k === 'Command') return 'Meta';
+    return k;
+  });
+  const held = normalized.filter((k) => modSet.has(k));
+  const mains = normalized.filter((k) => !modSet.has(k));
+  for (const m of held) await page.keyboard.down(playwrightKey(m));
+  for (const main of mains) await page.keyboard.down(playwrightKey(main));
+  for (const main of [...mains].reverse()) await page.keyboard.up(playwrightKey(main));
+  for (const m of [...held].reverse()) await page.keyboard.up(playwrightKey(m));
+}
+
 async function openDesktop(page) {
   await login(page, 'learner@example.com', 'learn123');
   await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
@@ -752,6 +803,61 @@ await run('training-explain', desk, async (page) => {
   const { w, h } = jpegSize(fs.readFileSync(dest));
   const snippet = await page.locator('main').innerText();
   return { file: 'desktop-learner-training-explain.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('training-correct', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-training-correct.jpg');
+  let lessons = [];
+  await page.route('**/training/random**', async (route) => {
+    const res = await route.fetch();
+    try {
+      lessons = await res.json();
+    } catch {
+      lessons = [];
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(lessons),
+    });
+  });
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/training', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Объяснение' }).waitFor({ timeout: 15000 });
+  const trainer = page.locator('[role="application"]');
+  await trainer.focus();
+  const keys = Array.isArray(lessons?.[0]?.keys) ? lessons[0].keys : [];
+  if (!keys.length) throw new Error('no random lesson keys');
+  await pressChord(page, keys);
+  const nextBtn = page.getByRole('button', { name: 'Далее →' });
+  await nextBtn.waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return {
+    file: 'desktop-learner-training-correct.jpg',
+    w,
+    h,
+    keys,
+    snippet: String(snippet).slice(0, 900),
+  };
+});
+
+await run('exam-timeout', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-exam-timeout.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/exam', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.getByRole('button', { name: 'Начать экзамен' }).waitFor({ timeout: 20000 });
+  await page.getByRole('button', { name: 'Начать экзамен' }).click();
+  await page.getByRole('button', { name: 'Завершить' }).waitFor({ timeout: 20000 });
+  await page.clock.install({ time: new Date() });
+  await page.clock.fastForward(10 * 60 * 1000 + 1500);
+  await page.getByRole('heading', { name: 'Время вышло' }).waitFor({ timeout: 8000 });
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('main').innerText();
+  return { file: 'desktop-learner-exam-timeout.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
 await browser.close();

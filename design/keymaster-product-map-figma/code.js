@@ -1303,6 +1303,7 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-hint.jpg', 'Create folder hint'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-training-explain.jpg', 'Training explain'],
+      ['desktop-learner-training-correct.jpg', 'Training correct'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-run.jpg', 'Speed run'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1315,6 +1316,7 @@ async function buildVisualFlows() {
       ['desktop-learner-exam-run.jpg', 'Exam run'],
       ['desktop-learner-exam-feedback.jpg', 'Exam feedback'],
       ['desktop-learner-exam-done.jpg', 'Exam done'],
+      ['desktop-learner-exam-timeout.jpg', 'Exam timeout'],
       ['desktop-learner-exam-empty.jpg', 'Exam empty'],
     ]],
     ['F9 Social', [
@@ -6389,6 +6391,63 @@ async function buildUniqueScreens() {
   explainCard.appendChild(instSecondary('К упражнению'));
   trainExplain.appendChild(explainCard);
 
+  const trainCorrect = al('VERTICAL', 'Training correct');
+  trainCorrect.itemSpacing = 12;
+  trainCorrect.appendChild(txt('Тренировка горячих клавиш', outfit('SemiBold'), 24, INK));
+  const correctMeta = al('HORIZONTAL', 'correct meta');
+  correctMeta.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  correctMeta.counterAxisAlignItems = 'CENTER';
+  correctMeta.resize(640, 10);
+  correctMeta.layoutSizingHorizontal = 'FIXED';
+  correctMeta.layoutSizingVertical = 'HUG';
+  const correctProg = al('VERTICAL', 'correct progress');
+  correctProg.itemSpacing = 6;
+  correctProg.appendChild(txt('Задание 1 из 13', outfit('Regular'), 13, MUTED));
+  correctProg.appendChild(instProgress('Value=Partial') || progressBar(220, 0.08, BRAND, 6));
+  correctMeta.appendChild(correctProg);
+  const correctStats = al('HORIZONTAL', 'correct stats');
+  correctStats.itemSpacing = 16;
+  correctStats.appendChild(txt('Серия: 1', outfit('SemiBold'), 13, MUTED));
+  correctStats.appendChild(txt('✓ Верно: 1', outfit('SemiBold'), 13, MUTED));
+  correctMeta.appendChild(correctStats);
+  trainCorrect.appendChild(correctMeta);
+  const correctCard = al('VERTICAL', 'waitingNext card');
+  correctCard.itemSpacing = 10;
+  correctCard.paddingTop = correctCard.paddingBottom = 32;
+  correctCard.paddingLeft = correctCard.paddingRight = 24;
+  correctCard.cornerRadius = 24;
+  correctCard.fills = [solid({ r: 0.941176, g: 0.992157, b: 0.956863 })];
+  correctCard.strokes = [solid(SUCCESS, 0.35)];
+  correctCard.primaryAxisAlignItems = 'CENTER';
+  correctCard.resize(640, 10);
+  correctCard.layoutSizingHorizontal = 'FIXED';
+  correctCard.layoutSizingVertical = 'HUG';
+  const checkWrap = al('HORIZONTAL', 'check');
+  checkWrap.primaryAxisAlignItems = 'CENTER';
+  checkWrap.counterAxisAlignItems = 'CENTER';
+  checkWrap.resize(48, 48);
+  checkWrap.layoutSizingHorizontal = 'FIXED';
+  checkWrap.layoutSizingVertical = 'FIXED';
+  checkWrap.cornerRadius = 99;
+  checkWrap.fills = [solid(SUCCESS, 0.15)];
+  checkWrap.appendChild(txt('✓', outfit('Bold'), 18, { r: 0.082353, g: 0.501961, b: 0.239216 }));
+  correctCard.appendChild(checkWrap);
+  correctCard.appendChild(txt('Верно!', outfit('Bold'), 22, { r: 0.086275, g: 0.396078, b: 0.203922 }));
+  correctCard.appendChild(txt('Ctrl + H', outfit('Bold'), 18, INK));
+  correctCard.appendChild(txt('Замена', outfit('SemiBold'), 13, INK));
+  correctCard.appendChild(
+    txt(
+      'Открывает «найти и заменить»: ищете одно слово и меняете его на другое сразу во всём тексте.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      420,
+    ),
+  );
+  correctCard.appendChild(instPrimary('Далее →'));
+  correctCard.appendChild(txt('Автоматически через 2…', outfit('Regular'), 11, MUTED));
+  trainCorrect.appendChild(correctCard);
+
   const speedBody = al('VERTICAL', 'Speed');
   speedBody.itemSpacing = 16;
   const speedHead = al('HORIZONTAL', 'speed head');
@@ -6701,6 +6760,71 @@ async function buildUniqueScreens() {
   doneBtns.appendChild(instPrimary('Новый экзамен'));
   doneBtns.appendChild(secondaryBtn('К пути'));
   examDone.appendChild(doneBtns);
+
+  const examTimeout = al('VERTICAL', 'Exam timeout');
+  examTimeout.itemSpacing = 12;
+  examTimeout.paddingTop = examTimeout.paddingBottom = 24;
+  examTimeout.paddingLeft = examTimeout.paddingRight = 24;
+  examTimeout.cornerRadius = 24;
+  examTimeout.fills = [solid(WHITE)];
+  examTimeout.resize(520, 10);
+  examTimeout.layoutSizingHorizontal = 'FIXED';
+  examTimeout.layoutSizingVertical = 'HUG';
+  examTimeout.appendChild(txt('ИТОГИ ЭКЗАМЕНА', outfit('Bold'), 11, BRAND800));
+  examTimeout.appendChild(txt('Время вышло', fraunces('Bold'), 30, INK));
+  const timeoutGradeRow = al('HORIZONTAL', 'timeout grade');
+  timeoutGradeRow.itemSpacing = 16;
+  timeoutGradeRow.counterAxisAlignItems = 'CENTER';
+  const timeoutGradeBox = al('HORIZONTAL', 'D');
+  timeoutGradeBox.primaryAxisAlignItems = 'CENTER';
+  timeoutGradeBox.counterAxisAlignItems = 'CENTER';
+  timeoutGradeBox.resize(64, 64);
+  timeoutGradeBox.layoutSizingHorizontal = 'FIXED';
+  timeoutGradeBox.layoutSizingVertical = 'FIXED';
+  timeoutGradeBox.cornerRadius = 16;
+  timeoutGradeBox.strokes = [solid(INK, 0.16)];
+  timeoutGradeBox.appendChild(txt('D', outfit('Bold'), 24, MUTED));
+  timeoutGradeRow.appendChild(timeoutGradeBox);
+  const timeoutGradeCopy = al('VERTICAL', 'timeout pct');
+  timeoutGradeCopy.itemSpacing = 4;
+  timeoutGradeCopy.appendChild(txt('0%', outfit('Bold'), 30, INK));
+  timeoutGradeCopy.appendChild(txt('Стоит повторить материал', outfit('Regular'), 13, MUTED));
+  timeoutGradeRow.appendChild(timeoutGradeCopy);
+  examTimeout.appendChild(timeoutGradeRow);
+  examTimeout.appendChild(progressBar(472, 0.02, MUTED, 8));
+  const timeoutStats = al('HORIZONTAL', 'timeout result stats');
+  timeoutStats.itemSpacing = 8;
+  timeoutStats.layoutWrap = 'WRAP';
+  timeoutStats.resize(472, 10);
+  timeoutStats.layoutSizingHorizontal = 'FIXED';
+  timeoutStats.layoutSizingVertical = 'HUG';
+  for (const [k, v] of [
+    ['Верно', '0'],
+    ['Ошибок', '0'],
+    ['Точность ответов', '0%'],
+    ['Пройдено', '0/20'],
+    ['Без ответа', '20'],
+    ['Время', '10:02'],
+  ]) {
+    const st = al('VERTICAL', k);
+    st.itemSpacing = 4;
+    st.paddingTop = st.paddingBottom = 12;
+    st.paddingLeft = st.paddingRight = 12;
+    st.cornerRadius = 16;
+    st.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+    st.resize(228, 10);
+    st.layoutSizingHorizontal = 'FIXED';
+    st.layoutSizingVertical = 'HUG';
+    st.appendChild(txt(k, outfit('Bold'), 10, MUTED));
+    st.appendChild(txt(v, outfit('Bold'), 20, INK));
+    timeoutStats.appendChild(st);
+  }
+  examTimeout.appendChild(timeoutStats);
+  const timeoutBtns = al('HORIZONTAL', 'timeout actions');
+  timeoutBtns.itemSpacing = 8;
+  timeoutBtns.appendChild(instPrimary('Новый экзамен'));
+  timeoutBtns.appendChild(secondaryBtn('К пути'));
+  examTimeout.appendChild(timeoutBtns);
 
   const reviewBack = al('VERTICAL', 'Review flipped');
   reviewBack.itemSpacing = 12;
@@ -8308,6 +8432,7 @@ async function buildUniqueScreens() {
       practicePage('Typing result /typing', 'Слепая печать', [typingResult]),
       practicePage('Training /training', 'Hotkeys', [trainBody]),
       practicePage('Training explain /training', 'Hotkeys', [trainExplain]),
+      practicePage('Training correct /training', 'Hotkeys', [trainCorrect]),
       practicePage('Training empty /training', 'Hotkeys', [trainEmpty]),
       practicePage('Training done /training', 'Hotkeys', [trainDone]),
       practicePage('Training loading /training', 'Hotkeys', [
@@ -8339,6 +8464,7 @@ async function buildUniqueScreens() {
       practicePage('Exam wrong /exam', 'Экзамен', [examWrong]),
       practicePage('Exam correct /exam', 'Экзамен', [examCorrect]),
       practicePage('Exam done /exam', 'Экзамен', [examDone]),
+      practicePage('Exam timeout /exam', 'Экзамен', [examTimeout]),
       practicePage('Review front /review', 'Повторение', [review]),
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
       practicePage('Review empty /review', 'Повторение', [reviewEmpty]),
