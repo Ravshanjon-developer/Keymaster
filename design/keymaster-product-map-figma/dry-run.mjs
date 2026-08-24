@@ -419,6 +419,10 @@ if (!names.includes('Сбалансированный темп: успеете �
   fail.push('no live exam session pace unique screen');
 }
 if (!names.includes('Keyboard gate card')) fail.push('no keyboard-gate GlassCard unique screen');
+if (!names.includes('Keyboard illustration')) fail.push('no live PracticeKeyboardGate keyboard illustration unique screen');
+if (!names.includes('Path timeline line')) fail.push('no live path spine unique screen');
+if (!names.includes('Следующий курс')) fail.push('no live path next-course CTA unique screen');
+if (!names.includes('CourseBrandIcon')) fail.push('no live path course brand icon unique screen');
 if (!names.includes('Мы отправили ссылку на anna@example.com. Перейдите по ней, затем войдите в аккаунт.')) {
   fail.push('no live register OTP check-email unique screen');
 }
@@ -502,6 +506,14 @@ if (!mobileCoursesUnique || !namesUnder(mobileCoursesUnique).includes('Начн�
 }
 if (!mobilePracticeUnique || !namesUnder(mobilePracticeUnique).includes('Выйти')) {
   fail.push('mobile practice unique screen is not authed chrome like the live capture');
+}
+let gateUnique = null;
+for (const p of pages) gateUnique = gateUnique || findByName(p, 'Keyboard gate');
+if (!gateUnique || !namesUnder(gateUnique).includes('Выйти') || !namesUnder(gateUnique).includes('Keyboard illustration')) {
+  fail.push('keyboard-gate unique screen missing authed chrome or live keyboard illustration');
+}
+if (!gateUnique || !namesUnder(gateUnique).includes('Экзамен')) {
+  fail.push('keyboard-gate unique screen is not PracticeShell exam chips like live /exam gate');
 }
 if (!names.includes('Начать бесплатно →')) fail.push('no live home CTA arrow unique screen');
 if (!names.includes('Нет аккаунта?')) fail.push('no live auth footer question unique screen');

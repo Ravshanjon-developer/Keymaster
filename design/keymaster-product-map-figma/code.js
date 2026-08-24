@@ -2028,6 +2028,73 @@ function navDivider() {
   return d;
 }
 
+/** Live KeyboardIllustration from PracticeKeyboardGate (SVG rows, not a stock icon). */
+function keyboardIllustration() {
+  const frame = figma.createFrame();
+  frame.name = 'Keyboard illustration';
+  frame.resize(280, 148);
+  frame.cornerRadius = 16;
+  frame.fills = [solid({ r: 0.859, g: 0.914, b: 0.988 })];
+  frame.strokes = [solid({ r: 0.58, g: 0.73, b: 0.96 })];
+  frame.strokeWeight = 2;
+  frame.clipsContent = false;
+  function key(x, y, w, fill, stroke) {
+    const r = figma.createRectangle();
+    frame.appendChild(r);
+    r.resize(w, 16);
+    r.x = x;
+    r.y = y;
+    r.cornerRadius = 4;
+    r.fills = [solid(fill)];
+    r.strokes = [solid(stroke)];
+    r.strokeWeight = 1;
+  }
+  const whiteKey = WHITE;
+  const slate = { r: 0.796, g: 0.835, b: 0.882 };
+  for (let i = 0; i < 10; i++) key(12 + i * 26, 16, 20, whiteKey, slate);
+  for (let i = 0; i < 9; i++) key(25 + i * 26, 38, 20, whiteKey, slate);
+  key(12, 60, 32, { r: 0.773, g: 0.937, b: 0.969 }, ACCENT);
+  key(48, 60, 176, whiteKey, slate);
+  key(228, 60, 32, { r: 0.773, g: 0.937, b: 0.969 }, ACCENT);
+  key(12, 82, 248, { r: 0.78, g: 0.86, b: 0.98 }, BRAND500);
+  key(12, 104, 42, whiteKey, slate);
+  key(58, 104, 42, whiteKey, slate);
+  key(104, 104, 108, { r: 0.82, g: 0.94, b: 0.86 }, SUCCESS);
+  key(216, 104, 44, whiteKey, slate);
+  return frame;
+}
+
+/** Live path spine: center w-px gradient between START and the first course node. */
+function pathTimeline(nodes, dark) {
+  const wrap = al('VERTICAL', 'Path timeline');
+  wrap.itemSpacing = 0;
+  wrap.primaryAxisAlignItems = 'CENTER';
+  wrap.counterAxisAlignItems = 'CENTER';
+  wrap.resize(880, 10);
+  wrap.layoutSizingHorizontal = 'FIXED';
+  wrap.layoutSizingVertical = 'HUG';
+  nodes.forEach((child, i) => {
+    wrap.appendChild(child);
+    if (i < nodes.length - 1) {
+      const line = figma.createRectangle();
+      line.name = 'Path timeline line';
+      wrap.appendChild(line);
+      line.resize(2, 32);
+      line.fills = [solid(BRAND, dark ? 0.45 : 0.35)];
+    }
+  });
+  return wrap;
+}
+
+function pathCtas(dark) {
+  const row = al('HORIZONTAL', 'path CTAs');
+  row.itemSpacing = 12;
+  row.primaryAxisAlignItems = 'CENTER';
+  row.appendChild(dark ? secondaryBtn('Каталог курсов', 'dark') : secondaryBtn('Каталог курсов'));
+  row.appendChild(instPrimary('Следующий курс'));
+  return row;
+}
+
 function themeToggle(dark) {
   const b = al('HORIZONTAL', 'Theme toggle');
   b.primaryAxisAlignItems = 'CENTER';
@@ -3197,6 +3264,17 @@ async function buildUniqueScreens() {
   pathCourse.resize(360, 10);
   pathCourse.layoutSizingHorizontal = 'FIXED';
   pathCourse.layoutSizingVertical = 'HUG';
+  const pathCourseRow = al('HORIZONTAL', 'course row');
+  pathCourseRow.itemSpacing = 12;
+  pathCourseRow.counterAxisAlignItems = 'MIN';
+  const pathIcon = figma.createRectangle();
+  pathIcon.name = 'CourseBrandIcon';
+  pathIcon.resize(42, 42);
+  pathIcon.cornerRadius = 12;
+  pathCourseRow.appendChild(pathIcon);
+  pathIcon.fills = [solid({ r: 0.96, g: 0.55, b: 0.2 })];
+  const pathCourseCol = al('VERTICAL', 'course copy');
+  pathCourseCol.itemSpacing = 6;
   const pathCourseHead = al('HORIZONTAL', 'course head');
   pathCourseHead.itemSpacing = 8;
   pathCourseHead.counterAxisAlignItems = 'CENTER';
@@ -3208,9 +3286,11 @@ async function buildUniqueScreens() {
   startChip.appendChild(txt('НАЧАТЬ', outfit('Bold'), 9, WHITE));
   pathCourseHead.appendChild(startChip);
   pathCourseHead.appendChild(txt('NOVICE · L1', outfit('Bold'), 10, MUTED));
-  pathCourse.appendChild(pathCourseHead);
-  pathCourse.appendChild(txt('First Laptop', fraunces('SemiBold'), 18, INK));
-  pathCourse.appendChild(txt('Первый ноутбук: файлы и папки', outfit('Regular'), 13, MUTED, 320));
+  pathCourseCol.appendChild(pathCourseHead);
+  pathCourseCol.appendChild(txt('First Laptop', fraunces('SemiBold'), 18, INK));
+  pathCourseCol.appendChild(txt('Первый ноутбук: файлы и папки', outfit('Regular'), 13, MUTED, 270));
+  pathCourseRow.appendChild(pathCourseCol);
+  pathCourse.appendChild(pathCourseRow);
   const pathMeta = al('HORIZONTAL', 'course meta');
   pathMeta.itemSpacing = 8;
   for (const [k, v] of [
@@ -3233,8 +3313,14 @@ async function buildUniqueScreens() {
     pathMeta.appendChild(m);
   }
   pathCourse.appendChild(pathMeta);
-  pathCourse.appendChild(instProgress('Value=Empty') || progressBar(320, 0.02, BRAND, 8));
-  pathCourse.appendChild(txt('Открыть курс', outfit('SemiBold'), 13, BRAND800));
+  pathCourse.appendChild(instProgress('Value=Empty') || progressBar(320, 0, BRAND, 8));
+  const pathOpen = al('HORIZONTAL', 'open course');
+  pathOpen.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  pathOpen.counterAxisAlignItems = 'CENTER';
+  pathOpen.appendChild(txt('Открыть курс', outfit('SemiBold'), 13, BRAND800));
+  pathOpen.appendChild(txt('↗', outfit('SemiBold'), 14, BRAND800));
+  pathCourse.appendChild(pathOpen);
+  pathOpen.layoutSizingHorizontal = 'FILL';
 
   const pathBody = [
     txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
@@ -3247,8 +3333,8 @@ async function buildUniqueScreens() {
       800,
     ),
     pathStats,
-    pathStart,
-    pathCourse,
+    pathTimeline([pathStart, pathCourse]),
+    pathCtas(),
     txt('Не дублировать каждый узел курса — 5 статусов покрывают остальную карту.', outfit('Regular'), 12, MUTED, 800),
     pathRow,
   ];
@@ -4977,92 +5063,6 @@ async function buildUniqueScreens() {
   reviewFlip.appendChild(instSecondary('На лицевую сторону'));
   reviewBack.appendChild(reviewFlip);
 
-  const gate = al('VERTICAL', 'Keyboard gate');
-  gate.itemSpacing = 0;
-  gate.fills = [solid(PAPER)];
-  gate.strokes = [solid(INK, 0.1)];
-  gate.resize(390, 10);
-  gate.layoutSizingHorizontal = 'FIXED';
-  gate.layoutSizingVertical = 'HUG';
-  const gnav = al('HORIZONTAL', 'header');
-  gnav.paddingLeft = gnav.paddingRight = 16;
-  gnav.counterAxisAlignItems = 'CENTER';
-  gnav.resize(390, 56);
-  gnav.layoutSizingHorizontal = 'FIXED';
-  gnav.layoutSizingVertical = 'FIXED';
-  gnav.fills = [solid(WHITE)];
-  gnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 16, INK));
-  const gbody = al('VERTICAL', 'gate body');
-  gbody.paddingTop = gbody.paddingBottom = 24;
-  gbody.paddingLeft = gbody.paddingRight = 16;
-  gbody.itemSpacing = 12;
-  gbody.primaryAxisAlignItems = 'CENTER';
-  const gcard = al('VERTICAL', 'Keyboard gate card');
-  gcard.itemSpacing = 10;
-  gcard.primaryAxisAlignItems = 'CENTER';
-  gcard.paddingTop = gcard.paddingBottom = 24;
-  gcard.paddingLeft = gcard.paddingRight = 16;
-  gcard.cornerRadius = 24;
-  gcard.fills = [solid(WHITE)];
-  gcard.resize(358, 10);
-  gcard.layoutSizingHorizontal = 'FIXED';
-  gcard.layoutSizingVertical = 'HUG';
-  gcard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 18, INK, 326));
-  gcard.appendChild(
-    txt(
-      'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
-      outfit('Regular'),
-      13,
-      MUTED,
-      326,
-    ),
-  );
-  gcard.appendChild(
-    txt(
-      'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
-      outfit('Regular'),
-      11,
-      MUTED,
-      326,
-    ),
-  );
-  gcard.appendChild(instPrimary('Изучить комбинации'));
-  gcard.appendChild(secondaryBtn('Основы hotkeys'));
-  gbody.appendChild(gcard);
-  const gbnav = al('HORIZONTAL', 'BottomNav');
-  gbnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
-  gbnav.paddingLeft = gbnav.paddingRight = 8;
-  gbnav.paddingTop = 6;
-  gbnav.paddingBottom = 10;
-  gbnav.resize(390, 56);
-  gbnav.layoutSizingHorizontal = 'FIXED';
-  gbnav.layoutSizingVertical = 'FIXED';
-  gbnav.fills = [solid(WHITE)];
-  for (const [label, on] of [
-    ['Курсы', false],
-    ['Мой путь', false],
-    ['Практика', true],
-    ['Рейтинг', false],
-  ]) {
-    const insted = instBottomNav(on, label);
-    if (insted) {
-      gbnav.appendChild(insted);
-      continue;
-    }
-    const it = al('VERTICAL', label);
-    it.primaryAxisAlignItems = 'CENTER';
-    it.itemSpacing = 2;
-    it.resize(80, 44);
-    it.layoutSizingHorizontal = 'FIXED';
-    it.layoutSizingVertical = 'FIXED';
-    it.appendChild(txt('•', outfit('Bold'), 14, on ? BRAND : MUTED));
-    it.appendChild(txt(label, outfit('SemiBold'), 10, on ? BRAND : MUTED));
-    gbnav.appendChild(it);
-  }
-  gate.appendChild(gnav);
-  gate.appendChild(gbody);
-  gate.appendChild(gbnav);
-
   const mobileLogin = al('VERTICAL', 'Mobile Login — BottomNav hidden');
   mobileLogin.itemSpacing = 0;
   mobileLogin.fills = [solid(PAPER)];
@@ -5786,6 +5786,53 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Hotkeys', authed: true },
   );
+  const gate = mobileFrame(
+    'Keyboard gate',
+    [
+      (() => {
+        const gcard = al('VERTICAL', 'Keyboard gate card');
+        gcard.itemSpacing = 12;
+        gcard.primaryAxisAlignItems = 'CENTER';
+        gcard.paddingTop = gcard.paddingBottom = 24;
+        gcard.paddingLeft = gcard.paddingRight = 16;
+        gcard.cornerRadius = 24;
+        gcard.fills = [solid(WHITE)];
+        gcard.resize(358, 10);
+        gcard.layoutSizingHorizontal = 'FIXED';
+        gcard.layoutSizingVertical = 'HUG';
+        gcard.appendChild(keyboardIllustration());
+        gcard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 22, INK, 326));
+        gcard.appendChild(
+          txt(
+            'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
+            outfit('Regular'),
+            13,
+            MUTED,
+            326,
+          ),
+        );
+        gcard.appendChild(
+          txt(
+            'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
+            outfit('Regular'),
+            11,
+            MUTED,
+            326,
+          ),
+        );
+        const gctas = al('VERTICAL', 'gate CTAs');
+        gctas.itemSpacing = 10;
+        gctas.layoutSizingHorizontal = 'FILL';
+        gctas.appendChild(instPrimary('Изучить комбинации'));
+        gctas.appendChild(secondaryBtn('Основы hotkeys'));
+        gcard.appendChild(gctas);
+        gctas.layoutSizingHorizontal = 'FILL';
+        return gcard;
+      })(),
+    ],
+    'Практика',
+    { chips: 'Экзамен', authed: true },
+  );
   const mobileReview = mobileFrame(
     'Mobile Review 390',
     [
@@ -6060,18 +6107,42 @@ async function buildUniqueScreens() {
   darkPathStart.appendChild(txt('Developer Growth Path', fraunces('Bold'), 22, DARK_TEXT));
   darkPathStart.appendChild(txt('От новичка к Keyboard Master', outfit('Regular'), 13, DARK_MUTED));
   const darkPathCourse = al('VERTICAL', 'Dark First Laptop node');
-  darkPathCourse.itemSpacing = 8;
+  darkPathCourse.itemSpacing = 10;
   darkPathCourse.paddingTop = darkPathCourse.paddingBottom = 16;
   darkPathCourse.paddingLeft = darkPathCourse.paddingRight = 16;
-  darkPathCourse.cornerRadius = 20;
+  darkPathCourse.cornerRadius = 16;
   darkPathCourse.fills = [solid(DARK_CARD)];
-  darkPathCourse.strokes = [solid(BRAND, 0.35)];
+  darkPathCourse.strokes = [solid(WHITE, 0.15)];
   darkPathCourse.resize(360, 10);
   darkPathCourse.layoutSizingHorizontal = 'FIXED';
   darkPathCourse.layoutSizingVertical = 'HUG';
-  darkPathCourse.appendChild(txt('ОСНОВЫ · УРОВЕНЬ 1', outfit('Bold'), 10, BRAND500));
-  darkPathCourse.appendChild(txt('First Laptop', fraunces('SemiBold'), 18, DARK_TEXT));
-  darkPathCourse.appendChild(txt('Первый ноутбук: файлы и папки', outfit('Regular'), 13, DARK_MUTED, 320));
+  const darkPathCourseRow = al('HORIZONTAL', 'dark course row');
+  darkPathCourseRow.itemSpacing = 12;
+  darkPathCourseRow.counterAxisAlignItems = 'MIN';
+  const darkPathIcon = figma.createRectangle();
+  darkPathIcon.name = 'CourseBrandIcon';
+  darkPathIcon.resize(42, 42);
+  darkPathIcon.cornerRadius = 12;
+  darkPathCourseRow.appendChild(darkPathIcon);
+  darkPathIcon.fills = [solid({ r: 0.96, g: 0.55, b: 0.2 })];
+  const darkPathCourseCol = al('VERTICAL', 'dark course copy');
+  darkPathCourseCol.itemSpacing = 6;
+  const darkStartChip = al('HORIZONTAL', 'НАЧАТЬ');
+  darkStartChip.paddingLeft = darkStartChip.paddingRight = 8;
+  darkStartChip.paddingTop = darkStartChip.paddingBottom = 2;
+  darkStartChip.cornerRadius = 6;
+  darkStartChip.fills = [solid(WHITE)];
+  darkStartChip.appendChild(txt('НАЧАТЬ', outfit('Bold'), 9, INK));
+  const darkPathHead = al('HORIZONTAL', 'dark course head');
+  darkPathHead.itemSpacing = 8;
+  darkPathHead.counterAxisAlignItems = 'CENTER';
+  darkPathHead.appendChild(darkStartChip);
+  darkPathHead.appendChild(txt('NOVICE · L1', outfit('Bold'), 10, DARK_MUTED));
+  darkPathCourseCol.appendChild(darkPathHead);
+  darkPathCourseCol.appendChild(txt('First Laptop', fraunces('SemiBold'), 18, DARK_TEXT));
+  darkPathCourseCol.appendChild(txt('Первый ноутбук: файлы и папки', outfit('Regular'), 13, DARK_MUTED, 270));
+  darkPathCourseRow.appendChild(darkPathCourseCol);
+  darkPathCourse.appendChild(darkPathCourseRow);
   const darkPathMeta = al('HORIZONTAL', 'dark course meta');
   darkPathMeta.itemSpacing = 8;
   for (const [k, v] of [
@@ -6094,7 +6165,14 @@ async function buildUniqueScreens() {
     darkPathMeta.appendChild(m);
   }
   darkPathCourse.appendChild(darkPathMeta);
-  darkPathCourse.appendChild(txt('Открыть курс', outfit('SemiBold'), 13, BRAND500));
+  darkPathCourse.appendChild(instProgress('Value=Empty') || progressBar(320, 0, BRAND, 8));
+  const darkPathOpen = al('HORIZONTAL', 'dark open course');
+  darkPathOpen.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  darkPathOpen.counterAxisAlignItems = 'CENTER';
+  darkPathOpen.appendChild(txt('Открыть курс', outfit('SemiBold'), 13, BRAND500));
+  darkPathOpen.appendChild(txt('↗', outfit('SemiBold'), 14, BRAND500));
+  darkPathCourse.appendChild(darkPathOpen);
+  darkPathOpen.layoutSizingHorizontal = 'FILL';
 
   const darkPathRow = al('HORIZONTAL', 'Dark Path nodes');
   darkPathRow.itemSpacing = 12;
@@ -6169,8 +6247,8 @@ async function buildUniqueScreens() {
         txt('Developer Growth Path', fraunces('Bold'), 32, DARK_TEXT),
         txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.', outfit('Regular'), 13, DARK_MUTED, 800),
         darkPathStats,
-        darkPathStart,
-        darkPathCourse,
+        pathTimeline([darkPathStart, darkPathCourse], true),
+        pathCtas(true),
         txt('Не дублировать каждый узел курса — 5 статусов покрывают остальную карту.', outfit('Regular'), 12, DARK_MUTED, 800),
         darkPathRow,
       ], true),

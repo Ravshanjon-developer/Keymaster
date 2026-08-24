@@ -21,7 +21,7 @@ Live unique-page metrics (Vite, do not change the app): `node measure-live.mjs` 
 
 | Page | Contents |
 |---|---|
-| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog unique screens match live 0 XP cards (СТАРТ + «Начните здесь») plus empty-search EmptyState. Home CTAs include the live ArrowRight. Auth footer is «Нет аккаунта?» + branded Регистрация. Stats unique matches empty Ответы chart. Exam feedback unique matches live Неверно · 9:59 · Ctrl+H. |
+| `01 — Product Map` | 4 layouts, IA sitemap, unique pages grouped by layout. Catalog unique screens match live 0 XP cards (СТАРТ + «Начните здесь») plus empty-search EmptyState. Home CTAs include the live ArrowRight. Auth footer is «Нет аккаунта?» + branded Регистрация. Stats unique matches empty Ответы chart. Exam feedback unique matches live Неверно · 9:59 · Ctrl+H. Path unique includes the live vertical spine, First Laptop CourseBrandIcon, and «Следующий курс». Keyboard gate unique matches PracticeKeyboardGate (illustration + authed mobile chrome + exam chips). |
 | `02 — User Flows` | F1–F12 from the live router + capture strips |
 | `03 — Existing Screens` | As-is desktop, dark, and state captures (59), including path full-scroll |
 | `04 — Design System` | Tokens from `tokens.css` / `index.css` |
