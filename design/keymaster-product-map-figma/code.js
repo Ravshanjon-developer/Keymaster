@@ -1252,6 +1252,8 @@ async function buildVisualFlows() {
       ['desktop-learner-23-simulator-desktop.jpg', 'Desktop sim'],
       ['desktop-learner-simulator-desktop-menu.jpg', 'Desktop context menu'],
       ['desktop-learner-simulator-desktop-explorer.jpg', 'Explorer'],
+      ['desktop-learner-simulator-desktop-explorer-menu.jpg', 'Explorer empty menu'],
+      ['desktop-learner-simulator-desktop-explorer-foldermenu.jpg', 'Explorer folder menu'],
       ['desktop-learner-simulator-desktop-zip-extract.jpg', 'ZIP extract'],
       ['desktop-learner-simulator-desktop-explorer-filemenu.jpg', 'Explorer file menu'],
       ['desktop-learner-simulator-desktop-trash.jpg', 'Recycle bin'],
@@ -5216,7 +5218,7 @@ async function buildUniqueScreens() {
     return sim;
   }
 
-  function deskWin(title, pathLabel, countLabel, empty, trashFile, zipFile) {
+  function deskWin(title, pathLabel, countLabel, empty, trashFile, zipFile, folderRow) {
     const win = al('VERTICAL', title + ' window');
     win.itemSpacing = 0;
     win.cornerRadius = 8;
@@ -5288,6 +5290,13 @@ async function buildUniqueScreens() {
       zipRow.appendChild(txt('ZIP', outfit('Bold'), 10, VSCODE_MUTED));
       zipRow.appendChild(txt('Welcome.zip', outfit('Regular'), 12, WHITE));
       main.appendChild(zipRow);
+    } else if (folderRow) {
+      main.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
+      const fr = al('HORIZONTAL', 'Новая папка row');
+      fr.itemSpacing = 12;
+      fr.counterAxisAlignItems = 'CENTER';
+      fr.appendChild(txt('Новая папка', outfit('Regular'), 12, WHITE));
+      main.appendChild(fr);
     } else main.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
     body.appendChild(side);
     body.appendChild(main);
@@ -5517,6 +5526,57 @@ async function buildUniqueScreens() {
       menu.layoutSizingHorizontal = 'FIXED';
       menu.layoutSizingVertical = 'HUG';
       for (const label of ['Открыть', 'Открыть с помощью Code', 'Переименовать', 'Копировать', 'Вырезать', 'Удалить']) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Удалить' ? SIGNAL : WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
+    } else if (overlay === 'explorermenu') {
+      deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов'));
+      const menu = al('VERTICAL', 'Explorer empty menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(200, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of ['Новый файл', 'Новая папка', 'Вставить', 'Обновить']) {
+        const row = al('HORIZONTAL', label);
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 7;
+        row.appendChild(txt(label, outfit('Regular'), 13, label === 'Вставить' ? VSCODE_MUTED : WHITE));
+        menu.appendChild(row);
+      }
+      deskWork.appendChild(menu);
+    } else if (overlay === 'foldermenu') {
+      deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '2 объектов', false, false, false, true));
+      const menu = al('VERTICAL', 'Explorer folder menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 6;
+      menu.paddingLeft = menu.paddingRight = 6;
+      menu.cornerRadius = 10;
+      menu.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 }, 0.96)];
+      menu.strokes = [solid(WHITE, 0.16)];
+      menu.resize(240, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const label of [
+        'Открыть',
+        'Открыть с помощью Code',
+        'Новый файл',
+        'Новая папка',
+        'Переименовать',
+        'Копировать',
+        'Вырезать',
+        'Сжать в ZIP',
+        'Удалить',
+        'Свойства',
+      ]) {
         const row = al('HORIZONTAL', label);
         row.paddingLeft = row.paddingRight = 12;
         row.paddingTop = row.paddingBottom = 7;
@@ -5767,6 +5827,8 @@ async function buildUniqueScreens() {
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
+  const deskExplorerMenu = makeDesktopSim('Desktop explorer menu /simulator?mode=desktop', 'explorermenu');
+  const deskFolderMenu = makeDesktopSim('Desktop explorer folder menu /simulator?mode=desktop', 'foldermenu');
   const deskTrash = makeDesktopSim('Desktop recycle-bin /simulator?mode=desktop', 'trash');
   const deskTrashFull = makeDesktopSim('Desktop recycle-bin full /simulator?mode=desktop', 'trashfull');
   const deskExplorerFileMenu = makeDesktopSim('Desktop explorer file menu /simulator?mode=desktop', 'explorerfilemenu');
@@ -10196,7 +10258,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simViewMenu, simEditMenu, simGoMenu, simRunMenu, simTermMenu, simHelpMenu, simTask, simTaskRun, simTaskList, simPreview, simKbViz, simManage, simLight, simToast, simNewFile, simHint, desk, deskMenu, deskExplorer, deskExplorerMenu, deskFolderMenu, deskExplorerFileMenu, deskZipExtract, deskTrash, deskTrashFull, deskTrashRestore, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps, deskLight, deskDone, deskToast, deskFromLesson, deskHint, deskNewFolder]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),

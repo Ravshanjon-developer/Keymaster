@@ -658,5 +658,13 @@
   "desktop-learner-simulator-desktop-zip-extract.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer-menu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer-foldermenu.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

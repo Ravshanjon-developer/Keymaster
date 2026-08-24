@@ -1157,6 +1157,42 @@ await run('desktop-zip-extract', desk, async (page) => {
   return { file: 'desktop-learner-simulator-desktop-zip-extract.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
 
+await run('desktop-explorer-menu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-explorer-menu.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Этот компьютер', { exact: true }).dblclick();
+  await page.getByText('Проводник', { exact: true }).waitFor({ timeout: 10000 });
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('/Рабочий стол', { exact: true }).click({ button: 'right' });
+  await page.getByText('Обновить', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Вставить', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-explorer-menu.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run('desktop-explorer-foldermenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-explorer-foldermenu.jpg');
+  await resetDesktopFirstTask(page);
+  await page.getByText('Этот компьютер', { exact: true }).dblclick();
+  await page.getByText('Проводник', { exact: true }).waitFor({ timeout: 10000 });
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByTitle('Новая папка').click();
+  const rename = page.locator('.bolt-desktop-root input');
+  await rename.waitFor({ timeout: 8000 });
+  await rename.press('Enter');
+  await page.getByText('Новая папка', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Свойства', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Новый файл', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'desktop-learner-simulator-desktop-explorer-foldermenu.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

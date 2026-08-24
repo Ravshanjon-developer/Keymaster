@@ -393,6 +393,10 @@ if (!names.includes('Learner / Desktop zip extract')) fail.push('no zip-extract 
 if (!names.includes('Exam certificate /exam')) fail.push('no exam-certificate unique screen');
 if (!names.includes('Learner / Exam certificate')) fail.push('no exam-certificate capture');
 if (!names.includes('Desktop explorer file menu /simulator?mode=desktop')) fail.push('no explorer file-menu unique screen');
+if (!names.includes('Desktop explorer menu /simulator?mode=desktop')) fail.push('no explorer empty-menu unique screen');
+if (!names.includes('Desktop explorer folder menu /simulator?mode=desktop')) fail.push('no explorer folder-menu unique screen');
+if (!names.includes('Learner / Desktop explorer menu')) fail.push('no explorer empty-menu capture');
+if (!names.includes('Learner / Desktop explorer folder menu')) fail.push('no explorer folder-menu capture');
 if (!names.includes('Learner / Desktop explorer file menu')) fail.push('no explorer file-menu capture');
 if (!names.includes('Desktop recycle-bin restore /simulator?mode=desktop')) fail.push('no trash-restore unique screen');
 if (!names.includes('Learner / Desktop recycle-bin restore')) fail.push('no trash-restore capture');
@@ -1332,6 +1336,8 @@ let trainDoneWeakUnique = null;
 let quizFinishedUnique = null;
 let deskTrashFullUnique = null;
 let deskExplorerFileMenuUnique = null;
+let deskExplorerMenuUnique = null;
+let deskFolderMenuUnique = null;
 let deskZipExtractUnique = null;
 let deskTrashRestoreUnique = null;
 let trainCorrectUnique = null;
@@ -1374,6 +1380,8 @@ for (const p of pages) {
   quizFinishedUnique = quizFinishedUnique || findByName(p, 'Quiz finished /quiz');
   deskTrashFullUnique = deskTrashFullUnique || findByName(p, 'Desktop recycle-bin full /simulator?mode=desktop');
   deskExplorerFileMenuUnique = deskExplorerFileMenuUnique || findByName(p, 'Desktop explorer file menu /simulator?mode=desktop');
+  deskExplorerMenuUnique = deskExplorerMenuUnique || findByName(p, 'Desktop explorer menu /simulator?mode=desktop');
+  deskFolderMenuUnique = deskFolderMenuUnique || findByName(p, 'Desktop explorer folder menu /simulator?mode=desktop');
   deskZipExtractUnique = deskZipExtractUnique || findByName(p, 'Desktop zip extract /simulator?mode=desktop');
   deskTrashRestoreUnique = deskTrashRestoreUnique || findByName(p, 'Desktop recycle-bin restore /simulator?mode=desktop');
   trainCorrectUnique = trainCorrectUnique || findByName(p, 'Training correct /training');
@@ -1487,6 +1495,12 @@ if (!examCertUnique || !namesUnder(examCertUnique).includes('СЕРТИФИКА�
 }
 if (!deskExplorerFileMenuUnique || !namesUnder(deskExplorerFileMenuUnique).includes('Сжать в ZIP') || !namesUnder(deskExplorerFileMenuUnique).includes('Свойства') || !namesUnder(deskExplorerFileMenuUnique).includes('Проводник') || namesUnder(deskExplorerFileMenuUnique).includes('Восстановить') || namesUnder(deskExplorerFileMenuUnique).includes('С чего начать')) {
   fail.push('explorer file-menu unique missing live Сжать в ZIP chrome');
+}
+if (!deskExplorerMenuUnique || !namesUnder(deskExplorerMenuUnique).includes('Обновить') || !namesUnder(deskExplorerMenuUnique).includes('Вставить') || !namesUnder(deskExplorerMenuUnique).includes('Проводник') || namesUnder(deskExplorerMenuUnique).includes('Открыть проводник') || namesUnder(deskExplorerMenuUnique).includes('С чего начать')) {
+  fail.push('explorer empty-menu unique missing live Обновить / Вставить chrome');
+}
+if (!deskFolderMenuUnique || !namesUnder(deskFolderMenuUnique).includes('Новый файл') || !namesUnder(deskFolderMenuUnique).includes('Новая папка') || !namesUnder(deskFolderMenuUnique).includes('Свойства') || namesUnder(deskFolderMenuUnique).includes('Извлечь сюда') || namesUnder(deskFolderMenuUnique).includes('С чего начать')) {
+  fail.push('explorer folder-menu unique missing live folder ПКМ chrome');
 }
 if (!deskTrashRestoreUnique || !namesUnder(deskTrashRestoreUnique).includes('Восстановить') || !namesUnder(deskTrashRestoreUnique).includes('1 объектов') || !namesUnder(deskTrashRestoreUnique).includes('Welcome.txt') || namesUnder(deskTrashRestoreUnique).includes('Эта папка пуста') || namesUnder(deskTrashRestoreUnique).includes('С чего начать')) {
   fail.push('trash-restore unique missing live Восстановить menu on Корзина with file');

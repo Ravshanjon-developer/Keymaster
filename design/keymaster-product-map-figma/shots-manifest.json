@@ -110,6 +110,8 @@
   {"file":"desktop-learner-23-simulator-desktop.jpg","page":"03 — Existing Screens","name":"Learner / Desktop sim","layout":"ImmersiveSimulator","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-menu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop context menu","layout":"ImmersiveSimulator — wallpaper ПКМ","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-explorer.jpg","page":"03 — Existing Screens","name":"Learner / Desktop explorer","layout":"ImmersiveSimulator — windowFiles Проводник","group":"Learner"},
+  {"file":"desktop-learner-simulator-desktop-explorer-menu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop explorer menu","layout":"ImmersiveSimulator — Проводник empty ПКМ Обновить","group":"Learner"},
+  {"file":"desktop-learner-simulator-desktop-explorer-foldermenu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop explorer folder menu","layout":"ImmersiveSimulator — папка ПКМ Новый файл","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-explorer-filemenu.jpg","page":"03 — Existing Screens","name":"Learner / Desktop explorer file menu","layout":"ImmersiveSimulator — Проводник ПКМ Сжать в ZIP","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-zip-extract.jpg","page":"03 — Existing Screens","name":"Learner / Desktop zip extract","layout":"ImmersiveSimulator — Welcome.zip ПКМ Извлечь сюда","group":"Learner"},
   {"file":"desktop-learner-simulator-desktop-trash.jpg","page":"03 — Existing Screens","name":"Learner / Desktop recycle-bin","layout":"ImmersiveSimulator — windowTrash Корзина","group":"Learner"},
