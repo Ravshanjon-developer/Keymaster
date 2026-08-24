@@ -1112,6 +1112,34 @@ if (!deskEditorUnique || !namesUnder(deskEditorUnique).includes('Сохрани�
   fail.push('desktop editor unique missing live Welcome.txt save + editorStats');
 }
 
+if (!names.includes('Code Lab terminal /simulator')) fail.push('no code-lab terminal unique screen');
+if (!names.includes('Desktop keyboard /simulator?mode=desktop')) fail.push('no desktop keyboard unique screen');
+if (!names.includes('Desktop properties /simulator?mode=desktop')) fail.push('no desktop properties unique screen');
+if (!names.includes('python index.py · node app.js · run page.html · help')) fail.push('no live Code Lab terminal help unique screen');
+if (!names.includes('184 байт')) fail.push('no live Welcome.txt properties size unique screen');
+if (!names.includes('Расположение')) fail.push('no live properties location unique screen');
+if (!names.includes('Learner / Code Lab terminal')) fail.push('no code-lab terminal capture');
+if (!names.includes('Learner / Desktop keyboard')) fail.push('no desktop keyboard capture');
+if (!names.includes('Learner / Desktop properties')) fail.push('no desktop properties capture');
+
+let simTermUnique = null;
+let deskKbUnique = null;
+let deskPropsUnique = null;
+for (const p of pages) {
+  simTermUnique = simTermUnique || findByName(p, 'Code Lab terminal /simulator');
+  deskKbUnique = deskKbUnique || findByName(p, 'Desktop keyboard /simulator?mode=desktop');
+  deskPropsUnique = deskPropsUnique || findByName(p, 'Desktop properties /simulator?mode=desktop');
+}
+if (!simTermUnique || !namesUnder(simTermUnique).includes('$ ~') || !namesUnder(simTermUnique).includes('python index.py · node app.js · run page.html · help')) {
+  fail.push('code lab terminal unique missing live Terminal help + prompt');
+}
+if (!deskKbUnique || !namesUnder(deskKbUnique).includes('Esc  F1  F2  F3  F4  F5  F6  F7  F8  F9  F10  F11  F12') || namesUnder(deskKbUnique).includes('С чего начать')) {
+  fail.push('desktop keyboard unique missing expanded F-keys without first-run');
+}
+if (!deskPropsUnique || !namesUnder(deskPropsUnique).includes('184 байт') || !namesUnder(deskPropsUnique).includes('Закрыть') || namesUnder(deskPropsUnique).includes('С чего начать')) {
+  fail.push('desktop properties unique missing live Welcome.txt size + close');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));

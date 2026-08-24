@@ -173,6 +173,45 @@ await run('code-lab-quickopen', desk, async (page) => {
   return { file: 'desktop-learner-simulator-code-quickopen.jpg', w, h };
 });
 
+await run('code-lab-terminal', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-terminal.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.goto(BASE + '/simulator', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('Готовы к практике?', { exact: true }).waitFor({ timeout: 20000 });
+  await page.keyboard.press('Control+Backquote');
+  await page.getByText('python index.py · node app.js · run page.html · help', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-terminal.jpg', w, h };
+});
+
+await run('desktop-keyboard', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-keyboard.jpg');
+  await openDesktop(page);
+  await page.getByTitle('Клавиатура').click();
+  await page.getByRole('button', { name: 'Клавиатура' }).click();
+  await page.getByText('F12', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-keyboard.jpg', w, h };
+});
+
+await run('desktop-properties', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-desktop-properties.jpg');
+  await openDesktop(page);
+  await page.getByText('Этот компьютер', { exact: true }).dblclick();
+  await page.getByText('/Рабочий стол', { exact: true }).waitFor({ timeout: 10000 });
+  await page.getByText('Welcome.txt', { exact: true }).last().click({ button: 'right' });
+  await page.getByText('Свойства', { exact: true }).click();
+  await page.getByText('184 байт', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-desktop-properties.jpg', w, h };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

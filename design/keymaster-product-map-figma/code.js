@@ -1255,6 +1255,8 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-desktop-trash.jpg', 'Recycle bin'],
       ['desktop-learner-simulator-desktop-start.jpg', 'Start menu'],
       ['desktop-learner-simulator-desktop-editor.jpg', 'Welcome.txt'],
+      ['desktop-learner-simulator-desktop-keyboard.jpg', 'Keyboard'],
+      ['desktop-learner-simulator-desktop-properties.jpg', 'Properties'],
       ['desktop-learner-18-lesson-task.jpg', 'Task lesson'],
     ]],
     ['F6 Hotkey learn', [
@@ -1266,6 +1268,7 @@ async function buildVisualFlows() {
       ['desktop-learner-22-simulator-code.jpg', 'Code Lab'],
       ['desktop-learner-simulator-code-palette.jpg', 'Command palette'],
       ['desktop-learner-simulator-code-quickopen.jpg', 'Quick Open'],
+      ['desktop-learner-simulator-code-terminal.jpg', 'Terminal'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1444,8 +1447,8 @@ async function buildSitemap() {
     [
       'ImmersiveSimulator',
       [
-        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · command palette · quick open'],
-        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · context menu · explorer · recycle-bin · Пуск · Welcome.txt'],
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · command palette · quick open · terminal'],
+        ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · context menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties'],
       ],
     ],
   ];
@@ -4796,6 +4799,21 @@ async function buildUniqueScreens() {
     simBody.appendChild(editor);
     simBody.appendChild(tasks);
     sim.appendChild(simBody);
+    if (overlay === 'terminal') {
+      const term = al('VERTICAL', 'Terminal');
+      term.itemSpacing = 6;
+      term.paddingTop = term.paddingBottom = 10;
+      term.paddingLeft = term.paddingRight = 12;
+      term.fills = [solid(VSCODE_BG)];
+      term.strokes = [solid(WHITE, 0.08)];
+      term.resize(960, 10);
+      term.layoutSizingHorizontal = 'FIXED';
+      term.layoutSizingVertical = 'HUG';
+      term.appendChild(txt('Terminal', outfit('Medium'), 13, WHITE));
+      term.appendChild(txt('python index.py · node app.js · run page.html · help', outfit('Regular'), 12, VSCODE_MUTED, 720));
+      term.appendChild(txt('$ ~', outfit('Regular'), 13, { r: 0.53, g: 0.81, b: 1 }));
+      sim.appendChild(term);
+    }
     const status = al('HORIZONTAL', 'status bar');
     status.primaryAxisAlignItems = 'SPACE_BETWEEN';
     status.paddingLeft = status.paddingRight = 12;
@@ -5026,6 +5044,50 @@ async function buildUniqueScreens() {
       body.appendChild(txt('Welcome to Keymaster Desktop Simulator!', outfit('Regular'), 13, WHITE, 520));
       win.appendChild(body);
       deskWork.appendChild(win);
+    } else if (overlay === 'keyboard') {
+      const kb = al('VERTICAL', 'Virtual keyboard');
+      kb.itemSpacing = 8;
+      kb.paddingTop = kb.paddingBottom = 10;
+      kb.paddingLeft = kb.paddingRight = 12;
+      kb.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
+      kb.strokes = [solid(WHITE, 0.12)];
+      kb.resize(600, 10);
+      kb.layoutSizingHorizontal = 'FIXED';
+      kb.layoutSizingVertical = 'HUG';
+      kb.appendChild(txt('Клавиатура', outfit('SemiBold'), 12, VSCODE_MUTED));
+      kb.appendChild(txt('Esc  F1  F2  F3  F4  F5  F6  F7  F8  F9  F10  F11  F12', outfit('Regular'), 11, WHITE, 560));
+      deskWork.appendChild(kb);
+    } else if (overlay === 'props') {
+      deskWork.appendChild(deskWin('Проводник', '/Рабочий стол', '1 объектов', false));
+      const modal = al('VERTICAL', 'Свойства');
+      modal.itemSpacing = 8;
+      modal.paddingTop = modal.paddingBottom = 16;
+      modal.paddingLeft = modal.paddingRight = 16;
+      modal.cornerRadius = 12;
+      modal.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 })];
+      modal.strokes = [solid(WHITE, 0.16)];
+      modal.resize(280, 10);
+      modal.layoutSizingHorizontal = 'FIXED';
+      modal.layoutSizingVertical = 'HUG';
+      modal.appendChild(txt('Welcome.txt', outfit('SemiBold'), 15, WHITE));
+      for (const [k, v] of [
+        ['Тип', 'Файл'],
+        ['Расположение', '/Рабочий стол'],
+        ['Размер', '184 байт'],
+        ['Создан', ''],
+        ['Изменён', ''],
+      ]) {
+        const row = al('HORIZONTAL', k);
+        row.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        row.resize(248, 10);
+        row.layoutSizingHorizontal = 'FIXED';
+        row.layoutSizingVertical = 'HUG';
+        row.appendChild(txt(k, outfit('Regular'), 12, VSCODE_MUTED));
+        if (v) row.appendChild(txt(v, outfit('Regular'), 12, WHITE));
+        modal.appendChild(row);
+      }
+      modal.appendChild(txt('Закрыть', outfit('SemiBold'), 13, WHITE));
+      deskWork.appendChild(modal);
     }
     const deskTasks = al('VERTICAL', 'desktop tasks');
     deskTasks.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
@@ -5073,12 +5135,15 @@ async function buildUniqueScreens() {
   const sim = makeCodeLab('Code Lab');
   const simPalette = makeCodeLab('Code Lab command palette /simulator', 'palette');
   const simQuick = makeCodeLab('Code Lab quick open /simulator', 'quickopen');
+  const simTerm = makeCodeLab('Code Lab terminal /simulator', 'terminal');
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
   const deskTrash = makeDesktopSim('Desktop recycle-bin /simulator?mode=desktop', 'trash');
   const deskStart = makeDesktopSim('Desktop start menu /simulator?mode=desktop', 'start');
   const deskEditor = makeDesktopSim('Desktop editor /simulator?mode=desktop', 'editor');
+  const deskKeyboard = makeDesktopSim('Desktop keyboard /simulator?mode=desktop', 'keyboard');
+  const deskProps = makeDesktopSim('Desktop properties /simulator?mode=desktop', 'props');
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -8753,7 +8818,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskProps]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
