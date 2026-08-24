@@ -295,6 +295,63 @@ await run('code-lab-extensions', desk, async (page) => {
   return { file: 'desktop-learner-simulator-code-extensions.jpg', w, h };
 });
 
+await run('code-lab-filemenu', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-filemenu.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'File', exact: true }).click();
+  await page.getByText('Open Folder from Computer…', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-filemenu.jpg', w, h };
+});
+
+await run('code-lab-task', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-task.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Начать первую задачу' }).click();
+  await page.getByText('Создать новый файл', { exact: true }).waitFor({ timeout: 8000 });
+  await page.getByText('Подсказка (0/3)', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-task.jpg', w, h };
+});
+
+await run('code-lab-tasklist', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-tasklist.jpg');
+  await openCodeLab(page);
+  await page.getByRole('button', { name: 'Все задачи' }).click();
+  await page.getByText('Создать папку', { exact: true }).waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-tasklist.jpg', w, h };
+});
+
+await run('code-lab-preview', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-preview.jpg');
+  await openCodeLab(page);
+  await page.getByText('index.html', { exact: true }).click();
+  await page.keyboard.press('F5');
+  await page.getByText('Preview — index.html').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-preview.jpg', w, h };
+});
+
+await run('code-lab-keyboard', desk, async (page) => {
+  const dest = path.join(shotsDir, 'desktop-learner-simulator-code-keyboard.jpg');
+  await openCodeLab(page);
+  await page.getByTitle('Toggle keyboard visualizer').first().click();
+  await page.getByText('Keyboard Visualizer').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  return { file: 'desktop-learner-simulator-code-keyboard.jpg', w, h };
+});
+
 await browser.close();
 
 const sizesPath = path.join(here, 'shot-sizes.json');

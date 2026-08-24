@@ -1192,6 +1192,50 @@ if (!deskFileMenuUnique || !namesUnder(deskFileMenuUnique).includes('Откры�
   fail.push('desktop file-menu unique should be Welcome.txt menu, not wallpaper');
 }
 
+if (!names.includes('Code Lab file menu /simulator')) fail.push('no code-lab file-menu unique screen');
+if (!names.includes('Code Lab current task /simulator')) fail.push('no code-lab current-task unique screen');
+if (!names.includes('Code Lab all tasks /simulator')) fail.push('no code-lab all-tasks unique screen');
+if (!names.includes('Code Lab preview /simulator')) fail.push('no code-lab preview unique screen');
+if (!names.includes('Code Lab keyboard /simulator')) fail.push('no code-lab keyboard unique screen');
+if (!names.includes('Open Folder from Computer…')) fail.push('no live Code Lab File menu unique screen');
+if (!names.includes('Создать новый файл')) fail.push('no live first Code Lab task unique screen');
+if (!names.includes('Подсказка (0/3)')) fail.push('no live Code Lab hint counter unique screen');
+if (!names.includes('PREVIEW — INDEX.HTML')) fail.push('no live Code Lab preview header unique screen');
+if (!names.includes('KEYBOARD VISUALIZER')) fail.push('no live Code Lab keyboard visualizer unique screen');
+if (!names.includes('Learner / Code Lab file menu')) fail.push('no code-lab file-menu capture');
+if (!names.includes('Learner / Code Lab current task')) fail.push('no code-lab current-task capture');
+if (!names.includes('Learner / Code Lab all tasks')) fail.push('no code-lab all-tasks capture');
+if (!names.includes('Learner / Code Lab preview')) fail.push('no code-lab preview capture');
+if (!names.includes('Learner / Code Lab keyboard')) fail.push('no code-lab keyboard capture');
+
+let simFileMenuUnique = null;
+let simTaskUnique = null;
+let simTaskListUnique = null;
+let simPreviewUnique = null;
+let simKbVizUnique = null;
+for (const p of pages) {
+  simFileMenuUnique = simFileMenuUnique || findByName(p, 'Code Lab file menu /simulator');
+  simTaskUnique = simTaskUnique || findByName(p, 'Code Lab current task /simulator');
+  simTaskListUnique = simTaskListUnique || findByName(p, 'Code Lab all tasks /simulator');
+  simPreviewUnique = simPreviewUnique || findByName(p, 'Code Lab preview /simulator');
+  simKbVizUnique = simKbVizUnique || findByName(p, 'Code Lab keyboard /simulator');
+}
+if (!simFileMenuUnique || !namesUnder(simFileMenuUnique).includes('New File') || !namesUnder(simFileMenuUnique).includes('Open Folder from Computer…') || namesUnder(simFileMenuUnique).includes('File: New File')) {
+  fail.push('code lab file-menu unique missing live File dropdown (not command palette)');
+}
+if (!simTaskUnique || !namesUnder(simTaskUnique).includes('Создать новый файл') || !namesUnder(simTaskUnique).includes('Подсказка (0/3)') || namesUnder(simTaskUnique).includes('Готовы к практике?')) {
+  fail.push('code lab current-task unique missing live first task without empty ready state');
+}
+if (!simTaskListUnique || !namesUnder(simTaskListUnique).includes('Все задачи') || !namesUnder(simTaskListUnique).includes('Создать папку') || namesUnder(simTaskListUnique).includes('Готовы к практике?')) {
+  fail.push('code lab all-tasks unique missing live task list chrome');
+}
+if (!simPreviewUnique || !namesUnder(simPreviewUnique).includes('PREVIEW — INDEX.HTML') || !namesUnder(simPreviewUnique).includes('<!doctype html>')) {
+  fail.push('code lab preview unique missing live Preview pane + index.html');
+}
+if (!simKbVizUnique || !namesUnder(simKbVizUnique).includes('KEYBOARD VISUALIZER') || !namesUnder(simKbVizUnique).includes('Bksp  Tab  Caps  Enter  Win  Space') || namesUnder(simKbVizUnique).includes('С чего начать')) {
+  fail.push('code lab keyboard unique missing live Keyboard Visualizer chrome');
+}
+
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
   console.error('DRY-RUN FAILED\n' + fail.join('\n'));

@@ -1275,6 +1275,11 @@ async function buildVisualFlows() {
       ['desktop-learner-simulator-code-scm.jpg', 'Source Control'],
       ['desktop-learner-simulator-code-run.jpg', 'Run and Debug'],
       ['desktop-learner-simulator-code-extensions.jpg', 'Extensions'],
+      ['desktop-learner-simulator-code-filemenu.jpg', 'File menu'],
+      ['desktop-learner-simulator-code-task.jpg', 'Current task'],
+      ['desktop-learner-simulator-code-tasklist.jpg', 'All tasks'],
+      ['desktop-learner-simulator-code-preview.jpg', 'Preview'],
+      ['desktop-learner-simulator-code-keyboard.jpg', 'Keyboard visualizer'],
       ['desktop-learner-12-training.jpg', 'Training'],
       ['desktop-learner-13-speed.jpg', 'Speed'],
       ['desktop-learner-speed-done.jpg', 'Speed done'],
@@ -1453,7 +1458,7 @@ async function buildSitemap() {
     [
       'ImmersiveSimulator',
       [
-        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · palette · quick open · terminal · find · search · SCM · run · extensions'],
+        ['/simulator', 'Code Lab', 'no chrome · #1e1e1e · palette · File menu · find · search · SCM · run · extensions · preview · current/all tasks · keyboard'],
         ['/simulator?mode=desktop', 'Desktop sim', 'Этот компьютер · wallpaper menu · file menu · explorer · recycle-bin · Пуск · Welcome.txt · keyboard · properties'],
       ],
     ],
@@ -4750,6 +4755,38 @@ async function buildUniqueScreens() {
       }
       palette.appendChild(list);
       sim.appendChild(palette);
+    } else if (overlay === 'menufile') {
+      const menu = al('VERTICAL', 'File menu');
+      menu.itemSpacing = 0;
+      menu.paddingTop = menu.paddingBottom = 4;
+      menu.paddingLeft = 12;
+      menu.fills = [solid(VSCODE_SIDE)];
+      menu.strokes = [solid(WHITE, 0.12)];
+      menu.resize(280, 10);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'HUG';
+      for (const [label, chord] of [
+        ['New File', 'Ctrl+N'],
+        ['New Folder', ''],
+        ['Open Folder from Computer…', ''],
+        ['Open Files from Computer…', ''],
+        ['Save', 'Ctrl+S'],
+        ['Save All', 'Ctrl+Shift+S'],
+        ['Open File', 'Ctrl+O'],
+      ]) {
+        const row = al('HORIZONTAL', label);
+        row.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        row.counterAxisAlignItems = 'CENTER';
+        row.paddingLeft = row.paddingRight = 12;
+        row.paddingTop = row.paddingBottom = 6;
+        row.resize(276, 10);
+        row.layoutSizingHorizontal = 'FIXED';
+        row.layoutSizingVertical = 'HUG';
+        row.appendChild(txt(label, outfit('Regular'), 13, WHITE, 180));
+        if (chord) row.appendChild(txt(chord, outfit('Regular'), 11, VSCODE_MUTED));
+        menu.appendChild(row);
+      }
+      sim.appendChild(menu);
     }
     const simBody = al('HORIZONTAL', 'panes');
     simBody.itemSpacing = 0;
@@ -4835,6 +4872,8 @@ async function buildUniqueScreens() {
       findBar.appendChild(txt('Esc', outfit('Regular'), 11, VSCODE_MUTED));
       editor.appendChild(findBar);
       editor.appendChild(txt('# Keymaster Project', outfit('Regular'), 13, WHITE, 400));
+    } else if (overlay === 'preview') {
+      editor.appendChild(txt('<!doctype html>', outfit('Regular'), 13, WHITE, 400));
     } else {
       for (const [label, chord] of [
         ['Show All Commands', 'Ctrl+Shift+P'],
@@ -4848,22 +4887,63 @@ async function buildUniqueScreens() {
     }
     const tasks = al('VERTICAL', 'Задачи');
     tasks.fills = [solid(VSCODE_SIDE)];
-    tasks.paddingTop = tasks.paddingBottom = 16;
+    tasks.paddingTop = tasks.paddingBottom = overlay === 'task' || overlay === 'tasklist' ? 10 : 16;
     tasks.paddingLeft = tasks.paddingRight = 16;
     tasks.itemSpacing = 8;
-    tasks.primaryAxisAlignItems = 'CENTER';
+    tasks.primaryAxisAlignItems = overlay === 'task' || overlay === 'tasklist' ? 'MIN' : 'CENTER';
     tasks.resize(280, 10);
     tasks.layoutSizingHorizontal = 'FIXED';
     tasks.layoutSizingVertical = 'HUG';
     tasks.appendChild(txt('ЗАДАЧИ · 0 XP', outfit('Bold'), 11, WHITE));
-    tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
-    tasks.appendChild(txt('Готовы к практике?', outfit('SemiBold'), 16, WHITE, 240));
-    tasks.appendChild(
-      txt('Выберите задачу и отработайте сочетания клавиш на реальных действиях в симуляторе.', outfit('Regular'), 12, VSCODE_MUTED, 240),
-    );
-    tasks.appendChild(instPrimary('Начать первую задачу'));
+    if (overlay === 'task') {
+      tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      tasks.appendChild(txt('НАЧАЛЬНЫЙ', outfit('Bold'), 10, { r: 0.086, g: 0.639, b: 0.29 }));
+      tasks.appendChild(txt('проводник', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('Создать новый файл', outfit('SemiBold'), 14, WHITE, 248));
+      tasks.appendChild(
+        txt('Создайте новый файл в проекте — через сочетание клавиш или контекстное меню.', outfit('Regular'), 11, VSCODE_MUTED, 248),
+      );
+      tasks.appendChild(txt('Прогресс', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('0%', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('ШАГИ', outfit('Bold'), 10, VSCODE_MUTED));
+      tasks.appendChild(txt('В проекте появился новый файл', outfit('Regular'), 12, WHITE, 248));
+      tasks.appendChild(txt('Сочетание', outfit('Regular'), 11, VSCODE_MUTED));
+      tasks.appendChild(txt('Ctrl+N', outfit('Regular'), 12, WHITE));
+      tasks.appendChild(txt('Подсказка (0/3)', outfit('Regular'), 12, WHITE));
+      tasks.appendChild(txt('Пропустить задачу', outfit('Regular'), 12, VSCODE_MUTED));
+    } else if (overlay === 'tasklist') {
+      tasks.appendChild(txt('Все задачи', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      for (const [title, meta] of [
+        ['Создать новый файл', '+15 XP · Начальный'],
+        ['Создать папку', '+20 XP · Начальный'],
+        ['Переименовать файл', '+15 XP · Начальный'],
+      ]) {
+        tasks.appendChild(txt(title, outfit('SemiBold'), 13, WHITE, 248));
+        tasks.appendChild(txt(meta, outfit('Regular'), 11, VSCODE_MUTED));
+      }
+    } else {
+      tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      tasks.appendChild(txt('Готовы к практике?', outfit('SemiBold'), 16, WHITE, 240));
+      tasks.appendChild(
+        txt('Выберите задачу и отработайте сочетания клавиш на реальных действиях в симуляторе.', outfit('Regular'), 12, VSCODE_MUTED, 240),
+      );
+      tasks.appendChild(instPrimary('Начать первую задачу'));
+    }
     simBody.appendChild(explorer);
     simBody.appendChild(editor);
+    if (overlay === 'preview') {
+      const preview = al('VERTICAL', 'Preview');
+      preview.fills = [solid(WHITE)];
+      preview.paddingTop = preview.paddingBottom = 12;
+      preview.paddingLeft = preview.paddingRight = 12;
+      preview.itemSpacing = 8;
+      preview.resize(220, 10);
+      preview.layoutSizingHorizontal = 'FIXED';
+      preview.layoutSizingVertical = 'HUG';
+      preview.appendChild(txt('PREVIEW — INDEX.HTML', outfit('Bold'), 10, MUTED));
+      preview.appendChild(txt('index.html', outfit('Regular'), 12, INK));
+      simBody.appendChild(preview);
+    }
     simBody.appendChild(tasks);
     sim.appendChild(simBody);
     if (overlay === 'terminal') {
@@ -4880,6 +4960,20 @@ async function buildUniqueScreens() {
       term.appendChild(txt('python index.py · node app.js · run page.html · help', outfit('Regular'), 12, VSCODE_MUTED, 720));
       term.appendChild(txt('$ ~', outfit('Regular'), 13, { r: 0.53, g: 0.81, b: 1 }));
       sim.appendChild(term);
+    }
+    if (overlay === 'kbviz') {
+      const kb = al('VERTICAL', 'Keyboard Visualizer');
+      kb.itemSpacing = 6;
+      kb.paddingTop = kb.paddingBottom = 8;
+      kb.paddingLeft = kb.paddingRight = 12;
+      kb.fills = [solid(VSCODE_SIDE)];
+      kb.resize(960, 10);
+      kb.layoutSizingHorizontal = 'FIXED';
+      kb.layoutSizingVertical = 'HUG';
+      kb.appendChild(txt('KEYBOARD VISUALIZER', outfit('Bold'), 10, VSCODE_MUTED));
+      kb.appendChild(txt('Esc  F1  F2  F3  F4  F5  F6  F7  F8', outfit('Regular'), 11, WHITE, 720));
+      kb.appendChild(txt('Bksp  Tab  Caps  Enter  Win  Space', outfit('Regular'), 11, WHITE, 720));
+      sim.appendChild(kb);
     }
     const status = al('HORIZONTAL', 'status bar');
     status.primaryAxisAlignItems = 'SPACE_BETWEEN';
@@ -5236,6 +5330,11 @@ async function buildUniqueScreens() {
   const simScm = makeCodeLab('Code Lab source control /simulator', 'scm');
   const simRun = makeCodeLab('Code Lab run /simulator', 'run');
   const simExt = makeCodeLab('Code Lab extensions /simulator', 'extensions');
+  const simFileMenu = makeCodeLab('Code Lab file menu /simulator', 'menufile');
+  const simTask = makeCodeLab('Code Lab current task /simulator', 'task');
+  const simTaskList = makeCodeLab('Code Lab all tasks /simulator', 'tasklist');
+  const simPreview = makeCodeLab('Code Lab preview /simulator', 'preview');
+  const simKbViz = makeCodeLab('Code Lab keyboard /simulator', 'kbviz');
   const desk = makeDesktopSim('Desktop');
   const deskMenu = makeDesktopSim('Desktop context menu /simulator?mode=desktop', 'menu');
   const deskExplorer = makeDesktopSim('Desktop explorer /simulator?mode=desktop', 'explorer');
@@ -8919,7 +9018,7 @@ async function buildUniqueScreens() {
   darkPathRow.appendChild(instPath('Status=Start') || pathNode('Start', 'Начать', false));
   darkPathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
-  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
+  board.appendChild(section('ImmersiveSimulator', [sim, simPalette, simQuick, simTerm, simFind, simSearch, simScm, simRun, simExt, simFileMenu, simTask, simTaskList, simPreview, simKbViz, desk, deskMenu, deskExplorer, deskTrash, deskStart, deskEditor, deskKeyboard, deskFileMenu, deskProps]));
   board.appendChild(
     section('Dark · html.dark (same layouts, semantic tokens)', [
       marketingPage('Dark Home / html.dark', 'Главная', false, [darkHero, darkFeats], true),
