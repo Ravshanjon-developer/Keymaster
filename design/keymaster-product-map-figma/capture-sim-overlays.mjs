@@ -114,10 +114,44 @@ const only = new Set(
 );
 
 const results = [];
-async function run(name, viewport, fn) {
+async function spoofNoPhysicalKeyboard(ctx) {
+  await ctx.addInitScript(() => {
+    const orig = window.matchMedia.bind(window);
+    window.matchMedia = (q) => {
+      if (/(pointer:\s*fine)|(hover:\s*hover)/i.test(q)) {
+        return {
+          matches: false,
+          media: q,
+          onchange: null,
+          addListener() {},
+          removeListener() {},
+          addEventListener() {},
+          removeEventListener() {},
+          dispatchEvent() {
+            return false;
+          },
+        };
+      }
+      return orig(q);
+    };
+    Object.defineProperty(navigator, 'maxTouchPoints', { get: () => 5 });
+  });
+}
+async function run(name, viewport, fn, extra) {
   if (only.size && !only.has(name)) return;
   try {
-    const ctx = await browser.newContext({ viewport });
+    const ctx = await browser.newContext({
+      viewport,
+      ...(extra?.touch
+        ? {
+            isMobile: true,
+            hasTouch: true,
+            userAgent:
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+          }
+        : {}),
+    });
+    if (extra?.noKeyboard) await spoofNoPhysicalKeyboard(ctx);
     const page = await ctx.newPage();
     const out = await fn(page);
     results.push({ name, ok: true, ...out });
@@ -1277,6 +1311,77 @@ await run('mobile-desktop', mobileVp, async (page) => {
   const snippet = await page.locator('.bolt-desktop-root').innerText();
   return { file: 'mobile-authed-15-simulator-desktop.jpg', w, h, snippet: String(snippet).slice(0, 900) };
 });
+
+await run('mobile-desktop-tasks', mobileVp, async (page) => {
+  const dest = path.join(shotsDir, 'mobile-authed-16-simulator-desktop-tasks.jpg');
+  await login(page, 'learner@example.com', 'learn123');
+  await page.route('**/progress/lessons**', async (route) => {
+    const res = await route.fetch();
+    let json = [];
+    try {
+      json = await res.json();
+    } catch {
+      json = [];
+    }
+    const body = (Array.isArray(json) ? json : []).map((row) => {
+      const key = Array.isArray(row.keys) ? row.keys[0] : '';
+      if (typeof key === 'string' && key.startsWith('desktop:')) {
+        return { ...row, completed: false };
+      }
+      return row;
+    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  await page.evaluate(() => {
+    localStorage.setItem('km_desktop_tasks_v1', JSON.stringify({ completed: [], xp: 0 }));
+    localStorage.removeItem('km-desktop-vfs-v1');
+    localStorage.setItem('km-desktop-firstrun-v1', '1');
+  });
+  await page.goto(BASE + '/simulator?mode=desktop', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.getByText('К практике', { exact: true }).waitFor({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Задачи' }).first().click();
+  await page.getByText('Текущая · 1/12').waitFor({ timeout: 8000 });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+  const { w, h } = jpegSize(fs.readFileSync(dest));
+  const snippet = await page.locator('.bolt-desktop-root').innerText();
+  return { file: 'mobile-authed-16-simulator-desktop-tasks.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+});
+
+await run(
+  'mobile-codelab-gate',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-17-simulator-code-gate.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/simulator', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByText('Практика требует физической клавиатуры', { exact: true }).waitFor({ timeout: 15000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-17-simulator-code-gate.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true, noKeyboard: true },
+);
+
+await run(
+  'mobile-speed-gate',
+  mobileVp,
+  async (page) => {
+    const dest = path.join(shotsDir, 'mobile-authed-18-speed-gate.jpg');
+    await login(page, 'learner@example.com', 'learn123');
+    await page.goto(BASE + '/speed', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.getByRole('button', { name: 'Старт 60 сек' }).click();
+    await page.getByText('Практика требует физической клавиатуры', { exact: true }).waitFor({ timeout: 15000 });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: dest, type: 'jpeg', quality: 72 });
+    const { w, h } = jpegSize(fs.readFileSync(dest));
+    const snippet = await page.locator('body').innerText();
+    return { file: 'mobile-authed-18-speed-gate.jpg', w, h, snippet: String(snippet).slice(0, 900) };
+  },
+  { touch: true, noKeyboard: true },
+);
 
 await browser.close();
 

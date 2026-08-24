@@ -382,6 +382,9 @@ if (!names.includes('Desktop new file /simulator?mode=desktop')) fail.push('no d
 if (!names.includes('Desktop paste menu /simulator?mode=desktop')) fail.push('no desktop paste-menu unique screen');
 if (!names.includes('Desktop tasks closed /simulator?mode=desktop')) fail.push('no desktop tasks-closed unique screen');
 if (!names.includes('Mobile Desktop 390')) fail.push('no mobile desktop unique screen');
+if (!names.includes('Mobile Desktop tasks 390')) fail.push('no mobile desktop-tasks unique screen');
+if (!names.includes('Mobile Code Lab gate 390')) fail.push('no mobile code-lab gate unique screen');
+if (!names.includes('Mobile Speed gate 390')) fail.push('no mobile speed-gate unique screen');
 if (!names.includes('Training hint /training')) fail.push('no training-hint unique screen');
 if (!names.includes('Training hint 2 /training')) fail.push('no training-hint2 unique screen');
 if (!names.includes('Training hint 3 /training')) fail.push('no training-hint3 unique screen');
@@ -414,6 +417,9 @@ if (!names.includes('Learner / Desktop new file')) fail.push('no desktop new-fil
 if (!names.includes('Learner / Desktop paste menu')) fail.push('no desktop paste-menu capture');
 if (!names.includes('Learner / Desktop tasks closed')) fail.push('no desktop tasks-closed capture');
 if (!names.includes('Mobile / Desktop sim')) fail.push('no mobile desktop capture');
+if (!names.includes('Mobile / Desktop tasks')) fail.push('no mobile desktop-tasks capture');
+if (!names.includes('Mobile / Code Lab gate')) fail.push('no mobile code-lab gate capture');
+if (!names.includes('Mobile / Speed gate')) fail.push('no mobile speed-gate capture');
 if (!names.includes('Learner / Training explain')) fail.push('no training-explain capture');
 if (!names.includes('Learner / Training correct')) fail.push('no training-correct capture');
 if (!names.includes('Exam timeout /exam')) fail.push('no exam-timeout unique screen');
@@ -1339,6 +1345,9 @@ let deskNewFileUnique = null;
 let deskMenuPasteUnique = null;
 let deskTasksClosedUnique = null;
 let mobileDesktopUnique = null;
+let mobileDesktopTasksUnique = null;
+let mobileCodeGateUnique = null;
+let mobileSpeedGateUnique = null;
 let trainExplainUnique = null;
 let trainHintUnique = null;
 let trainHint2Unique = null;
@@ -1387,6 +1396,9 @@ for (const p of pages) {
   deskMenuPasteUnique = deskMenuPasteUnique || findByName(p, 'Desktop paste menu /simulator?mode=desktop');
   deskTasksClosedUnique = deskTasksClosedUnique || findByName(p, 'Desktop tasks closed /simulator?mode=desktop');
   mobileDesktopUnique = mobileDesktopUnique || findByName(p, 'Mobile Desktop 390');
+  mobileDesktopTasksUnique = mobileDesktopTasksUnique || findByName(p, 'Mobile Desktop tasks 390');
+  mobileCodeGateUnique = mobileCodeGateUnique || findByName(p, 'Mobile Code Lab gate 390');
+  mobileSpeedGateUnique = mobileSpeedGateUnique || findByName(p, 'Mobile Speed gate 390');
   trainExplainUnique = trainExplainUnique || findByName(p, 'Training explain /training');
   trainHintUnique = trainHintUnique || findByName(p, 'Training hint /training');
   trainHint2Unique = trainHint2Unique || findByName(p, 'Training hint 2 /training');
@@ -1494,8 +1506,17 @@ if (!deskMenuPasteUnique || !namesUnder(deskMenuPasteUnique).includes('Вста�
 if (!deskTasksClosedUnique || !namesUnder(deskTasksClosedUnique).includes('Этот компьютер') || namesUnder(deskTasksClosedUnique).includes('ЗАДАЧИ') || namesUnder(deskTasksClosedUnique).includes('ТЕКУЩАЯ · 1/12') || namesUnder(deskTasksClosedUnique).includes('С чего начать')) {
   fail.push('desktop tasks-closed unique should be wallpaper without ЗАДАЧИ rail');
 }
-if (!mobileDesktopUnique || !namesUnder(mobileDesktopUnique).includes('К практике') || !namesUnder(mobileDesktopUnique).includes('/Рабочий стол') || !namesUnder(mobileDesktopUnique).includes('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ') || namesUnder(mobileDesktopUnique).includes('KeyMaster') || namesUnder(mobileDesktopUnique).includes('Тренировочный зал')) {
+if (!mobileDesktopUnique || !namesUnder(mobileDesktopUnique).includes('К практике') || !namesUnder(mobileDesktopUnique).includes('/Рабочий стол') || !namesUnder(mobileDesktopUnique).includes('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ') || namesUnder(mobileDesktopUnique).includes('KeyMaster') || namesUnder(mobileDesktopUnique).includes('Тренировочный зал') || namesUnder(mobileDesktopUnique).includes('ЗАДАЧИ')) {
   fail.push('mobile desktop unique missing live FileManager 390 chrome without BottomNav header');
+}
+if (!mobileDesktopTasksUnique || !namesUnder(mobileDesktopTasksUnique).includes('ЗАДАЧИ') || !namesUnder(mobileDesktopTasksUnique).includes('ТЕКУЩАЯ · 1/12') || !namesUnder(mobileDesktopTasksUnique).includes('/Рабочий стол') || namesUnder(mobileDesktopTasksUnique).includes('KeyMaster') || namesUnder(mobileDesktopTasksUnique).includes('Тренировочный зал')) {
+  fail.push('mobile desktop-tasks unique missing live FileManager 390 + ЗАДАЧИ overlay');
+}
+if (!mobileCodeGateUnique || !namesUnder(mobileCodeGateUnique).includes('Практика требует физической клавиатуры') || !namesUnder(mobileCodeGateUnique).includes('Keyboard illustration') || namesUnder(mobileCodeGateUnique).includes('ВСЕ КУРСЫ') || namesUnder(mobileCodeGateUnique).includes('Завершить') || namesUnder(mobileCodeGateUnique).includes('KeyMaster') || namesUnder(mobileCodeGateUnique).includes('Экзамен · 1/20')) {
+  fail.push('mobile code-lab gate unique should be immersive PracticeKeyboardGate without exam chrome');
+}
+if (!mobileSpeedGateUnique || !namesUnder(mobileSpeedGateUnique).includes('Режим скорости') || !namesUnder(mobileSpeedGateUnique).includes('⏱ 1:00') || !namesUnder(mobileSpeedGateUnique).includes('Практика требует физической клавиатуры') || !namesUnder(mobileSpeedGateUnique).includes('Скорость') || namesUnder(mobileSpeedGateUnique).includes('ВСЕ КУРСЫ') || namesUnder(mobileSpeedGateUnique).includes('Завершить') || namesUnder(mobileSpeedGateUnique).includes('Нажмите сочетание на клавиатуре')) {
+  fail.push('mobile speed-gate unique missing PracticeShell chips + speed HUD + keyboard gate');
 }
 if (!trainExplainUnique || !namesUnder(trainExplainUnique).includes('ЧТО ДЕЛАЕТ') || !namesUnder(trainExplainUnique).includes('К упражнению') || !namesUnder(trainExplainUnique).includes('Замена') || namesUnder(trainExplainUnique).includes('Нажмите сочетание на клавиатуре') || namesUnder(trainExplainUnique).includes('Подсказка')) {
   fail.push('training-explain unique missing live KeyboardTrainer back face');

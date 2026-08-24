@@ -169,5 +169,8 @@
   {"file":"desktop-learner-lesson-desktop-task-done.jpg","page":"03 — Existing Screens","name":"Learner / Lesson desktop-task done","layout":"MarketingShell — Задание выполнено + Выполнено","group":"Learner"},
   {"file":"mobile-authed-12-dashboard.jpg","page":"07 — Mobile Screens","name":"Mobile / Dashboard","layout":"BottomNav inactive + Кабинет","group":"Mobile 390"},
   {"file":"mobile-authed-13-course-computer-basics.jpg","page":"07 — Mobile Screens","name":"Mobile / Course detail (computer-basics)","layout":"BottomNav Курсы + Desktop CTA","group":"Mobile 390"},
-  {"file":"mobile-authed-15-simulator-desktop.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop sim","layout":"ImmersiveSimulator — FileManager 390 no BottomNav","group":"Mobile 390"}
+  {"file":"mobile-authed-15-simulator-desktop.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop sim","layout":"ImmersiveSimulator — FileManager 390 no BottomNav","group":"Mobile 390"},
+  {"file":"mobile-authed-16-simulator-desktop-tasks.jpg","page":"07 — Mobile Screens","name":"Mobile / Desktop tasks","layout":"ImmersiveSimulator — FileManager 390 + ЗАДАЧИ overlay","group":"Mobile 390"},
+  {"file":"mobile-authed-17-simulator-code-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Code Lab gate","layout":"ImmersiveSimulator — PracticeKeyboardGate no exam chrome","group":"Mobile 390"},
+  {"file":"mobile-authed-18-speed-gate.jpg","page":"07 — Mobile Screens","name":"Mobile / Speed gate","layout":"PracticeShell chips + ⏱ HUD + PracticeKeyboardGate","group":"Mobile 390"}
 ]

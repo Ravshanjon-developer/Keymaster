@@ -9709,77 +9709,225 @@ async function buildUniqueScreens() {
     'Практика',
     { chips: 'Тренировочный зал', authed: true },
   );
-  const mobileDesktop = al('VERTICAL', 'Mobile Desktop 390');
-  mobileDesktop.itemSpacing = 0;
-  mobileDesktop.fills = [solid(DESK_BG)];
-  mobileDesktop.strokes = [solid(INK, 0.1)];
-  mobileDesktop.resize(390, 10);
-  mobileDesktop.layoutSizingHorizontal = 'FIXED';
-  mobileDesktop.layoutSizingVertical = 'HUG';
-  const mdTop = al('HORIZONTAL', 'mobile desktop chrome');
-  mdTop.primaryAxisAlignItems = 'SPACE_BETWEEN';
-  mdTop.counterAxisAlignItems = 'CENTER';
-  mdTop.paddingLeft = mdTop.paddingRight = 12;
-  mdTop.resize(390, 48);
-  mdTop.layoutSizingHorizontal = 'FIXED';
-  mdTop.layoutSizingVertical = 'FIXED';
-  mdTop.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
-  mdTop.appendChild(txt('К практике', outfit('SemiBold'), 13, WHITE));
-  mdTop.appendChild(txt('Клавиатура  ·  Задачи', outfit('Regular'), 11, VSCODE_MUTED));
-  mobileDesktop.appendChild(mdTop);
-  const mdBody = al('HORIZONTAL', 'mobile FileManager');
-  mdBody.itemSpacing = 0;
-  const mdSide = al('VERTICAL', 'sidebar');
-  mdSide.itemSpacing = 6;
-  mdSide.paddingTop = mdSide.paddingBottom = 8;
-  mdSide.paddingLeft = mdSide.paddingRight = 8;
-  mdSide.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 })];
-  mdSide.resize(148, 10);
-  mdSide.layoutSizingHorizontal = 'FIXED';
-  mdSide.layoutSizingVertical = 'HUG';
-  mdSide.appendChild(txt('Рабочий стол', outfit('SemiBold'), 12, WHITE));
-  mdSide.appendChild(txt('Welcome.txt', outfit('Regular'), 11, VSCODE_MUTED));
-  for (const label of ['Документы', 'Загрузки', 'Projects', 'Корзина']) {
-    mdSide.appendChild(txt(label, outfit('Regular'), 12, VSCODE_MUTED));
+  function makeMobileDesktop390(name, tasksOpen) {
+    const frame = al('VERTICAL', name);
+    frame.itemSpacing = 0;
+    frame.fills = [solid(DESK_BG)];
+    frame.strokes = [solid(INK, 0.1)];
+    frame.resize(390, 10);
+    frame.layoutSizingHorizontal = 'FIXED';
+    frame.layoutSizingVertical = 'HUG';
+    const top = al('HORIZONTAL', 'mobile desktop chrome');
+    top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    top.counterAxisAlignItems = 'CENTER';
+    top.paddingLeft = top.paddingRight = 12;
+    top.resize(390, 48);
+    top.layoutSizingHorizontal = 'FIXED';
+    top.layoutSizingVertical = 'FIXED';
+    top.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
+    top.appendChild(txt('К практике', outfit('SemiBold'), 13, WHITE));
+    top.appendChild(txt('Клавиатура  ·  Задачи', outfit('Regular'), 11, VSCODE_MUTED));
+    frame.appendChild(top);
+    const body = al('HORIZONTAL', 'mobile FileManager');
+    body.itemSpacing = 0;
+    const side = al('VERTICAL', 'sidebar');
+    side.itemSpacing = 6;
+    side.paddingTop = side.paddingBottom = 8;
+    side.paddingLeft = side.paddingRight = 8;
+    side.fills = [solid({ r: 0.14, g: 0.15, b: 0.18 })];
+    side.resize(148, 10);
+    side.layoutSizingHorizontal = 'FIXED';
+    side.layoutSizingVertical = 'HUG';
+    side.appendChild(txt('Рабочий стол', outfit('SemiBold'), 12, WHITE));
+    side.appendChild(txt('Welcome.txt', outfit('Regular'), 11, VSCODE_MUTED));
+    for (const label of ['Документы', 'Загрузки', 'Projects', 'Корзина']) {
+      side.appendChild(txt(label, outfit('Regular'), 12, VSCODE_MUTED));
+    }
+    side.appendChild(txt('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ', outfit('Regular'), 10, VSCODE_MUTED, 132));
+    const main = al('VERTICAL', 'files');
+    main.itemSpacing = 8;
+    main.paddingTop = main.paddingBottom = 8;
+    main.paddingLeft = main.paddingRight = 8;
+    main.resize(242, 10);
+    main.layoutSizingHorizontal = 'FIXED';
+    main.layoutSizingVertical = 'HUG';
+    const tool = al('HORIZONTAL', 'toolbar');
+    tool.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    tool.counterAxisAlignItems = 'CENTER';
+    tool.resize(226, 10);
+    tool.layoutSizingHorizontal = 'FIXED';
+    tool.layoutSizingVertical = 'HUG';
+    tool.appendChild(txt('/Рабочий стол', outfit('Regular'), 12, WHITE, 140));
+    tool.appendChild(txt('1 объектов', outfit('Regular'), 11, VSCODE_MUTED));
+    main.appendChild(tool);
+    const file = al('VERTICAL', 'Welcome.txt');
+    file.itemSpacing = 4;
+    file.primaryAxisAlignItems = 'CENTER';
+    file.appendChild(txt('TXT', outfit('Bold'), 10, VSCODE_MUTED));
+    file.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
+    main.appendChild(file);
+    body.appendChild(side);
+    body.appendChild(main);
+    frame.appendChild(body);
+    if (tasksOpen) {
+      const panel = al('VERTICAL', 'mobile tasks overlay');
+      panel.itemSpacing = 8;
+      panel.paddingTop = panel.paddingBottom = 14;
+      panel.paddingLeft = panel.paddingRight = 14;
+      panel.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
+      panel.resize(390, 10);
+      panel.layoutSizingHorizontal = 'FIXED';
+      panel.layoutSizingVertical = 'HUG';
+      const head = al('HORIZONTAL', 'task head');
+      head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+      head.counterAxisAlignItems = 'CENTER';
+      head.resize(362, 10);
+      head.layoutSizingHorizontal = 'FIXED';
+      head.layoutSizingVertical = 'HUG';
+      head.appendChild(txt('ЗАДАЧИ', outfit('Bold'), 11, WHITE));
+      head.appendChild(txt('К практике', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      panel.appendChild(head);
+      panel.appendChild(txt('ТЕКУЩАЯ · 1/12', outfit('Bold'), 10, { r: 0.53, g: 0.81, b: 1 }));
+      panel.appendChild(txt('Создайте папку «Practice»', outfit('SemiBold'), 14, WHITE, 330));
+      panel.appendChild(
+        txt(
+          'Щёлкните правой кнопкой по фону рабочего стола → «Новая папка». Или дважды щёлкните «Этот компьютер» и создайте папку в проводнике.',
+          outfit('Regular'),
+          12,
+          VSCODE_MUTED,
+          330,
+        ),
+      );
+      panel.appendChild(txt('Подсказка', outfit('SemiBold'), 12, WHITE));
+      panel.appendChild(txt('Прогресс', outfit('Regular'), 11, VSCODE_MUTED));
+      panel.appendChild(txt('0/12', outfit('Regular'), 11, VSCODE_MUTED));
+      panel.appendChild(txt('Заработано 0 XP', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+      frame.appendChild(panel);
+    }
+    const bar = al('HORIZONTAL', 'taskbar');
+    bar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    bar.counterAxisAlignItems = 'CENTER';
+    bar.paddingLeft = bar.paddingRight = 10;
+    bar.paddingTop = bar.paddingBottom = 8;
+    bar.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
+    bar.resize(390, 40);
+    bar.layoutSizingHorizontal = 'FIXED';
+    bar.layoutSizingVertical = 'FIXED';
+    bar.appendChild(txt('Пуск  ·  Поиск  ·  Проводник', outfit('Regular'), 10, WHITE, 200));
+    bar.appendChild(txt('РУС  ·  17:42  24.08.2026', outfit('Regular'), 10, WHITE));
+    frame.appendChild(bar);
+    return frame;
   }
-  mdSide.appendChild(txt('ТЕКУЩАЯ ПАПКА: /РАБОЧИЙ СТОЛ', outfit('Regular'), 10, VSCODE_MUTED, 132));
-  const mdMain = al('VERTICAL', 'files');
-  mdMain.itemSpacing = 8;
-  mdMain.paddingTop = mdMain.paddingBottom = 8;
-  mdMain.paddingLeft = mdMain.paddingRight = 8;
-  mdMain.resize(242, 10);
-  mdMain.layoutSizingHorizontal = 'FIXED';
-  mdMain.layoutSizingVertical = 'HUG';
-  const mdTool = al('HORIZONTAL', 'toolbar');
-  mdTool.primaryAxisAlignItems = 'SPACE_BETWEEN';
-  mdTool.counterAxisAlignItems = 'CENTER';
-  mdTool.resize(226, 10);
-  mdTool.layoutSizingHorizontal = 'FIXED';
-  mdTool.layoutSizingVertical = 'HUG';
-  mdTool.appendChild(txt('/Рабочий стол', outfit('Regular'), 12, WHITE, 140));
-  mdTool.appendChild(txt('1 объектов', outfit('Regular'), 11, VSCODE_MUTED));
-  mdMain.appendChild(mdTool);
-  const mdFile = al('VERTICAL', 'Welcome.txt');
-  mdFile.itemSpacing = 4;
-  mdFile.primaryAxisAlignItems = 'CENTER';
-  mdFile.appendChild(txt('TXT', outfit('Bold'), 10, VSCODE_MUTED));
-  mdFile.appendChild(txt('Welcome.txt', outfit('Regular'), 12, WHITE));
-  mdMain.appendChild(mdFile);
-  mdBody.appendChild(mdSide);
-  mdBody.appendChild(mdMain);
-  mobileDesktop.appendChild(mdBody);
-  const mdBar = al('HORIZONTAL', 'taskbar');
-  mdBar.primaryAxisAlignItems = 'SPACE_BETWEEN';
-  mdBar.counterAxisAlignItems = 'CENTER';
-  mdBar.paddingLeft = mdBar.paddingRight = 10;
-  mdBar.paddingTop = mdBar.paddingBottom = 8;
-  mdBar.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
-  mdBar.resize(390, 40);
-  mdBar.layoutSizingHorizontal = 'FIXED';
-  mdBar.layoutSizingVertical = 'FIXED';
-  mdBar.appendChild(txt('Пуск  ·  Поиск  ·  Проводник', outfit('Regular'), 10, WHITE, 200));
-  mdBar.appendChild(txt('РУС  ·  17:42  24.08.2026', outfit('Regular'), 10, WHITE));
-  mobileDesktop.appendChild(mdBar);
+  const mobileDesktop = makeMobileDesktop390('Mobile Desktop 390', false);
+  const mobileDesktopTasks = makeMobileDesktop390('Mobile Desktop tasks 390', true);
+  const mobileCodeGate = al('VERTICAL', 'Mobile Code Lab gate 390');
+  mobileCodeGate.itemSpacing = 16;
+  mobileCodeGate.paddingTop = mobileCodeGate.paddingBottom = 24;
+  mobileCodeGate.paddingLeft = mobileCodeGate.paddingRight = 16;
+  mobileCodeGate.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
+  mobileCodeGate.strokes = [solid(INK, 0.1)];
+  mobileCodeGate.resize(390, 10);
+  mobileCodeGate.layoutSizingHorizontal = 'FIXED';
+  mobileCodeGate.layoutSizingVertical = 'HUG';
+  const codeGateCard = al('VERTICAL', 'Keyboard gate card');
+  codeGateCard.itemSpacing = 12;
+  codeGateCard.primaryAxisAlignItems = 'CENTER';
+  codeGateCard.paddingTop = codeGateCard.paddingBottom = 24;
+  codeGateCard.paddingLeft = codeGateCard.paddingRight = 16;
+  codeGateCard.cornerRadius = 24;
+  codeGateCard.fills = [solid(WHITE)];
+  codeGateCard.resize(358, 10);
+  codeGateCard.layoutSizingHorizontal = 'FIXED';
+  codeGateCard.layoutSizingVertical = 'HUG';
+  codeGateCard.appendChild(keyboardIllustration());
+  codeGateCard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 22, INK, 326));
+  codeGateCard.appendChild(
+    txt(
+      'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      326,
+    ),
+  );
+  codeGateCard.appendChild(
+    txt(
+      'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
+      outfit('Regular'),
+      11,
+      MUTED,
+      326,
+    ),
+  );
+  const codeGateCtas = al('VERTICAL', 'gate CTAs');
+  codeGateCtas.itemSpacing = 10;
+  codeGateCtas.appendChild(instPrimary('Изучить комбинации'));
+  codeGateCtas.appendChild(secondaryBtn('Основы hotkeys'));
+  codeGateCard.appendChild(codeGateCtas);
+  codeGateCtas.layoutSizingHorizontal = 'FILL';
+  mobileCodeGate.appendChild(codeGateCard);
+  const mobileSpeedGate = mobileFrame(
+    'Mobile Speed gate 390',
+    [
+      (() => {
+        const head = al('HORIZONTAL', 'speed run head 390');
+        head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+        head.counterAxisAlignItems = 'CENTER';
+        head.resize(358, 10);
+        head.layoutSizingHorizontal = 'FIXED';
+        head.layoutSizingVertical = 'HUG';
+        head.appendChild(txt('Режим скорости', outfit('Bold'), 24, INK, 180));
+        const hud = al('HORIZONTAL', 'speed hud 390');
+        hud.itemSpacing = 10;
+        hud.appendChild(txt('⏱ 1:00', outfit('Medium'), 13, INK));
+        hud.appendChild(txt('⭐ 0', outfit('Medium'), 13, INK));
+        hud.appendChild(txt('🔥 x0', outfit('Medium'), 13, INK));
+        head.appendChild(hud);
+        return head;
+      })(),
+      (() => {
+        const gcard = al('VERTICAL', 'Speed gate card');
+        gcard.itemSpacing = 12;
+        gcard.primaryAxisAlignItems = 'CENTER';
+        gcard.paddingTop = gcard.paddingBottom = 24;
+        gcard.paddingLeft = gcard.paddingRight = 16;
+        gcard.cornerRadius = 24;
+        gcard.fills = [solid(WHITE)];
+        gcard.resize(358, 10);
+        gcard.layoutSizingHorizontal = 'FIXED';
+        gcard.layoutSizingVertical = 'HUG';
+        gcard.appendChild(keyboardIllustration());
+        gcard.appendChild(txt('Практика требует физической клавиатуры', outfit('SemiBold'), 22, INK, 326));
+        gcard.appendChild(
+          txt(
+            'Для тренировки необходимо использовать компьютер или подключить Bluetooth-клавиатуру к телефону.',
+            outfit('Regular'),
+            13,
+            MUTED,
+            326,
+          ),
+        );
+        gcard.appendChild(
+          txt(
+            'Нажмите любую клавишу на внешней клавиатуре — практика включится автоматически.',
+            outfit('Regular'),
+            11,
+            MUTED,
+            326,
+          ),
+        );
+        const gctas = al('VERTICAL', 'speed gate CTAs');
+        gctas.itemSpacing = 10;
+        gctas.appendChild(instPrimary('Изучить комбинации'));
+        gctas.appendChild(secondaryBtn('Основы hotkeys'));
+        gcard.appendChild(gctas);
+        gctas.layoutSizingHorizontal = 'FILL';
+        return gcard;
+      })(),
+    ],
+    'Практика',
+    { chips: 'Скорость', authed: true },
+  );
 
   function mobileNavOpen(name, guest) {
     const frame = al('VERTICAL', name);
@@ -10452,6 +10600,9 @@ async function buildUniqueScreens() {
       mobileRegister,
       mobilePractice,
       mobileDesktop,
+      mobileDesktopTasks,
+      mobileCodeGate,
+      mobileSpeedGate,
       mobileNavGuest,
       mobileNavAuthed,
       mobilePath,
