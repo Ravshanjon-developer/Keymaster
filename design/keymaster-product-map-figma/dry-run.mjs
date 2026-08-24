@@ -606,6 +606,9 @@ if (!studyUnique || !namesUnder(studyUnique).some((n) => String(n).includes('б�
 if (!studyUnique || !namesUnder(studyUnique).includes('Вход') || namesUnder(studyUnique).includes('Анна')) {
   fail.push('study-only unique screen is not guest chrome like the live capture');
 }
+if (!studyUnique || !namesUnder(studyUnique).includes('Окна') || !namesUnder(studyUnique).includes('В реальной системе: Alt+Tab')) {
+  fail.push('guest study-only unique missing live Окна / Alt+Tab copy');
+}
 if (!names.includes('wrong head')) fail.push('no live quiz-picked wrong-toast unique screen');
 let examFbUnique = null;
 let darkCoursesUnique = null;
@@ -762,6 +765,94 @@ if (!deskTaskUnique || !namesUnder(deskTaskUnique).includes('Папка Practice
 }
 if (!mobileDashUnique || !namesUnder(mobileDashUnique).includes('Выйти') || !namesUnder(mobileDashUnique).includes('Привет, Анна!') || namesUnder(mobileDashUnique).includes('Регистрация')) {
   fail.push('mobile dashboard unique should show Выйти + Привет, Анна! without Регистрация');
+}
+
+if (!names.includes('Leaderboard empty /leaderboard')) fail.push('no leaderboard empty unique screen');
+if (!names.includes('Leaderboard period empty /leaderboard')) fail.push('no leaderboard period-empty unique screen');
+if (!names.includes('Leaderboard api down /leaderboard')) fail.push('no leaderboard API-down unique screen');
+if (!names.includes('Leaderboard loading /leaderboard')) fail.push('no leaderboard loading unique screen');
+if (!names.includes('Achievements empty /achievements')) fail.push('no achievements empty unique screen');
+if (!names.includes('Lesson loading /lessons/:id')) fail.push('no lesson loading unique screen');
+if (!names.includes('Lesson study-only authed /lessons/:id')) fail.push('no authed study-only unique screen');
+if (!names.includes('Lesson study-only learned /lessons/:id')) fail.push('no learned study-only unique screen');
+if (!names.includes('Lesson task done /lessons/:id')) fail.push('no task-done unique screen');
+if (!names.includes('Lesson desktop-task done /lessons/:id')) fail.push('no desktop-task done unique screen');
+if (!names.includes('Lesson hotkey done /lessons/:id')) fail.push('no hotkey-done unique screen');
+if (!names.includes('Рейтинг пуст')) fail.push('no live leaderboard empty title unique screen');
+if (!names.includes('За этот период пока никого')) fail.push('no live leaderboard period-empty title unique screen');
+if (!names.includes('Пройдите первый урок, чтобы открыть достижения')) fail.push('no live achievements empty title unique screen');
+if (!names.includes('Это сочетание уже в вашем арсенале')) fail.push('no live study-only inArsenal unique screen');
+if (!names.includes('Запомнил')) fail.push('no live study-only markLearned unique screen');
+if (!names.includes('Задание выполнено')) fail.push('no live task-done title unique screen');
+if (!names.includes('Сочетание изучено')) fail.push('no live hotkey-done title unique screen');
+if (!names.includes('Запомните: Ctrl + C — Скопируйте')) fail.push('no live hotkey-done rememberLine unique screen');
+if (!names.includes('Guest / Leaderboard empty')) fail.push('no leaderboard empty capture');
+if (!names.includes('Learner / Leaderboard period empty')) fail.push('no leaderboard period-empty capture');
+if (!names.includes('Guest / Leaderboard API down')) fail.push('no leaderboard API-down capture');
+if (!names.includes('Guest / Leaderboard loading')) fail.push('no leaderboard loading capture');
+if (!names.includes('Learner / Achievements empty')) fail.push('no achievements empty capture');
+if (!names.includes('Guest / Lesson loading')) fail.push('no lesson loading capture');
+if (!names.includes('Learner / Lesson study-only')) fail.push('no authed study-only capture');
+if (!names.includes('Learner / Lesson study-only learned')) fail.push('no learned study-only capture');
+if (!names.includes('Learner / Lesson task done')) fail.push('no task-done capture');
+if (!names.includes('Learner / Lesson desktop-task done')) fail.push('no desktop-task done capture');
+
+let lbEmptyUnique = null;
+let lbPeriodUnique = null;
+let lbApiUnique = null;
+let lbLoadUnique = null;
+let achEmptyUnique = null;
+let lessonLoadUnique = null;
+let studyAuthedUnique = null;
+let studyLearnedUnique = null;
+let taskDoneUnique = null;
+let deskDoneUnique = null;
+let hotkeyDoneUnique = null;
+for (const p of pages) {
+  lbEmptyUnique = lbEmptyUnique || findByName(p, 'Leaderboard empty /leaderboard');
+  lbPeriodUnique = lbPeriodUnique || findByName(p, 'Leaderboard period empty /leaderboard');
+  lbApiUnique = lbApiUnique || findByName(p, 'Leaderboard api down /leaderboard');
+  lbLoadUnique = lbLoadUnique || findByName(p, 'Leaderboard loading /leaderboard');
+  achEmptyUnique = achEmptyUnique || findByName(p, 'Achievements empty /achievements');
+  lessonLoadUnique = lessonLoadUnique || findByName(p, 'Lesson loading /lessons/:id');
+  studyAuthedUnique = studyAuthedUnique || findByName(p, 'Lesson study-only authed /lessons/:id');
+  studyLearnedUnique = studyLearnedUnique || findByName(p, 'Lesson study-only learned /lessons/:id');
+  taskDoneUnique = taskDoneUnique || findByName(p, 'Lesson task done /lessons/:id');
+  deskDoneUnique = deskDoneUnique || findByName(p, 'Lesson desktop-task done /lessons/:id');
+  hotkeyDoneUnique = hotkeyDoneUnique || findByName(p, 'Lesson hotkey done /lessons/:id');
+}
+if (!lbEmptyUnique || !namesUnder(lbEmptyUnique).includes('Рейтинг пуст') || !namesUnder(lbEmptyUnique).includes('СОРЕВНОВАНИЕ')) {
+  fail.push('leaderboard empty unique missing live Рейтинг пуст under competition hero');
+}
+if (!lbPeriodUnique || !namesUnder(lbPeriodUnique).includes('За этот период пока никого') || !namesUnder(lbPeriodUnique).includes('Выйти')) {
+  fail.push('leaderboard period-empty unique should keep authed chrome + week empty copy');
+}
+if (!lbApiUnique || !namesUnder(lbApiUnique).includes('API недоступен') || !namesUnder(lbApiUnique).includes('СОРЕВНОВАНИЕ')) {
+  fail.push('leaderboard API-down unique missing hero + API недоступен');
+}
+if (!lbLoadUnique || !namesUnder(lbLoadUnique).includes('ОСТАЛЬНЫЕ МЕСТА') || !namesUnder(lbLoadUnique).includes('Skeleton instance')) {
+  fail.push('leaderboard loading unique missing podium/table skeletons');
+}
+if (!achEmptyUnique || !namesUnder(achEmptyUnique).includes('Пройдите первый урок, чтобы открыть достижения')) {
+  fail.push('achievements empty unique missing live EmptyState title');
+}
+if (!lessonLoadUnique || !namesUnder(lessonLoadUnique).includes('Skeleton instance')) {
+  fail.push('lesson loading unique missing Skeleton instance');
+}
+if (!studyAuthedUnique || !namesUnder(studyAuthedUnique).includes('Запомнил') || !namesUnder(studyAuthedUnique).includes('НЕ ИЗУЧЕНО') || namesUnder(studyAuthedUnique).includes('Регистрация для практики')) {
+  fail.push('authed study-only unique should show Запомнил without guest register gate');
+}
+if (!studyLearnedUnique || !namesUnder(studyLearnedUnique).includes('Это сочетание уже в вашем арсенале') || namesUnder(studyLearnedUnique).includes('Запомнил')) {
+  fail.push('learned study-only unique should show inArsenal without Запомнил');
+}
+if (!taskDoneUnique || !namesUnder(taskDoneUnique).includes('Задание выполнено') || !namesUnder(taskDoneUnique).includes('Выполнено') || !namesUnder(taskDoneUnique).includes('Следующий урок через 0…')) {
+  fail.push('task-done unique missing live Задание выполнено / Выполнено / countdown copy');
+}
+if (!deskDoneUnique || !namesUnder(deskDoneUnique).includes('Запомните: Создайте на рабочем столе папку Practice') || !namesUnder(deskDoneUnique).includes('Выполнено')) {
+  fail.push('desktop-task done unique missing live rememberTaskLine');
+}
+if (!hotkeyDoneUnique || !namesUnder(hotkeyDoneUnique).includes('Сочетание изучено') || !namesUnder(hotkeyDoneUnique).includes('Тренировка без подсказок')) {
+  fail.push('hotkey-done unique missing live doneTitle / training CTA');
 }
 
 console.log(JSON.stringify(report, null, 2));

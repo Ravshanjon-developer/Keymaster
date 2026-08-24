@@ -1272,7 +1272,11 @@ async function buildVisualFlows() {
     ['F9 Social', [
       ['desktop-guest-07-leaderboard.jpg', 'Leaderboard guest'],
       ['desktop-learner-leaderboard.jpg', 'Leaderboard authed Вы'],
-      ['desktop-learner-19-achievements.jpg', 'Achievements'],
+      ['desktop-guest-leaderboard-empty.jpg', 'Leaderboard empty'],
+      ['desktop-learner-leaderboard-period-empty.jpg', 'Period empty'],
+      ['desktop-guest-leaderboard-api-down.jpg', 'Leaderboard API down'],
+      ['desktop-learner-19-achievements.jpg', 'Achievements locked'],
+      ['desktop-learner-achievements-empty.jpg', 'Achievements empty'],
     ]],
     ['F10 Progress', [
       ['desktop-learner-08-dashboard.jpg', 'Dashboard'],
@@ -1369,7 +1373,7 @@ async function buildSitemap() {
   board.appendChild(txt('Information architecture (current product)', fraunces('Bold'), 28, INK, 1720));
   board.appendChild(
     txt(
-      'One node per unique page. /courses/:slug is six unique layouts (guest/authed × computer-basics Desktop vs programmer-basics start+Training vs vscode Training) plus not-found. /lessons/:id is four kinds, not N lessons.',
+      'One node per unique page. /courses/:slug is six unique layouts (guest/authed × computer-basics Desktop vs programmer-basics start+Training vs vscode Training) plus not-found and loading. /lessons/:id is four kinds plus loading, study-only authed/learned, and task/desktop done — not N lessons.',
       outfit('Regular'),
       13,
       MUTED,
@@ -1385,10 +1389,10 @@ async function buildSitemap() {
         ['/', 'Home', 'Guest + learner'],
         ['/courses', 'Catalog', 'guest spacer · authed 0/N · loading · api down · empty · filter start'],
         ['/courses/:slug', 'Course detail', 'guest/authed × Desktop vs start+Training vs vscode Training · not found'],
-        ['/lessons/:id', 'Lesson', 'hotkey | task | study | desktop-task'],
+        ['/lessons/:id', 'Lesson', 'hotkey | task | study guest/authed/learned | desktop-task · loading · done'],
         ['/path', 'Learning path', 'protected'],
-        ['/leaderboard', 'Leaderboard', 'public · authed Вы'],
-        ['/achievements', 'Achievements', 'locked / unlocked'],
+        ['/leaderboard', 'Leaderboard', 'public · authed Вы · empty · period empty · api down · loading'],
+        ['/achievements', 'Achievements', 'locked grid / empty'],
         ['/dashboard', 'Dashboard', 'XP · streak'],
         ['/stats', 'Stats', 'protected'],
         ['/admin', 'Admin', 'overview · courses · users · achievements · forbidden'],
@@ -1745,6 +1749,19 @@ function instPrimary(label) {
   return n;
 }
 
+function instPrimaryDisabled(label) {
+  const n = inst('Button', 'Variant=Primary, State=Disabled, Size=MD');
+  if (!n) {
+    const b = instPrimary(label);
+    b.opacity = 0.55;
+    return b;
+  }
+  const t = findAll(n, (x) => x.type === 'TEXT')[0];
+  if (t) t.characters = label;
+  n.name = 'Button instance';
+  return n;
+}
+
 function instSecondary(label) {
   const n = inst('Button/Rest', 'Variant=Secondary, State=Default, Size=MD');
   if (!n) return secondaryBtn(label);
@@ -1761,6 +1778,111 @@ function instKeyCap(label) {
   if (t) t.characters = label;
   n.name = 'KeyCap instance';
   return n;
+}
+
+function comboKeys(keys) {
+  const row = al('HORIZONTAL', 'KeyCombo');
+  row.itemSpacing = 8;
+  row.counterAxisAlignItems = 'CENTER';
+  row.primaryAxisAlignItems = 'CENTER';
+  keys.forEach((k, i) => {
+    if (i) row.appendChild(txt('+', outfit('Medium'), 14, MUTED));
+    const cap = instKeyCap(k);
+    if (cap) {
+      row.appendChild(cap);
+      return;
+    }
+    const box = al('HORIZONTAL', k);
+    box.primaryAxisAlignItems = 'CENTER';
+    box.counterAxisAlignItems = 'CENTER';
+    box.paddingLeft = box.paddingRight = 12;
+    box.paddingTop = box.paddingBottom = 8;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    row.appendChild(box);
+  });
+  return row;
+}
+
+function learnChip(learned) {
+  const row = al('HORIZONTAL', learned ? 'ИЗУЧЕНО' : 'НЕ ИЗУЧЕНО');
+  row.itemSpacing = 6;
+  row.paddingLeft = row.paddingRight = 10;
+  row.paddingTop = row.paddingBottom = 4;
+  row.cornerRadius = 99;
+  row.fills = [solid(learned ? { r: 0.86, g: 0.98, b: 0.9 } : { r: 0.941, g: 0.945, b: 0.953 })];
+  row.appendChild(instLearn(learned) || txt(learned ? 'ИЗУЧЕНО' : 'НЕ ИЗУЧЕНО', outfit('Bold'), 10, learned ? SUCCESS : MUTED));
+  return row;
+}
+
+function studyOnlyBody(mode) {
+  const root = al('VERTICAL', 'Study-only lesson ' + mode);
+  root.itemSpacing = 16;
+  const card = al('VERTICAL', 'study card ' + mode);
+  card.itemSpacing = 12;
+  card.paddingTop = card.paddingBottom = 28;
+  card.paddingLeft = card.paddingRight = 28;
+  card.cornerRadius = 24;
+  card.fills = [solid(WHITE)];
+  card.resize(720, 10);
+  card.layoutSizingHorizontal = 'FIXED';
+  card.layoutSizingVertical = 'HUG';
+  if (mode === 'guest') {
+    card.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
+  } else {
+    card.appendChild(learnChip(mode === 'learned'));
+  }
+  card.appendChild(txt('Окна', fraunces('Bold'), 28, INK));
+  card.appendChild(txt('В реальной системе: Alt+Tab', outfit('Regular'), 14, MUTED, 664));
+  card.appendChild(comboKeys(['Alt', 'Tab']));
+  if (mode === 'learned') {
+    card.appendChild(txt('Это сочетание уже в вашем арсенале', outfit('Medium'), 13, BRAND800));
+  }
+  card.appendChild(
+    txt(
+      'Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».',
+      outfit('Regular'),
+      13,
+      MUTED,
+      664,
+    ),
+  );
+  if (mode === 'guest') {
+    const studyCta = al('VERTICAL', 'register gate');
+    studyCta.itemSpacing = 8;
+    studyCta.paddingTop = studyCta.paddingBottom = 16;
+    studyCta.paddingLeft = studyCta.paddingRight = 16;
+    studyCta.cornerRadius = 16;
+    studyCta.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+    studyCta.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
+    studyCta.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
+    studyCta.appendChild(
+      txt(
+        'Тренажёр клавиш, XP и путь обучения доступны после регистрации. Каталог и теория уроков — без аккаунта.',
+        outfit('Regular'),
+        13,
+        MUTED,
+        560,
+      ),
+    );
+    const studyBtns = al('HORIZONTAL', 'ctas');
+    studyBtns.itemSpacing = 8;
+    studyBtns.appendChild(instPrimary('Регистрация'));
+    studyBtns.appendChild(instSecondary('Уже есть аккаунт'));
+    studyCta.appendChild(studyBtns);
+    card.appendChild(studyCta);
+  } else {
+    const actions = al('VERTICAL', 'study actions');
+    actions.itemSpacing = 8;
+    if (mode !== 'learned') actions.appendChild(instPrimary('Запомнил'));
+    actions.appendChild(instSecondary('Открыть повторение'));
+    card.appendChild(actions);
+  }
+  root.appendChild(card);
+  root.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+  return root;
 }
 
 function instOtpDigit(filling) {
@@ -1815,6 +1937,21 @@ function instSkeleton(kind) {
   if (!n) return null;
   n.name = 'Skeleton instance';
   return n;
+}
+
+function skelBlock(w, h, kind) {
+  const n = instSkeleton(kind || (h > 80 ? 'Kind=Card' : 'Kind=Line'));
+  if (n) {
+    n.resize(w, h);
+    n.layoutSizingHorizontal = 'FIXED';
+    return n;
+  }
+  const r = figma.createRectangle();
+  r.name = 'Skeleton instance';
+  r.resize(w, h);
+  r.cornerRadius = h > 80 ? 24 : 8;
+  r.fills = [solid(INK, 0.08)];
+  return r;
 }
 
 function instEmpty(title, desc) {
@@ -2394,6 +2531,52 @@ function makeFooter(dark, locale) {
     ),
   );
   return f;
+}
+
+function makeLbHero(name, period) {
+  const hero = al('VERTICAL', name);
+  hero.itemSpacing = 8;
+  hero.paddingTop = hero.paddingBottom = 32;
+  hero.paddingLeft = hero.paddingRight = 32;
+  hero.cornerRadius = 24;
+  hero.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+  hero.strokes = [solid(BRAND, 0.2)];
+  hero.resize(880, 10);
+  hero.layoutSizingHorizontal = 'FIXED';
+  hero.layoutSizingVertical = 'HUG';
+  hero.appendChild(txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800));
+  hero.appendChild(txt('Рейтинг', fraunces('Bold'), 32, INK));
+  hero.appendChild(
+    txt(
+      'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      720,
+    ),
+  );
+  const periods = al('HORIZONTAL', name + ' periods');
+  periods.itemSpacing = 4;
+  periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
+  periods.cornerRadius = 12;
+  periods.fills = [solid(WHITE)];
+  periods.strokes = [solid(INK, 0.1)];
+  for (const [label, key] of [
+    ['Всё время', 'all'],
+    ['Неделя', 'week'],
+    ['Месяц', 'month'],
+  ]) {
+    const on = period === key;
+    const chip = al('HORIZONTAL', label);
+    chip.paddingLeft = chip.paddingRight = 14;
+    chip.paddingTop = chip.paddingBottom = 6;
+    chip.cornerRadius = 8;
+    chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
+    chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
+    periods.appendChild(chip);
+  }
+  hero.appendChild(periods);
+  return hero;
 }
 
 function marketingPage(name, active, guest, body, dark, admin, locale) {
@@ -3283,69 +3466,224 @@ async function buildUniqueScreens() {
   lessonDesktop.appendChild(deskCard);
   lessonDesktop.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
-  const lessonStudy = al('VERTICAL', 'Study-only lesson');
-  lessonStudy.itemSpacing = 16;
-  const studyCard = al('VERTICAL', 'study card');
-  studyCard.itemSpacing = 12;
-  studyCard.paddingTop = studyCard.paddingBottom = 28;
-  studyCard.paddingLeft = studyCard.paddingRight = 28;
-  studyCard.cornerRadius = 24;
-  studyCard.fills = [solid(WHITE)];
-  studyCard.appendChild(txt('Регистрация для практики', outfit('Bold'), 11, BRAND));
-  studyCard.appendChild(txt('Переключение окон', fraunces('Bold'), 28, INK));
-  const studyKeys = al('HORIZONTAL', 'combo');
-  studyKeys.itemSpacing = 8;
-  studyKeys.counterAxisAlignItems = 'CENTER';
-  for (const k of ['Alt', 'Tab']) {
-    const cap = instKeyCap(k);
-    if (cap) {
-      studyKeys.appendChild(cap);
-      continue;
-    }
-    const box = al('HORIZONTAL', k);
-    box.paddingLeft = box.paddingRight = 12;
-    box.paddingTop = box.paddingBottom = 8;
-    box.cornerRadius = 12;
-    box.fills = [solid(WHITE)];
-    box.strokes = [solid(INK)];
-    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    studyKeys.appendChild(box);
-  }
-  studyCard.appendChild(studyKeys);
-  studyCard.appendChild(
+  const lessonStudy = studyOnlyBody('guest');
+  const lessonStudyAuthed = studyOnlyBody('authed');
+  const lessonStudyLearned = studyOnlyBody('learned');
+
+  const lessonLoading = al('VERTICAL', 'Lesson loading');
+  lessonLoading.itemSpacing = 24;
+  lessonLoading.appendChild(skelBlock(224, 32, 'Kind=Line'));
+  lessonLoading.appendChild(skelBlock(720, 384, 'Kind=Card'));
+  lessonLoading.appendChild(
+    txt('Lesson loading — PageShell SkeletonBlock h-8 + h-96, not course-detail h-10 + h-64.', outfit('Regular'), 12, MUTED, 720),
+  );
+
+  const lessonTaskDone = al('VERTICAL', 'Task lesson done');
+  lessonTaskDone.itemSpacing = 12;
+  lessonTaskDone.appendChild(learnChip(true));
+  const taskDoneCard = al('VERTICAL', 'task done card');
+  taskDoneCard.itemSpacing = 16;
+  taskDoneCard.paddingTop = taskDoneCard.paddingBottom = 24;
+  taskDoneCard.paddingLeft = taskDoneCard.paddingRight = 24;
+  taskDoneCard.cornerRadius = 24;
+  taskDoneCard.fills = [solid(WHITE)];
+  taskDoneCard.strokes = [solid(BRAND, 0.3)];
+  taskDoneCard.resize(720, 10);
+  taskDoneCard.layoutSizingHorizontal = 'FIXED';
+  taskDoneCard.layoutSizingVertical = 'HUG';
+  taskDoneCard.appendChild(txt('Файл и папка', fraunces('Bold'), 28, INK));
+  taskDoneCard.appendChild(
     txt(
-      'Это системное сочетание браузер не принимает. Запомните его здесь и повторяйте в режиме «Повторение».',
+      'Папки помогают не искать всё на рабочем столе. У файла есть имя и расширение: report.docx, photo.jpg.',
       outfit('Regular'),
-      13,
+      14,
       MUTED,
-      640,
+      672,
     ),
   );
-  const studyCta = al('VERTICAL', 'register gate');
-  studyCta.itemSpacing = 8;
-  studyCta.paddingTop = studyCta.paddingBottom = 16;
-  studyCta.paddingLeft = studyCta.paddingRight = 16;
-  studyCta.cornerRadius = 16;
-  studyCta.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
-  studyCta.appendChild(txt('ПРАКТИКА', outfit('Bold'), 11, BRAND800));
-  studyCta.appendChild(txt('Создайте бесплатный аккаунт', outfit('SemiBold'), 16, INK));
-  studyCta.appendChild(
-    txt(
-      'Тренажёр клавиш, XP и путь обучения доступны после регистрации. Каталог и теория уроков — без аккаунта.',
-      outfit('Regular'),
-      13,
-      MUTED,
-      560,
-    ),
+  const taskDoneHint = al('VERTICAL', 'hint');
+  taskDoneHint.paddingTop = taskDoneHint.paddingBottom = 14;
+  taskDoneHint.paddingLeft = taskDoneHint.paddingRight = 16;
+  taskDoneHint.cornerRadius = 16;
+  taskDoneHint.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  taskDoneHint.appendChild(txt('Поймите разницу между файлом и папкой', outfit('SemiBold'), 14, BRAND800, 640));
+  taskDoneCard.appendChild(taskDoneHint);
+  const taskDonePanel = al('VERTICAL', 'ЗАДАНИЕ');
+  taskDonePanel.itemSpacing = 12;
+  taskDonePanel.paddingTop = taskDonePanel.paddingBottom = 20;
+  taskDonePanel.paddingLeft = taskDonePanel.paddingRight = 20;
+  taskDonePanel.cornerRadius = 16;
+  taskDonePanel.fills = [solid(WHITE)];
+  taskDonePanel.strokes = [solid(BRAND, 0.2)];
+  taskDonePanel.appendChild(txt('ЗАДАНИЕ', outfit('Bold'), 11, BRAND800));
+  taskDonePanel.appendChild(txt('Файл и папка', outfit('SemiBold'), 16, INK));
+  taskDonePanel.appendChild(txt('Поймите разницу между файлом и папкой', outfit('Regular'), 13, MUTED, 640));
+  const taskDoneSteps = al('VERTICAL', 'Шаги');
+  taskDoneSteps.itemSpacing = 6;
+  taskDoneSteps.paddingTop = taskDoneSteps.paddingBottom = 12;
+  taskDoneSteps.paddingLeft = taskDoneSteps.paddingRight = 14;
+  taskDoneSteps.cornerRadius = 12;
+  taskDoneSteps.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  taskDoneSteps.appendChild(txt('Шаги', outfit('SemiBold'), 13, INK));
+  taskDoneSteps.appendChild(txt('• Папка — «конверт»', outfit('Regular'), 13, MUTED, 600));
+  taskDoneSteps.appendChild(txt('• файл — одна заметка, фото или программа', outfit('Regular'), 13, MUTED, 600));
+  taskDonePanel.appendChild(taskDoneSteps);
+  const taskDoneBtns = al('HORIZONTAL', 'task done actions');
+  taskDoneBtns.itemSpacing = 8;
+  taskDoneBtns.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  taskDoneBtns.appendChild(instPrimaryDisabled('Выполнено'));
+  taskDonePanel.appendChild(taskDoneBtns);
+  taskDonePanel.appendChild(txt('Честно отметьте, когда прочитали шаги.', outfit('Regular'), 12, MUTED, 600));
+  taskDoneCard.appendChild(taskDonePanel);
+  lessonTaskDone.appendChild(taskDoneCard);
+  const taskDoneBanner = al('VERTICAL', 'done task banner');
+  taskDoneBanner.itemSpacing = 8;
+  taskDoneBanner.paddingTop = taskDoneBanner.paddingBottom = 20;
+  taskDoneBanner.paddingLeft = taskDoneBanner.paddingRight = 20;
+  taskDoneBanner.cornerRadius = 24;
+  taskDoneBanner.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+  taskDoneBanner.strokes = [solid(BRAND, 0.3)];
+  taskDoneBanner.resize(720, 10);
+  taskDoneBanner.layoutSizingHorizontal = 'FIXED';
+  taskDoneBanner.layoutSizingVertical = 'HUG';
+  const taskDoneHead = al('HORIZONTAL', 'done task head');
+  taskDoneHead.itemSpacing = 8;
+  taskDoneHead.counterAxisAlignItems = 'CENTER';
+  taskDoneHead.appendChild(txt('Задание выполнено', outfit('Bold'), 18, BRAND800));
+  taskDoneHead.appendChild(learnChip(true));
+  taskDoneBanner.appendChild(taskDoneHead);
+  taskDoneBanner.appendChild(txt('Запомните: Поймите разницу между файлом и папкой', outfit('Regular'), 13, MUTED, 672));
+  taskDoneBanner.appendChild(txt('Следующий урок через 0…', outfit('Regular'), 13, MUTED));
+  const taskDoneNext = al('HORIZONTAL', 'done task ctas');
+  taskDoneNext.itemSpacing = 8;
+  taskDoneNext.appendChild(instPrimary('Следующий урок'));
+  taskDoneNext.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  taskDoneBanner.appendChild(taskDoneNext);
+  lessonTaskDone.appendChild(taskDoneBanner);
+  lessonTaskDone.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+
+  const lessonDesktopDone = al('VERTICAL', 'Desktop-task lesson done');
+  lessonDesktopDone.itemSpacing = 12;
+  lessonDesktopDone.appendChild(learnChip(true));
+  const deskDoneCard = al('VERTICAL', 'desktop-task done card');
+  deskDoneCard.itemSpacing = 16;
+  deskDoneCard.paddingTop = deskDoneCard.paddingBottom = 24;
+  deskDoneCard.paddingLeft = deskDoneCard.paddingRight = 24;
+  deskDoneCard.cornerRadius = 24;
+  deskDoneCard.fills = [solid(WHITE)];
+  deskDoneCard.strokes = [solid(BRAND, 0.3)];
+  deskDoneCard.resize(720, 10);
+  deskDoneCard.layoutSizingHorizontal = 'FIXED';
+  deskDoneCard.layoutSizingVertical = 'HUG';
+  deskDoneCard.appendChild(txt('Папка Practice', fraunces('Bold'), 28, INK, 672));
+  deskDoneCard.appendChild(
+    txt('Имена латиницей проще для программ. В симуляторе шаг засчитается сам.', outfit('Regular'), 13, MUTED, 672),
   );
-  const studyBtns = al('HORIZONTAL', 'ctas');
-  studyBtns.itemSpacing = 8;
-  studyBtns.appendChild(instPrimary('Регистрация'));
-  studyBtns.appendChild(instSecondary('Уже есть аккаунт'));
-  studyCta.appendChild(studyBtns);
-  studyCard.appendChild(studyCta);
-  lessonStudy.appendChild(studyCard);
-  lessonStudy.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+  const deskDonePrompt = al('VERTICAL', 'prompt');
+  deskDonePrompt.paddingTop = deskDonePrompt.paddingBottom = 14;
+  deskDonePrompt.paddingLeft = deskDonePrompt.paddingRight = 16;
+  deskDonePrompt.cornerRadius = 16;
+  deskDonePrompt.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  deskDonePrompt.appendChild(txt('Создайте на рабочем столе папку Practice', outfit('SemiBold'), 14, BRAND800, 640));
+  deskDoneCard.appendChild(deskDonePrompt);
+  const deskDonePanel = al('VERTICAL', 'ЗАДАНИЕ');
+  deskDonePanel.itemSpacing = 12;
+  deskDonePanel.paddingTop = deskDonePanel.paddingBottom = 20;
+  deskDonePanel.paddingLeft = deskDonePanel.paddingRight = 20;
+  deskDonePanel.cornerRadius = 16;
+  deskDonePanel.fills = [solid(WHITE)];
+  deskDonePanel.strokes = [solid(BRAND, 0.2)];
+  deskDonePanel.appendChild(txt('ЗАДАНИЕ', outfit('Bold'), 11, BRAND800));
+  deskDonePanel.appendChild(txt('Папка Practice', outfit('SemiBold'), 16, INK));
+  deskDonePanel.appendChild(txt('Создайте на рабочем столе папку Practice', outfit('Regular'), 13, MUTED, 640));
+  const deskDoneSteps = al('VERTICAL', 'Шаги');
+  deskDoneSteps.itemSpacing = 6;
+  deskDoneSteps.paddingTop = deskDoneSteps.paddingBottom = 12;
+  deskDoneSteps.paddingLeft = deskDoneSteps.paddingRight = 14;
+  deskDoneSteps.cornerRadius = 12;
+  deskDoneSteps.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+  deskDoneSteps.appendChild(txt('Шаги', outfit('SemiBold'), 13, INK));
+  deskDoneSteps.appendChild(txt('• ПКМ по обоям → Новая папка → Practice', outfit('Regular'), 13, MUTED, 600));
+  deskDoneSteps.appendChild(txt('• или Ctrl+Shift+N', outfit('Regular'), 13, MUTED, 600));
+  deskDonePanel.appendChild(deskDoneSteps);
+  const deskDoneBtns = al('HORIZONTAL', 'desktop done actions');
+  deskDoneBtns.itemSpacing = 8;
+  deskDoneBtns.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  const deskDoneBadge = instPrimary('Выполнено');
+  deskDoneBadge.opacity = 0.8;
+  deskDoneBtns.appendChild(deskDoneBadge);
+  deskDonePanel.appendChild(deskDoneBtns);
+  deskDonePanel.appendChild(txt('Симулятор сам засчитает урок и XP, когда шаг будет выполнен.', outfit('Regular'), 12, MUTED, 600));
+  deskDoneCard.appendChild(deskDonePanel);
+  lessonDesktopDone.appendChild(deskDoneCard);
+  const deskDoneBanner = al('VERTICAL', 'done desktop banner');
+  deskDoneBanner.itemSpacing = 8;
+  deskDoneBanner.paddingTop = deskDoneBanner.paddingBottom = 20;
+  deskDoneBanner.paddingLeft = deskDoneBanner.paddingRight = 20;
+  deskDoneBanner.cornerRadius = 24;
+  deskDoneBanner.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+  deskDoneBanner.strokes = [solid(BRAND, 0.3)];
+  deskDoneBanner.resize(720, 10);
+  deskDoneBanner.layoutSizingHorizontal = 'FIXED';
+  deskDoneBanner.layoutSizingVertical = 'HUG';
+  const deskDoneHead = al('HORIZONTAL', 'done desktop head');
+  deskDoneHead.itemSpacing = 8;
+  deskDoneHead.counterAxisAlignItems = 'CENTER';
+  deskDoneHead.appendChild(txt('Задание выполнено', outfit('Bold'), 18, BRAND800));
+  deskDoneHead.appendChild(learnChip(true));
+  deskDoneBanner.appendChild(deskDoneHead);
+  deskDoneBanner.appendChild(txt('Запомните: Создайте на рабочем столе папку Practice', outfit('Regular'), 13, MUTED, 672));
+  deskDoneBanner.appendChild(txt('Следующий урок через 0…', outfit('Regular'), 13, MUTED));
+  const deskDoneNext = al('HORIZONTAL', 'done desktop ctas');
+  deskDoneNext.itemSpacing = 8;
+  deskDoneNext.appendChild(instPrimary('Следующий урок'));
+  deskDoneNext.appendChild(instSecondary('Открыть симулятор рабочего стола'));
+  deskDoneBanner.appendChild(deskDoneNext);
+  lessonDesktopDone.appendChild(deskDoneBanner);
+  lessonDesktopDone.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
+
+  const lessonHotkeyDone = al('VERTICAL', 'Hotkey lesson done');
+  lessonHotkeyDone.itemSpacing = 12;
+  lessonHotkeyDone.appendChild(learnChip(true));
+  const hotkeyDoneCard = al('VERTICAL', 'hotkey done trainer');
+  hotkeyDoneCard.itemSpacing = 12;
+  hotkeyDoneCard.paddingTop = hotkeyDoneCard.paddingBottom = 24;
+  hotkeyDoneCard.paddingLeft = hotkeyDoneCard.paddingRight = 24;
+  hotkeyDoneCard.cornerRadius = 24;
+  hotkeyDoneCard.fills = [solid(WHITE)];
+  hotkeyDoneCard.strokes = [solid(BRAND, 0.18)];
+  hotkeyDoneCard.resize(640, 10);
+  hotkeyDoneCard.layoutSizingHorizontal = 'FIXED';
+  hotkeyDoneCard.layoutSizingVertical = 'HUG';
+  hotkeyDoneCard.appendChild(txt('Копировать', outfit('SemiBold'), 22, INK));
+  hotkeyDoneCard.appendChild(comboKeys(['Ctrl', 'C']));
+  hotkeyDoneCard.appendChild(txt('Зажмите Ctrl, затем вторую клавишу', outfit('Regular'), 12, MUTED));
+  lessonHotkeyDone.appendChild(hotkeyDoneCard);
+  const hotkeyDoneBanner = al('VERTICAL', 'done hotkey banner');
+  hotkeyDoneBanner.itemSpacing = 8;
+  hotkeyDoneBanner.paddingTop = hotkeyDoneBanner.paddingBottom = 20;
+  hotkeyDoneBanner.paddingLeft = hotkeyDoneBanner.paddingRight = 20;
+  hotkeyDoneBanner.cornerRadius = 24;
+  hotkeyDoneBanner.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
+  hotkeyDoneBanner.strokes = [solid(BRAND, 0.3)];
+  hotkeyDoneBanner.resize(640, 10);
+  hotkeyDoneBanner.layoutSizingHorizontal = 'FIXED';
+  hotkeyDoneBanner.layoutSizingVertical = 'HUG';
+  const hotkeyDoneHead = al('HORIZONTAL', 'done hotkey head');
+  hotkeyDoneHead.itemSpacing = 8;
+  hotkeyDoneHead.counterAxisAlignItems = 'CENTER';
+  hotkeyDoneHead.appendChild(txt('Сочетание изучено', outfit('Bold'), 18, BRAND800));
+  hotkeyDoneHead.appendChild(learnChip(true));
+  hotkeyDoneBanner.appendChild(hotkeyDoneHead);
+  hotkeyDoneBanner.appendChild(txt('Запомните: Ctrl + C — Скопируйте', outfit('Regular'), 13, MUTED, 600));
+  hotkeyDoneBanner.appendChild(txt('Следующий урок через 0…', outfit('Regular'), 13, MUTED));
+  const hotkeyDoneNext = al('HORIZONTAL', 'done hotkey ctas');
+  hotkeyDoneNext.itemSpacing = 8;
+  hotkeyDoneNext.appendChild(instPrimary('Следующий урок'));
+  hotkeyDoneNext.appendChild(instSecondary('Тренировка без подсказок'));
+  hotkeyDoneBanner.appendChild(hotkeyDoneNext);
+  lessonHotkeyDone.appendChild(hotkeyDoneBanner);
+  lessonHotkeyDone.appendChild(txt('← К каталогу', outfit('SemiBold'), 13, BRAND800));
 
   const pathRow = al('HORIZONTAL', 'Path nodes');
   pathRow.itemSpacing = 12;
@@ -5939,9 +6277,15 @@ async function buildUniqueScreens() {
         txt('Course detail loading — PageShell Skeleton h-10 + h-64, not catalog SkeletonCardGrid.', outfit('Regular'), 12, MUTED, 860),
       ]),
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
+      marketingPage('Lesson hotkey done /lessons/:id', 'Курсы', false, [lessonHotkeyDone]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
+      marketingPage('Lesson task done /lessons/:id', 'Курсы', false, [lessonTaskDone]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', true, [lessonStudy]),
+      marketingPage('Lesson study-only authed /lessons/:id', 'Курсы', false, [lessonStudyAuthed]),
+      marketingPage('Lesson study-only learned /lessons/:id', 'Курсы', false, [lessonStudyLearned]),
       marketingPage('Lesson desktop-task /lessons/:id', 'Курсы', false, [lessonDesktop]),
+      marketingPage('Lesson desktop-task done /lessons/:id', 'Курсы', false, [lessonDesktopDone]),
+      marketingPage('Lesson loading /lessons/:id', 'Курсы', true, [lessonLoading]),
       marketingPage('Path /path', 'Мой путь', false, pathBody),
       marketingPage('Path guest /path', 'Мой путь', true, [
         txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
@@ -5985,97 +6329,11 @@ async function buildUniqueScreens() {
       ]),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
-        (() => {
-          const hero = al('VERTICAL', 'Leaderboard hero');
-          hero.itemSpacing = 8;
-          hero.paddingTop = hero.paddingBottom = 32;
-          hero.paddingLeft = hero.paddingRight = 32;
-          hero.cornerRadius = 24;
-          hero.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
-          hero.strokes = [solid(BRAND, 0.2)];
-          hero.resize(880, 10);
-          hero.layoutSizingHorizontal = 'FIXED';
-          hero.layoutSizingVertical = 'HUG';
-          hero.appendChild(txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800));
-          hero.appendChild(txt('Рейтинг', fraunces('Bold'), 32, INK));
-          hero.appendChild(
-            txt(
-              'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
-              outfit('Regular'),
-              13,
-              MUTED,
-              720,
-            ),
-          );
-          const periods = al('HORIZONTAL', 'Period filter');
-          periods.itemSpacing = 4;
-          periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
-          periods.cornerRadius = 12;
-          periods.fills = [solid(WHITE)];
-          periods.strokes = [solid(INK, 0.1)];
-          for (const [label, on] of [
-            ['Всё время', true],
-            ['Неделя', false],
-            ['Месяц', false],
-          ]) {
-            const chip = al('HORIZONTAL', label);
-            chip.paddingLeft = chip.paddingRight = 14;
-            chip.paddingTop = chip.paddingBottom = 6;
-            chip.cornerRadius = 8;
-            chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
-            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
-            periods.appendChild(chip);
-          }
-          hero.appendChild(periods);
-          return hero;
-        })(),
+        makeLbHero('Leaderboard hero', 'all'),
         podium,
       ]),
       marketingPage('Leaderboard authed /leaderboard', 'Рейтинг', false, [
-        (() => {
-          const hero = al('VERTICAL', 'Leaderboard hero authed');
-          hero.itemSpacing = 8;
-          hero.paddingTop = hero.paddingBottom = 32;
-          hero.paddingLeft = hero.paddingRight = 32;
-          hero.cornerRadius = 24;
-          hero.fills = [solid({ r: 0.941, g: 0.961, b: 1 })];
-          hero.strokes = [solid(BRAND, 0.2)];
-          hero.resize(880, 10);
-          hero.layoutSizingHorizontal = 'FIXED';
-          hero.layoutSizingVertical = 'HUG';
-          hero.appendChild(txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800));
-          hero.appendChild(txt('Рейтинг', fraunces('Bold'), 32, INK));
-          hero.appendChild(
-            txt(
-              'Топ учеников KeyMaster по XP. Тренируйтесь, поднимайтесь выше и держите серию.',
-              outfit('Regular'),
-              13,
-              MUTED,
-              720,
-            ),
-          );
-          const periods = al('HORIZONTAL', 'Period filter authed');
-          periods.itemSpacing = 4;
-          periods.paddingTop = periods.paddingBottom = periods.paddingLeft = periods.paddingRight = 4;
-          periods.cornerRadius = 12;
-          periods.fills = [solid(WHITE)];
-          periods.strokes = [solid(INK, 0.1)];
-          for (const [label, on] of [
-            ['Всё время', true],
-            ['Неделя', false],
-            ['Месяц', false],
-          ]) {
-            const chip = al('HORIZONTAL', label);
-            chip.paddingLeft = chip.paddingRight = 14;
-            chip.paddingTop = chip.paddingBottom = 6;
-            chip.cornerRadius = 8;
-            chip.fills = on ? [solid(BRAND)] : [TRANSPARENT];
-            chip.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : MUTED));
-            periods.appendChild(chip);
-          }
-          hero.appendChild(periods);
-          return hero;
-        })(),
+        makeLbHero('Leaderboard hero authed', 'all'),
         (() => {
           const wrap = al('VERTICAL', 'Podium authed');
           wrap.itemSpacing = 16;
@@ -6127,10 +6385,70 @@ async function buildUniqueScreens() {
           return wrap;
         })(),
       ]),
+      marketingPage('Leaderboard empty /leaderboard', 'Рейтинг', true, [
+        makeLbHero('Leaderboard hero empty', 'all'),
+        instEmpty('Рейтинг пуст', 'Пройдите уроки и наберите XP — вы появитесь в таблице') ||
+          txt('Рейтинг пуст', outfit('SemiBold'), 22, INK),
+      ]),
+      marketingPage('Leaderboard period empty /leaderboard', 'Рейтинг', false, [
+        makeLbHero('Leaderboard hero period empty', 'week'),
+        instEmpty(
+          'За этот период пока никого',
+          'Завершите уроки на этой неделе или в этом месяце — XP попадёт в таблицу.',
+        ) || txt('За этот период пока никого', outfit('SemiBold'), 22, INK),
+      ]),
+      marketingPage('Leaderboard api down /leaderboard', 'Рейтинг', true, [
+        makeLbHero('Leaderboard hero api down', 'all'),
+        instEmpty('API недоступен', 'Запустите backend: uvicorn app.main:app --reload --port 8000') ||
+          txt('API недоступен', outfit('SemiBold'), 22, INK),
+      ]),
+      marketingPage('Leaderboard loading /leaderboard', 'Рейтинг', true, [
+        makeLbHero('Leaderboard hero loading', 'all'),
+        (() => {
+          const row = al('HORIZONTAL', 'Leaderboard skeleton podium');
+          row.itemSpacing = 12;
+          row.appendChild(skelBlock(280, 160, 'Kind=Card'));
+          row.appendChild(skelBlock(280, 160, 'Kind=Card'));
+          row.appendChild(skelBlock(280, 160, 'Kind=Card'));
+          return row;
+        })(),
+        (() => {
+          const table = al('VERTICAL', 'ОСТАЛЬНЫЕ МЕСТА');
+          table.itemSpacing = 0;
+          table.cornerRadius = 24;
+          table.fills = [solid(WHITE)];
+          table.strokes = [solid(INK, 0.08)];
+          table.resize(880, 10);
+          table.layoutSizingHorizontal = 'FIXED';
+          table.layoutSizingVertical = 'HUG';
+          const head = al('HORIZONTAL', 'table head');
+          head.paddingTop = head.paddingBottom = 12;
+          head.paddingLeft = head.paddingRight = 16;
+          head.fills = [solid({ r: 0.976, g: 0.98, b: 0.984 })];
+          head.appendChild(txt('ОСТАЛЬНЫЕ МЕСТА', outfit('Bold'), 11, BRAND800));
+          table.appendChild(head);
+          for (let i = 0; i < 5; i++) {
+            const row = al('VERTICAL', 'skeleton row');
+            row.paddingTop = row.paddingBottom = 16;
+            row.paddingLeft = row.paddingRight = 16;
+            row.appendChild(skelBlock(820, 40, 'Kind=Line'));
+            table.appendChild(row);
+          }
+          return table;
+        })(),
+      ]),
       marketingPage('Achievements /achievements', '', false, [
         txt('Достижения', fraunces('Bold'), 32, INK),
         txt('2 колонки, все бейджи закрыты при 0 XP. Не дублировать все 13 — 4 карточки покрывают layout.', outfit('Regular'), 13, MUTED, 720),
         achRow,
+      ]),
+      marketingPage('Achievements empty /achievements', '', false, [
+        txt('Достижения', fraunces('Bold'), 32, INK),
+        instEmpty(
+          'Пройдите первый урок, чтобы открыть достижения',
+          'Учитесь и тренируйтесь — бейджи откроются автоматически.',
+        ) ||
+          txt('Пройдите первый урок, чтобы открыть достижения', outfit('SemiBold'), 22, INK),
       ]),
       marketingPage('Stats /stats', '', false, [
         txt('Статистика', outfit('Bold'), 30, INK),

@@ -310,5 +310,45 @@
   "mobile-authed-13-course-computer-basics.jpg": {
     "w": 390,
     "h": 2322
+  },
+  "desktop-learner-leaderboard-period-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-api-down.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-achievements-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-study-only.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-study-only-learned.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-task-done.jpg": {
+    "w": 1440,
+    "h": 1194
+  },
+  "desktop-learner-lesson-desktop-task-done.jpg": {
+    "w": 1440,
+    "h": 1170
   }
 }
