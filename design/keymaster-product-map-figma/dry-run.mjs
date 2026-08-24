@@ -397,6 +397,45 @@ if (!names.some((n) => String(n).includes('42 Уроки · 7 Категории
   fail.push('no live admin courses vscode unique screen');
 }
 if (!names.includes('+ Создать')) fail.push('no live admin create CTA unique screen');
+if (!names.some((n) => String(n).includes('100-correct'))) fail.push('no live admin achievements unique screen');
+if (!names.includes('С чего начать сегодня')) fail.push('no live practice start-today unique screen');
+if (!names.includes('Exam empty card')) fail.push('no exam empty GlassCard unique screen');
+if (!names.includes('Скриншот')) fail.push('no live mobile review PrtSc/Скриншот unique screen');
+if (!names.includes('Dark Daily')) fail.push('no dark dashboard daily-tasks unique screen');
+if (!names.includes('Dark First Laptop node')) fail.push('no dark path First Laptop unique screen');
+if (!names.includes('Dark PathStageStrip')) fail.push('no dark dashboard stage strip unique screen');
+if (!names.includes('quiz stats compact')) fail.push('no compact mobile quiz stats unique screen');
+
+function findByName(root, name) {
+  if (root.name === name) return root;
+  for (const c of root.children || []) {
+    const hit = findByName(c, name);
+    if (hit) return hit;
+  }
+  return null;
+}
+function namesUnder(root) {
+  const out = [];
+  function walk(n) {
+    out.push(n.name);
+    if (n.characters) out.push(n.characters);
+    for (const c of n.children || []) walk(c);
+  }
+  walk(root);
+  return out;
+}
+let quizUnique = null;
+let reviewUnique = null;
+for (const p of pages) {
+  quizUnique = quizUnique || findByName(p, 'Quiz /quiz');
+  reviewUnique = reviewUnique || findByName(p, 'Review front /review');
+}
+if (!quizUnique || !namesUnder(quizUnique).includes('Какая комбинация клавиш используется для копирования текста или файла?')) {
+  fail.push('desktop quiz unique screen lost question (appendChild steal)');
+}
+if (!reviewUnique || !namesUnder(reviewUnique).includes('Вырезать')) {
+  fail.push('desktop review unique screen lost Вырезать (appendChild steal)');
+}
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
