@@ -246,5 +246,13 @@
   "desktop-guest-course-not-found.jpg": {
     "w": 1440,
     "h": 900
+  },
+  "desktop-learner-leaderboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-courses-filter-start.jpg": {
+    "w": 1440,
+    "h": 900
   }
 }

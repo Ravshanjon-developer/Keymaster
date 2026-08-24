@@ -1219,6 +1219,7 @@ async function buildVisualFlows() {
     ['F1 Guest discover', [
       ['desktop-guest-01-home.jpg', 'Home'],
       ['desktop-guest-04-courses.jpg', 'Courses'],
+      ['desktop-guest-courses-filter-start.jpg', 'Filter start'],
       ['desktop-guest-05-course-computer-basics.jpg', 'Course'],
       ['desktop-learner-17-lesson-hotkey.jpg', 'Lesson'],
       ['desktop-guest-03-register.jpg', 'Register gate'],
@@ -1268,7 +1269,8 @@ async function buildVisualFlows() {
       ['desktop-learner-exam-empty.jpg', 'Exam empty'],
     ]],
     ['F9 Social', [
-      ['desktop-guest-07-leaderboard.jpg', 'Leaderboard'],
+      ['desktop-guest-07-leaderboard.jpg', 'Leaderboard guest'],
+      ['desktop-learner-leaderboard.jpg', 'Leaderboard authed Вы'],
       ['desktop-learner-19-achievements.jpg', 'Achievements'],
     ]],
     ['F10 Progress', [
@@ -5404,8 +5406,22 @@ async function buildUniqueScreens() {
         })(),
       ]),
       marketingPage('Courses filter start /courses', 'Курсы', true, [
-        txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800),
-        txt('Каталог курсов', fraunces('Bold'), 32, INK),
+        (() => {
+          const head = al('HORIZONTAL', 'catalog head start');
+          head.primaryAxisAlignItems = 'SPACE_BETWEEN';
+          head.counterAxisAlignItems = 'MAX';
+          head.resize(880, 10);
+          head.layoutSizingHorizontal = 'FIXED';
+          head.layoutSizingVertical = 'HUG';
+          const titles = al('VERTICAL', 'titles start');
+          titles.itemSpacing = 6;
+          titles.appendChild(txt('КАТАЛОГ', outfit('Bold'), 11, BRAND800));
+          titles.appendChild(txt('Каталог курсов', fraunces('Bold'), 32, INK));
+          titles.appendChild(txt('Выберите инструмент и изучайте сочетания. Прогресс сохраняется и отображается на карте пути.', outfit('Regular'), 13, MUTED, 640));
+          head.appendChild(titles);
+          head.appendChild(secondaryBtn('Путь обучения'));
+          return head;
+        })(),
         searchField(880),
         (() => {
           const row = al('HORIZONTAL', 'Filters start');

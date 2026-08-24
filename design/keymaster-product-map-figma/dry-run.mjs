@@ -301,7 +301,8 @@ if (!names.includes('Leaderboard authed /leaderboard')) fail.push('no authed lea
 if (!names.includes('Leaderboard hero')) fail.push('no live leaderboard gradient hero unique screen');
 if (!names.includes('ВЫ')) fail.push('no live authed leaderboard Вы badge unique screen');
 if (!names.includes('Courses filter start /courses')) fail.push('no catalog start-filter unique screen');
-if (!names.includes('Start filter cards')) fail.push('no catalog start-filter cards unique screen');
+if (!names.includes('Guest / Courses filter start')) fail.push('no catalog start-filter capture');
+if (!names.includes('Learner / Leaderboard')) fail.push('no authed leaderboard capture');
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!names.includes('Lesson desktop-task /lessons/:id')) fail.push('no desktop-task lesson unique screen');
