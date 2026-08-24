@@ -2873,6 +2873,115 @@ async function buildUniqueScreens() {
   pathRow.appendChild(instPath('Status=Done') || pathNode('Git', 'Завершено', false));
   pathRow.appendChild(instPath('Status=Locked') || pathNode('Shortcut Legend', 'Заблокировано', true));
 
+  const pathStats = al('HORIZONTAL', 'Path stats');
+  pathStats.itemSpacing = 12;
+  pathStats.layoutWrap = 'WRAP';
+  pathStats.resize(880, 10);
+  pathStats.layoutSizingHorizontal = 'FIXED';
+  pathStats.layoutSizingVertical = 'HUG';
+  for (const [label, value, accent] of [
+    ['ТЕКУЩИЙ УРОВЕНЬ', 'Novice Operator', false],
+    ['ВСЕГО XP', '0', false],
+    ['ПРОЙДЕНО', '0/20 курсов', false],
+    ['СЛЕДУЮЩИЙ ЭТАП', 'First Laptop', true],
+  ]) {
+    const c = al('VERTICAL', label);
+    c.itemSpacing = 6;
+    c.paddingTop = c.paddingBottom = 16;
+    c.paddingLeft = c.paddingRight = 16;
+    c.cornerRadius = 24;
+    c.fills = [solid(accent ? BRAND50 : WHITE)];
+    c.strokes = [solid(accent ? BRAND : INK, accent ? 0.3 : 0.1)];
+    c.resize(208, 10);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'HUG';
+    c.appendChild(txt(label, outfit('Bold'), 10, accent ? BRAND800 : MUTED));
+    c.appendChild(txt(value, fraunces('Bold'), 20, INK, 176));
+    if (accent) c.appendChild(txt('Продолжить →', outfit('SemiBold'), 13, BRAND800));
+    pathStats.appendChild(c);
+  }
+
+  const pathStart = al('VERTICAL', 'START node');
+  pathStart.itemSpacing = 8;
+  pathStart.primaryAxisAlignItems = 'CENTER';
+  pathStart.paddingTop = pathStart.paddingBottom = 20;
+  pathStart.paddingLeft = pathStart.paddingRight = 24;
+  pathStart.cornerRadius = 20;
+  pathStart.fills = [solid(WHITE)];
+  pathStart.strokes = [solid(BRAND, 0.45)];
+  pathStart.resize(360, 10);
+  pathStart.layoutSizingHorizontal = 'FIXED';
+  pathStart.layoutSizingVertical = 'HUG';
+  pathStart.appendChild(txt('START', outfit('Bold'), 11, BRAND800));
+  pathStart.appendChild(txt('Developer Growth Path', fraunces('Bold'), 22, INK));
+  pathStart.appendChild(txt('От новичка к Keyboard Master', outfit('Regular'), 13, MUTED));
+
+  const pathCourse = al('VERTICAL', 'First Laptop node');
+  pathCourse.itemSpacing = 10;
+  pathCourse.paddingTop = pathCourse.paddingBottom = 16;
+  pathCourse.paddingLeft = pathCourse.paddingRight = 16;
+  pathCourse.cornerRadius = 16;
+  pathCourse.fills = [solid(WHITE)];
+  pathCourse.strokes = [solid(INK, 0.15)];
+  pathCourse.resize(360, 10);
+  pathCourse.layoutSizingHorizontal = 'FIXED';
+  pathCourse.layoutSizingVertical = 'HUG';
+  const pathCourseHead = al('HORIZONTAL', 'course head');
+  pathCourseHead.itemSpacing = 8;
+  pathCourseHead.counterAxisAlignItems = 'CENTER';
+  const startChip = al('HORIZONTAL', 'НАЧАТЬ');
+  startChip.paddingLeft = startChip.paddingRight = 8;
+  startChip.paddingTop = startChip.paddingBottom = 2;
+  startChip.cornerRadius = 6;
+  startChip.fills = [solid(INK)];
+  startChip.appendChild(txt('НАЧАТЬ', outfit('Bold'), 9, WHITE));
+  pathCourseHead.appendChild(startChip);
+  pathCourseHead.appendChild(txt('NOVICE · L1', outfit('Bold'), 10, MUTED));
+  pathCourse.appendChild(pathCourseHead);
+  pathCourse.appendChild(txt('First Laptop', fraunces('SemiBold'), 18, INK));
+  pathCourse.appendChild(txt('Первый ноутбук: файлы и папки', outfit('Regular'), 13, MUTED, 320));
+  const pathMeta = al('HORIZONTAL', 'course meta');
+  pathMeta.itemSpacing = 8;
+  for (const [k, v] of [
+    ['Уроки', '0/16'],
+    ['XP курса', '0/240'],
+    ['Прогресс', '0%'],
+  ]) {
+    const m = al('VERTICAL', k);
+    m.itemSpacing = 2;
+    m.primaryAxisAlignItems = 'CENTER';
+    m.paddingTop = m.paddingBottom = 8;
+    m.paddingLeft = m.paddingRight = 8;
+    m.cornerRadius = 8;
+    m.fills = [solid({ r: 0.941, g: 0.945, b: 0.953 })];
+    m.resize(104, 10);
+    m.layoutSizingHorizontal = 'FIXED';
+    m.layoutSizingVertical = 'HUG';
+    m.appendChild(txt(k, outfit('Regular'), 10, MUTED));
+    m.appendChild(txt(v, outfit('SemiBold'), 12, INK));
+    pathMeta.appendChild(m);
+  }
+  pathCourse.appendChild(pathMeta);
+  pathCourse.appendChild(instProgress('Value=Empty') || progressBar(320, 0.02, BRAND, 8));
+  pathCourse.appendChild(txt('Открыть курс', outfit('SemiBold'), 13, BRAND800));
+
+  const pathBody = [
+    txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
+    txt('Developer Growth Path', fraunces('Bold'), 32, INK),
+    txt(
+      'От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.',
+      outfit('Regular'),
+      13,
+      MUTED,
+      800,
+    ),
+    pathStats,
+    pathStart,
+    pathCourse,
+    txt('Не дублировать каждый узел курса — 5 статусов покрывают остальную карту.', outfit('Regular'), 12, MUTED, 800),
+    pathRow,
+  ];
+
   const dash = al('VERTICAL', 'Dashboard body');
   dash.itemSpacing = 16;
   const dashHead = al('HORIZONTAL', 'header');
@@ -3404,57 +3513,178 @@ async function buildUniqueScreens() {
   review.appendChild(txt('Ctrl + S', outfit('SemiBold'), 28, INK));
   review.appendChild(txt('Нажмите, чтобы перевернуть', outfit('Regular'), 12, MUTED));
 
+  const VSCODE_BG = { r: 0.118, g: 0.118, b: 0.118 };
+  const VSCODE_SIDE = { r: 0.145, g: 0.145, b: 0.145 };
+  const VSCODE_MUTED = { r: 0.63, g: 0.63, b: 0.63 };
+  const VSCODE_STATUS = { r: 0, g: 0.478, b: 0.8 };
   const sim = al('VERTICAL', 'Code Lab');
-  sim.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
-  sim.paddingTop = sim.paddingBottom = 24;
-  sim.paddingLeft = sim.paddingRight = 24;
-  sim.itemSpacing = 12;
-  sim.resize(960, 280);
+  sim.fills = [solid(VSCODE_BG)];
+  sim.itemSpacing = 0;
+  sim.resize(960, 10);
   sim.layoutSizingHorizontal = 'FIXED';
-  sim.layoutSizingVertical = 'FIXED';
-  sim.appendChild(txt('VS Code Simulator  ·  no Navbar / Footer / BottomNav  ·  #1e1e1e', outfit('Regular'), 13, WHITE, 900));
-  const panes = al('HORIZONTAL', 'panes');
-  panes.itemSpacing = 8;
+  sim.layoutSizingVertical = 'HUG';
+  const simBar = al('HORIZONTAL', 'menubar');
+  simBar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  simBar.counterAxisAlignItems = 'CENTER';
+  simBar.paddingLeft = simBar.paddingRight = 12;
+  simBar.paddingTop = simBar.paddingBottom = 8;
+  simBar.fills = [solid(VSCODE_SIDE)];
+  simBar.resize(960, 36);
+  simBar.layoutSizingHorizontal = 'FIXED';
+  simBar.layoutSizingVertical = 'FIXED';
+  simBar.appendChild(txt('File  Edit  View  Go  Run  Terminal  Help', outfit('Regular'), 11, VSCODE_MUTED, 420));
+  simBar.appendChild(txt('keymaster-project', outfit('Regular'), 11, WHITE));
+  simBar.appendChild(txt('Рабочий стол · VS Code симулятор · К практике', outfit('Regular'), 11, WHITE, 280));
+  sim.appendChild(simBar);
+  const simBody = al('HORIZONTAL', 'panes');
+  simBody.itemSpacing = 0;
   const explorer = al('VERTICAL', 'Explorer');
-  explorer.fills = [solid({ r: 0.145, g: 0.145, b: 0.145 })];
+  explorer.fills = [solid(VSCODE_SIDE)];
   explorer.paddingTop = explorer.paddingBottom = 12;
   explorer.paddingLeft = explorer.paddingRight = 12;
-  explorer.resize(200, 180);
+  explorer.itemSpacing = 6;
+  explorer.resize(220, 10);
   explorer.layoutSizingHorizontal = 'FIXED';
-  explorer.layoutSizingVertical = 'FIXED';
-  explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, { r: 0.8, g: 0.8, b: 0.8 }));
-  explorer.appendChild(txt('src\n  App.tsx', outfit('Regular'), 12, WHITE));
+  explorer.layoutSizingVertical = 'HUG';
+  explorer.appendChild(txt('EXPLORER', outfit('Bold'), 10, VSCODE_MUTED));
+  explorer.appendChild(txt('KEYMASTER-PROJECT', outfit('Bold'), 10, WHITE));
+  explorer.appendChild(txt('src', outfit('Regular'), 12, WHITE));
+  explorer.appendChild(txt('README.md', outfit('Regular'), 12, WHITE));
+  explorer.appendChild(txt('package.json', outfit('Regular'), 12, WHITE));
+  explorer.appendChild(txt('index.html', outfit('Regular'), 12, WHITE));
   const editor = al('VERTICAL', 'Editor');
-  editor.fills = [solid({ r: 0.118, g: 0.118, b: 0.118 })];
-  editor.paddingTop = editor.paddingBottom = 12;
-  editor.paddingLeft = editor.paddingRight = 12;
-  editor.resize(700, 180);
+  editor.fills = [solid(VSCODE_BG)];
+  editor.paddingTop = editor.paddingBottom = 32;
+  editor.paddingLeft = editor.paddingRight = 24;
+  editor.itemSpacing = 8;
+  editor.primaryAxisAlignItems = 'CENTER';
+  editor.resize(460, 10);
   editor.layoutSizingHorizontal = 'FIXED';
-  editor.layoutSizingVertical = 'FIXED';
-  editor.appendChild(txt('App.tsx', outfit('Regular'), 12, WHITE));
-  panes.appendChild(explorer);
-  panes.appendChild(editor);
-  sim.appendChild(panes);
+  editor.layoutSizingVertical = 'HUG';
+  for (const [label, chord] of [
+    ['Show All Commands', 'Ctrl+Shift+P'],
+    ['Go to File', 'Ctrl+P'],
+    ['Find in Files', 'Ctrl+Shift+F'],
+    ['Toggle Terminal', 'Ctrl+`'],
+    ['Toggle Primary Side Bar', 'Ctrl+B'],
+  ]) {
+    editor.appendChild(txt(label + '  ' + chord, outfit('Regular'), 12, VSCODE_MUTED, 400));
+  }
+  const tasks = al('VERTICAL', 'Задачи');
+  tasks.fills = [solid(VSCODE_SIDE)];
+  tasks.paddingTop = tasks.paddingBottom = 16;
+  tasks.paddingLeft = tasks.paddingRight = 16;
+  tasks.itemSpacing = 8;
+  tasks.primaryAxisAlignItems = 'CENTER';
+  tasks.resize(280, 10);
+  tasks.layoutSizingHorizontal = 'FIXED';
+  tasks.layoutSizingVertical = 'HUG';
+  tasks.appendChild(txt('ЗАДАЧИ · 0 XP', outfit('Bold'), 11, WHITE));
+  tasks.appendChild(txt('Текущая', outfit('SemiBold'), 12, { r: 0.53, g: 0.81, b: 1 }));
+  tasks.appendChild(txt('Готовы к практике?', outfit('SemiBold'), 16, WHITE, 240));
+  tasks.appendChild(
+    txt('Выберите задачу и отработайте сочетания клавиш на реальных действиях в симуляторе.', outfit('Regular'), 12, VSCODE_MUTED, 240),
+  );
+  tasks.appendChild(instPrimary('Начать первую задачу'));
+  simBody.appendChild(explorer);
+  simBody.appendChild(editor);
+  simBody.appendChild(tasks);
+  sim.appendChild(simBody);
+  const status = al('HORIZONTAL', 'status bar');
+  status.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  status.paddingLeft = status.paddingRight = 12;
+  status.paddingTop = status.paddingBottom = 6;
+  status.fills = [solid(VSCODE_STATUS)];
+  status.resize(960, 28);
+  status.layoutSizingHorizontal = 'FIXED';
+  status.layoutSizingVertical = 'FIXED';
+  status.appendChild(txt('main  ·  Tasks', outfit('Regular'), 11, WHITE));
+  status.appendChild(txt('Ln 1, Col 1  ·  UTF-8  ·  Plain Text', outfit('Regular'), 11, WHITE));
+  sim.appendChild(status);
 
+  const DESK_BG = { r: 0.04, g: 0.04, b: 0.1 };
   const desk = al('VERTICAL', 'Desktop');
-  desk.fills = [solid({ r: 0.05, g: 0.35, b: 0.55 })];
-  desk.paddingTop = 24;
-  desk.paddingLeft = desk.paddingRight = 24;
-  desk.itemSpacing = 12;
-  desk.resize(960, 280);
+  desk.fills = [solid(DESK_BG)];
+  desk.itemSpacing = 0;
+  desk.resize(960, 10);
   desk.layoutSizingHorizontal = 'FIXED';
-  desk.layoutSizingVertical = 'FIXED';
-  desk.appendChild(txt('Рабочий стол · проводник  ·  ImmersiveSimulator', outfit('Regular'), 13, WHITE));
-  const folder = al('VERTICAL', 'Folder');
-  folder.itemSpacing = 4;
-  folder.primaryAxisAlignItems = 'CENTER';
-  const folderIcon = figma.createRectangle();
-  folderIcon.resize(48, 36);
-  folderIcon.cornerRadius = 4;
-  folderIcon.fills = [solid({ r: 0.96, g: 0.78, b: 0.2 })];
-  folder.appendChild(folderIcon);
-  folder.appendChild(txt('Documents', outfit('Regular'), 11, WHITE));
-  desk.appendChild(folder);
+  desk.layoutSizingVertical = 'HUG';
+  const deskBody = al('HORIZONTAL', 'desktop body');
+  deskBody.itemSpacing = 0;
+  const deskWork = al('VERTICAL', 'workspace');
+  deskWork.itemSpacing = 16;
+  deskWork.paddingTop = 20;
+  deskWork.paddingLeft = deskWork.paddingRight = 20;
+  deskWork.paddingBottom = 20;
+  deskWork.resize(640, 10);
+  deskWork.layoutSizingHorizontal = 'FIXED';
+  deskWork.layoutSizingVertical = 'HUG';
+  const icons = al('VERTICAL', 'icons');
+  icons.itemSpacing = 12;
+  for (const label of ['Корзина', 'Visual Studio Code', 'Welcome.txt']) {
+    const ic = al('VERTICAL', label);
+    ic.itemSpacing = 4;
+    ic.primaryAxisAlignItems = 'CENTER';
+    const box = figma.createRectangle();
+    box.resize(36, 36);
+    box.cornerRadius = 8;
+    box.fills = [solid(label === 'Welcome.txt' ? WHITE : label === 'Корзина' ? { r: 0.4, g: 0.55, b: 0.65 } : BRAND)];
+    ic.appendChild(box);
+    ic.appendChild(txt(label, outfit('Regular'), 11, WHITE, 120));
+    icons.appendChild(ic);
+  }
+  deskWork.appendChild(icons);
+  const tip = al('VERTICAL', 'С чего начать');
+  tip.itemSpacing = 8;
+  tip.paddingTop = tip.paddingBottom = 14;
+  tip.paddingLeft = tip.paddingRight = 14;
+  tip.cornerRadius = 12;
+  tip.fills = [solid({ r: 0.08, g: 0.1, b: 0.16 }, 0.92)];
+  tip.resize(320, 10);
+  tip.layoutSizingHorizontal = 'FIXED';
+  tip.layoutSizingVertical = 'HUG';
+  tip.appendChild(txt('С чего начать', outfit('SemiBold'), 14, WHITE));
+  tip.appendChild(
+    txt(
+      'Перетащите папку на VS Code — откроется в редакторе. На корзину — удалить. Можно двигать иконки по столу. Справа — задачи.',
+      outfit('Regular'),
+      12,
+      { r: 0.8, g: 0.84, b: 0.9 },
+      292,
+    ),
+  );
+  tip.appendChild(instPrimary('Понятно'));
+  deskWork.appendChild(tip);
+  const deskTasks = al('VERTICAL', 'desktop tasks');
+  deskTasks.fills = [solid({ r: 0.12, g: 0.13, b: 0.16 })];
+  deskTasks.paddingTop = deskTasks.paddingBottom = 16;
+  deskTasks.paddingLeft = deskTasks.paddingRight = 14;
+  deskTasks.itemSpacing = 8;
+  deskTasks.resize(320, 10);
+  deskTasks.layoutSizingHorizontal = 'FIXED';
+  deskTasks.layoutSizingVertical = 'HUG';
+  deskTasks.appendChild(txt('ЗАДАЧИ  ·  ← К практике', outfit('Bold'), 11, WHITE));
+  deskTasks.appendChild(txt('ТЕКУЩАЯ — 1/12', outfit('Bold'), 10, { r: 0.53, g: 0.81, b: 1 }));
+  deskTasks.appendChild(txt('Создайте папку «Practice»', outfit('SemiBold'), 14, WHITE, 280));
+  deskTasks.appendChild(txt('0/12  ·  Заработано 0 XP', outfit('Regular'), 12, VSCODE_MUTED));
+  deskTasks.appendChild(txt('Создайте папку «Practice»  +10', outfit('Regular'), 12, WHITE, 280));
+  deskTasks.appendChild(txt('Создайте файл «notes.txt»  +10', outfit('Regular'), 12, VSCODE_MUTED, 280));
+  deskTasks.appendChild(txt('Переименуйте notes.txt в my-notes.txt  +10', outfit('Regular'), 12, VSCODE_MUTED, 280));
+  deskBody.appendChild(deskWork);
+  deskBody.appendChild(deskTasks);
+  desk.appendChild(deskBody);
+  const taskbar = al('HORIZONTAL', 'taskbar');
+  taskbar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  taskbar.counterAxisAlignItems = 'CENTER';
+  taskbar.paddingLeft = taskbar.paddingRight = 16;
+  taskbar.paddingTop = taskbar.paddingBottom = 8;
+  taskbar.fills = [solid({ r: 0.06, g: 0.07, b: 0.1 }, 0.92)];
+  taskbar.resize(960, 40);
+  taskbar.layoutSizingHorizontal = 'FIXED';
+  taskbar.layoutSizingVertical = 'FIXED';
+  taskbar.appendChild(txt('Пуск  ·  Поиск  ·  Проводник  ·  VS Code', outfit('Regular'), 11, WHITE, 420));
+  taskbar.appendChild(txt('РУС  ·  11:04  24.08.2026', outfit('Regular'), 11, WHITE));
+  desk.appendChild(taskbar);
 
   const mobile = al('VERTICAL', 'Mobile Home 390');
   mobile.itemSpacing = 0;
@@ -4200,13 +4430,7 @@ async function buildUniqueScreens() {
       marketingPage('Lesson hotkey /lessons/:id', 'Курсы', false, [lessonHotkey]),
       marketingPage('Lesson task /lessons/:id', 'Курсы', false, [lessonTask]),
       marketingPage('Lesson study-only /lessons/:id', 'Курсы', false, [lessonStudy]),
-      marketingPage('Path /path', 'Мой путь', false, [
-        txt('МОЙ ПУТЬ РАЗВИТИЯ', outfit('Bold'), 11, BRAND800),
-        txt('Developer Growth Path', fraunces('Bold'), 32, INK),
-        txt('От первого ноутбука до инструментов профи: файлы → печать и hotkeys → VS Code и дальше. Курсы те же — путь понятнее.', outfit('Regular'), 13, MUTED, 800),
-        txt('Не дублировать каждый узел курса — 5 статусов покрывают карту.', outfit('Regular'), 12, MUTED, 800),
-        pathRow,
-      ]),
+      marketingPage('Path /path', 'Мой путь', false, pathBody),
       marketingPage('Dashboard /dashboard', '', false, [dash]),
       marketingPage('Leaderboard /leaderboard', 'Рейтинг', true, [
         txt('СОРЕВНОВАНИЕ', outfit('Bold'), 11, BRAND800),

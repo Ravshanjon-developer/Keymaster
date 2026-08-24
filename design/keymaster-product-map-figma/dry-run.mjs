@@ -357,6 +357,11 @@ if (!names.includes('Пройдите ещё уроки — таблица ра�
   fail.push('no live leaderboard climb-hint unique screen');
 }
 if (!names.includes('193')) fail.push('admin overview lessons count does not match live capture');
+if (!names.includes('First Laptop')) fail.push('no live path First Laptop unique screen');
+if (!names.includes('0/20 курсов')) fail.push('no live path 0/20 courses unique screen');
+if (!names.includes('Готовы к практике?')) fail.push('no live code-lab empty unique screen');
+if (!names.includes('Welcome.txt')) fail.push('no live desktop Welcome.txt unique screen');
+if (!names.includes('Создайте папку «Practice»')) fail.push('no live desktop first-task unique screen');
 if (shots.length < 58) fail.push('expected at least 58 shots, got ' + shots.length);
 
 console.log(JSON.stringify(report, null, 2));
