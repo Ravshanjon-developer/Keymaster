@@ -329,6 +329,9 @@ if (!names.includes('Начните здесь')) fail.push('no live catalog sta
 if (!names.includes('0/16 сочетаний')) fail.push('no live authed catalog progress unique screen');
 if (!names.includes('16 уроков · 4 категории')) fail.push('no live catalog lesson-count unique screen');
 if (!names.includes('Основные горячие клавиши программиста')) fail.push('no live programmer-basics catalog card unique screen');
+if (!names.some((n) => String(n).includes('Системные клавиши (Alt+Tab, Win, F)'))) {
+  fail.push('no live programmer-basics catalog description unique screen');
+}
 if (!names.includes('empty bar')) fail.push('no live stats empty-chart unique screen');
 if (!names.includes('chart y-axis')) fail.push('no live stats chart y-axis unique screen');
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
