@@ -604,6 +604,7 @@ function makeBtn(name, fill, textColor, opacity, label, padX, padY, size) {
   c.cornerRadius = 16;
   c.fills = fill ? [solid(fill)] : [TRANSPARENT];
   c.opacity = opacity;
+  c.minHeight = size >= 16 ? 48 : size <= 12 ? 36 : 44;
   const t = figma.createText();
   t.fontName = outfit('SemiBold');
   t.fontSize = size;
@@ -630,6 +631,7 @@ async function buildComponents() {
     makeBtn('Variant=Primary, State=Active, Size=MD', BRAND500, WHITE, 1, 'Продолжить', 20, 10, 14),
     makeBtn('Variant=Primary, State=Disabled, Size=MD', BRAND, WHITE, 0.55, 'Продолжить', 20, 10, 14),
     makeBtn('Variant=Primary, State=Loading, Size=MD', BRAND, WHITE, 0.85, 'Продолжить', 20, 10, 14),
+    makeBtn('Variant=Primary, State=Focus, Size=MD', BRAND, WHITE, 1, 'Продолжить', 20, 10, 14),
     makeBtn('Variant=Primary, State=Default, Size=SM', BRAND, WHITE, 1, 'Дальше', 12, 6, 12),
     makeBtn('Variant=Primary, State=Default, Size=LG', BRAND, WHITE, 1, 'Начать экзамен', 24, 12, 16),
   ];
@@ -640,7 +642,13 @@ async function buildComponents() {
   buttonSet.layoutMode = 'HORIZONTAL';
   buttonSet.itemSpacing = 16;
   buttonSet.paddingLeft = buttonSet.paddingRight = buttonSet.paddingTop = buttonSet.paddingBottom = 24;
-  buttonSet.description = 'KeyMaster .btn-primary — frontend/src/shared/components/ui.tsx';
+  buttonSet.description = 'KeyMaster .btn-primary — min-h-11, radius-button 16, focus-visible ring --focus-ring';
+  const focusBtn = buttonSet.children.find((n) => n.name.includes('State=Focus'));
+  if (focusBtn) {
+    focusBtn.effects = [
+      { type: 'DROP_SHADOW', color: { r: 0.145, g: 0.388, b: 0.922, a: 0.35 }, offset: { x: 0, y: 0 }, radius: 0, spread: 4, visible: true, blendMode: 'NORMAL' },
+    ];
+  }
 
   const rest = [
     makeBtn('Variant=Secondary, State=Default, Size=MD', WHITE, INK, 1, 'Отмена', 20, 10, 14),
@@ -795,8 +803,12 @@ async function buildComponents() {
     nav('State=Default', null, INK, false),
     nav('State=Hover', INK, INK, false),
     nav('State=Active', BRAND50, { r: 0.118, g: 0.251, b: 0.686 }, true),
+    nav('State=Focus', null, INK, false),
   ];
   navs[1].fills = [solid(INK, 0.06)];
+  navs[3].effects = [
+    { type: 'DROP_SHADOW', color: { r: 0.145, g: 0.388, b: 0.922, a: 0.35 }, offset: { x: 0, y: 0 }, radius: 0, spread: 4, visible: true, blendMode: 'NORMAL' },
+  ];
   const navSet = figma.combineAsVariants(navs, page);
   navSet.name = 'NavLink';
   navSet.x = 80;
@@ -1007,6 +1019,24 @@ async function buildComponents() {
   tabSet.paddingLeft = tabSet.paddingRight = tabSet.paddingTop = tabSet.paddingBottom = 24;
 
   await buildProductComponents(page);
+  await bindComponentTokens(page);
+}
+
+async function bindComponentTokens(page) {
+  if (!figma.variables.setBoundVariableForPaint) return;
+  const vars = await figma.variables.getLocalVariablesAsync();
+  const byName = Object.fromEntries(vars.map((v) => [v.name, v]));
+  const brand600 = byName['brand/600'];
+  const brand500 = byName['brand/500'];
+  if (!brand600) return;
+  const set = page.findOne((n) => n.type === 'COMPONENT_SET' && n.name === 'Button');
+  if (!set || !set.children) return;
+  for (const child of set.children) {
+    const paints = child.fills;
+    if (!paints || !paints[0] || paints[0].type !== 'SOLID') continue;
+    const token = child.name.includes('State=Hover') || child.name.includes('State=Active') ? brand500 || brand600 : brand600;
+    child.fills = [figma.variables.setBoundVariableForPaint(paints[0], 'color', token)];
+  }
 }
 
 async function buildPlaceholder() {
@@ -1859,6 +1889,104 @@ async function buildProductComponents(page) {
   examSet.itemSpacing = 12;
   examSet.paddingLeft = examSet.paddingRight = examSet.paddingTop = examSet.paddingBottom = 24;
   examSet.description = 'ExamPage phases setup | run | done — frontend/src/features/training/ExamPage.tsx';
+
+  function navbarVariant(name, scrolled, mobile, authed) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'VERTICAL';
+    c.itemSpacing = 0;
+    c.resize(720, mobile ? 280 : 64);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'FIXED';
+    c.fills = [solid(WHITE, 0.78)];
+    c.strokes = [solid(INK, scrolled ? 0.1 : 0.06)];
+    if (scrolled) {
+      c.effects = [
+        { type: 'DROP_SHADOW', color: { ...INK, a: 0.11 }, offset: { x: 0, y: 4 }, radius: 18, spread: -4, visible: true, blendMode: 'NORMAL' },
+      ];
+    }
+    const bar = al('HORIZONTAL', 'bar');
+    bar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    bar.counterAxisAlignItems = 'CENTER';
+    bar.paddingLeft = bar.paddingRight = 16;
+    bar.resize(720, 64);
+    bar.layoutSizingHorizontal = 'FIXED';
+    bar.layoutSizingVertical = 'FIXED';
+    bar.fills = [TRANSPARENT];
+    bar.appendChild(txt('KeyMaster', fraunces('SemiBold'), 18, INK));
+    if (!mobile) {
+      const links = al('HORIZONTAL', 'links');
+      links.itemSpacing = 8;
+      links.appendChild(txt('Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('SemiBold'), 12, INK));
+      bar.appendChild(links);
+      bar.appendChild(txt(authed ? 'Анна  120 XP' : 'Вход  Регистрация', outfit('SemiBold'), 12, INK));
+    } else {
+      bar.appendChild(txt('☰', outfit('Bold'), 18, INK));
+    }
+    c.appendChild(bar);
+    if (mobile) {
+      const menu = al('VERTICAL', 'km-mobile-nav');
+      menu.itemSpacing = 8;
+      menu.paddingTop = menu.paddingBottom = 16;
+      menu.paddingLeft = menu.paddingRight = 16;
+      menu.fills = [solid(WHITE)];
+      menu.resize(720, 216);
+      menu.layoutSizingHorizontal = 'FIXED';
+      menu.layoutSizingVertical = 'FIXED';
+      for (const group of ['Обучение', 'Практика', 'Сообщество']) {
+        menu.appendChild(txt(group, outfit('Bold'), 11, MUTED));
+        menu.appendChild(txt(group === 'Обучение' ? 'Главная · Курсы · Мой путь' : group === 'Практика' ? 'Тренировочный зал' : 'Рейтинг', outfit('SemiBold'), 14, INK));
+      }
+      c.appendChild(menu);
+    }
+    return c;
+  }
+  const navBarSet = figma.combineAsVariants(
+    [
+      navbarVariant('State=Default', false, false, false),
+      navbarVariant('State=Scrolled', true, false, false),
+      navbarVariant('State=MobileOpen', false, true, false),
+      navbarVariant('State=Authed', false, false, true),
+    ],
+    page,
+  );
+  navBarSet.name = 'Navbar';
+  navBarSet.x = 80;
+  navBarSet.y = 3680;
+  navBarSet.layoutMode = 'VERTICAL';
+  navBarSet.itemSpacing = 16;
+  navBarSet.paddingLeft = navBarSet.paddingRight = navBarSet.paddingTop = navBarSet.paddingBottom = 24;
+  navBarSet.description = 'km-nav-bar / km-nav-bar--scrolled / km-mobile-nav — frontend/src/shared/components/Navbar.tsx';
+
+  function strength(name, level) {
+    const c = figma.createComponent();
+    c.name = name;
+    c.layoutMode = 'HORIZONTAL';
+    c.itemSpacing = 4;
+    c.resize(200, 3);
+    c.layoutSizingHorizontal = 'FIXED';
+    c.layoutSizingVertical = 'FIXED';
+    for (let i = 1; i <= 4; i++) {
+      const seg = figma.createRectangle();
+      seg.resize(47, 3);
+      seg.cornerRadius = 99;
+      const on = i <= level;
+      seg.fills = [solid(level === 4 && on ? SUCCESS : on ? BRAND : INK, on ? 1 : 0.08)];
+      c.appendChild(seg);
+    }
+    return c;
+  }
+  const strSet = figma.combineAsVariants(
+    [strength('Level=0', 0), strength('Level=1', 1), strength('Level=2', 2), strength('Level=3', 3), strength('Level=4', 4)],
+    page,
+  );
+  strSet.name = 'PasswordStrength';
+  strSet.x = 80;
+  strSet.y = 4300;
+  strSet.layoutMode = 'VERTICAL';
+  strSet.itemSpacing = 12;
+  strSet.paddingLeft = strSet.paddingRight = strSet.paddingTop = strSet.paddingBottom = 24;
+  strSet.description = 'km-password-strength levels 1–4 from FloatingLabelInput';
 }
 
 async function buildUniqueScreens() {
@@ -2586,7 +2714,36 @@ async function buildUniqueScreens() {
       practicePage('Review flipped /review', 'Повторение', [reviewBack]),
     ]),
   );
+  const darkHome = al('VERTICAL', 'Dark Home / html.dark');
+  darkHome.itemSpacing = 0;
+  darkHome.fills = [solid({ r: 0.008, g: 0.024, b: 0.09 })];
+  darkHome.strokes = [solid(WHITE, 0.1)];
+  darkHome.resize(960, 10);
+  darkHome.layoutSizingHorizontal = 'FIXED';
+  darkHome.layoutSizingVertical = 'HUG';
+  const dnav = al('HORIZONTAL', 'Navbar');
+  dnav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  dnav.counterAxisAlignItems = 'CENTER';
+  dnav.paddingLeft = dnav.paddingRight = 24;
+  dnav.resize(960, 64);
+  dnav.layoutSizingHorizontal = 'FIXED';
+  dnav.layoutSizingVertical = 'FIXED';
+  dnav.fills = [solid({ r: 0.008, g: 0.024, b: 0.09 }, 0.82)];
+  dnav.appendChild(txt('KeyMaster', fraunces('SemiBold'), 18, { r: 0.973, g: 0.98, b: 0.988 }));
+  dnav.appendChild(txt('Главная · Курсы · Мой путь · Практика · Рейтинг', outfit('SemiBold'), 12, { r: 0.973, g: 0.98, b: 0.988 }));
+  const dmain = al('VERTICAL', 'main');
+  dmain.itemSpacing = 12;
+  dmain.paddingTop = dmain.paddingBottom = 40;
+  dmain.paddingLeft = dmain.paddingRight = 40;
+  dmain.primaryAxisAlignItems = 'CENTER';
+  dmain.appendChild(txt('KeyMaster', fraunces('Bold'), 48, { r: 0.973, g: 0.98, b: 0.988 }));
+  dmain.appendChild(txt('От первого ноутбука — до мастерства клавиатуры', outfit('Medium'), 18, { r: 0.886, g: 0.91, b: 0.941 }, 640));
+  dmain.appendChild(primaryBtn('Начать бесплатно'));
+  darkHome.appendChild(dnav);
+  darkHome.appendChild(dmain);
+
   board.appendChild(section('ImmersiveSimulator', [sim, desk]));
+  board.appendChild(section('Dark · html.dark (same layouts, semantic tokens)', [darkHome]));
   board.appendChild(
     section('Mobile 390 · BottomNav', [
       mobile,

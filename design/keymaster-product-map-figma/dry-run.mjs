@@ -170,6 +170,9 @@ const figma = {
       coll.variableIds.push(v.id);
       return v;
     },
+    setBoundVariableForPaint(paint, _field, variable) {
+      return { ...paint, boundVariables: { color: { type: 'VARIABLE_ALIAS', id: variable.id } } };
+    },
   },
 };
 
@@ -274,6 +277,9 @@ if (!names.includes('Leaderboard /leaderboard')) fail.push('no leaderboard uniqu
 if (!names.includes('Exam done /exam')) fail.push('no exam done unique screen');
 if (!names.includes('Keyboard gate')) fail.push('no keyboard gate unique screen');
 if (!sets.includes('Exam')) fail.push('no Exam set');
+if (!sets.includes('Navbar')) fail.push('no Navbar set');
+if (!sets.includes('PasswordStrength')) fail.push('no PasswordStrength set');
+if (!names.includes('Dark Home / html.dark')) fail.push('no dark home unique screen');
 
 console.log(JSON.stringify(report, null, 2));
 if (fail.length) {
