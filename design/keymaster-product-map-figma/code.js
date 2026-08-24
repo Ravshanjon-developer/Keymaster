@@ -1273,6 +1273,8 @@ async function buildVisualFlows() {
     ['F11 Admin', [
       ['desktop-admin-24-admin.jpg', 'Overview'],
       ['desktop-admin-courses.jpg', 'Courses'],
+      ['desktop-admin-users.jpg', 'Users'],
+      ['desktop-admin-achievements.jpg', 'Achievements'],
       ['desktop-learner-21-admin-forbidden.jpg', 'Forbidden'],
     ]],
     ['F12 Theme + locale', [
@@ -1381,7 +1383,7 @@ async function buildSitemap() {
         ['/achievements', 'Achievements', 'locked / unlocked'],
         ['/dashboard', 'Dashboard', 'XP · streak'],
         ['/stats', 'Stats', 'protected'],
-        ['/admin', 'Admin', 'tabs · forbidden'],
+        ['/admin', 'Admin', 'overview · courses · users · achievements · forbidden'],
       ],
     ],
     [
@@ -1962,7 +1964,7 @@ function themeToggle(dark) {
   return b;
 }
 
-function makeNavbar(active, guest, dark) {
+function makeNavbar(active, guest, dark, admin) {
   const ink = dark ? DARK_TEXT : INK;
   const nav = al('HORIZONTAL', 'Navbar');
   nav.primaryAxisAlignItems = 'SPACE_BETWEEN';
@@ -2068,7 +2070,7 @@ function makeNavbar(active, guest, dark) {
     user.paddingLeft = user.paddingRight = 10;
     user.paddingTop = user.paddingBottom = 8;
     user.cornerRadius = 8;
-    user.appendChild(txt('Анна', outfit('SemiBold'), 14, ink));
+    user.appendChild(txt(admin ? 'KeyMaster Admin' : 'Анна', outfit('SemiBold'), 14, ink));
     const xp = al('HORIZONTAL', 'XP');
     xp.paddingLeft = xp.paddingRight = 6;
     xp.paddingTop = xp.paddingBottom = 2;
@@ -2077,6 +2079,13 @@ function makeNavbar(active, guest, dark) {
     xp.appendChild(txt('0 XP', outfit('Bold'), 12, dark ? BRAND500 : BRAND800));
     user.appendChild(xp);
     actions.appendChild(user);
+    if (admin) {
+      const adm = al('HORIZONTAL', 'Админ');
+      adm.paddingLeft = adm.paddingRight = 8;
+      adm.paddingTop = adm.paddingBottom = 8;
+      adm.appendChild(txt('Админ', outfit('SemiBold'), 14, dark ? BRAND500 : BRAND800));
+      actions.appendChild(adm);
+    }
     const logout = al('HORIZONTAL', 'Выйти');
     logout.paddingLeft = logout.paddingRight = 12;
     logout.paddingTop = logout.paddingBottom = 6;
@@ -2116,7 +2125,7 @@ function makeFooter(dark) {
   return f;
 }
 
-function marketingPage(name, active, guest, body, dark) {
+function marketingPage(name, active, guest, body, dark, admin) {
   const page = al('VERTICAL', name);
   page.itemSpacing = 0;
   page.fills = [solid(dark ? DARK_BG : PAPER)];
@@ -2125,7 +2134,7 @@ function marketingPage(name, active, guest, body, dark) {
   page.resize(960, 10);
   page.layoutSizingHorizontal = 'FIXED';
   page.layoutSizingVertical = 'HUG';
-  page.appendChild(makeNavbar(active, guest, dark));
+  page.appendChild(makeNavbar(active, guest, dark, admin));
   const main = al('VERTICAL', 'main');
   main.itemSpacing = 16;
   main.paddingTop = main.paddingBottom = 32;
@@ -3326,6 +3335,11 @@ async function buildUniqueScreens() {
     ['Практика', false],
     ['Рейтинг', false],
   ]) {
+    const insted = instBottomNav(on, label);
+    if (insted) {
+      bnav.appendChild(insted);
+      continue;
+    }
     const it = al('VERTICAL', label);
     it.primaryAxisAlignItems = 'CENTER';
     it.itemSpacing = 2;
@@ -3419,23 +3433,23 @@ async function buildUniqueScreens() {
     statTiles.appendChild(t);
   }
 
-  const adminTabs = al('HORIZONTAL', 'Admin tabs');
-  adminTabs.itemSpacing = 8;
-  for (const [label, on] of [
-    ['Обзор', true],
-    ['Курсы', false],
-    ['Пользователи', false],
-    ['Достижения', false],
-  ]) {
-    const tab = al('HORIZONTAL', label);
-    tab.paddingLeft = tab.paddingRight = 12;
-    tab.paddingTop = tab.paddingBottom = 8;
-    tab.cornerRadius = 10;
-    tab.fills = on ? [solid(BRAND)] : [solid(WHITE)];
-    tab.strokes = [solid(on ? BRAND : INK, on ? 1 : 0.1)];
-    tab.appendChild(txt(label, outfit('SemiBold'), 12, on ? WHITE : INK));
-    adminTabs.appendChild(tab);
+  function adminTabBar(active) {
+    const tabs = al('HORIZONTAL', 'Admin tabs ' + active);
+    tabs.itemSpacing = 8;
+    for (const label of ['Обзор', 'Курсы', 'Пользователи', 'Достижения']) {
+      const on = label === active;
+      const tab = al('HORIZONTAL', label);
+      tab.paddingLeft = tab.paddingRight = 14;
+      tab.paddingTop = tab.paddingBottom = 8;
+      tab.cornerRadius = 10;
+      tab.fills = on ? [solid({ r: 0.114, g: 0.306, b: 0.847 })] : [solid(INK, 0.06)];
+      tab.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
+      tabs.appendChild(tab);
+    }
+    return tabs;
   }
+
+  const adminTabs = adminTabBar('Обзор');
 
   const verifyCard = al('VERTICAL', 'Verify email');
   verifyCard.itemSpacing = 12;
@@ -3699,19 +3713,24 @@ async function buildUniqueScreens() {
   const fbKeys = al('HORIZONTAL', 'combo');
   fbKeys.itemSpacing = 8;
   for (const k of ['Ctrl', 'S']) {
-    const cap = al('HORIZONTAL', k);
-    cap.primaryAxisAlignItems = 'CENTER';
-    cap.counterAxisAlignItems = 'CENTER';
-    cap.minWidth = 40;
-    cap.minHeight = 40;
-    cap.paddingLeft = cap.paddingRight = 12;
-    cap.cornerRadius = 12;
-    cap.fills = [solid(WHITE)];
-    cap.strokes = [solid(INK)];
-    cap.strokeWeight = 1;
-    cap.strokeBottomWeight = 4;
-    cap.appendChild(txt(k, outfit('SemiBold'), 14, INK));
-    fbKeys.appendChild(cap);
+    const cap = instKeyCap(k);
+    if (cap) {
+      fbKeys.appendChild(cap);
+      continue;
+    }
+    const box = al('HORIZONTAL', k);
+    box.primaryAxisAlignItems = 'CENTER';
+    box.counterAxisAlignItems = 'CENTER';
+    box.minWidth = 40;
+    box.minHeight = 40;
+    box.paddingLeft = box.paddingRight = 12;
+    box.cornerRadius = 12;
+    box.fills = [solid(WHITE)];
+    box.strokes = [solid(INK)];
+    box.strokeWeight = 1;
+    box.strokeBottomWeight = 4;
+    box.appendChild(txt(k, outfit('SemiBold'), 14, INK));
+    fbKeys.appendChild(box);
   }
   examFeedback.appendChild(fbKeys);
   examFeedback.appendChild(txt('Ctrl + S', outfit('SemiBold'), 18, INK));
@@ -3891,6 +3910,11 @@ async function buildUniqueScreens() {
     ['Практика', true],
     ['Рейтинг', false],
   ]) {
+    const insted = instBottomNav(on, label);
+    if (insted) {
+      gbnav.appendChild(insted);
+      continue;
+    }
     const it = al('VERTICAL', label);
     it.primaryAxisAlignItems = 'CENTER';
     it.itemSpacing = 2;
@@ -4054,35 +4078,63 @@ async function buildUniqueScreens() {
           }
           return grid;
         })(),
-      ]),
+      ], false, true),
       marketingPage('Admin courses /admin', 'Главная', false, [
         txt('Админ-панель', outfit('SemiBold'), 28, INK),
         txt('Курсы, уроки, пользователи и достижения · вкладка Курсы, тот же layout.', outfit('Regular'), 13, MUTED, 800),
-        (() => {
-          const tabs = al('HORIZONTAL', 'Admin tabs courses');
-          tabs.itemSpacing = 8;
-          for (const [label, on] of [
-            ['Обзор', false],
-            ['Курсы', true],
-            ['Пользователи', false],
-            ['Достижения', false],
-          ]) {
-            const tab = al('HORIZONTAL', label);
-            tab.paddingLeft = tab.paddingRight = 14;
-            tab.paddingTop = tab.paddingBottom = 8;
-            tab.cornerRadius = 8;
-            tab.fills = on ? [solid({ r: 0.114, g: 0.306, b: 0.847 })] : [solid(INK, 0.05)];
-            tab.appendChild(txt(label, outfit('SemiBold'), 13, on ? WHITE : INK));
-            tabs.appendChild(tab);
-          }
-          return tabs;
-        })(),
+        adminTabBar('Курсы'),
         field('Поиск…', 'computer-basics', INK),
         txt('Slug                  Название                         Уроки', outfit('Regular'), 12, MUTED, 800),
         txt('computer-basics       Первый ноутбук: файлы и папки    12', outfit('Regular'), 13, INK, 800),
         txt('programmer-basics     Основы программиста              18', outfit('Regular'), 13, INK, 800),
         instPrimary('Создать'),
-      ]),
+      ], false, true),
+      marketingPage('Admin users /admin', 'Главная', false, [
+        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Курсы, уроки, пользователи и достижения · вкладка Пользователи.', outfit('Regular'), 13, MUTED, 800),
+        adminTabBar('Пользователи'),
+        field('Поиск…', 'Поиск…', INK),
+        txt('EMAIL                 USERNAME     ИМЯ               XP   УРОВЕНЬ  АДМИН', outfit('Regular'), 11, MUTED, 860),
+        txt('learner@example.com   learner      Анна              0    1        ☐', outfit('Regular'), 13, INK, 860),
+        txt('admin@example.com     siteadmin    KeyMaster Admin   0    1        ☑', outfit('Regular'), 13, INK, 860),
+      ], false, true),
+      marketingPage('Admin achievements /admin', 'Главная', false, [
+        txt('Админ-панель', outfit('SemiBold'), 28, INK),
+        txt('Вкладка Достижения · тот же layout. Не дублировать каждый бейдж.', outfit('Regular'), 13, MUTED, 800),
+        adminTabBar('Достижения'),
+        instPrimary('Создать'),
+        (() => {
+          const list = al('VERTICAL', 'Achievement CRUD');
+          list.itemSpacing = 8;
+          for (const [title, meta, desc] of [
+            ['Первый ноутбук', 'computer-basics-complete · course_complete >= 1 · +50 XP', 'Пройдите курс «Первый ноутбук: файлы и папки»'],
+            ['Первая победа', 'first-win · correct_answers >= 1 · +50 XP', 'Первый правильный ответ'],
+            ['Неделя подряд', 'week-streak · streak_days >= 7 · +50 XP', '7 дней серии'],
+          ]) {
+            const card = al('VERTICAL', title);
+            card.itemSpacing = 4;
+            card.paddingTop = card.paddingBottom = 16;
+            card.paddingLeft = card.paddingRight = 16;
+            card.cornerRadius = 16;
+            card.fills = [solid(WHITE)];
+            card.strokes = [solid(INK, 0.08)];
+            card.resize(860, 10);
+            card.layoutSizingHorizontal = 'FIXED';
+            card.layoutSizingVertical = 'HUG';
+            const top = al('HORIZONTAL', 'row');
+            top.primaryAxisAlignItems = 'SPACE_BETWEEN';
+            top.counterAxisAlignItems = 'CENTER';
+            top.appendChild(txt(title, outfit('SemiBold'), 15, INK, 680));
+            top.appendChild(txt('✎  ⌫', outfit('Regular'), 13, MUTED));
+            top.layoutSizingHorizontal = 'FILL';
+            card.appendChild(top);
+            card.appendChild(txt(meta, outfit('Regular'), 11, MUTED, 800));
+            card.appendChild(txt(desc, outfit('Regular'), 13, MUTED, 800));
+            list.appendChild(card);
+          }
+          return list;
+        })(),
+      ], false, true),
       marketingPage('Admin forbidden', 'Главная', false, [
         txt('Доступ только для администраторов', outfit('SemiBold'), 22, INK, 800),
       ]),

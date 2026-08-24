@@ -317,6 +317,9 @@ if (!names.includes('Exam wrong /exam')) fail.push('no exam wrong unique screen'
 if (!names.includes('AuthCard compact')) fail.push('no compact AuthCard (register)');
 if (!names.includes('Speed done /speed')) fail.push('no speed done unique screen');
 if (!names.includes('Admin courses /admin')) fail.push('no admin courses unique screen');
+if (!names.includes('Admin users /admin')) fail.push('no admin users unique screen');
+if (!names.includes('Admin achievements /admin')) fail.push('no admin achievements unique screen');
+if (!names.includes('Админ')) fail.push('no admin navbar link on unique screens');
 if (!names.includes('Dark Register / html.dark')) fail.push('no dark register unique screen');
 if (!names.includes('Dark Practice / html.dark')) fail.push('no dark practice unique screen');
 if (!names.includes('Speed challenge')) fail.push('no practice speed challenge row');
