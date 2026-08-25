@@ -356,12 +356,50 @@ export function allExpectedModifiersHeld(pressed: string[], expectedMods: string
   return expectedMods.every((m) => pressed.includes(m))
 }
 
-export function needsDemoEditor(keys: string[]): boolean {
+export type DemoEditorKind = 'select-all' | 'cut' | 'copy' | 'paste' | 'undo' | 'redo'
+
+export function demoEditorKind(keys: string[]): DemoEditorKind | null {
   const practice = webPracticeKeys(keys)
   const set = new Set(practice.map((k) => k.toUpperCase()))
-  const hasMod = set.has('CONTROL')
-  const letter = practice.find((k) => k.length === 1)
-  return hasMod && ['X', 'C', 'V', 'Z', 'Y', 'A'].includes(letter ?? '')
+  if (!set.has('CONTROL')) return null
+  const letter = practice.find((k) => k.length === 1)?.toUpperCase() ?? ''
+  switch (letter) {
+    case 'A':
+      return 'select-all'
+    case 'X':
+      return 'cut'
+    case 'C':
+      return 'copy'
+    case 'V':
+      return 'paste'
+    case 'Z':
+      return 'undo'
+    case 'Y':
+      return 'redo'
+    default:
+      return null
+  }
+}
+
+export function needsDemoEditor(keys: string[]): boolean {
+  return demoEditorKind(keys) !== null
+}
+
+/** Copy/cut start with a selection; select-all only highlights after a correct press. */
+export function demoSelectionVisible(kind: DemoEditorKind | null, done: boolean): boolean {
+  if (kind === 'select-all') return done
+  if (kind === 'copy') return true
+  if (kind === 'cut') return !done
+  return false
+}
+
+/** Typed fragment in the demo field: undo removes it, redo brings it back. */
+export type DemoExtraState = 'hidden' | 'typed' | 'ghost' | 'restored'
+
+export function demoExtraState(kind: DemoEditorKind | null, done: boolean): DemoExtraState {
+  if (kind === 'undo') return done ? 'ghost' : 'typed'
+  if (kind === 'redo') return done ? 'restored' : 'ghost'
+  return 'hidden'
 }
 
 export function explainMismatch(

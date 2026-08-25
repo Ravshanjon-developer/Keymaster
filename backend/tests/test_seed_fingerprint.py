@@ -20,12 +20,47 @@ def test_fingerprint_changes_when_lesson_keys_change():
     assert fingerprint_from_seed(mutated) != original
 
 
+def test_git_course_has_zero_to_hero_curriculum():
+    git = next(c for c in COURSES if c["slug"] == "git")
+    assert [cat["slug"] for cat in git["categories"]] == ["basics", "repo", "changes", "github", "branch"]
+    keys = [lesson["keys"][0] for cat in git["categories"] for lesson in cat["lessons"]]
+    assert keys == [
+        "cmd:intro",
+        "cmd:version",
+        "cmd:config",
+        "cmd:init",
+        "cmd:clone",
+        "cmd:status",
+        "cmd:add",
+        "cmd:commit",
+        "cmd:log",
+        "cmd:diff",
+        "cmd:restore",
+        "cmd:remote",
+        "cmd:remote-add",
+        "cmd:push",
+        "cmd:pull",
+        "cmd:fetch",
+        "cmd:what-is-branch",
+        "cmd:branch",
+        "cmd:switch",
+        "cmd:merge",
+    ]
+    blob = " ".join(keys)
+    for word in ("rebase", "reset", "revert", "cherry-pick", "stash", "bisect", "blame", "reflog", "submodule"):
+        assert word not in blob
+
+
 def test_computer_basics_practice_lessons_map_to_desktop_tasks():
     course = _computer_basics()
     mapped: list[int] = []
+    titles: list[str] = []
     for cat in course["categories"]:
         for lesson in cat["lessons"]:
+            titles.append(lesson["title"])
             keys = lesson["keys"]
             if keys and keys[0].startswith("desktop:"):
                 mapped.append(int(keys[0].split(":")[1]))
     assert mapped == list(range(1, 13))
+    assert titles[-1] == "Файл index.html"
+    assert "Дальше" not in titles

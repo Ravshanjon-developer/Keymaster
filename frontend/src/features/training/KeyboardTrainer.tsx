@@ -19,7 +19,9 @@ import {
   mainKeyFromEvent,
   matchesShortcutKeys,
   modifiersFromEvent,
-  needsDemoEditor,
+  demoEditorKind,
+  demoExtraState,
+  demoSelectionVisible,
   normalizeShortcutKeys,
   sanitizeChordForMatch,
   splitShortcut,
@@ -34,7 +36,7 @@ import { cn } from '@/shared/lib/utils'
 /** 0 = nothing shown, 1 = first key, 2 = all keys + steps, 3 = full answer. */
 type HintLevel = 0 | 1 | 2 | 3
 
-interface Props {
+export interface KeyboardTrainerProps {
   actionPrompt: string
   keys: string[]
   onResult: (correct: boolean, responseMs: number, meta?: { mistakes: number; usedHint: boolean }) => void
@@ -53,14 +55,20 @@ interface Props {
   initialHintLevel?: HintLevel
   /** Shows a «пропустить» action when the learner is stuck. */
   onSkip?: () => void
+  /** Hide the big headline — used inside the course lesson workspace. */
+  compact?: boolean
+  /** Stretch demo + keys to fill the lesson practice card. */
+  fill?: boolean
 }
 
 function demoEffectMessage(keys: string[], t: TranslateFn): string | null {
   const sorted = [...keys].sort().join('|')
+  if (sorted === 'Control|A') return t('trainer.selectAll')
   if (sorted === 'Control|X') return t('trainer.cut')
   if (sorted === 'Control|C') return t('trainer.copy')
   if (sorted === 'Control|V') return t('trainer.paste')
   if (sorted === 'Control|Z') return t('trainer.undo')
+  if (sorted === 'Control|Y') return t('trainer.redo')
   return null
 }
 
@@ -85,15 +93,21 @@ export function KeyboardTrainer({
   taskLabel,
   initialHintLevel = 0,
   onSkip,
-}: Props) {
+  compact = false,
+  fill = false,
+}: KeyboardTrainerProps) {
   const t = useT()
   const demoDefault = t('trainer.demoDefault')
+  const demoSample = t('trainer.demoSample')
   const baseHint: HintLevel = mode === 'learn' ? 2 : mode === 'exam' ? 0 : initialHintLevel
 
   const [flash, setFlash] = useState<'ok' | 'err' | null>(null)
   const [liveChord, setLiveChord] = useState<string[]>([])
   const [focused, setFocused] = useState(false)
-  const [demoText, setDemoText] = useState(demoDefault)
+  const [demoText, setDemoText] = useState(() => {
+    const kind = demoEditorKind(normalizeShortcutKeys(keys))
+    return kind === 'copy' || kind === 'cut' ? demoDefault : demoSample
+  })
   const [mistakes, setMistakes] = useState(0)
   const [coachTip, setCoachTip] = useState<string | null>(null)
   const [done, setDone] = useState(false)
@@ -115,7 +129,9 @@ export function KeyboardTrainer({
   const metaBlocked = isOsCapturedShortcut(normalizedKeys)
   const fnKeyLesson = isStandaloneFunctionKey(normalizedKeys)
   const { modifiers, main } = useMemo(() => splitShortcut(practiceKeys), [practiceKeys])
-  const showDemo = needsDemoEditor(normalizedKeys)
+  const demoKind = useMemo(() => demoEditorKind(normalizedKeys), [normalizedKeys])
+  const initialDemoText = demoKind === 'copy' || demoKind === 'cut' ? demoDefault : demoSample
+  const showDemo = Boolean(demoKind)
   const titleText = (headline ?? actionPrompt).trim()
   const labelText = (taskLabel ?? title ?? '').trim()
   const whyText = (why ?? '').trim()
@@ -137,7 +153,7 @@ export function KeyboardTrainer({
     setDone(false)
     setFlash(null)
     setLiveChord([])
-    setDemoText(demoDefault)
+    setDemoText(initialDemoText)
     setMistakes(0)
     mistakesRef.current = 0
     setCoachTip(null)
@@ -150,7 +166,7 @@ export function KeyboardTrainer({
     started.current = Date.now()
     heldMods.current = {}
     focusBox()
-  }, [baseHint, demoDefault, focusBox])
+  }, [baseHint, focusBox, initialDemoText])
 
   useEffect(() => {
     reset()
@@ -426,6 +442,7 @@ export function KeyboardTrainer({
       : modifiers.length && !mystery
         ? t('trainer.tapOrderHint', { mods: modifiers.map(displayKey).join(' + ') })
         : t('trainer.pressShortcut'))
+  const extraState = demoExtraState(demoKind, done)
 
   const requestHint = () => {
     askedRef.current = true
@@ -457,6 +474,7 @@ export function KeyboardTrainer({
 
   const frontContent = (
     <>
+      {compact ? null : (
       <AnimatePresence mode="wait">
         <motion.div
           key={titleText}
@@ -496,27 +514,64 @@ export function KeyboardTrainer({
           </div>
         </motion.div>
       </AnimatePresence>
+      )}
 
       {showDemo && (
-        <div className="mt-4 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] p-3">
-          <p className="text-muted mb-2 text-xs">{t('trainer.demoField')}</p>
-          <div className="min-h-[2.75rem] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-sm">
-            {!done && demoText ? (
-              <mark className="rounded bg-sky-300/70 px-0.5 text-slate-900 dark:bg-sky-500/40 dark:text-slate-100">
-                {demoText}
-              </mark>
-            ) : demoText ? (
-              <span>{demoText}</span>
+        <div
+          className={cn(
+            'km-demo-field mt-4 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] p-3',
+            fill && 'mt-0 w-full p-3',
+          )}
+        >
+          <p className={cn('text-muted mb-2 text-xs', fill && 'mb-3 text-sm')}>{t('trainer.demoField')}</p>
+          <div
+            className={cn(
+              'min-h-[2.75rem] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-sm',
+              fill && 'min-h-[3.25rem] p-3 text-base leading-relaxed',
+            )}
+          >
+            {demoText ? (
+              <>
+                {demoSelectionVisible(demoKind, done) ? (
+                  <mark className="rounded bg-sky-300/70 px-0.5 text-slate-900 dark:bg-sky-500/40 dark:text-slate-100">
+                    {demoText}
+                  </mark>
+                ) : (
+                  <span>{demoText}</span>
+                )}
+                {extraState !== 'hidden' ? (
+                  <span
+                    className={cn(
+                      'ml-1 rounded px-0.5',
+                      extraState === 'typed' &&
+                        'bg-amber-300/80 text-slate-900 dark:bg-amber-500/40 dark:text-slate-100',
+                      extraState === 'ghost' &&
+                        'text-[var(--text-muted)] line-through decoration-[var(--text-muted)] opacity-60',
+                      extraState === 'restored' &&
+                        'bg-emerald-300/80 text-slate-900 dark:bg-emerald-500/40 dark:text-slate-100',
+                    )}
+                  >
+                    {t('trainer.demoChange')}
+                  </span>
+                ) : null}
+              </>
             ) : (
               <span className="italic text-[var(--text-muted)]">{t('trainer.textCut')}</span>
             )}
           </div>
+          {(demoKind === 'undo' || demoKind === 'redo') && !done ? (
+            <p className={cn('text-muted mt-2 text-xs leading-snug', fill && 'mt-2 text-sm')}>
+              {demoKind === 'undo' ? t('trainer.undoHint') : t('trainer.redoHint')}
+            </p>
+          ) : null}
         </div>
       )}
 
       <div
         className={cn(
-          'mt-5 rounded-2xl border px-4 py-6 transition-colors',
+          'km-key-stage mt-5 rounded-2xl border px-4 py-6 transition-colors',
+          compact && 'mt-0 py-4',
+          fill && 'mt-3 w-full px-8 py-4 md:px-12 md:py-5',
           flash === 'err'
             ? 'border-amber-500/40 bg-amber-500/5'
             : 'border-[var(--border-default)] bg-[var(--bg-muted)]',
@@ -529,13 +584,14 @@ export function KeyboardTrainer({
           revealedKeys={revealedKeys}
           activeKeys={highlightKeys}
           learned={done}
-          size="lg"
+          size={compact && !fill ? 'md' : 'lg'}
           onKeyActivate={mode === 'exam' ? undefined : onVirtualKey}
         />
         {!done ? (
           <p
             className={cn(
               'mt-4 text-center text-sm leading-snug',
+              fill && 'mt-3 text-sm',
               flash === 'err'
                 ? 'font-medium text-amber-800 dark:text-amber-200'
                 : 'text-[var(--text-secondary)]',
@@ -598,9 +654,9 @@ export function KeyboardTrainer({
 
       {done && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mt-5 space-y-1 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className={cn('mt-5 space-y-1 text-center', fill && 'mt-3 shrink-0 space-y-0.5')}
         >
           <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
             {t('trainer.accepted')}
@@ -619,7 +675,7 @@ export function KeyboardTrainer({
             </p>
           ) : null}
           {mode !== 'exam' && (
-            <button type="button" onClick={reset} className="btn-secondary mt-3">
+            <button type="button" onClick={reset} className={cn('btn-secondary mt-3', fill && 'mt-2')}>
               {t('trainer.tryAgain')}
             </button>
           )}
@@ -669,6 +725,7 @@ export function KeyboardTrainer({
       }}
       className={cn(
         'relative rounded-3xl border outline-none transition-colors duration-300',
+        fill && 'flex w-full flex-col',
         'focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)]',
         focused && !done && 'ring-2 ring-brand-500/40',
         flash === 'ok' && 'border-emerald-500/50 bg-emerald-500/10',
@@ -682,6 +739,7 @@ export function KeyboardTrainer({
         className={cn(
           'relative grid transition-transform ease-[cubic-bezier(0.4,0.0,0.2,1)]',
           '[transform-style:preserve-3d]',
+          fill && 'w-full',
           flipped && detail && '[transform:rotateY(180deg)]',
         )}
         style={{ transitionDuration: '550ms' }}
@@ -689,6 +747,8 @@ export function KeyboardTrainer({
         <div
           className={cn(
             'col-start-1 row-start-1 rounded-3xl bg-[var(--bg-elevated)] p-5 md:p-8',
+            compact && 'p-3 md:p-4',
+            fill && 'flex w-full flex-col items-stretch p-2 md:p-3',
             '[backface-visibility:hidden] [-webkit-backface-visibility:hidden]',
             flipped && detail && 'pointer-events-none',
           )}

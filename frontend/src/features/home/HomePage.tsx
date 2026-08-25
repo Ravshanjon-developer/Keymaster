@@ -69,7 +69,7 @@ export function HomePage() {
             className="mt-10 flex flex-wrap items-center justify-center gap-3"
           >
             <Link to={user ? '/path' : '/register'} className="btn-primary px-7 py-3 text-[15px]">
-              {user ? t('home.ctaPath') : t('home.ctaStart')}
+              {user ? t('nav.path') : t('home.ctaStart')}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link to={user ? '/practice' : '/courses'} className="btn-secondary px-7 py-3 text-[15px]">

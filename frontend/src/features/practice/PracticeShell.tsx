@@ -145,10 +145,9 @@ export function PracticeShell() {
         </nav>
 
         <div className="border-t border-[#2a2f3a] p-4">
-          <p className="text-[11px] leading-relaxed text-[#6f788c]">{t('practiceShell.hint')}</p>
           <NavLink
             to="/dashboard"
-            className="mt-3 block text-[11px] font-semibold text-[#89ceff] hover:underline"
+            className="block text-[11px] font-semibold text-[#89ceff] hover:underline"
           >
             {t('practiceShell.dashboard')} →
           </NavLink>

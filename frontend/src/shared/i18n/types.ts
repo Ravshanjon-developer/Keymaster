@@ -49,7 +49,6 @@ export type Messages = {
   home: {
     headline: string
     lead: string
-    ctaPath: string
     ctaStart: string
     ctaCourses: string
     ctaPractice: string
@@ -61,10 +60,8 @@ export type Messages = {
     f3Text: string
   }
   courses: {
-    eyebrow: string
     title: string
     subtitle: string
-    openPath: string
     apiDownTitle: string
     apiDownDesc: string
     lessons: string
@@ -85,7 +82,6 @@ export type Messages = {
     filterOffice: string
     filterVcs: string
     noMatches: string
-    startHere: string
     statusStart: string
     statusDone: string
     statusProgress: string
@@ -108,12 +104,8 @@ export type Messages = {
   dashboard: {
     hello: string
     student: string
-    subtitle: string
-    pathBtn: string
-    continueBtn: string
     level: string
     xp: string
-    completion: string
     streak: string
     days: string
     daily: string
@@ -127,37 +119,13 @@ export type Messages = {
     continueLesson: string
   }
   path: {
-    eyebrow: string
     title: string
     subtitle: string
-    level: string
-    xp: string
-    courseXp: string
-    completed: string
-    coursesWord: string
     nextStage: string
-    continue: string
-    continueArrow: string
-    loginHint: string
-    login: string
-    openCourse: string
-    needProgress: string
-    unlockAfter: string
+    continueStage: string
     catalog: string
-    nextCourse: string
-    lessons: string
-    progress: string
-    milestoneSub: string
-    startLabel: string
-    startTitle: string
-    startSub: string
-    nextStepEyebrow: string
-    guestTitle: string
     guestText: string
-    openPath: string
-    myPath: string
     summary: string
-    summaryNext: string
     masterFallback: string
     rankNovice: string
     rankTrainee: string
@@ -165,11 +133,6 @@ export type Messages = {
     rankMid: string
     rankSenior: string
     rankMaster: string
-    diffNovice: string
-    diffCore: string
-    diffPro: string
-    diffAdvanced: string
-    diffElite: string
   }
   status: {
     locked: string
@@ -245,6 +208,19 @@ export type Messages = {
     selfCheckHint: string
     pressToStartPractice: string
     studyOnlyHint: string
+    systemStudyIntro: string
+    systemStudyTitle: string
+    systemStudyColKey: string
+    systemStudyColDoes: string
+    systemStudyCheckTitle: string
+    systemStudyDoneAll: string
+    systemStudyAllDone: string
+    systemExplainAltTab: string
+    systemExplainAltF4: string
+    systemExplainWinD: string
+    systemExplainWinE: string
+    systemExplainPrtSc: string
+    systemExplainWinShiftS: string
     openReview: string
     markLearned: string
     learnMode: string
@@ -275,6 +251,61 @@ export type Messages = {
     taskStepsEyebrow: string
     doneTaskTitle: string
     rememberTaskLine: string
+    backToCourse: string
+    understandTitle: string
+    lessonOf: string
+    progressCount: string
+    yourProgress: string
+    currentLesson: string
+    completed: string
+    locked: string
+    syntax: string
+    whatItDoes: string
+    whatItDoesTopic: string
+    youWillLearn: string
+    explanation: string
+    howItWorks: string
+    important: string
+    lessonPlan: string
+    taskLabel: string
+    doThis: string
+    checkResult: string
+    greatJob: string
+    nextCourse: string
+    quizPick: string
+    quizBad: string
+    example: string
+    whenToUse: string
+    tryYourself: string
+    checkTask: string
+    commandPlaceholder: string
+    commandOk: string
+    commandBad: string
+    prevLesson: string
+    xpForLesson: string
+    levelBeginner: string
+    levelLabel: string
+    nextUp: string
+    copied: string
+    copy: string
+    lockedHint: string
+    pressToCheck: string
+    openLessons: string
+    aboutMinutes: string
+    trackBasics: string
+    exampleStructure: string
+    tip: string
+    quickCheck: string
+    quickCheckLead: string
+    checkNow: string
+    reward: string
+    congrats: string
+    progressDoneOf: string
+    progressTitle: string
+    progressLessonsOf: string
+    progressPassed: string
+    percent: string
+    xpBand: string
   }
   training: {
     title: string
@@ -366,27 +397,18 @@ export type Messages = {
     start60: string
   }
   practice: {
-    eyebrow: string
     title: string
     subtitle: string
-    typingTitle: string
     typingText: string
-    simTitle: string
     simText: string
-    desktopSimTitle: string
     desktopSimText: string
-    hotkeysTitle: string
     hotkeysText: string
-    speedTitle: string
     speedText: string
     tagBeginner: string
     tagCore: string
-    tagFun: string
     tagReinforce: string
     skillsSection: string
-    skillsSectionDesc: string
     reinforceSection: string
-    reinforceSectionDesc: string
     reviewTitle: string
     reviewText: string
     quizTitle: string
@@ -400,7 +422,6 @@ export type Messages = {
     step4: string
     startCourse: string
     todayRecommend: string
-    todayRecommendText: string
     startChallenge: string
   }
   practiceShell: {
@@ -415,7 +436,6 @@ export type Messages = {
     levelLine: string
     guest: string
     navLabel: string
-    hint: string
     exitSim: string
   }
   keyos: {
@@ -812,10 +832,16 @@ export type Messages = {
   }
   trainer: {
     demoDefault: string
+    demoSample: string
     cut: string
     copy: string
     paste: string
     undo: string
+    redo: string
+    selectAll: string
+    demoChange: string
+    undoHint: string
+    redoHint: string
     pastedFragment: string
     holdMods: string
     remember: string

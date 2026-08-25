@@ -23,10 +23,9 @@ export function DashboardPage() {
     <PageShell>
       <PageHeader
         title={t('dashboard.hello', { name: user?.display_name ?? t('dashboard.student') })}
-        subtitle={t('dashboard.subtitle')}
         actions={
           <Link to="/path" className="btn-secondary">
-            {t('dashboard.pathBtn')}
+            {t('nav.path')}
           </Link>
         }
       />

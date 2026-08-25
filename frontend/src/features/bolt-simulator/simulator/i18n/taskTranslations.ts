@@ -247,23 +247,23 @@ const ru: Record<string, TaskCopy> = {
 const tg: Record<string, TaskCopy> = {
   'task.create-file': {
     title: 'Эҷоди файли нав',
-    description: 'Дар лоиҳа файли нав эҷод кунед — бо миёнбур ё менюи контекстӣ.',
+    description: 'Дар проект файли нав эҷод кунед — бо миёнбур ё менюи контекстӣ.',
     hints: [
       'Дар Explorer бо тугмаи рост клик кунед ва файли нав созед.',
       'Амали «New File»-ро аз палитраи фармон (Ctrl+Shift+P) низ метавонед фарохонид.',
       'Зудтарин роҳ — Ctrl+N.',
     ],
-    steps: { 'file-created': 'Файли нав дар кори лоиҳа мавҷуд аст' },
+    steps: { 'file-created': 'Файли нав дар кори проект мавҷуд аст' },
   },
   'task.create-folder': {
     title: 'Эҷоди папка',
-    description: 'Дар решаи лоиҳа папка бо номи «assets» эҷод кунед.',
+    description: 'Дар решаи проект папка бо номи «assets» эҷод кунед.',
     hints: [
-      'Папкаро дар сатҳи болои лоиҳа созед.',
+      'Папкаро дар сатҳи болои проект созед.',
       'Ба реша клики рост кунед ё тугмаи New Folder дар Explorer-ро истифода баред.',
       'Номи папка бояд дақиқ «assets» бошад.',
     ],
-    steps: { 'folder-exists': 'Дар реша папкаи «assets» ҳаст' },
+    steps: { 'folder-exists': 'Дар реша папка «assets» ҳаст' },
   },
   'task.rename-file': {
     title: 'Тағйири номи файл',
@@ -277,11 +277,11 @@ const tg: Record<string, TaskCopy> = {
   },
   'task.delete-file': {
     title: 'Нест кардани файл',
-    description: 'Файли «package.json»-ро аз решаи лоиҳа нест кунед.',
+    description: 'Файли «package.json»-ро аз решаи проект нест кунед.',
     hints: [
       'Ба файл клики рост кунед ва Delete-ро интихоб кунед.',
       'Ё файлро интихоб карда тугмаи Delete-ро пахш кунед.',
-      '«package.json» бояд аз лоиҳа нест шавад.',
+      '«package.json» бояд аз проект нест шавад.',
     ],
     steps: { deleted: 'package.json нест карда шуд' },
   },
@@ -326,11 +326,11 @@ const tg: Record<string, TaskCopy> = {
     steps: { opened: 'Терминал намоиш дода мешавад' },
   },
   'task.create-components-folder': {
-    title: 'Папкаи components дар src',
+    title: 'Папка components дар src',
     description: 'Дар дохили «src» папка бо номи «components» эҷод кунед.',
     hints: [
       'Папкаро дар дохили src созед, на дар реша.',
-      'Аввал src-ро кушоед, сипас папкаи тарафдор.',
+      'Аввал src-ро кушоед, сипас папка тарафдор.',
       'Ном — «components», волидай — src.',
     ],
     steps: { 'folder-in-src': 'src/components/ мавҷуд аст' },
@@ -356,10 +356,10 @@ const tg: Record<string, TaskCopy> = {
     steps: { opened: 'Палитраи фармон кушода шуд' },
   },
   'task.global-search': {
-    title: 'Ҷустуҷӯ дар лоиҳа',
+    title: 'Ҷустуҷӯ дар проект',
     description: 'Ҷустуҷӯи умумиро бо Ctrl+Shift+F кушоед.',
     hints: [
-      'Матнро дар ҳамаи файлҳои лоиҳа меҷӯяд.',
+      'Матнро дар ҳамаи файлҳои проект меҷӯяд.',
       'Миёнбур: Ctrl+Shift+F.',
       'Панели Search чап кушода мешавад.',
     ],
@@ -446,7 +446,7 @@ const tg: Record<string, TaskCopy> = {
     steps: { selected: '«Select next occurrence» истифода шуд' },
   },
   'task.create-structure': {
-    title: 'Сохтори лоиҳа',
+    title: 'Сохтори проект',
     description: 'Дар реша «styles» созед, сипас «main.css» дар дохили он.',
     hints: [
       'Ҳам папка ва ҳам файл дар дохили он лозим аст.',
@@ -454,7 +454,7 @@ const tg: Record<string, TaskCopy> = {
       'Сипас «main.css» дар «styles».',
     ],
     steps: {
-      'styles-folder': 'Дар реша папкаи styles/ ҳаст',
+      'styles-folder': 'Дар реша папка styles/ ҳаст',
       'main-css': 'styles/main.css мавҷуд аст',
     },
   },
@@ -466,7 +466,7 @@ const tg: Record<string, TaskCopy> = {
       'Фармони эҷоди папка: mkdir.',
       'mkdir lib навишед ва Enter пахш кунед.',
     ],
-    steps: { 'lib-created': 'Дар реша папкаи lib/ ҳаст' },
+    steps: { 'lib-created': 'Дар реша папка lib/ ҳаст' },
   },
   'task.terminal-touch': {
     title: 'Файл тавассути терминал',

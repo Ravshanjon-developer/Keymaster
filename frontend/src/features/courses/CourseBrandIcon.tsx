@@ -110,29 +110,34 @@ const BRANDS: Record<string, Brand> = {
 
   'programmer-basics': {
     kind: 'svg',
-    bg: 'linear-gradient(145deg,#1d4ed8,#06b6d4)',
-    glow: 'rgba(37,99,235,.5)',
+    bg: 'linear-gradient(160deg,#0b1224 0%,#1d4ed8 58%,#06b6d4 130%)',
+    glow: 'rgba(34,211,238,.45)',
     node: (
       <svg viewBox="0 0 48 48" fill="none">
-        <rect x="10" y="12" width="28" height="20" rx="3" fill="#fff" fillOpacity=".95" />
-        <path d="M15 19h5v3h-5V19Zm7 0h5v3h-5V19Zm7 0h4v3h-4V19ZM15 25h18v3H15v-3Z" fill="#2563eb" />
-        <path d="M18 34h12l-2 4H20l-2-4Z" fill="#67e8f9" />
+        <rect x="6" y="14" width="36" height="22" rx="6" fill="#fff" />
+        <rect x="9" y="17.5" width="5" height="5" rx="1.2" fill="#1d4ed8" />
+        <rect x="16" y="17.5" width="5" height="5" rx="1.2" fill="#0f172a" fillOpacity=".18" />
+        <rect x="23" y="17.5" width="5" height="5" rx="1.2" fill="#0f172a" fillOpacity=".18" />
+        <rect x="30" y="17.5" width="9" height="5" rx="1.2" fill="#06b6d4" />
+        <rect x="9" y="25" width="30" height="7" rx="1.6" fill="#0f172a" fillOpacity=".12" />
+        <circle cx="38.5" cy="13" r="2.2" fill="#67e8f9" />
       </svg>
     ),
   },
 
   'computer-basics': {
     kind: 'svg',
-    bg: 'linear-gradient(145deg,#d97706,#f59e0b)',
-    glow: 'rgba(217,119,6,.45)',
+    bg: 'linear-gradient(160deg,#1c1917 0%,#b45309 55%,#f59e0b 120%)',
+    glow: 'rgba(245,158,11,.42)',
     node: (
       <svg viewBox="0 0 48 48" fill="none">
-        <path
-          d="M10 18h12l2 3h14a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V21a3 3 0 0 1 3-3Z"
-          fill="#fff"
-          fillOpacity=".95"
-        />
-        <path d="M10 24h28v2H10v-2Z" fill="#d97706" fillOpacity=".35" />
+        <rect x="8" y="9" width="32" height="22" rx="3.5" fill="#fff" />
+        <rect x="10.5" y="11.5" width="27" height="16" rx="2" fill="#0f172a" />
+        <rect x="13" y="14" width="10" height="7" rx="1.2" fill="#fbbf24" />
+        <rect x="25" y="14" width="10" height="3" rx="1" fill="#fff" fillOpacity=".28" />
+        <rect x="25" y="19" width="7" height="2" rx=".8" fill="#fff" fillOpacity=".18" />
+        <path d="M20 31h8l1.5 3H18.5L20 31Z" fill="#fff" />
+        <rect x="15" y="34.5" width="18" height="2.2" rx="1.1" fill="#fff" fillOpacity=".7" />
       </svg>
     ),
   },

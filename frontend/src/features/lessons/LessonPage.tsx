@@ -1,39 +1,37 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link, useNavigate } from 'react-router-dom'
 
-import { PracticeKeyboardGate } from '@/features/mobile/PracticeKeyboardGate'
-import { TaskLessonPanel } from '@/features/lessons/TaskLessonPanel'
-import { KeyboardTrainer } from '@/features/training/KeyboardTrainer'
+import { LessonWorkspace, lessonKindFromData } from '@/features/lessons/LessonWorkspace'
+import { firstPlayableId, trackStatuses } from '@/features/lessons/lessonView'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
-import { formatShortcut, isBrowserHostileForTraining } from '@/shared/lib/hotkeys'
+import { isBrowserHostileForTraining } from '@/shared/lib/hotkeys'
 import { useBlockBrowserChord } from '@/shared/hooks/useBlockBrowserChord'
-import { isTaskLesson } from '@/shared/lib/lessonKind'
 import { deriveTrainerCopy } from '@/shared/lib/lessonCopy'
-import { parseTaskSteps } from '@/shared/lib/taskSteps'
+import {
+  isProgrammerSystemCategory,
+  loadSystemStudyTicks,
+  systemExplainId,
+  systemShortcutLabel,
+} from '@/features/lessons/systemStudy'
+import { addLocalLessonDone, loadLocalLessonDone } from '@/features/lessons/localLessonDone'
 import { desktopSimulatorHref, parseDesktopTaskId, DESKTOP_PROGRESS_EVENT, isDesktopTaskDoneLocally } from '@/shared/lib/simulatorProgress'
 import { useT, useLocaleStore } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { LearnStatusBadge } from '@/shared/components/LearnStatus'
-import { PracticeRegisterGate } from '@/shared/components/PracticeRegisterGate'
-import { GlassCard, KeyCombo } from '@/shared/components/ui'
-import { PageShell, SkeletonBlock } from '@/shared/components/PageLayout'
-
-const NEXT_LESSON_MS = 1500
+import { SkeletonBlock } from '@/shared/components/PageLayout'
 
 export function LessonPage({ lessonId }: { lessonId: string }) {
   const t = useT()
   const locale = useLocaleStore((s) => s.locale)
-  const navigate = useNavigate()
-  const { localizeLesson } = useLocalizedContent()
+  const { localizeLesson, localizeCourse, localizeCategory } = useLocalizedContent()
   const { data, isLoading } = useQuery({ queryKey: ['lesson', lessonId], queryFn: () => api.lesson(lessonId) })
   const token = useAuthStore((s) => s.token)
   const refreshUser = useAuthStore((s) => s.refreshUser)
   const queryClient = useQueryClient()
   const [succeeded, setSucceeded] = useState(false)
-  const [countdown, setCountdown] = useState(0)
+  const [localDone, setLocalDone] = useState<string[]>([])
+  const [tickedSystem, setTickedSystem] = useState<string[]>([])
 
   const lessonProgress = useQuery({
     queryKey: ['lesson-progress-item', lessonId],
@@ -52,36 +50,31 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     enabled: !!data?.course_slug,
   })
 
-  const nextLessonId = useMemo(() => {
-    const cats = courseQuery.data?.categories
-    if (!cats?.length) return null
-    const flat = cats.flatMap((c) => c.lessons)
-    const idx = flat.findIndex((l) => l.id === lessonId)
-    if (idx < 0 || idx >= flat.length - 1) return null
-    return flat[idx + 1]?.id ?? null
-  }, [courseQuery.data, lessonId])
+  const courseProgressQuery = useQuery({
+    queryKey: ['lesson-progress', data?.course_slug],
+    queryFn: () => api.lessonProgress({ courseSlug: data!.course_slug! }),
+    enabled: !!token && !!data?.course_slug,
+  })
 
   const desktopTaskId = data ? parseDesktopTaskId(data.keys) : null
   const localDesktopDone = desktopTaskId ? isDesktopTaskDoneLocally(desktopTaskId) : false
-
-  const learned = useMemo(
-    () =>
-      succeeded ||
-      Boolean(lessonProgress.data?.completed) ||
-      localDesktopDone,
-    [succeeded, lessonProgress.data?.completed, localDesktopDone],
-  )
+  const learned = succeeded || Boolean(lessonProgress.data?.completed) || localDesktopDone
+  const taskKind = data ? lessonKindFromData(data.course_slug ?? undefined, data.keys, data.title) : 'hotkey'
+  const studyOnly = Boolean(data && taskKind === 'hotkey' && isBrowserHostileForTraining(data.keys))
+  const keyboardPractice = Boolean(data && taskKind === 'hotkey' && !studyOnly && token)
 
   useEffect(() => {
     setSucceeded(false)
-    setCountdown(0)
   }, [lessonId])
 
-  const taskModeLesson = data ? isTaskLesson(data.course_slug ?? undefined, data.keys) : false
-  const studyOnly = Boolean(data && !taskModeLesson && isBrowserHostileForTraining(data.keys))
-  const keyboardPractice = Boolean(data && !taskModeLesson && !studyOnly && token)
+  useEffect(() => {
+    const slug = data?.course_slug
+    if (!slug) return
+    setLocalDone(loadLocalLessonDone(slug))
+    const ticks = loadSystemStudyTicks()
+    setTickedSystem(Object.entries(ticks).filter(([, on]) => on).map(([id]) => id))
+  }, [data?.course_slug])
 
-  // Sync desktop-sim completion as soon as localStorage / focus updates (no long wait).
   useEffect(() => {
     if (!token || !desktopTaskId) return
 
@@ -89,7 +82,6 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
       void queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
       void queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
       void queryClient.invalidateQueries({ queryKey: ['course-progress'] })
-      // Force a re-render so isDesktopTaskDoneLocally() is read again.
       if (isDesktopTaskDoneLocally(desktopTaskId)) setSucceeded(true)
     }
 
@@ -123,38 +115,63 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     }
   }, [token, desktopTaskId, lessonId, queryClient, lessonProgress.data?.completed])
 
-  // Block Ctrl+S / lesson chord so Chrome does not open “Save page as…” before the trainer is focused.
-  useBlockBrowserChord(
-    keyboardPractice ? data?.keys ?? null : null,
-    keyboardPractice,
-  )
+  useBlockBrowserChord(keyboardPractice ? data?.keys ?? null : null, keyboardPractice)
 
-  useEffect(() => {
-    if (!succeeded) return
-    // Desktop lessons: show «Следующий урок» immediately; user often stays in the sim queue.
-    if (desktopTaskId) return
-    if (!taskModeLesson && !studyOnly && !keyboardPractice) return
-    if (!nextLessonId) return
-    const endAt = Date.now() + NEXT_LESSON_MS
-    setCountdown(Math.ceil(NEXT_LESSON_MS / 1000))
-    const tick = window.setInterval(() => {
-      setCountdown(Math.max(0, Math.ceil((endAt - Date.now()) / 1000)))
-    }, 200)
-    const done = window.setTimeout(() => {
-      navigate(`/lessons/${nextLessonId}`)
-    }, NEXT_LESSON_MS)
-    return () => {
-      window.clearInterval(tick)
-      window.clearTimeout(done)
+  const track = useMemo(() => {
+    const cats = courseQuery.data?.categories ?? []
+    const ordered = cats.flatMap((cat) => cat.lessons.map((lesson) => lesson.id))
+    const completed = new Set(
+      (courseProgressQuery.data ?? [])
+        .filter((row) => row.completed || (row.lesson_id === lessonId && learned))
+        .map((row) => row.lesson_id),
+    )
+    if (learned) completed.add(lessonId)
+    for (const id of localDone) completed.add(id)
+    for (const id of tickedSystem) completed.add(id)
+    const statuses = trackStatuses(ordered, completed, lessonId, false)
+    const index = ordered.indexOf(lessonId)
+    const status = index >= 0 ? statuses[index] : 'available'
+    const prevId = index > 0 ? ordered[index - 1]! : null
+    const nextRaw = index >= 0 && index < ordered.length - 1 ? ordered[index + 1]! : null
+    const nextStatus = nextRaw ? statuses[ordered.indexOf(nextRaw)] : null
+    const nextId = nextRaw && nextStatus !== 'locked' ? nextRaw : null
+    return {
+      ordered,
+      statuses,
+      index: Math.max(0, index),
+      locked: status === 'locked',
+      prevId,
+      nextId,
+      playableId: firstPlayableId(ordered, statuses),
+      doneCount: ordered.filter((_, i) => statuses[i] === 'done').length,
+      totalCount: ordered.length,
     }
-  }, [succeeded, taskModeLesson, studyOnly, keyboardPractice, desktopTaskId, nextLessonId, navigate])
+  }, [courseProgressQuery.data, courseQuery.data, learned, lessonId, localDone, tickedSystem])
+
+  const modules = useMemo(() => {
+    const cats = courseQuery.data?.categories ?? []
+    let cursor = 0
+    return cats.map((cat) => {
+      const lessons = cat.lessons.map((lesson) => {
+        cursor += 1
+        const status = track.statuses[cursor - 1] ?? 'available'
+        const loc = localizeLesson(courseQuery.data?.slug, cat.slug, lesson.keys, { title: lesson.title })
+        return { id: lesson.id, title: loc.title, status, n: cursor }
+      })
+      return {
+        slug: cat.slug,
+        title: localizeCategory(courseQuery.data?.slug ?? '', cat.slug, cat.title),
+        lessons,
+      }
+    })
+  }, [courseQuery.data, locale, localizeCategory, localizeLesson, track.statuses])
 
   if (isLoading) {
     return (
-      <PageShell width="3xl">
+      <div className="km-player-frame" style={{ padding: 32 }}>
         <SkeletonBlock className="h-8 w-56" />
-        <SkeletonBlock className="mt-6 h-96 w-full rounded-[var(--radius-card)]" />
-      </PageShell>
+        <SkeletonBlock className="mt-6 h-96 w-full rounded-[14px]" />
+      </div>
     )
   }
   if (!data) return null
@@ -165,8 +182,6 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     usage_example: data.usage_example,
     description: data.description,
   })
-
-  const taskSteps = parseTaskSteps(loc.usage_example ?? data.usage_example ?? '')
   const copy = deriveTrainerCopy({
     keys: data.keys,
     title: loc.title ?? data.title,
@@ -175,16 +190,100 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
     description: loc.description ?? data.description,
     locale,
   })
+  const courseTitle = courseQuery.data
+    ? localizeCourse(courseQuery.data.slug, courseQuery.data.title, courseQuery.data.description).title
+    : data.course_slug ?? ''
 
-  const markTaskComplete = async () => {
-    setSucceeded(true)
-    if (!token) return
+  const systemCategory = courseQuery.data?.categories.find((cat) => cat.slug === 'system')
+  const showSystemSheet = isProgrammerSystemCategory(data.course_slug, data.category_slug)
+  const systemSheet =
+    showSystemSheet && systemCategory
+      ? {
+          title: localizeCategory(data.course_slug ?? '', 'system', systemCategory.title),
+          rows: systemCategory.lessons.map((lesson) => {
+            const rowLoc = localizeLesson(data.course_slug ?? undefined, 'system', lesson.keys, {
+              title: lesson.title,
+              description: lesson.description,
+            })
+            const explain = systemExplainId(lesson.keys)
+            return {
+              id: lesson.id,
+              keys: lesson.keys,
+              title: rowLoc.title,
+              shortcut: systemShortcutLabel(lesson.keys),
+              meaning: explain ? t(`lesson.${explain}`) : (rowLoc.description || rowLoc.title),
+              done:
+                localDone.includes(lesson.id) ||
+                tickedSystem.includes(lesson.id) ||
+                Boolean(
+                  (courseProgressQuery.data ?? []).find((row) => row.lesson_id === lesson.id && row.completed),
+                ) ||
+                (learned && lesson.id === lessonId),
+            }
+          }),
+        }
+      : null
+
+  const rememberDone = (ids: string[]) => {
+    const slug = data.course_slug
+    if (!slug) {
+      setLocalDone((prev) => [...new Set([...prev, ...ids])])
+      return
+    }
+    setLocalDone(addLocalLessonDone(slug, ids))
+  }
+
+  const saveCompleteSystem = async () => {
+    const pending = systemSheet?.rows.filter((row) => !row.done) ?? []
+    const pendingIds = pending.map((row) => row.id)
+    if (!pending.length) {
+      rememberDone(systemSheet?.rows.map((row) => row.id) ?? [data.id])
+      setSucceeded(true)
+      return
+    }
+    if (!token) {
+      rememberDone(pendingIds)
+      setSucceeded(true)
+      return
+    }
+    try {
+      let xp = 0
+      const doneIds: string[] = []
+      for (const row of pending) {
+        const result = await api.submitTraining({
+          lesson_id: row.id,
+          correct: true,
+          response_time_ms: 0,
+        })
+        doneIds.push(row.id)
+        xp += result.xp_gained
+      }
+      rememberDone(doneIds)
+      setSucceeded(true)
+      await refreshUser()
+      await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+      if (xp > 0) toast.success(t('lesson.xpLearned', { n: xp }))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
+    }
+  }
+
+  const saveComplete = async () => {
+    if (!token) {
+      rememberDone([data.id])
+      setSucceeded(true)
+      return
+    }
     try {
       const result = await api.submitTraining({
         lesson_id: data.id,
         correct: true,
         response_time_ms: 0,
       })
+      rememberDone([data.id])
+      setSucceeded(true)
       await refreshUser()
       await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
       await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
@@ -196,214 +295,69 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   }
 
   return (
-    <PageShell width="3xl">
-      {!keyboardPractice && (
-      <GlassCard className={learned ? 'border-brand-600/30' : undefined}>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {token ? <LearnStatusBadge learned={learned} /> : (
-            <Link to="/register" state={{ from: `/lessons/${lessonId}` }} className="text-xs font-semibold text-brand-700 hover:underline">
-              {t('lesson.saveProgress')}
-            </Link>
-          )}
-        </div>
-        <h1 className="font-display mt-1 text-3xl font-bold text-ink dark:text-white">{loc.title}</h1>
-        {copy.why ? <p className="mt-3 text-slate-700 dark:text-slate-200">{copy.why}</p> : null}
-
-        {!taskModeLesson && (
-          <div className="mt-8">
-            <KeyCombo keys={data.keys} learned={learned} />
-            {learned && (
-              <p className="mt-2 text-center text-sm font-medium text-brand-700 dark:text-brand-300">
-                {t('lesson.inArsenal')}
-              </p>
-            )}
-          </div>
-        )}
-
-        {taskModeLesson && (
-          <div className="mt-6 rounded-2xl bg-slate-100 p-4 dark:bg-slate-800/80">
-            <p className="text-lg font-semibold">{loc.action_prompt}</p>
-          </div>
-        )}
-
-        {taskModeLesson && (
-          <div className="mt-8">
-            {!token ? (
-              <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
-            ) : (
-              <TaskLessonPanel
-                title={loc.title}
-                actionPrompt={loc.action_prompt ?? data.action_prompt}
-                steps={taskSteps}
-                simulatorHref={desktopSimulatorHref(desktopTaskId, data.id)}
-                requiresSimulator={desktopTaskId !== null}
-                onComplete={() => void markTaskComplete()}
-                completed={learned}
-              />
-            )}
-          </div>
-        )}
-
-        {!taskModeLesson && studyOnly && (
-          <div className="mt-8 space-y-3">
-            <p className="text-center text-sm text-slate-600 dark:text-slate-300">
-              {t('lesson.studyOnlyHint')}
-            </p>
-            {!token ? (
-              <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
-            ) : (
-              <>
-                {!learned && (
-                  <button
-                    type="button"
-                    onClick={() => void markTaskComplete()}
-                    className="btn-primary w-full py-3 text-base"
-                  >
-                    {t('lesson.markLearned')}
-                  </button>
-                )}
-                <Link
-                  to={`/review?course=${encodeURIComponent(data.course_slug ?? 'programmer-basics')}`}
-                  className="btn-secondary flex w-full justify-center py-3 text-base"
-                >
-                  {t('lesson.openReview')}
-                </Link>
-              </>
-            )}
-          </div>
-        )}
-
-        {!taskModeLesson && !studyOnly && !token && (
-          <div className="mt-8">
-            <PracticeRegisterGate returnTo={`/lessons/${lessonId}`} />
-          </div>
-        )}
-      </GlassCard>
-      )}
-
-      {taskModeLesson && learned && token && (
-        <GlassCard className="mt-8 border-brand-600/30 bg-brand-50/50 dark:bg-brand-950/30">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-bold text-brand-800 dark:text-brand-200">{t('lesson.doneTaskTitle')}</h2>
-            <LearnStatusBadge learned />
-          </div>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            {t('lesson.rememberTaskLine', { prompt: loc.action_prompt ?? data.action_prompt })}
-          </p>
-          {nextLessonId ? (
-            <>
-              <p className="mt-3 text-sm text-slate-500">{t('lesson.nextLessonIn', { n: countdown })}</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button type="button" onClick={() => navigate(`/lessons/${nextLessonId}`)} className="btn-primary">
-                  {t('lesson.nextLesson')}
-                </button>
-                <Link to={desktopSimulatorHref(desktopTaskId, data.id)} className="btn-secondary">
-                  {t('lesson.openDesktopSim')}
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Link to="/courses/computer-basics" className="btn-primary">
-                {t('simulator.toCourse')}
-              </Link>
-              <Link to={desktopSimulatorHref(desktopTaskId, data.id)} className="btn-secondary">
-                {t('lesson.openDesktopSim')}
-              </Link>
-            </div>
-          )}
-        </GlassCard>
-      )}
-
-      {keyboardPractice && (
-        <div className="space-y-4 pb-8">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <LearnStatusBadge learned={learned} />
-          </div>
-          <PracticeKeyboardGate courseQuery={data.course_slug ?? undefined}>
-            <KeyboardTrainer
-              key={lessonId}
-              headline={copy.headline || loc.title}
-              why={copy.why}
-              detail={copy.detail}
-              mode="learn"
-              actionPrompt={loc.action_prompt ?? data.action_prompt}
-              keys={data.keys}
-              onResult={async (correct, ms) => {
-                if (!correct) return
-                setSucceeded(true)
-                if (token) {
-                  try {
-                    const result = await api.submitTraining({
-                      lesson_id: data.id,
-                      correct,
-                      response_time_ms: ms,
-                    })
-                    await refreshUser()
-                    await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
-                    await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
-                    await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
-                    if (result.xp_gained > 0) toast.success(t('lesson.xpLearned', { n: result.xp_gained }))
-                  } catch (err) {
-                    toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
-                  }
-                }
-              }}
-            />
-          </PracticeKeyboardGate>
-
-          {succeeded && (
-            <GlassCard className="border-brand-600/30 bg-brand-50/50 dark:bg-brand-950/30">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg font-bold text-brand-800 dark:text-brand-200">{t('lesson.doneTitle')}</h2>
-                <LearnStatusBadge learned />
-              </div>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                {t('lesson.rememberLine', {
-                  shortcut: formatShortcut(data.keys),
-                  prompt: loc.action_prompt ?? data.action_prompt,
-                })}
-              </p>
-              {nextLessonId ? (
-                <>
-                  <p className="mt-3 text-sm text-slate-500">{t('lesson.nextLessonIn', { n: countdown })}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/lessons/${nextLessonId}`)}
-                      className="btn-primary"
-                    >
-                      {t('lesson.nextLesson')}
-                    </button>
-                    <Link to="/training" className="btn-secondary">
-                      {t('lesson.training')}
-                    </Link>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="mt-3 text-sm text-slate-500">{t('lesson.courseFinished')}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Link to="/training" className="btn-primary">
-                      {t('lesson.training')}
-                    </Link>
-                    <Link to="/path" className="btn-secondary">
-                      {t('lesson.path')}
-                    </Link>
-                    <Link to="/courses" className="btn-secondary">
-                      {t('lesson.catalog')}
-                    </Link>
-                  </div>
-                </>
-              )}
-            </GlassCard>
-          )}
-        </div>
-      )}
-
-      <Link to="/courses" className="mt-6 inline-block text-sm text-brand-600">
-        {t('lesson.backCatalog')}
-      </Link>
-    </PageShell>
+    <LessonWorkspace
+        courseSlug={data.course_slug ?? ''}
+        courseIcon={courseQuery.data?.icon}
+        courseTitle={courseTitle}
+        lessonId={lessonId}
+        lessonTitle={loc.title}
+        seedTitle={data.title}
+        summary={copy.why || loc.action_prompt || ''}
+        why={copy.why}
+        detail={copy.detail}
+        description={loc.description ?? data.description ?? ''}
+        actionPrompt={loc.action_prompt ?? data.action_prompt}
+        usageExample={loc.usage_example ?? data.usage_example ?? ''}
+        keys={data.keys}
+        xpReward={data.xp_reward}
+        kind={taskKind}
+        locale={locale}
+        modules={modules}
+        doneCount={track.doneCount}
+        totalCount={track.totalCount || 1}
+        lessonIndex={track.index}
+        locked={track.locked}
+        playableId={track.playableId}
+        prevId={track.prevId}
+        nextId={track.nextId}
+        token={Boolean(token)}
+        completed={learned}
+        studyOnly={studyOnly}
+        systemSheet={systemSheet}
+        simulatorHref={desktopTaskId ? desktopSimulatorHref(desktopTaskId, data.id) : undefined}
+        onComplete={() => void saveComplete()}
+        onCompleteSystem={() => void saveCompleteSystem()}
+        onSystemTicksChange={(ids) => {
+          setTickedSystem((prev) => {
+            const before = [...prev].sort().join('|')
+            const after = [...ids].sort().join('|')
+            return before === after ? prev : ids
+          })
+        }}
+        onHotkeyResult={async (correct, ms) => {
+          if (!correct) return
+          if (!token) {
+            rememberDone([data.id])
+            setSucceeded(true)
+            return
+          }
+          try {
+            const result = await api.submitTraining({
+              lesson_id: data.id,
+              correct,
+              response_time_ms: ms,
+            })
+            rememberDone([data.id])
+            setSucceeded(true)
+            await refreshUser()
+            await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+            await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+            await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+            if (result.xp_gained > 0) toast.success(t('lesson.xpLearned', { n: result.xp_gained }))
+          } catch (err) {
+            toast.error(err instanceof Error ? err.message : t('lesson.xpFail'))
+          }
+        }}
+      />
   )
 }

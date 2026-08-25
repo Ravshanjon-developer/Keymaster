@@ -174,15 +174,18 @@ export function KeyCap({
   label,
   active,
   learned,
+  size = 'md',
 }: {
   label: string
   active?: boolean
   learned?: boolean
+  size?: 'md' | 'lg'
 }) {
   return (
     <span
       className={cn(
-        'inline-flex min-h-10 min-w-10 items-center justify-center rounded-[var(--radius-md)] border border-b-4 px-3 text-sm font-semibold transition-[transform,background-color,border-color] duration-150',
+        'inline-flex items-center justify-center rounded-[var(--radius-md)] border border-b-4 font-semibold transition-[transform,background-color,border-color] duration-150',
+        size === 'lg' ? 'min-h-14 min-w-14 px-5 text-lg' : 'min-h-10 min-w-10 px-3 text-sm',
         active
           ? 'scale-95 border-brand-500 border-b-brand-700 bg-brand-50 text-brand-900 dark:bg-brand-900/40 dark:text-brand-100'
           : learned
@@ -221,21 +224,24 @@ export function KeyCombo({
   const checked = new Set(checkedKeys ?? [])
   const revealed = new Set(revealedKeys ?? [])
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className={cn('flex flex-wrap items-center justify-center gap-2', size === 'lg' && 'gap-3')}>
       {keys.map((k, i) => {
         const hidden = mystery && !checked.has(k) && !active.has(k) && !revealed.has(k)
         const label = hidden ? '?' : displayKey(k)
         const interactive = Boolean(onKeyActivate)
         const cap = (
           <KeyCap
+            size={size}
             label={checked.has(k) ? `${displayKey(k)} ✓` : label}
             active={active.has(k) || checked.has(k)}
             learned={learned || checked.has(k)}
           />
         )
         return (
-          <span key={`${k}-${i}`} className={cn('flex items-center gap-2', size === 'lg' && 'scale-110')}>
-            {i > 0 && <span className="text-[var(--text-muted)]">+</span>}
+          <span key={`${k}-${i}`} className="flex items-center gap-2">
+          {i > 0 && (
+            <span className={cn('text-[var(--text-muted)]', size === 'lg' && 'text-xl font-semibold')}>+</span>
+          )}
             {interactive ? (
               <button
                 type="button"

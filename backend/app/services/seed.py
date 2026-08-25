@@ -7,7 +7,9 @@ from app.services.seed_data import ACHIEVEMENTS, COURSES
 
 STARTER_SLUGS = frozenset({"computer-basics", "programmer-basics"})
 # May rebuild lesson tree when seed fingerprint changes (progress for that course resets once).
-CONTENT_REFRESH_SLUGS = frozenset({"computer-basics", "programmer-basics", "windows", "chrome", "vscode"})
+CONTENT_REFRESH_SLUGS = frozenset(
+    {"computer-basics", "programmer-basics", "windows", "chrome", "vscode", "git", "github-desktop"}
+)
 
 
 def fingerprint_from_seed(course_data: dict) -> str:

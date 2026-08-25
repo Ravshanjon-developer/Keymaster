@@ -3,54 +3,14 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { useAuthStore } from '@/features/auth/authStore'
-import { useLocaleStore, useT, type Locale } from '@/shared/i18n'
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher'
+import { useT } from '@/shared/i18n'
 import { isPracticeRoute } from '@/shared/lib/practiceRoutes'
 import { useThemeStore } from '@/shared/stores/themeStore'
 import { cn } from '@/shared/lib/utils'
 
 function navLinkClass(isActive: boolean) {
   return cn('km-nav-link', isActive && 'km-nav-link--active')
-}
-
-function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
-  const locale = useLocaleStore((s) => s.locale)
-  const setLocale = useLocaleStore((s) => s.setLocale)
-  const t = useT()
-
-  const options: { id: Locale; label: string }[] = [
-    { id: 'ru', label: t('nav.langRu') },
-    { id: 'tg', label: t('nav.langTg') },
-  ]
-
-  return (
-    <div
-      className={cn(
-        'inline-flex items-center rounded-lg border border-ink/10 p-0.5 dark:border-white/15',
-        compact ? 'w-full' : '',
-      )}
-      role="group"
-      aria-label={t('nav.language')}
-    >
-      {options.map((opt) => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => setLocale(opt.id)}
-          className={cn(
-            'rounded-md font-bold tracking-wide transition',
-            compact
-              ? 'min-h-11 flex-1 px-3 text-[13px]'
-              : 'px-2.5 py-1 text-[12px]',
-            locale === opt.id
-              ? 'bg-brand-700 text-white dark:bg-brand-500 dark:text-ink'
-              : 'text-ink/70 hover:text-ink dark:text-slate-300 dark:hover:text-white',
-          )}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  )
 }
 
 export function Navbar() {

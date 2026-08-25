@@ -10,13 +10,14 @@ export function PageShell({
 }: {
   children: ReactNode
   className?: string
-  width?: '2xl' | '3xl' | '5xl' | '6xl'
+  width?: '2xl' | '3xl' | '5xl' | '6xl' | 'full'
 }) {
   const maxW = {
     '2xl': 'max-w-2xl',
     '3xl': 'max-w-3xl',
     '5xl': 'max-w-5xl',
     '6xl': 'max-w-6xl',
+    full: 'max-w-[1440px]',
   }[width]
 
   return (

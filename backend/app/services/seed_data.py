@@ -229,9 +229,227 @@ CHROME_LESSONS = [
     _L("Консоль", "Откройте консоль", ["Control", "Shift", "J"], "Ctrl+Shift+J"),
 ]
 
-GIT_LESSONS = [
-    _L("Статус", "git status (в терминале)", ["Control", "Shift", "G"], "Часто в IDE"),
-    _L("Commit в VS Code", "Откройте SCM", ["Control", "Shift", "G"], "Ctrl+Shift+G"),
+def _CMD(slug: str, title: str, action: str, example: str, desc: str = "") -> LessonSeed:
+    """Concept / command lesson — not a hotkey chord."""
+    return _L(title, action, [f"cmd:{slug}"], example, desc)
+
+
+GIT_CATEGORIES: list[CategorySeed] = [
+    {
+        "slug": "basics",
+        "title": "Основы Git",
+        "lessons": [
+            _CMD(
+                "intro",
+                "Что такое Git",
+                "Поймите, зачем нужен Git",
+                "Git сохраняет историю и позволяет вернуться к прошлым версиям; Git работает локально на компьютере; GitHub хранит удалённую копию для совместной работы; схема: компьютер → Git → локальный репозиторий → GitHub → удалённый репозиторий",
+                "Git хранит историю проекта на компьютере. GitHub — отдельный онлайн-сервис для репозиториев и работы в команде.",
+            ),
+            _CMD(
+                "version",
+                "git --version",
+                "Проверьте, установлен ли Git",
+                "Откройте терминал; введите git --version; если видите номер версии, Git готов к работе",
+                "Если Git установлен, команда показывает версию, например git version 2.x.x.",
+            ),
+            _CMD(
+                "config",
+                "git config",
+                "Укажите имя и email для commit",
+                'Задайте имя: git config --global user.name "Your Name"; задайте email: git config --global user.email "you@example.com"; проверьте настройки: git config --list',
+                "Имя и email попадают в каждый commit. Флаг --global применяет настройку ко всем репозиториям на этом компьютере.",
+            ),
+        ],
+    },
+    {
+        "slug": "repo",
+        "title": "Создание репозитория",
+        "lessons": [
+            _CMD(
+                "init",
+                "git init",
+                "Создайте Git-репозиторий в текущей папке",
+                "Создайте папку my-project; перейдите в неё: cd my-project; выполните git init; проверьте состояние: git status",
+                "Появляется скрытая папка .git — в ней хранится история. Не меняйте её вручную.",
+            ),
+            _CMD(
+                "clone",
+                "git clone",
+                "Скопируйте существующий репозиторий на компьютер",
+                "Выполните git clone https://github.com/user/project.git; откройте появившуюся папку в редакторе; это полная копия проекта с историей",
+                "Скачиваются файлы, история commit, ветки и связь с удалённым репозиторием. Нужен, когда проект уже есть на GitHub.",
+            ),
+        ],
+    },
+    {
+        "slug": "changes",
+        "title": "Работа с изменениями",
+        "lessons": [
+            _CMD(
+                "status",
+                "git status",
+                "Посмотрите текущее состояние репозитория",
+                "Создайте index.html; выполните git status; измените файл; снова выполните git status; сравните, как изменилось состояние",
+                "Команда показывает ветку, новые и изменённые файлы, staging и связь с remote. Если неясно, что происходит — начните со status.",
+            ),
+            _CMD(
+                "add",
+                "git add",
+                "Добавьте изменения в staging",
+                "Создайте index.html и выполните git status; добавьте файл: git add index.html; снова git status — файл должен быть в staging; git add . добавляет все изменения в папке",
+                "Staging — шаг между правкой файла и commit. Команда не создаёт снимок, а помечает, что войдёт в следующий commit.",
+            ),
+            _CMD(
+                "commit",
+                "git commit",
+                "Сохраните версию проекта в истории",
+                'Сделайте изменение в HTML-файле; проверьте git status; выполните git add .; создайте снимок: git commit -m "Add homepage"; откройте историю: git log',
+                "Commit — сохранённый снимок. Пишите, зачем изменение: Add homepage, Fix navigation. Не пишите fix, changes, aaa.",
+            ),
+            _CMD(
+                "log",
+                "git log",
+                "Откройте историю commit",
+                "Создайте несколько commit; выполните git log; затем git log --oneline; найдите свой первый commit",
+                "Видны снимок, автор, дата и сообщение. git log --oneline показывает историю коротко, по одной строке.",
+            ),
+            _CMD(
+                "diff",
+                "git diff",
+                "Посмотрите, что именно изменилось",
+                "Измените HTML-файл; выполните git diff; затем git add .; снова git diff — staged-изменения уже не видны",
+                "status говорит «что изменилось», diff — «какие строки». Обычный git diff не показывает уже добавленное в staging.",
+            ),
+            _CMD(
+                "restore",
+                "git restore",
+                "Отмените незакоммиченные изменения",
+                "Измените файл и выполните git add .; уберите из staging: git restore --staged index.html; проверьте git status; чтобы отменить правки в файле, используйте git restore index.html",
+                "git restore возвращает файл к последнему commit — правки пропадут. git restore --staged убирает файл из staging, но изменения в файле остаются.",
+            ),
+        ],
+    },
+    {
+        "slug": "github",
+        "title": "GitHub",
+        "lessons": [
+            _CMD(
+                "remote",
+                "git remote",
+                "Посмотрите подключённые удалённые репозитории",
+                "Выполните git remote -v; если репозиторий связан с GitHub, увидите origin и URL; origin — это имя, а не особая команда",
+                "origin — обычное имя удалённого репозитория, просто название. git remote -v показывает адреса.",
+            ),
+            _CMD(
+                "remote-add",
+                "git remote add",
+                "Подключите локальный проект к GitHub",
+                "Создайте пустой репозиторий на GitHub; выполните git remote add origin https://github.com/user/project.git; проверьте связь: git remote -v",
+                "Команда связывает папку на компьютере с удалённым репозиторием. После этого push и pull знают, куда ходить.",
+            ),
+            _CMD(
+                "push",
+                "git push",
+                "Отправьте локальные commit на GitHub",
+                "Создайте commit; подключите GitHub через remote add; выполните git push -u origin main; откройте GitHub и проверьте, что commit появился",
+                "Без push снимки остаются только на компьютере. Первый раз: git push -u origin main — дальше достаточно git push.",
+            ),
+            _CMD(
+                "pull",
+                "git pull",
+                "Получите изменения с GitHub и обновите ветку",
+                "Представьте две копии одного репозитория; в первой измените файл, сделайте commit и push; во второй выполните git pull; изменения появятся локально",
+                "Если коллега отправил правки, git pull забирает их и вливает в текущую ветку. Схема: GitHub → ваш компьютер.",
+            ),
+            _CMD(
+                "fetch",
+                "git fetch",
+                "Узнайте, что появилось на GitHub, без слияния",
+                "Выполните git fetch, чтобы увидеть, что изменилось на GitHub; текущие файлы пока не трогаются; git pull уже вливает изменения в вашу ветку",
+                "fetch только скачивает информацию о новых commit. pull = fetch плюс обновление текущей ветки.",
+            ),
+        ],
+    },
+    {
+        "slug": "branch",
+        "title": "Ветки",
+        "lessons": [
+            _CMD(
+                "what-is-branch",
+                "Что такое branch",
+                "Поймите, зачем нужны ветки",
+                "main — основная линия проекта; новую работу ведут в отдельной ветке, например feature-login; так можно экспериментировать и работать вдвоём, не ломая main",
+                "Ветка — отдельная линия разработки. Новую функцию делают в feature-login, а не сразу в main.",
+            ),
+            _CMD(
+                "branch",
+                "git branch",
+                "Посмотрите ветки и создайте новую",
+                "Выполните git branch — увидите текущую ветку; создайте ветку: git branch feature-login; снова git branch; звёздочка стоит у текущей, новая ветка уже есть",
+                "git branch feature-login создаёт ветку, но не переключает на неё. Звёздочка в списке отмечает текущую ветку.",
+            ),
+            _CMD(
+                "switch",
+                "git switch",
+                "Переключитесь на другую ветку",
+                'Создайте и сразу перейдите: git switch -c feature-login; измените файлы; выполните git add . и git commit -m "Add login"',
+                "git switch feature-login делает ветку текущей. git switch -c сразу создаёт ветку и переходит на неё.",
+            ),
+            _CMD(
+                "merge",
+                "git merge",
+                "Объедините ветку с main",
+                "Закончите работу в feature-login; перейдите: git switch main; объедините: git merge feature-login; теперь main содержит изменения feature-login",
+                "Сначала перейдите на main, затем git merge feature-login. Изменения из feature-login попадают в основную линию.",
+            ),
+        ],
+    },
+]
+
+GITHUB_LESSONS = [
+    _CMD(
+        "repo",
+        "Репозиторий",
+        "Что такое репозиторий",
+        "Репозиторий — проект с историей Git; на GitHub он лежит на сервере; у вас на диске — локальная копия.",
+        "Один проект = один репозиторий. Там код, история коммитов и настройки.",
+    ),
+    _CMD(
+        "remote",
+        "origin",
+        "Что такое origin",
+        "origin — обычное имя удалённого репозитория на GitHub; git remote -v показывает адрес.",
+        "push и pull ходят в origin, если вы не указали другой remote.",
+    ),
+    _CMD(
+        "fork",
+        "Fork",
+        "Чем fork отличается от clone",
+        "clone — копия к себе на компьютер; fork — копия репозитория на ваш аккаунт GitHub.",
+        "Fork нужен, когда нет права писать в чужой репозиторий: меняете свою копию, затем открываете pull request.",
+    ),
+    _CMD(
+        "pr",
+        "Pull request",
+        "Что такое pull request",
+        "Пушите ветку; открываете pull request; коллеги смотрят diff; после approve ветку сливают в main.",
+        "PR — просьба принять ваши коммиты. Так обсуждают код, не ломая основную ветку.",
+    ),
+    _CMD(
+        "merge",
+        "Merge",
+        "Как принимают pull request",
+        "После ревью нажимают Merge; коммиты ветки попадают в main; ветку можно удалить.",
+        "Merge — слияние историй. Конфликт значит, что одни и те же строки меняли в двух ветках.",
+    ),
+    _CMD(
+        "issues",
+        "Issues",
+        "Зачем нужны issues",
+        "Issue — задача или баг в репозитории; в нём описывают проблему и обсуждают решение.",
+        "Сначала issue, потом ветка и pull request — так команда не теряет контекст.",
+    ),
 ]
 
 CURSOR_LESSONS = [
@@ -350,15 +568,12 @@ COURSES: list[CourseSeed] = [
     {
         "slug": "git",
         "title": "Git",
-        "description": "Система контроля версий Git.",
+        "description": (
+            "Git с нуля: зачем нужен Git, репозиторий, commit, GitHub, ветки и merge. "
+            "Не заучивайте команды — понимайте, что происходит с проектом."
+        ),
         "icon": "git-branch",
-        "categories": [
-            {
-                "slug": "workflow",
-                "title": "Workflow",
-                "lessons": GIT_LESSONS + VSCODE_CATEGORIES[6]["lessons"],
-            }
-        ],
+        "categories": GIT_CATEGORIES,
     },
     {
         "slug": "visual-studio",
@@ -457,15 +672,14 @@ COURSES: list[CourseSeed] = [
     },
     {
         "slug": "github-desktop",
-        "title": "GitHub Desktop",
-        "description": "GitHub Desktop клиент.",
+        "title": "GitHub",
+        "description": "Репозиторий, origin, fork, pull request, merge и issues.",
         "icon": "github",
         "categories": [
             {
-                "slug": "desktop",
-                "title": "Клиент",
-                "lessons": GIT_LESSONS
-                + _expand("GH Desktop", [("Fetch", "Fetch origin", ["Control", "Shift", "F"])]),
+                "slug": "github",
+                "title": "GitHub",
+                "lessons": GITHUB_LESSONS,
             }
         ],
     },

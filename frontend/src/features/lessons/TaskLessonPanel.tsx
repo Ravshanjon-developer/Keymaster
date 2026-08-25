@@ -18,7 +18,7 @@ export function TaskLessonPanel({
   title,
   actionPrompt,
   steps,
-  simulatorHref = '/simulator?mode=desktop',
+  simulatorHref,
   requiresSimulator = false,
   onComplete,
   completed,
@@ -47,10 +47,12 @@ export function TaskLessonPanel({
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <Link to={simulatorHref} className="btn-secondary inline-flex flex-1 justify-center gap-2 py-3">
-          <ExternalLink className="h-4 w-4" />
-          {t('lesson.openDesktopSim')}
-        </Link>
+        {simulatorHref ? (
+          <Link to={simulatorHref} className="btn-secondary inline-flex flex-1 justify-center gap-2 py-3">
+            <ExternalLink className="h-4 w-4" />
+            {t('lesson.openDesktopSim')}
+          </Link>
+        ) : null}
         {!requiresSimulator ? (
           <button
             type="button"

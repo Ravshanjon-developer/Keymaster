@@ -2,17 +2,16 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, CheckCircle2, Library, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
+import { playableLessonId } from '@/features/lessons/lessonView'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
 import { getCourseStatus } from '@/shared/lib/courseStatus'
-import { formatShortcut } from '@/shared/lib/hotkeys'
-import { isTaskLesson } from '@/shared/lib/lessonKind'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
-import { LearnProgressBar, LearnStatusBadge } from '@/shared/components/LearnStatus'
+import { LearnProgressBar } from '@/shared/components/LearnStatus'
 import { PageHeader, PageShell, SkeletonCardGrid } from '@/shared/components/PageLayout'
 import { EmptyState, GlassCard, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { cn } from '@/shared/lib/utils'
@@ -89,12 +88,11 @@ export function CoursesPage() {
   return (
     <PageShell>
       <PageHeader
-        eyebrow={t('courses.eyebrow')}
         title={t('courses.title')}
         subtitle={t('courses.subtitle')}
         actions={
           <Link to="/path" className="btn-secondary shrink-0">
-            {t('courses.openPath')}
+            {t('nav.path')}
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         }
@@ -234,7 +232,6 @@ export function CoursesPage() {
                         className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent-muted)] px-2.5 py-1 text-[11px] font-semibold text-brand-800 transition group-hover:bg-[var(--color-accent)] group-hover:text-white dark:text-brand-200 dark:group-hover:text-[var(--bg-primary)]"
                         aria-hidden
                       >
-                        {isRequired ? t('courses.startHere') : null}
                         <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </span>
                     </div>
@@ -262,25 +259,24 @@ export function CoursesPage() {
 
 export function CourseDetailPage({ slug }: { slug: string }) {
   const t = useT()
-  const { localizeCourse, localizeCategory, localizeLesson } = useLocalizedContent()
   const user = useAuthStore((s) => s.user)
-  const { data, isLoading } = useQuery({ queryKey: ['course', slug], queryFn: () => api.course(slug) })
+  const { data, isLoading, isError } = useQuery({ queryKey: ['course', slug], queryFn: () => api.course(slug) })
   const lessonProgress = useQuery({
     queryKey: ['lesson-progress', slug],
     queryFn: () => api.lessonProgress({ courseSlug: slug }),
     enabled: !!user,
   })
 
-  const learnedMap = useMemo(() => {
-    const map = new Map<string, boolean>()
-    lessonProgress.data?.forEach((p) => map.set(p.lesson_id, p.completed))
-    return map
-  }, [lessonProgress.data])
+  const targetId = useMemo(() => {
+    if (!data) return null
+    const ordered = data.categories.flatMap((cat) => cat.lessons.map((lesson) => lesson.id))
+    const completed = new Set((lessonProgress.data ?? []).filter((row) => row.completed).map((row) => row.lesson_id))
+    return playableLessonId(ordered, completed, Boolean(user))
+  }, [data, lessonProgress.data, user])
 
-  const totalLessons = data?.lesson_count ?? 0
-  const doneLessons = lessonProgress.data?.filter((p) => p.completed).length ?? 0
+  const waitingProgress = Boolean(user && lessonProgress.isPending)
 
-  if (isLoading) {
+  if (isLoading || waitingProgress) {
     return (
       <PageShell>
         <Skeleton className="h-10 max-w-md w-full" />
@@ -288,7 +284,8 @@ export function CourseDetailPage({ slug }: { slug: string }) {
       </PageShell>
     )
   }
-  if (!data) {
+
+  if (isError || !data || !targetId) {
     return (
       <PageShell width="3xl">
         <EmptyState title={t('courses.notFound')} description="" />
@@ -296,114 +293,5 @@ export function CourseDetailPage({ slug }: { slug: string }) {
     )
   }
 
-  const courseLoc = localizeCourse(data.slug, data.title, data.description)
-
-  return (
-    <PageShell>
-      <div className="mb-8 flex flex-wrap items-start gap-5">
-        <CourseBrandIcon slug={data.slug} icon={data.icon} size={56} />
-        <div className="min-w-0 flex-1">
-          {(data.slug === 'computer-basics' || data.slug === 'programmer-basics') && (
-            <span className="status-chip mb-2 border-brand-700/30 bg-brand-700 text-white">
-              {t('courses.requiredStart')}
-            </span>
-          )}
-          <h1 className="text-page-title mt-1">{courseLoc.title}</h1>
-          {courseLoc.description ? (
-            <p className="text-muted mt-2 max-w-2xl">{courseLoc.description}</p>
-          ) : null}
-          {user ? (
-            <div className="mt-5 max-w-md">
-              <LearnProgressBar done={doneLessons} total={totalLessons} />
-            </div>
-          ) : (
-            <p className="mt-3 text-[14px] text-ink-soft">
-              <Link to="/register" state={{ from: `/courses/${slug}` }} className="font-semibold text-brand-800 hover:underline">
-                {t('courses.loginLink')}
-              </Link>
-              {t('courses.loginToTrack')}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-9">
-        {data.categories.map((cat) => {
-          const catDone = cat.lessons.filter((l) => learnedMap.get(l.id)).length
-          const catTitle = localizeCategory(data.slug, cat.slug, cat.title)
-          return (
-            <section key={cat.id}>
-              <div className="mb-1 flex flex-wrap items-end justify-between gap-2 border-b border-ink/[0.07] pb-3 dark:border-white/10">
-                <h2 className="text-lg font-semibold tracking-tight text-ink dark:text-white">{catTitle}</h2>
-                {user && (
-                  <p className="text-[12px] font-medium tabular-nums text-ink-soft dark:text-slate-400">
-                    {catDone}/{cat.lessons.length} {t('courses.learnedCount')}
-                  </p>
-                )}
-              </div>
-              <div className="mt-3 grid gap-2.5 md:grid-cols-2">
-                {cat.lessons.map((lesson) => {
-                  const learned = learnedMap.get(lesson.id) ?? false
-                  const taskLesson = isTaskLesson(data.slug, lesson.keys)
-                  const lessonLoc = localizeLesson(data.slug, cat.slug, lesson.keys, {
-                    title: lesson.title,
-                  })
-                  return (
-                    <Link key={lesson.id} to={`/lessons/${lesson.id}`}>
-                      <GlassCard
-                        hover
-                        className={cn(
-                          'flex flex-col gap-1.5 !p-4',
-                          learned &&
-                            'border-brand-700/30 bg-gradient-to-r from-brand-50/80 to-white dark:from-brand-950/30 dark:to-card-dark',
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="font-semibold leading-snug tracking-tight text-ink dark:text-white">
-                              {lessonLoc.title}
-                            </p>
-                            {!(taskLesson && data.slug === 'computer-basics') && (
-                              <p className="mt-1 text-[13px] font-medium text-brand-800 dark:text-brand-300">
-                                {taskLesson ? t('courses.lessonTypeTask') : formatShortcut(lesson.keys)}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex shrink-0 flex-col items-end gap-1.5">
-                            {user && <LearnStatusBadge learned={learned} size="sm" />}
-                            <span className="text-[11px] font-medium tabular-nums text-ink-soft/80">
-                              +{lesson.xp_reward} XP
-                            </span>
-                          </div>
-                        </div>
-                      </GlassCard>
-                    </Link>
-                  )
-                })}
-              </div>
-            </section>
-          )
-        })}
-      </div>
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Link to="/path" className="btn-secondary">
-          {t('courses.path')}
-        </Link>
-        {data.slug === 'computer-basics' ? (
-          <Link to="/simulator?mode=desktop" className="btn-primary">
-            {t('practiceShell.desktopSimulator')}
-          </Link>
-        ) : (
-          <Link to={`/training?course=${slug}`} className="btn-primary">
-            {t('courses.training')}
-          </Link>
-        )}
-        {data.slug !== 'computer-basics' && (
-          <Link to={`/exam?course=${slug}`} className="btn-secondary">
-            {t('courses.exam')}
-          </Link>
-        )}
-      </div>
-    </PageShell>
-  )
+  return <Navigate to={`/lessons/${targetId}`} replace />
 }

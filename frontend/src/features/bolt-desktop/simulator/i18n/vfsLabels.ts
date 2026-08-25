@@ -9,7 +9,7 @@ const ROOT_LABELS: Record<Locale, Record<string, string>> = {
     trash: 'Корзина',
   },
   tg: {
-    desktop: 'Мизи кор',
+    desktop: 'Рабочий стол',
     documents: 'Санадҳо',
     downloads: 'Боргириҳо',
     projects: 'Projects',

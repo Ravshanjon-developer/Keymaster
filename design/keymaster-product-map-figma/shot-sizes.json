@@ -1,0 +1,758 @@
+{
+  "dark-01-home.jpg": {
+    "w": 1440,
+    "h": 1245
+  },
+  "dark-02-login.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "dark-03-courses.jpg": {
+    "w": 1440,
+    "h": 2551
+  },
+  "dark-04-path.jpg": {
+    "w": 1236,
+    "h": 4096
+  },
+  "dark-05-practice.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "dark-06-dashboard.jpg": {
+    "w": 1440,
+    "h": 1306
+  },
+  "dark-07-register.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-24-admin.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-achievements.jpg": {
+    "w": 1440,
+    "h": 1839
+  },
+  "desktop-admin-courses.jpg": {
+    "w": 1440,
+    "h": 2183
+  },
+  "desktop-admin-users.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-01-home.jpg": {
+    "w": 1440,
+    "h": 1245
+  },
+  "desktop-guest-02-login.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-03-register.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-04-courses.jpg": {
+    "w": 1440,
+    "h": 2551
+  },
+  "desktop-guest-05-course-computer-basics.jpg": {
+    "w": 1440,
+    "h": 1405
+  },
+  "desktop-guest-06-course-vscode.jpg": {
+    "w": 1440,
+    "h": 3050
+  },
+  "desktop-guest-07-leaderboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-verify-email-error.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-verify-email-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-verify-email-ok.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-08-dashboard.jpg": {
+    "w": 1440,
+    "h": 1306
+  },
+  "desktop-learner-09-path-viewport.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-09-path.jpg": {
+    "w": 1236,
+    "h": 4096
+  },
+  "desktop-learner-10-practice.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-11-typing.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-12-training.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-13-speed.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-14-review.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-15-quiz.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-16-exam.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-17-lesson-hotkey.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-18-lesson-task.jpg": {
+    "w": 1440,
+    "h": 964
+  },
+  "desktop-learner-19-achievements.jpg": {
+    "w": 1440,
+    "h": 1118
+  },
+  "desktop-learner-20-stats.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-21-admin-forbidden.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-22-simulator-code.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-23-simulator-desktop.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-done.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-exam-run.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-quiz-done.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-quiz-picked.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-review-flipped.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-typing-path.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-learner-typing-progress.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "mobile-authed-04-practice.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-05-review.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-06-quiz.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-07-path.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-08-training-gate.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-guest-01-home.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-guest-02-courses.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-guest-03-login.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "state-btn-disabled.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "state-btn-primary-hover.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "state-input-focus.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-login-error.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-feedback.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-speed-done.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-study-only.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-courses.jpg": {
+    "w": 1440,
+    "h": 2551
+  },
+  "desktop-learner-course-vscode.jpg": {
+    "w": 1440,
+    "h": 3072
+  },
+  "desktop-guest-course-not-found.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-leaderboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-courses-filter-start.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "mobile-authed-09-home.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-guest-04-leaderboard.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-10-leaderboard.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-guest-05-register.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-11-courses.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-learner-lesson-desktop-task.jpg": {
+    "w": 1440,
+    "h": 922
+  },
+  "mobile-authed-12-dashboard.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-learner-course-computer-basics.jpg": {
+    "w": 1440,
+    "h": 1621
+  },
+  "desktop-guest-course-programmer-basics.jpg": {
+    "w": 1440,
+    "h": 1548
+  },
+  "desktop-learner-course-programmer-basics.jpg": {
+    "w": 1440,
+    "h": 1571
+  },
+  "desktop-learner-training-empty.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "desktop-guest-course-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-review-empty.jpg": {
+    "w": 1440,
+    "h": 1006
+  },
+  "mobile-authed-13-course-computer-basics.jpg": {
+    "w": 390,
+    "h": 2322
+  },
+  "desktop-learner-leaderboard-period-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-api-down.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-leaderboard-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-achievements-empty.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-study-only.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-study-only-learned.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-lesson-task-done.jpg": {
+    "w": 1440,
+    "h": 1194
+  },
+  "desktop-learner-lesson-desktop-task-done.jpg": {
+    "w": 1440,
+    "h": 1170
+  },
+  "desktop-learner-achievements-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-achievements-unlocked.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-review-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-speed-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "mobile-authed-14-leaderboard-period-empty.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-admin-course-editor.jpg": {
+    "w": 1440,
+    "h": 2750
+  },
+  "desktop-admin-course-create.jpg": {
+    "w": 1440,
+    "h": 2576
+  },
+  "desktop-learner-exam-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-leaderboard-outside-top.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-path-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-stats-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-dashboard-daily-empty.jpg": {
+    "w": 1440,
+    "h": 1306
+  },
+  "desktop-learner-dashboard-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-overview-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-users-loading.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-achievement-create.jpg": {
+    "w": 1440,
+    "h": 2294
+  },
+  "desktop-learner-simulator-desktop-menu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-trash.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-palette.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-add-lesson.jpg": {
+    "w": 1440,
+    "h": 3198
+  },
+  "desktop-learner-simulator-desktop-start.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-quickopen.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-editor.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-terminal.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-properties.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-keyboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-filemenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-find.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-search.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-scm.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-run.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-extensions.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-filemenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-task.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-tasklist.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-preview.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-keyboard.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-taskrun.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-manage.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-viewmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-editmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-gomenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-runmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-termmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-helpmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-light.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-light.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-toast.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-toast.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-done.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-newfile.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-fromlesson.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-code-hint.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-speed-run.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-hint.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-typing-busy.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-typing-paused.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-typing-result.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-newfolder.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-explain.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-timeout.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-correct.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-quiz-finished.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-trash-full.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-hint.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-hint2.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer-filemenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-trash-restore.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-hint3.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-retry.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-training-done-weak.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-certificate.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-zip-extract.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer-menu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-explorer-foldermenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-newfile.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-menupaste.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-simulator-desktop-tasks-closed.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "mobile-authed-15-simulator-desktop.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-17-simulator-code-gate.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-16-simulator-desktop-tasks.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-18-speed-gate.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-19-lesson-gate.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-20-typing.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-21-speed.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "mobile-authed-22-exam-setup.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-learner-simulator-desktop-iconmenu.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-hotkey.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-login-verified.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-guest-lesson-task.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-typing-code.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-learner-exam-capped.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "desktop-admin-edit-lesson.jpg": {
+    "w": 1440,
+    "h": 3098
+  },
+  "desktop-admin-achievement-edit.jpg": {
+    "w": 1440,
+    "h": 2172
+  },
+  "desktop-guest-login-unverified.jpg": {
+    "w": 1440,
+    "h": 900
+  },
+  "mobile-authed-23-typing-code.jpg": {
+    "w": 390,
+    "h": 844
+  },
+  "desktop-learner-typing-en.jpg": {
+    "w": 1440,
+    "h": 900
+  }
+}

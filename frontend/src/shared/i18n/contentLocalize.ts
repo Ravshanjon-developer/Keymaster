@@ -5,12 +5,20 @@ export function lessonContentKey(courseSlug: string, categorySlug: string, keys:
   return `${courseSlug}/${categorySlug}/${keys.join('+')}`
 }
 
+function titleLessonKey(courseSlug: string, categorySlug: string, title: string) {
+  return `${courseSlug}/${categorySlug}/title:${title}`
+}
+
 function findLessonTg(
   courseSlug: string | undefined,
   categorySlug: string | undefined,
   keys: string[],
+  title?: string,
 ): ContentLessonTg | undefined {
   const chord = keys.join('+')
+  if (courseSlug && categorySlug && !chord && title) {
+    return contentTg.lessons[titleLessonKey(courseSlug, categorySlug, title)]
+  }
   if (!chord) return undefined
   if (courseSlug && categorySlug) {
     const direct = contentTg.lessons[lessonContentKey(courseSlug, categorySlug, keys)]
@@ -56,7 +64,7 @@ export function localizeLesson(
 ) {
   const locale = useLocaleStore.getState().locale
   if (locale !== 'tg') return fields
-  const hit = findLessonTg(courseSlug, categorySlug, keys)
+  const hit = findLessonTg(courseSlug, categorySlug, keys, fields.title)
   if (!hit) return fields
   return {
     title: hit.title,

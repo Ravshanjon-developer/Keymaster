@@ -53,17 +53,6 @@ function ModeCardLink({ card, index }: { card: ModeCard; index: number }) {
   )
 }
 
-function SectionIntro({ title, description, id }: { title: string; description: string; id?: string }) {
-  return (
-    <div className="mb-5 max-w-2xl">
-      <h2 id={id} className="text-h2">
-        {title}
-      </h2>
-      <p className="text-muted mt-1.5 text-sm leading-relaxed">{description}</p>
-    </div>
-  )
-}
-
 export function PracticeHubPage() {
   const t = useT()
   const location = useLocation()
@@ -140,7 +129,6 @@ export function PracticeHubPage() {
   return (
     <PageShell width="5xl">
       <PageHeader
-        eyebrow={t('practice.eyebrow')}
         title={t('practice.title')}
         subtitle={t('practice.subtitle')}
       />
@@ -150,7 +138,6 @@ export function PracticeHubPage() {
           {t('practice.todayRecommend')}
         </p>
         <h2 className="font-display mt-2 text-xl font-semibold">{t('practice.journeyTitle')}</h2>
-        <p className="mt-1.5 text-sm text-[var(--text-muted)]">{t('practice.todayRecommendText')}</p>
         <ol className="mt-4 space-y-2.5 text-sm text-[var(--text-secondary)]">
           {[t('practice.step1'), t('practice.step2'), t('practice.step3'), t('practice.step4')].map(
             (step, i) => (
@@ -174,11 +161,9 @@ export function PracticeHubPage() {
       </GlassCard>
 
       <section className="mt-10" aria-labelledby="practice-skills-heading">
-        <SectionIntro
-          id="practice-skills-heading"
-          title={t('practice.skillsSection')}
-          description={t('practice.skillsSectionDesc')}
-        />
+        <h2 id="practice-skills-heading" className="text-h2 mb-5">
+          {t('practice.skillsSection')}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {skills.map((card, i) => (
             <ModeCardLink key={card.to} card={card} index={i} />
@@ -205,11 +190,9 @@ export function PracticeHubPage() {
       </Link>
 
       <section id="reinforce" className="mt-12 scroll-mt-24" aria-labelledby="practice-reinforce-heading">
-        <SectionIntro
-          id="practice-reinforce-heading"
-          title={t('practice.reinforceSection')}
-          description={t('practice.reinforceSectionDesc')}
-        />
+        <h2 id="practice-reinforce-heading" className="text-h2 mb-5">
+          {t('practice.reinforceSection')}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {reinforce.map((card, i) => (
             <ModeCardLink key={card.to} card={card} index={i + skills.length} />

@@ -14,9 +14,9 @@ export type ContentCatalogTg = {
 export const contentTg: ContentCatalogTg = {
   courses: {
     'computer-basics': {
-      title: 'Ноутбуки аввал: файлҳо ва папкаҳо',
+      title: 'Ноутбуки аввал: файлҳо ва папки',
       description:
-        'Эҷоди папкаҳо ва файлҳо, проводник, сабад ва ZIP. Вазифаҳоро дар «Рабочий стол» иҷро кунед.',
+        'Эҷоди папки ва файлҳо, проводник, сабад ва ZIP. Вазифаҳоро дар «Рабочий стол» иҷро кунед.',
     },
     'programmer-basics': {
       title: 'Клавишаҳои асосии барномасоз',
@@ -44,7 +44,8 @@ export const contentTg: ContentCatalogTg = {
     },
     'git': {
       title: 'Git',
-      description: 'Системаи назорати версияҳо Git.',
+      description:
+        'Git аз сифр: чаро Git лозим аст, репозиторий, commit, GitHub, шохаҳо ва merge. Фармонҳоро азёд накунед — фаҳмед, пас аз ҳар фармон бо проект чӣ рӯй медиҳад.',
     },
     'visual-studio': {
       title: 'Visual Studio',
@@ -79,8 +80,8 @@ export const contentTg: ContentCatalogTg = {
       description: 'JetBrains PyCharm.',
     },
     'github-desktop': {
-      title: 'GitHub Desktop',
-      description: 'Клиенти GitHub Desktop.',
+      title: 'GitHub',
+      description: 'Репозиторий, origin, fork, pull request, merge ва issues.',
     },
     'terminal': {
       title: 'Terminal',
@@ -96,10 +97,10 @@ export const contentTg: ContentCatalogTg = {
     },
   },
   categories: {
-    'computer-basics/basics': 'Файлҳо ва папкаҳо',
+    'computer-basics/basics': 'Файлҳо ва папки',
     'computer-basics/explorer': 'Машқ дар проводник',
-    'computer-basics/trash-zip': 'Сабад ва ZIP',
-    'computer-basics/project': 'Сохтори лоиҳа',
+    'computer-basics/trash-zip': 'Корзина ва ZIP',
+    'computer-basics/project': 'Сохтори проект',
     'programmer-basics/basics': 'Асосҳо',
     'programmer-basics/system': 'Система (омӯзиш)',
     'programmer-basics/text': 'Кор бо матн',
@@ -123,7 +124,12 @@ export const contentTg: ContentCatalogTg = {
     'chrome/tabs': 'Варақаҳо ва навигатсия',
     'edge/navigation': 'Навигатсия',
     'cursor/ai': 'AI ва муҳаррир',
-    'git/workflow': 'Workflow',
+    'git/basics': 'Асосҳои Git',
+    'git/repo': 'Сохтани репозиторий',
+    'git/changes': 'Кор бо тағйирот',
+    'git/github': 'GitHub',
+    'git/branch': 'Шохаҳо',
+    'github-desktop/github': 'GitHub',
     'visual-studio/ide': 'IDE',
     'word/formatting': 'Форматбандӣ',
     'excel/sheets': 'Варақҳо',
@@ -134,19 +140,39 @@ export const contentTg: ContentCatalogTg = {
     'pycharm/python': 'Python IDE',
     'github-desktop/desktop': 'Клиент',
     'terminal/shell': 'Shell',
-    'linux/desktop': 'Мизи корӣ',
+    'linux/desktop': 'Рабочий стол',
     'macos/system': 'Система',
   },
   lessons: {
+    'computer-basics/basics/title:Файл и папка': {
+      title: 'Файл ва папка',
+      action_prompt: 'Фарқи байни файл ва папкаро фаҳмед',
+      usage_example: 'Папка — «лифофа»; файл — як ёддошт, акс ё барнома',
+      description:
+        'Папки кӯмак мекунанд, ки ҳама чизро дар рабочий стол ҷустуҷӯ накунед. Файл ном ва пасванд дорад: report.docx, photo.jpg.',
+    },
+    'computer-basics/basics/title:Расширение файла': {
+      title: 'Пасванди файл',
+      action_prompt: 'Бифаҳмед, чаро .txt, .jpg, .zip лозим аст',
+      usage_example: '.txt — матн; .jpg — акс; .zip — архив (файлҳои зиёд дар як ҷо)',
+      description:
+        'Windows пасвандҳоро пинҳон карда метавонад — номи пурраро дидан муҳим аст, то навъро иваз накунед.',
+    },
+    'computer-basics/basics/title:Где хранить': {
+      title: 'Куҷо нигоҳ дорем',
+      action_prompt: 'Қарор диҳед, чӣ дар рабочий стол бошад ва чӣ дар папки',
+      usage_example: 'Дар рабочий стол — ярлыкҳо; ҳуҷҷатҳо ва таҳсил — дар папки',
+      description: 'Рабочий стол тоза = камтар стресс ва зудтар ёфтани лозима.',
+    },
     'computer-basics/explorer/desktop:1': {
-      title: 'Папкаи Practice',
-      action_prompt: 'Дар мизи кор папкаи Practice эҷод кунед',
-      usage_example: 'Клики рост → Папкаи нав → Practice',
+      title: 'Папка Practice',
+      action_prompt: 'Дар рабочий стол папка Practice эҷод кунед',
+      usage_example: 'Клики рост → Новая папка → Practice',
       description: 'Номҳои лотинӣ барои барномаҳо осонтаранд.',
     },
     'computer-basics/explorer/desktop:2': {
       title: 'Файли notes.txt',
-      action_prompt: 'Дар мизи кор notes.txt эҷод кунед',
+      action_prompt: 'Дар рабочий стол notes.txt эҷод кунед',
       usage_example: 'Клики рост → Файли нав → notes.txt',
       description: '.txt матни оддӣ аст.',
     },
@@ -157,10 +183,10 @@ export const contentTg: ContentCatalogTg = {
       description: 'Ном бояд мундариҷаро гӯяд.',
     },
     'computer-basics/explorer/desktop:4': {
-      title: 'Папкаи Projects',
-      action_prompt: 'Папкаи Projects эҷод кунед',
-      usage_example: 'Клики рост → Папкаи нав → Projects',
-      description: 'Лоиҳаҳоро алоҳида нигоҳ доред.',
+      title: 'Папка Projects',
+      action_prompt: 'Папка Projects эҷод кунед',
+      usage_example: 'Клики рост → Новая папка → Projects',
+      description: 'Проектҳоро алоҳида нигоҳ доред.',
     },
     'computer-basics/explorer/desktop:5': {
       title: 'Интиқоли файл',
@@ -175,16 +201,16 @@ export const contentTg: ContentCatalogTg = {
       description: 'Пеш аз таҳрир нусха гиред.',
     },
     'computer-basics/trash-zip/desktop:7': {
-      title: 'Нест кардан ба сабад',
-      action_prompt: 'Файлро нест кунед — ба сабад меравад',
+      title: 'Нест кардан ба Корзина',
+      action_prompt: 'Файлро нест кунед — ба Корзина меравад',
       usage_example: 'Delete ё клики рост → Нест кардан',
       description: 'Delete файлро пурра нест намекунад.',
     },
     'computer-basics/trash-zip/desktop:8': {
-      title: 'Барқарор аз сабад',
+      title: 'Барқарор аз Корзина',
       action_prompt: 'Файли нестшударо барқарор кунед',
-      usage_example: 'Сабад → клики рост → Барқарор',
-      description: 'Shift+Delete бе сабад нест мекунад.',
+      usage_example: 'Корзина → клики рост → Барқарор',
+      description: 'Shift+Delete бе Корзина нест мекунад.',
     },
     'computer-basics/trash-zip/desktop:9': {
       title: 'Фишурдан ба ZIP',
@@ -199,7 +225,7 @@ export const contentTg: ContentCatalogTg = {
       description: 'Пас аз кушодан файл ё папка пайдо мешавад.',
     },
     'computer-basics/project/desktop:11': {
-      title: 'Папкаҳои Website',
+      title: 'Папки Website',
       action_prompt: 'Website бо html, css ва js созед',
       usage_example: 'Website → html, css, js',
       description: 'Сохтори оддии сайт.',
@@ -301,10 +327,10 @@ export const contentTg: ContentCatalogTg = {
       description: 'Пӯшидани барнома',
     },
     'programmer-basics/system/Meta+D': {
-      title: 'Мизи кор',
-      action_prompt: 'Мизи кор',
+      title: 'Рабочий стол',
+      action_prompt: 'Рабочий стол',
       usage_example: 'Win+D',
-      description: 'Мизи кор',
+      description: 'Рабочий стол',
     },
     'programmer-basics/system/Meta+E': {
       title: 'Проводник',
@@ -388,7 +414,7 @@ export const contentTg: ContentCatalogTg = {
       title: 'Зуд кушодани файл',
       action_prompt: 'Файлро зуд ёфта кушоед',
       usage_example: 'Дар IDE — Quick Open: ҷустуҷӯи файл аз рӯи ном.',
-      description: 'Тарзи асосии навигатсия дар лоиҳа дар VS Code / Cursor.',
+      description: 'Тарзи асосии навигатсия дар проект дар VS Code / Cursor.',
     },
     'programmer-basics/files/Control+W': {
       title: 'Пӯшидани варақа',
@@ -538,7 +564,7 @@ export const contentTg: ContentCatalogTg = {
       title: 'Гузариш байни тирезаҳо',
       action_prompt: 'Байни тирезаҳо гузаред',
       usage_example: 'Гузариш байни барномаҳо. Дар браузер тавассути Ctrl+Tab машқ мекунем.',
-      description: 'Навигатсияи ҳаррӯза дар мизи корӣ.',
+      description: 'Навигатсияи ҳаррӯза дар рабочий стол.',
     },
     'programmer-basics/windows/Alt+F4': {
       title: 'Пӯшидани барнома',
@@ -548,8 +574,8 @@ export const contentTg: ContentCatalogTg = {
     },
     'programmer-basics/windows/Meta+D': {
       title: 'Печондани ҳамаи тирезаҳо',
-      action_prompt: 'Ҳамаи тирезаҳоро ба мизи корӣ печонед',
-      usage_example: 'Нишон додани мизи корӣ (Win+D). Дар тренажёр: Ctrl+D.',
+      action_prompt: 'Ҳамаи тирезаҳоро ба рабочий стол печонед',
+      usage_example: 'Нишон додани рабочий стол (Win+D). Дар тренажёр: Ctrl+D.',
       description: 'Тирезаҳоро аз экран зуд пинҳон кунед.',
     },
     'programmer-basics/windows/Meta+E': {
@@ -685,7 +711,7 @@ export const contentTg: ContentCatalogTg = {
       description: 'Ctrl+Shift+E',
     },
     'vscode/navigation/Control+Shift+F': {
-      title: 'Ҷустуҷӯ дар лоиҳа',
+      title: 'Ҷустуҷӯ дар проект',
       action_prompt: 'Ҷустуҷӯи глобалиро кушоед',
       usage_example: 'Ctrl+Shift+F',
       description: 'Ctrl+Shift+F',
@@ -865,7 +891,7 @@ export const contentTg: ContentCatalogTg = {
       description: 'Ctrl+H',
     },
     'vscode/search/Control+Shift+F': {
-      title: 'Ёфтан дар лоиҳа',
+      title: 'Ёфтан дар проект',
       action_prompt: 'Ҷустуҷӯи глобалӣ',
       usage_example: 'Ctrl+Shift+F',
       description: 'Ctrl+Shift+F',
@@ -973,7 +999,7 @@ export const contentTg: ContentCatalogTg = {
       description: 'Alt+Tab',
     },
     'windows/basics/Meta+D': {
-      title: 'Мизи корӣ',
+      title: 'Рабочий стол',
       action_prompt: 'Ҳамаи тирезаҳоро печонед',
       usage_example: 'Win+D',
       description: 'Win+D',
@@ -1740,11 +1766,207 @@ export const contentTg: ContentCatalogTg = {
       usage_example: 'Alt+↑',
       description: 'Alt+↑',
     },
-    'git/workflow/Control+Shift+G': {
-      title: 'Ҳолат',
-      action_prompt: 'git status (дар терминал)',
-      usage_example: 'Аксар дар IDE',
-      description: 'Аксар дар IDE',
+    'git/basics/cmd:intro': {
+      title: 'Git чист?',
+      action_prompt: 'Фаҳмед, ки Git барои чӣ лозим аст',
+      usage_example:
+        'Git таърихро нигоҳ медорад ва ба версияҳои қаблӣ бармегардонад; Git дар компютери шумо кор мекунад; GitHub нусхаи дурро барои кори даста нигоҳ медорад; схема: компютер → Git → репозиторияи маҳаллӣ → GitHub → репозиторияи дур',
+      description:
+        'Git таърихи проектро дар компютер нигоҳ медорад. GitHub — сервиси алоҳидаи онлайн барои репозиторийҳо ва кори якҷоя.',
+    },
+    'git/basics/cmd:version': {
+      title: 'git --version',
+      action_prompt: 'Санҷед, ки Git насб шудааст',
+      usage_example:
+        'Терминалро кушоед; git --version нависед; агар рақами версияро бинед, Git ба кор омода аст',
+      description: 'Агар Git насб шуда бошад, фармон версияро нишон медиҳад, масалан git version 2.x.x.',
+    },
+    'git/basics/cmd:config': {
+      title: 'git config',
+      action_prompt: 'Ном ва email-ро барои commit нишон диҳед',
+      usage_example:
+        'Ном: git config --global user.name "Your Name"; email: git config --global user.email "you@example.com"; танзимотро санҷед: git config --list',
+      description:
+        'Ном ва email ба ҳар commit меафтанд. --global танзимро ба ҳамаи репозиторийҳои ин компютер татбиқ мекунад.',
+    },
+    'git/repo/cmd:init': {
+      title: 'git init',
+      action_prompt: 'Дар папка ҷорӣ Git-репозиторий созед',
+      usage_example:
+        'Папка my-project созед; ба он гузаред: cd my-project; git init иҷро кунед; ҳолатро санҷед: git status',
+      description: 'Папка пинҳони .git пайдо мешавад — таърих ҳамон ҷост. Онро дастӣ тағйир надиҳед.',
+    },
+    'git/repo/cmd:clone': {
+      title: 'git clone',
+      action_prompt: 'Репозиторияи мавҷударо ба компютер нусха бардоред',
+      usage_example:
+        'git clone https://github.com/user/project.git иҷро кунед; папка пайдошударо дар муҳаррир кушоед; ин нусхаи пурраи проект бо таърих аст',
+      description:
+        'Файлҳо, таърихи commit, шохаҳо ва пайванд бо репозиторияи дур зеркашӣ мешаванд. Лозим аст, вақте проект аллакай дар GitHub ҳаст.',
+    },
+    'git/changes/cmd:status': {
+      title: 'git status',
+      action_prompt: 'Ҳолати ҷории репозиториро бубинед',
+      usage_example:
+        'index.html созед; git status иҷро кунед; файлро тағйир диҳед; боз git status; фарқи ҳолатро муқоиса кунед',
+      description:
+        'Фармон шоха, файлҳои нав ва тағйирёфта, staging ва пайванд бо remote-ро нишон медиҳад. Агар норавшан бошад — аз status оғоз кунед.',
+    },
+    'git/changes/cmd:add': {
+      title: 'git add',
+      action_prompt: 'Тағйиротро ба staging илова кунед',
+      usage_example:
+        'index.html созед ва git status иҷро кунед; файлро илова кунед: git add index.html; боз git status — файл бояд дар staging бошад; git add . ҳамаи тағйироти папкаро илова мекунад',
+      description:
+        'Staging — қадам байни таҳрири файл ва commit. Фармон снимка намесозад, танҳо нишон медиҳад, ки ба commit-и навбатӣ чӣ медарояд.',
+    },
+    'git/changes/cmd:commit': {
+      title: 'git commit',
+      action_prompt: 'Версияи проектро дар таърих захира кунед',
+      usage_example:
+        'Дар файли HTML тағйирот кунед; git status-ро санҷед; git add . иҷро кунед; снимка созед: git commit -m "Add homepage"; таърихро кушоед: git log',
+      description:
+        'Commit — снимкаи захирашуда. Нависед, чаро тағйирот шуд: Add homepage, Fix navigation. Нанависед fix, changes, aaa.',
+    },
+    'git/changes/cmd:log': {
+      title: 'git log',
+      action_prompt: 'Таърихи commit-ро кушоед',
+      usage_example:
+        'Якчанд commit созед; git log иҷро кунед; баъд git log --oneline; commit-и аввалини худро ёбед',
+      description:
+        'Снимка, муаллиф, сана ва паём дида мешаванд. git log --oneline таърихро кӯтоҳ, як сатр нишон медиҳад.',
+    },
+    'git/changes/cmd:diff': {
+      title: 'git diff',
+      action_prompt: 'Бубинед, ки маҳз чӣ тағйир ёфт',
+      usage_example:
+        'Файли HTML-ро тағйир диҳед; git diff иҷро кунед; баъд git add .; боз git diff — тағйироти staged дигар намоён нестанд',
+      description:
+        'status мегӯяд «чӣ тағйир ёфт», diff — «кадом сатрҳо». git diff-и оддӣ тағйироти аллакай дар staging-ро нишон намедиҳад.',
+    },
+    'git/changes/cmd:restore': {
+      title: 'git restore',
+      action_prompt: 'Тағйироти commit нашударо бекор кунед',
+      usage_example:
+        'Файлро тағйир диҳед ва git add . иҷро кунед; аз staging хориҷ кунед: git restore --staged index.html; git status-ро санҷед; барои бекор кардани таҳрир дар файл git restore index.html нависед',
+      description:
+        'git restore файлро ба commit-и охирин бармегардонад — таҳрирҳо гум мешаванд. git restore --staged файлро аз staging мебарорад, аммо тағйирот дар файл мемонанд.',
+    },
+    'git/github/cmd:remote': {
+      title: 'git remote',
+      action_prompt: 'Репозиторийҳои дури пайвастшударо бубинед',
+      usage_example:
+        'git remote -v иҷро кунед; агар репозиторий бо GitHub пайваст бошад, origin ва URL-ро мебинед; origin — ном аст, на фармони махсус',
+      description:
+        'origin — номи одатии репозиторияи дур, танҳо ном. git remote -v суроғаҳоро нишон медиҳад.',
+    },
+    'git/github/cmd:remote-add': {
+      title: 'git remote add',
+      action_prompt: 'Проекти маҳаллиро ба GitHub пайваст кунед',
+      usage_example:
+        'Дар GitHub репозиторияи холӣ созед; git remote add origin https://github.com/user/project.git иҷро кунед; пайвандро санҷед: git remote -v',
+      description:
+        'Фармон папка компютерро бо репозиторияи дур мепайвандад. Баъд push ва pull медонанд, ба куҷо раванд.',
+    },
+    'git/github/cmd:push': {
+      title: 'git push',
+      action_prompt: 'Commit-ҳои маҳаллиро ба GitHub фиристед',
+      usage_example:
+        'Commit созед; GitHub-ро бо remote add пайваст кунед; git push -u origin main иҷро кунед; GitHub-ро кушоед ва санҷед, ки commit пайдо шуд',
+      description:
+        'Бе push снимкаҳо танҳо дар компютер мемонанд. Бори аввал: git push -u origin main — баъд git push кифоя аст.',
+    },
+    'git/github/cmd:pull': {
+      title: 'git pull',
+      action_prompt: 'Тағйиротро аз GitHub гиред ва шохаро нав кунед',
+      usage_example:
+        'Ду нусхаи як репозиториро тасаввур кунед; дар якум файлро тағйир диҳед, commit ва push кунед; дар дуюм git pull иҷро кунед; тағйирот маҳаллӣ пайдо мешаванд',
+      description:
+        'Агар ҳамкор тағйирот фиристода бошад, git pull онҳоро гирифта ба шохаи ҷорӣ мерезонад. Схема: GitHub → компютери шумо.',
+    },
+    'git/github/cmd:fetch': {
+      title: 'git fetch',
+      action_prompt: 'Бубинед, ки дар GitHub чӣ нав шуд, бе омехта кардан',
+      usage_example:
+        'git fetch иҷро кунед, то бубинед, ки дар GitHub чӣ тағйир ёфт; файлҳои ҷорӣ ҳанӯз даст намехӯранд; git pull аллакай тағйиротро ба шохаи шумо мерезонад',
+      description: 'fetch танҳо маълумот дар бораи commit-ҳои навро мегирад. pull = fetch плюс навсозии шохаи ҷорӣ.',
+    },
+    'git/branch/cmd:what-is-branch': {
+      title: 'Branch чист?',
+      action_prompt: 'Фаҳмед, ки шохаҳо барои чӣ лозиманд',
+      usage_example:
+        'main — хати асосии проект; кори навро дар шохаи алоҳида, масалан feature-login, мебаранд; ҳамин тавр таҷриба ва кори якҷоя main-ро намешиканад',
+      description:
+        'Шоха — хати алоҳидаи рушд. Функсияи навро дар feature-login месозанд, на якбора дар main.',
+    },
+    'git/branch/cmd:branch': {
+      title: 'git branch',
+      action_prompt: 'Шохаҳоро бубинед ва шохаи нав созед',
+      usage_example:
+        'git branch иҷро кунед — шохаи ҷориро мебинед; шоха созед: git branch feature-login; боз git branch; ситора назди шохаи ҷорӣ аст, шохаи нав аллакай ҳаст',
+      description:
+        'git branch feature-login шоха месозад, аммо ба он намегузарад. Ситора дар рӯйхат шохаи ҷориро нишон медиҳад.',
+    },
+    'git/branch/cmd:switch': {
+      title: 'git switch',
+      action_prompt: 'Ба шохаи дигар гузаред',
+      usage_example:
+        'Созед ва фавран гузаред: git switch -c feature-login; файлҳоро тағйир диҳед; git add . ва git commit -m "Add login" иҷро кунед',
+      description:
+        'git switch feature-login шохаро ҷорӣ мекунад. git switch -c якбора шоха месозад ва ба он мегузарад.',
+    },
+    'git/branch/cmd:merge': {
+      title: 'git merge',
+      action_prompt: 'Шохаро бо main якҷоя кунед',
+      usage_example:
+        'Корро дар feature-login анҷом диҳед; гузаред: git switch main; якҷоя кунед: git merge feature-login; акнун main тағйироти feature-login-ро дорад',
+      description:
+        'Аввал ба main гузаред, баъд git merge feature-login. Тағйироти feature-login ба хати асосӣ меафтанд.',
+    },
+    'github-desktop/github/cmd:repo': {
+      title: 'Репозиторий',
+      action_prompt: 'Репозиторий чист',
+      usage_example:
+        'Репозиторий — проект бо таърихи Git; дар GitHub он дар сервер аст; дар диски шумо — нусхаи маҳаллӣ.',
+      description: 'Як проект = як репозиторий. Он ҷо код, таърихи коммитҳо ва танзимот ҳастанд.',
+    },
+    'github-desktop/github/cmd:remote': {
+      title: 'origin',
+      action_prompt: 'origin чист',
+      usage_example:
+        'origin — номи одатии репозиторияи дур дар GitHub; git remote -v суроғаро нишон медиҳад.',
+      description: 'push ва pull ба origin мераванд, агар remote-и дигар нанависед.',
+    },
+    'github-desktop/github/cmd:fork': {
+      title: 'Fork',
+      action_prompt: 'Fork аз clone чӣ фарқ дорад',
+      usage_example:
+        'clone — нусха ба компютери шумо; fork — нусхаи репозиторий дар аккаунти GitHub-и шумо.',
+      description:
+        'Fork лозим аст, вақте ҳуқуқи навиштан ба репозиторияи дигар нест: нусхаи худро иваз мекунед, баъд pull request мекушоед.',
+    },
+    'github-desktop/github/cmd:pr': {
+      title: 'Pull request',
+      action_prompt: 'Pull request чист',
+      usage_example:
+        'Шохаро push мекунед; pull request мекушоед; ҳамкорон diff-ро мебинанд; пас аз approve шохаро ба main мерезанд.',
+      description:
+        'PR — дархост, ки коммитҳои шуморо қабул кунанд. Ҳамин тавр кодро муҳокима мекунанд, бе шикастани шохаи асосӣ.',
+    },
+    'github-desktop/github/cmd:merge': {
+      title: 'Merge',
+      action_prompt: 'Pull request-ро чӣ тавр қабул мекунанд',
+      usage_example:
+        'Пас аз баррасӣ Merge мепазанд; коммитҳои шоха ба main меафтанд; шохаро метавон нест кард.',
+      description:
+        'Merge — омехтани таърихҳо. Конфликт маънои онро дорад, ки як сатрҳоро дар ду шоха иваз кардаанд.',
+    },
+    'github-desktop/github/cmd:issues': {
+      title: 'Issues',
+      action_prompt: 'Issues барои чӣ лозиманд',
+      usage_example:
+        'Issue — вазифа ё хато дар репозиторий; дар он мушкилро тавсиф ва ҳалро муҳокима мекунанд.',
+      description: 'Аввал issue, баъд шоха ва pull request — ҳамин тавр даста контекстро гум намекунад.',
     },
     'visual-studio/ide/Control+N': {
       title: 'Ҷустуҷӯи класс',

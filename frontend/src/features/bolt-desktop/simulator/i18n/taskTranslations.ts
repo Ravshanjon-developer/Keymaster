@@ -68,13 +68,13 @@ const ru: Record<number, TaskCopy> = {
 
 const tg: Record<number, TaskCopy> = {
   1: {
-    title: 'Папкаи «Practice» эҷод кунед',
-    description: 'Ба фони мизи кор клики рост → «Папкаи нав». Ё два бор «Файлҳо»-ро клик кунед ва дар равандни файл папка созед.',
-    hint: 'Клики рост дар ҷои холии обои (на менюи браузер). Ё «Файлҳо» → клики рост → «Папкаи нав». Ctrl+Shift+N.',
+    title: 'Папка «Practice» эҷод кунед',
+    description: 'Ба фони рабочий стол клики рост → «Новая папка». Ё два бор «Файлҳо»-ро клик кунед ва дар равандни файл папка созед.',
+    hint: 'Клики рост дар ҷои холии обои (на менюи браузер). Ё «Файлҳо» → клики рост → «Новая папка». Ctrl+Shift+N.',
   },
   2: {
     title: 'Файли «notes.txt» эҷод кунед',
-    description: 'Дар мизи кор файли матнии notes.txt созед.',
+    description: 'Дар рабочий стол файли матнии notes.txt созед.',
     hint: 'Клики рост → «Файли нав», notes.txt нависед.',
   },
   3: {
@@ -83,9 +83,9 @@ const tg: Record<number, TaskCopy> = {
     hint: 'Клики рост ба notes.txt → «Ивази ном» ё F2.',
   },
   4: {
-    title: 'Папкаи «Projects» эҷод кунед',
-    description: 'Дар мизи кор папкаи Projects эҷод кунед (китобхонаи ҳамном дар панели чап ҳисоб намешавад).',
-    hint: 'Клики рост дар ҷои холии мизи кор → «Папкаи нав» → номи Projects.',
+    title: 'Папка «Projects» эҷод кунед',
+    description: 'Дар рабочий стол папка Projects эҷод кунед (китобхонаи ҳамном дар панели чап ҳисоб намешавад).',
+    hint: 'Клики рост дар ҷои холии рабочий стол → «Новая папка» → номи Projects.',
   },
   5: {
     title: 'my-notes.txt-ро ба Projects кӯчонед',
@@ -119,8 +119,8 @@ const tg: Record<number, TaskCopy> = {
   },
   11: {
     title: 'Сохтори Website',
-    description: 'Дар мизи кор «Website» созед, дар дохили он html, css ва js.',
-    hint: 'Website дар мизи кор, баъд html, css, js.',
+    description: 'Дар рабочий стол «Website» созед, дар дохили он html, css ва js.',
+    hint: 'Website дар рабочий стол, баъд html, css, js.',
   },
   12: {
     title: 'index.html дар html',

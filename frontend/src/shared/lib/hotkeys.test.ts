@@ -11,6 +11,10 @@ import {
   mainKeyFromEvent,
   matchesShortcut,
   matchesShortcutKeys,
+  demoEditorKind,
+  demoExtraState,
+  demoSelectionVisible,
+  needsDemoEditor,
   normalizeShortcutKeys,
   webPracticeKeys,
 } from '@/shared/lib/hotkeys'
@@ -168,5 +172,34 @@ describe('layout-safe matching', () => {
 
   it('explains Y vs У mix-up', () => {
     expect(explainMismatch(['Control', 'Y'], ['Control', 'E'])).toMatch(/Н|Y/)
+  })
+})
+
+describe('demo editor selection', () => {
+  it('treats Ctrl+A as select-all that highlights only after success', () => {
+    expect(needsDemoEditor(['Control', 'A'])).toBe(true)
+    expect(demoEditorKind(['Control', 'A'])).toBe('select-all')
+    expect(demoSelectionVisible('select-all', false)).toBe(false)
+    expect(demoSelectionVisible('select-all', true)).toBe(true)
+  })
+
+  it('keeps copy/cut pre-selected until the action finishes', () => {
+    expect(demoEditorKind(['Control', 'C'])).toBe('copy')
+    expect(demoEditorKind(['Control', 'X'])).toBe('cut')
+    expect(demoSelectionVisible('copy', false)).toBe(true)
+    expect(demoSelectionVisible('cut', false)).toBe(true)
+    expect(demoSelectionVisible('cut', true)).toBe(false)
+  })
+
+  it('shows undo as a typed change that becomes a ghost after success', () => {
+    expect(demoEditorKind(['Control', 'Z'])).toBe('undo')
+    expect(demoExtraState('undo', false)).toBe('typed')
+    expect(demoExtraState('undo', true)).toBe('ghost')
+  })
+
+  it('shows redo as a ghost change that is restored after success', () => {
+    expect(demoEditorKind(['Control', 'Y'])).toBe('redo')
+    expect(demoExtraState('redo', false)).toBe('ghost')
+    expect(demoExtraState('redo', true)).toBe('restored')
   })
 })

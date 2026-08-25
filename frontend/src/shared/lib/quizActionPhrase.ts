@@ -3,8 +3,15 @@
 /** IT terms stay in Russian/English in TJ quiz copy (per product copy rules). */
 const LOANWORD_FIXES: Array<[RegExp, string]> = [
   [/муҳаррир/gi, 'редактор'],
-  [/мизи кор/gi, 'рабочий стол'],
+  [/мизи кориро/gi, 'рабочий стол'],
+  [/мизи кории/gi, 'рабочий стол'],
   [/мизи корӣ/gi, 'рабочий стол'],
+  [/мизи корро/gi, 'рабочий стол'],
+  [/мизи кор/gi, 'рабочий стол'],
+  [/лоиҳа/gi, 'проект'],
+  [/папкаҳо/gi, 'папки'],
+  [/папкаи/gi, 'папка'],
+  [/Папка-и/g, 'Папка'],
 ]
 
 export function preserveQuizLoanwords(text: string): string {

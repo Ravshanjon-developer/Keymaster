@@ -12,9 +12,16 @@ type Props = {
   courseQuery?: string
   /** When true, show the trainer even without a physical keyboard (tap on-screen keys). */
   allowVirtualKeys?: boolean
+  /** Dark lesson-player chrome instead of the light practice shell. */
+  variant?: 'page' | 'player'
 }
 
-export function PracticeKeyboardGate({ children, courseQuery, allowVirtualKeys }: Props) {
+export function PracticeKeyboardGate({
+  children,
+  courseQuery,
+  allowVirtualKeys,
+  variant = 'page',
+}: Props) {
   const hasPhysical = usePhysicalKeyboard()
   const t = useT()
   const ReviewIcon = practiceIcons.review
@@ -27,6 +34,27 @@ export function PracticeKeyboardGate({ children, courseQuery, allowVirtualKeys }
     courseQuery && courseQuery !== 'computer-basics'
       ? `/quiz?course=${encodeURIComponent(courseQuery)}`
       : '/quiz'
+
+  if (variant === 'player') {
+    return (
+      <div className="lp-kb-gate">
+        <KeyboardIllustration className="lp-kb-gate-art" />
+        <h2>{t('mobile.keyboardRequiredTitle')}</h2>
+        <p>{t('mobile.keyboardRequiredDesc')}</p>
+        <p className="lp-kb-gate-hint">{t('mobile.keyboardHint')}</p>
+        <div className="lp-kb-gate-actions">
+          <Link to={reviewTo} className="check-btn">
+            <ReviewIcon className="h-4 w-4" strokeWidth={PRACTICE_ICON_STROKE} aria-hidden />
+            {t('mobile.ctaReview')}
+          </Link>
+          <Link to={quizTo} className="nav-btn">
+            <QuizIcon className="h-4 w-4" strokeWidth={PRACTICE_ICON_STROKE} aria-hidden />
+            {t('mobile.ctaQuiz')}
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <PageShell width="2xl">

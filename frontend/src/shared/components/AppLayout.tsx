@@ -4,11 +4,13 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/shared/components/BottomNav'
 import { Navbar } from '@/shared/components/Navbar'
 import { useT } from '@/shared/i18n'
+import '@/features/lessons/lessonPlayer.css'
 
 export function AppLayout() {
   const t = useT()
   const { pathname } = useLocation()
   const immersive = pathname === '/simulator'
+  const lessonPlayer = pathname.startsWith('/lessons/')
 
   useEffect(() => {
     if (!immersive) return
@@ -33,6 +35,19 @@ export function AppLayout() {
     )
   }
 
+  if (lessonPlayer) {
+    return (
+      <div className="km-player-root">
+        <a href="#main-content" className="skip-link">
+          {t('nav.skipToContent')}
+        </a>
+        <main id="main-content" tabIndex={-1} className="min-h-dvh">
+          <Outlet />
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-dvh flex-col overflow-x-hidden">
       <a href="#main-content" className="skip-link">
@@ -46,6 +61,7 @@ export function AppLayout() {
       >
         <Outlet />
       </main>
+      {!lessonPlayer ? (
       <footer className="hidden border-t border-black/[0.06] py-9 pb-12 text-center text-[13px] text-slate-600 sm:block dark:border-white/[0.06] dark:text-slate-400">
         <span className="font-display font-semibold text-ink dark:text-slate-200">KeyMaster</span>
         <span className="mx-2 text-slate-300 dark:text-slate-700">·</span>
@@ -53,6 +69,7 @@ export function AppLayout() {
         <span className="mx-2 text-slate-300 dark:text-slate-700">·</span>
         {t('footer.tagline')}
       </footer>
+      ) : null}
       <BottomNav />
     </div>
   )

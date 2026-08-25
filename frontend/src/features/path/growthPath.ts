@@ -1,253 +1,140 @@
-/** Visual career path — maps to EXISTING course slugs only. Does not rename or alter courses. */
+/** One journey: the main road is short; extra courses stay in the catalog. */
 
-import { getT } from '@/shared/i18n'
+import type { CourseDto, CourseProgressDto } from '@/shared/lib/api'
 
-export type NodeShape = 'rect' | 'hex' | 'diamond' | 'wide'
-export type NodeLane = 'center' | 'left' | 'right'
-export type PathNodeKind = 'start' | 'course' | 'milestone'
+export type PathTrack = 'core' | 'dev' | 'web' | 'office' | 'os' | 'design'
+export type PathNodeKind = 'course' | 'milestone'
+export type NodeStatus = 'locked' | 'start' | 'progress' | 'done'
 
 export type GrowthNodeDef = {
   id: string
   kind: PathNodeKind
-  /** Existing course slug from API — never invent new courses */
   slug?: string
-  /** Career label on the map (UI only; course title stays original) */
-  careerTitle: string
-  difficulty: 1 | 2 | 3 | 4 | 5
-  shape: NodeShape
-  lane: NodeLane
-  /** Node ids that must be unlocked (≥ unlock threshold) before this opens */
+  track: PathTrack
   requires: string[]
 }
 
 export const UNLOCK_PERCENT = 60
+export const CORE_SEQUENCE = [
+  'computer',
+  'basics',
+  'windows',
+  'vscode',
+  'git',
+  'github-desktop',
+  'chrome',
+] as const
 
-/**
- * Learning journey: first laptop → hotkeys → tools.
- * Any slug missing from API is simply skipped at render time.
- */
+/** Visual order on the road. Unlock rules still follow `requires`. */
+export const JOURNEY_SEQUENCE = [...CORE_SEQUENCE, 'master'] as const
+
 export const GROWTH_PATH: GrowthNodeDef[] = [
-  {
-    id: 'start',
-    kind: 'start',
-    careerTitle: 'START',
-    difficulty: 1,
-    shape: 'diamond',
-    lane: 'center',
-    requires: [],
-  },
-  {
-    id: 'computer',
-    kind: 'course',
-    slug: 'computer-basics',
-    careerTitle: 'First Laptop',
-    difficulty: 1,
-    shape: 'wide',
-    lane: 'center',
-    requires: ['start'],
-  },
-  {
-    id: 'basics',
-    kind: 'course',
-    slug: 'programmer-basics',
-    careerTitle: 'Keyboard Foundation',
-    difficulty: 1,
-    shape: 'wide',
-    lane: 'center',
-    requires: ['computer'],
-  },
-  {
-    id: 'windows',
-    kind: 'course',
-    slug: 'windows',
-    careerTitle: 'Fast Editing',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'center',
-    requires: ['basics'],
-  },
-  {
-    id: 'vscode',
-    kind: 'course',
-    slug: 'vscode',
-    careerTitle: 'VS Code Developer',
-    difficulty: 3,
-    shape: 'hex',
-    lane: 'center',
-    requires: ['windows'],
-  },
-  {
-    id: 'git',
-    kind: 'course',
-    slug: 'git',
-    careerTitle: 'Git Workflow',
-    difficulty: 3,
-    shape: 'diamond',
-    lane: 'center',
-    requires: ['vscode'],
-  },
-  {
-    id: 'cursor',
-    kind: 'course',
-    slug: 'cursor',
-    careerTitle: 'AI Pair Programming',
-    difficulty: 3,
-    shape: 'rect',
-    lane: 'left',
-    requires: ['git'],
-  },
-  {
-    id: 'terminal',
-    kind: 'course',
-    slug: 'terminal',
-    careerTitle: 'Terminal Fluent',
-    difficulty: 3,
-    shape: 'hex',
-    lane: 'center',
-    requires: ['git'],
-  },
-  {
-    id: 'chrome',
-    kind: 'course',
-    slug: 'chrome',
-    careerTitle: 'Browser Velocity',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'right',
-    requires: ['git'],
-  },
-  {
-    id: 'edge',
-    kind: 'course',
-    slug: 'edge',
-    careerTitle: 'Edge Power User',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'right',
-    requires: ['chrome'],
-  },
-  {
-    id: 'visual-studio',
-    kind: 'course',
-    slug: 'visual-studio',
-    careerTitle: 'Visual Studio Pro',
-    difficulty: 4,
-    shape: 'wide',
-    lane: 'center',
-    requires: ['terminal', 'cursor'],
-  },
-  {
-    id: 'intellij',
-    kind: 'course',
-    slug: 'intellij',
-    careerTitle: 'JVM Craft',
-    difficulty: 4,
-    shape: 'hex',
-    lane: 'left',
-    requires: ['visual-studio'],
-  },
-  {
-    id: 'pycharm',
-    kind: 'course',
-    slug: 'pycharm',
-    careerTitle: 'Python Craft',
-    difficulty: 4,
-    shape: 'hex',
-    lane: 'right',
-    requires: ['visual-studio'],
-  },
-  {
-    id: 'macos',
-    kind: 'course',
-    slug: 'macos',
-    careerTitle: 'macOS Fluency',
-    difficulty: 3,
-    shape: 'rect',
-    lane: 'left',
-    requires: ['computer'],
-  },
-  {
-    id: 'linux',
-    kind: 'course',
-    slug: 'linux',
-    careerTitle: 'Linux Fluency',
-    difficulty: 3,
-    shape: 'rect',
-    lane: 'right',
-    requires: ['computer'],
-  },
-  {
-    id: 'github-desktop',
-    kind: 'course',
-    slug: 'github-desktop',
-    careerTitle: 'Ship with GitHub',
-    difficulty: 3,
-    shape: 'diamond',
-    lane: 'center',
-    requires: ['git'],
-  },
-  {
-    id: 'word',
-    kind: 'course',
-    slug: 'word',
-    careerTitle: 'Docs at Speed',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'left',
-    requires: ['windows'],
-  },
-  {
-    id: 'excel',
-    kind: 'course',
-    slug: 'excel',
-    careerTitle: 'Sheets at Speed',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'right',
-    requires: ['windows'],
-  },
-  {
-    id: 'powerpoint',
-    kind: 'course',
-    slug: 'powerpoint',
-    careerTitle: 'Slides at Speed',
-    difficulty: 2,
-    shape: 'rect',
-    lane: 'center',
-    requires: ['word', 'excel'],
-  },
-  {
-    id: 'photoshop',
-    kind: 'course',
-    slug: 'photoshop',
-    careerTitle: 'Pixel Shortcuts',
-    difficulty: 4,
-    shape: 'hex',
-    lane: 'left',
-    requires: ['powerpoint'],
-  },
-  {
-    id: 'figma',
-    kind: 'course',
-    slug: 'figma',
-    careerTitle: 'Design Velocity',
-    difficulty: 4,
-    shape: 'hex',
-    lane: 'right',
-    requires: ['powerpoint'],
-  },
-  {
-    id: 'master',
-    kind: 'milestone',
-    careerTitle: 'Keyboard Master',
-    difficulty: 5,
-    shape: 'wide',
-    lane: 'center',
-    requires: ['intellij', 'pycharm', 'edge', 'figma'],
-  },
+  { id: 'computer', kind: 'course', slug: 'computer-basics', track: 'core', requires: [] },
+  { id: 'basics', kind: 'course', slug: 'programmer-basics', track: 'core', requires: ['computer'] },
+  { id: 'windows', kind: 'course', slug: 'windows', track: 'core', requires: ['basics'] },
+  { id: 'vscode', kind: 'course', slug: 'vscode', track: 'core', requires: ['windows'] },
+  { id: 'git', kind: 'course', slug: 'git', track: 'core', requires: ['vscode'] },
+  { id: 'github-desktop', kind: 'course', slug: 'github-desktop', track: 'core', requires: ['git'] },
+  { id: 'chrome', kind: 'course', slug: 'chrome', track: 'core', requires: ['github-desktop'] },
+
+  { id: 'terminal', kind: 'course', slug: 'terminal', track: 'dev', requires: ['git'] },
+  { id: 'cursor', kind: 'course', slug: 'cursor', track: 'dev', requires: ['git'] },
+  { id: 'visual-studio', kind: 'course', slug: 'visual-studio', track: 'dev', requires: ['git'] },
+  { id: 'intellij', kind: 'course', slug: 'intellij', track: 'dev', requires: ['git'] },
+  { id: 'pycharm', kind: 'course', slug: 'pycharm', track: 'dev', requires: ['git'] },
+
+  { id: 'edge', kind: 'course', slug: 'edge', track: 'web', requires: ['chrome'] },
+
+  { id: 'word', kind: 'course', slug: 'word', track: 'office', requires: ['windows'] },
+  { id: 'excel', kind: 'course', slug: 'excel', track: 'office', requires: ['windows'] },
+  { id: 'powerpoint', kind: 'course', slug: 'powerpoint', track: 'office', requires: ['windows'] },
+
+  { id: 'macos', kind: 'course', slug: 'macos', track: 'os', requires: ['windows'] },
+  { id: 'linux', kind: 'course', slug: 'linux', track: 'os', requires: ['windows'] },
+
+  { id: 'figma', kind: 'course', slug: 'figma', track: 'design', requires: ['windows'] },
+  { id: 'photoshop', kind: 'course', slug: 'photoshop', track: 'design', requires: ['windows'] },
+
+  { id: 'master', kind: 'milestone', track: 'core', requires: [...CORE_SEQUENCE] },
 ]
 
-export type NodeStatus = 'locked' | 'start' | 'progress' | 'done'
+export type ResolvedNode = GrowthNodeDef & {
+  course?: CourseDto
+  progress?: CourseProgressDto
+  percent: number
+  status: NodeStatus
+  unlocked: boolean
+  blockedBy?: string
+}
+
+export type PathInput = {
+  courses: CourseDto[]
+  progress: CourseProgressDto[]
+  isGuest: boolean
+}
+
+export function resolvePathNodes({ courses, progress, isGuest }: PathInput): ResolvedNode[] {
+  const bySlug = new Map(courses.map((c) => [c.slug, c]))
+  const progressBySlug = new Map(progress.map((p) => [p.slug, p]))
+
+  const available = GROWTH_PATH.filter(
+    (def) => def.kind !== 'course' || (def.slug && bySlug.has(def.slug)),
+  )
+
+  const percentOf = (def: GrowthNodeDef) =>
+    def.kind === 'course' && def.slug ? (progressBySlug.get(def.slug)?.percent ?? 0) : 0
+
+  const percentById = new Map(available.map((def) => [def.id, percentOf(def)]))
+
+  const cleared = (id: string) => {
+    const percent = percentById.get(id)
+    return percent === undefined ? true : percent >= UNLOCK_PERCENT
+  }
+
+  const coreDefs = available.filter((d) => d.track === 'core' && d.kind === 'course')
+  const coreDone = coreDefs.filter((d) => percentOf(d) >= 100).length
+  const firstCoreId = CORE_SEQUENCE.find((id) => available.some((d) => d.id === id))
+
+  return available.map((def) => {
+    const course = def.slug ? bySlug.get(def.slug) : undefined
+    const nodeProgress = def.slug ? progressBySlug.get(def.slug) : undefined
+    let percent = percentOf(def)
+
+    let unlocked = def.requires.every(cleared)
+    if (def.kind === 'milestone') {
+      unlocked = coreDefs.length > 0 && coreDone >= coreDefs.length
+      percent = coreDefs.length ? Math.round((coreDone / coreDefs.length) * 100) : 0
+    }
+
+    if (isGuest) unlocked = def.id === firstCoreId
+
+    let status: NodeStatus = 'locked'
+    if (!unlocked) status = 'locked'
+    else if (percent >= 100) status = 'done'
+    else if (percent > 0) status = 'progress'
+    else status = 'start'
+
+    const blockedBy = unlocked ? undefined : def.requires.find((id) => !cleared(id))
+
+    return { ...def, course, progress: nodeProgress, percent, status, unlocked, blockedBy }
+  })
+}
+
+export function coreNodes(nodes: ResolvedNode[]): ResolvedNode[] {
+  return CORE_SEQUENCE.map((id) => nodes.find((n) => n.id === id)).filter(
+    (n): n is ResolvedNode => !!n,
+  )
+}
+
+export function journeyNodes(nodes: ResolvedNode[]): ResolvedNode[] {
+  return JOURNEY_SEQUENCE.map((id) => nodes.find((n) => n.id === id)).filter(
+    (n): n is ResolvedNode => !!n,
+  )
+}
+
+export function pickNextNode(nodes: ResolvedNode[]): ResolvedNode | undefined {
+  return journeyNodes(nodes).find((n) => n.unlocked && n.status !== 'done')
+}
 
 export type CareerRankKey =
   | 'path.rankMaster'
@@ -264,31 +151,4 @@ export function careerRankKey(completedCourses: number, xp: number): CareerRankK
   if (completedCourses >= 2 || xp >= 600) return 'path.rankJunior'
   if (completedCourses >= 1 || xp >= 100) return 'path.rankTrainee'
   return 'path.rankNovice'
-}
-
-export function careerRankTitle(completedCourses: number, xp: number): string {
-  return getT()(careerRankKey(completedCourses, xp))
-}
-
-export type DifficultyKey =
-  | 'path.diffNovice'
-  | 'path.diffCore'
-  | 'path.diffPro'
-  | 'path.diffAdvanced'
-  | 'path.diffElite'
-
-export function difficultyKey(d: number): DifficultyKey {
-  const keys: DifficultyKey[] = [
-    'path.diffNovice',
-    'path.diffNovice',
-    'path.diffCore',
-    'path.diffPro',
-    'path.diffAdvanced',
-    'path.diffElite',
-  ]
-  return keys[d] ?? 'path.diffCore'
-}
-
-export function difficultyLabel(d: number): string {
-  return getT()(difficultyKey(d))
 }

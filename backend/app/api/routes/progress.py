@@ -489,8 +489,8 @@ def _is_filler_lesson(lesson: Lesson) -> bool:
 
 
 def _is_desktop_task_keys(keys: list) -> bool:
-    raw = keys[0] if keys else ""
-    return str(raw).startswith("desktop:")
+    raw = str(keys[0] if keys else "")
+    return raw.startswith("desktop:") or raw.startswith("cmd:")
 
 
 def _is_browser_hostile_keys(keys: list) -> bool:

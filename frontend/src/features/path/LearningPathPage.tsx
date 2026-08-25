@@ -1,341 +1,238 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, Lock, Sparkles, Zap } from 'lucide-react'
+import { Check, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
-import { difficultyKey, type NodeStatus } from '@/features/path/growthPath'
+import { type NodeStatus } from '@/features/path/growthPath'
+import { ROAD_VIEW_W, roadCurve, roadHeight, roadWaypoints, traveledRatio } from '@/features/path/pathRoad'
 import { useGrowthPath, type ResolvedNode } from '@/features/path/useGrowthPath'
+import { PageHeader, PageShell } from '@/shared/components/PageLayout'
 import { GlassCard, ProgressBar, Skeleton, StatusBadge } from '@/shared/components/ui'
 import { useT } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
 import { cn } from '@/shared/lib/utils'
 
-function laneClass(lane: ResolvedNode['lane']) {
-  if (lane === 'left') return 'md:col-start-1 md:justify-self-end'
-  if (lane === 'right') return 'md:col-start-3 md:justify-self-start'
-  return 'md:col-start-2 md:justify-self-center'
-}
-
-function shapeClass(shape: ResolvedNode['shape'], status: ResolvedNode['status']) {
-  const base =
-    status === 'locked'
-      ? 'border-ink/10 bg-white/70 opacity-70 dark:border-white/10 dark:bg-slate-900/50'
-      : status === 'done'
-        ? 'border-brand-600/50 bg-gradient-to-br from-brand-50 to-white shadow-[0_0_0_1px_rgb(37_99_235_/_0.15),0_16px_40px_-20px_rgb(37_99_235_/_0.45)] dark:from-brand-950/50 dark:to-slate-900'
-        : status === 'progress'
-          ? 'border-brand-600/40 bg-white ring-2 ring-brand-600/20 dark:bg-slate-900'
-          : 'border-ink/15 bg-white dark:border-white/15 dark:bg-slate-900'
-
-  if (shape === 'diamond') return cn(base, 'clip-path-none rotate-0 rounded-2xl md:rounded-[1.75rem]')
-  if (shape === 'hex') return cn(base, 'rounded-[1.75rem] md:rounded-[2rem]')
-  if (shape === 'wide') return cn(base, 'rounded-2xl md:min-w-[20rem]')
-  return cn(base, 'rounded-xl')
+function statusTone(status: NodeStatus) {
+  if (status === 'done') return 'success' as const
+  if (status === 'progress') return 'brand' as const
+  if (status === 'start') return 'neutral' as const
+  return 'locked' as const
 }
 
 function StatusPill({ status }: { status: NodeStatus }) {
   const t = useT()
-  return (
-    <StatusBadge
-      tone={
-        status === 'done'
-          ? 'success'
-          : status === 'progress'
-            ? 'brand'
-            : status === 'locked'
-              ? 'locked'
-              : 'neutral'
-      }
-      className={
-        status === 'start'
-          ? 'border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink'
-          : status === 'done'
-            ? 'border-transparent bg-success-600 text-white'
-            : undefined
-      }
-    >
-      {status === 'locked' && <Lock className="h-3 w-3" />}
-      {t(`status.${status}`)}
-    </StatusBadge>
-  )
+  return <StatusBadge tone={statusTone(status)}>{t(`status.${status}`)}</StatusBadge>
 }
 
-function PathNodeCard({ node, index }: { node: ResolvedNode; index: number }) {
+function useNodeTitle() {
   const t = useT()
   const { localizeCourse } = useLocalizedContent()
-  const courseTitle = node.course
-    ? localizeCourse(node.course.slug, node.course.title, node.course.description).title
-    : ''
-  const href =
-    node.kind === 'course' && node.slug && node.unlocked
-      ? `/courses/${node.slug}`
-      : node.kind === 'course' && node.slug
-        ? `/courses/${node.slug}`
-        : undefined
+  return (node: ResolvedNode) =>
+    node.course
+      ? localizeCourse(node.course.slug, node.course.title, node.course.description).title
+      : t('path.masterFallback')
+}
 
-  const inner = (
-    <motion.div
-      initial={{ opacity: 0, y: 28, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ delay: Math.min(index * 0.04, 0.35), type: 'spring', stiffness: 260, damping: 24 }}
-      whileHover={node.unlocked ? { y: -4, transition: { duration: 0.2 } } : undefined}
-      className={cn(
-        'relative w-full max-w-sm border p-4 transition',
-        shapeClass(node.shape, node.status),
-      )}
-    >
-      {node.kind === 'start' && (
-        <div className="text-center">
-          <p className="font-display text-xs font-bold uppercase tracking-[0.25em] text-brand-800 dark:text-brand-300">
-            {t('path.startLabel')}
-          </p>
-          <p className="mt-2 font-display text-2xl font-bold text-[var(--text-primary)]">
-            {t('path.startTitle')}
-          </p>
-          <p className="text-muted mt-1 text-sm">{t('path.startSub')}</p>
-        </div>
-      )}
+function JourneyRoad({
+  nodes,
+  nextId,
+}: {
+  nodes: ResolvedNode[]
+  nextId?: string
+}) {
+  const titleOf = useNodeTitle()
+  const points = roadWaypoints(nodes.length)
+  const height = roadHeight(nodes.length)
+  const curve = roadCurve(points)
+  const nextIndex = nextId ? nodes.findIndex((n) => n.id === nextId) : -1
+  const traveled = traveledRatio(nextIndex, nodes.length)
 
-      {node.kind === 'milestone' && (
-        <div className="text-center">
-          <Sparkles className="mx-auto h-6 w-6 text-brand-600" />
-          <p className="font-display mt-2 text-2xl font-bold text-[var(--text-primary)]">{node.careerTitle}</p>
-          <p className="text-muted mt-1 text-sm">{t('path.milestoneSub')}</p>
-          <ProgressBar value={node.percent} className="mx-auto mt-4 max-w-[12rem]" />
-          <div className="mt-3">
-            <StatusPill status={node.status} />
-          </div>
-        </div>
-      )}
+  return (
+    <div className="relative mx-auto w-full max-w-[1080px]" style={{ height }}>
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+        viewBox={`0 0 ${ROAD_VIEW_W} ${height}`}
+        fill="none"
+        aria-hidden
+      >
+        <path className="path-curve-bed" d={curve} />
+        <path
+          className="path-curve-progress"
+          d={curve}
+          pathLength={1}
+          strokeDasharray={`${traveled} 1`}
+        />
+        <path
+          className={cn('path-curve-lane', nextIndex >= 0 && 'path-curve-lane--flow')}
+          d={curve}
+        />
+      </svg>
 
-      {node.kind === 'course' && node.course && (
-        <>
-          <div className="flex items-start gap-3">
-            <CourseBrandIcon slug={node.course.slug} icon={node.course.icon} size={42} />
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusPill status={node.status} />
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  {t(difficultyKey(node.difficulty))} · L{node.difficulty}
-                </span>
-              </div>
-              <p className="font-display mt-1.5 text-lg font-semibold leading-tight text-[var(--text-primary)]">
-                {node.careerTitle}
-              </p>
-              <p className="text-muted mt-0.5 truncate text-sm">{courseTitle}</p>
-            </div>
-          </div>
+      <ol className="absolute inset-0">
+        {nodes.map((node, i) => {
+          const point = points[i]
+          const isNext = node.id === nextId
+          const isLeft = i % 2 === 0
+          const lessonsDone = node.progress?.completed_lessons ?? 0
+          const lessonsTotal = node.course?.lesson_count ?? 0
 
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
-              <p className="text-[var(--text-muted)]">{t('path.lessons')}</p>
-              <p className="font-semibold text-[var(--text-primary)]">
-                {node.progress?.completed_lessons ?? 0}/{node.course.lesson_count}
-              </p>
-            </div>
-            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
-              <p className="text-[var(--text-muted)]">{t('path.courseXp')}</p>
-              <p className="font-semibold text-brand-700 dark:text-brand-300">
-                {node.progress?.xp_earned ?? 0}
-                {node.progress?.xp_total != null ? `/${node.progress.xp_total}` : ''}
-              </p>
-            </div>
-            <div className="rounded-lg bg-[var(--bg-muted)] px-2 py-2">
-              <p className="text-[var(--text-muted)]">{t('path.progress')}</p>
-              <p className="font-semibold text-[var(--text-primary)]">{Math.round(node.percent)}%</p>
-            </div>
-          </div>
-
-          <ProgressBar
-            value={Math.min(100, node.percent)}
-            className="mt-3"
-            barClassName={node.status === 'done' ? 'bg-success-600' : 'bg-brand-600'}
-          />
-
-          <div className="mt-3 flex items-start justify-between gap-2 text-xs font-semibold">
-            <span
-              className={
-                node.unlocked ? 'text-brand-700 dark:text-brand-300' : 'text-[var(--text-secondary)]'
-              }
+          return (
+            <li
+              key={node.id}
+              className="absolute"
+              style={{
+                left: `${(point.x / ROAD_VIEW_W) * 100}%`,
+                top: `${(point.y / height) * 100}%`,
+              }}
             >
-              {node.unlocked ? t('path.openCourse') : (node.unlockHint ?? t('path.needProgress'))}
-            </span>
-            {node.unlocked && <ArrowUpRight className="h-4 w-4 shrink-0 text-brand-700" />}
-          </div>
-        </>
-      )}
-    </motion.div>
+              <div className="relative -translate-x-1/2 -translate-y-1/2">
+                <span
+                  className={cn(
+                    'path-waypoint mx-auto',
+                    node.status === 'done' && 'path-waypoint--done',
+                    isNext && 'path-waypoint--now',
+                  )}
+                >
+                  {node.kind === 'milestone' ? (
+                    <Sparkles className="h-4 w-4" />
+                  ) : node.status === 'done' ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    i + 1
+                  )}
+                </span>
+                <Link
+                  to={node.slug ? `/courses/${node.slug}` : '/courses'}
+                  className={cn(
+                    'absolute top-1/2 w-[14rem] -translate-y-1/2 rounded-[var(--radius-card)] border p-3.5 shadow-[var(--shadow-sm)] transition sm:w-[17.5rem] sm:p-4 lg:w-[20rem] lg:p-5',
+                    isLeft
+                      ? 'left-[calc(100%+0.95rem)] sm:left-[calc(100%+1.2rem)]'
+                      : 'right-[calc(100%+0.95rem)] sm:right-[calc(100%+1.2rem)]',
+                    isNext
+                      ? 'border-brand-600/40 bg-brand-50/90 ring-1 ring-brand-600/15 dark:bg-brand-950/40'
+                      : 'border-[var(--border-default)] bg-[var(--bg-elevated)]/95 hover:border-brand-600/30',
+                    node.status === 'locked' && !isNext && 'opacity-70',
+                  )}
+                >
+                  <span className="flex items-start gap-3 sm:gap-3.5">
+                    {node.course ? (
+                      <CourseBrandIcon slug={node.course.slug} icon={node.course.icon} size={28} />
+                    ) : (
+                      <Sparkles className="mt-1 h-7 w-7 shrink-0 text-brand-600" aria-hidden />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <StatusPill status={node.status} />
+                      <span className="mt-1.5 block text-[15px] font-semibold leading-snug text-[var(--text-primary)] sm:text-base">
+                        {titleOf(node)}
+                      </span>
+                      {lessonsTotal > 0 && (
+                        <span className="mt-1.5 block text-xs tabular-nums text-[var(--text-muted)]">
+                          {lessonsDone}/{lessonsTotal}
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                </Link>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
   )
-
-  // Always open existing course pages — path lock is guidance, catalog stays fully usable
-  if (href) {
-    return (
-      <Link to={href} className="block w-full max-w-sm">
-        {inner}
-      </Link>
-    )
-  }
-
-  return <div className="w-full max-w-sm">{inner}</div>
 }
 
 export function LearningPathPage() {
   const t = useT()
-  const { nodes, coursesLoading, progressLoading, completedCourses, totalCourses, next, rank, user, xp } =
-    useGrowthPath()
+  const titleOf = useNodeTitle()
+  const {
+    journey,
+    coursesLoading,
+    progressLoading,
+    completedCourses,
+    totalCourses,
+    next,
+    rank,
+    user,
+    xp,
+  } = useGrowthPath()
+
+  const loading = coursesLoading || progressLoading
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Blueprint grid */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-20"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgb(11 31 51 / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(11 31 51 / 0.06) 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -left-20 top-40 h-72 w-72 rounded-full bg-brand-500/10 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 top-[40%] h-80 w-80 rounded-full bg-ink/5 blur-3xl"
-      />
-
-      <div className="relative mx-auto max-w-5xl px-4 py-12">
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-800 dark:text-brand-300">
-            {t('path.eyebrow')}
-          </p>
-          <h1 className="text-page-title mt-2 md:text-[2.5rem]">{t('path.title')}</h1>
-          <p className="text-muted mt-3 max-w-2xl">{t('path.subtitle')}</p>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.level')}</p>
-              <p className="font-display mt-1 text-xl font-bold leading-snug text-[var(--text-primary)]">{rank}</p>
-            </GlassCard>
-            <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.xp')}</p>
-              <p className="font-display mt-1 flex items-center gap-2 text-2xl font-bold text-[var(--text-primary)]">
-                <Zap className="h-5 w-5 text-brand-600" />
-                {xp}
-              </p>
-            </GlassCard>
-            <GlassCard className="p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('path.completed')}</p>
-              <p className="font-display mt-1 text-2xl font-bold text-[var(--text-primary)]">
-                {completedCourses}/{totalCourses} {t('path.coursesWord')}
-              </p>
-            </GlassCard>
-            <GlassCard className="border-brand-600/30 bg-gradient-to-br from-brand-50/90 to-white p-4 dark:from-brand-950/40 dark:to-slate-900">
-              <p className="text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-300">
-                {t('path.nextStage')}
-              </p>
-              <p className="font-display mt-1 text-xl font-bold">
-                {next?.careerTitle ?? t('path.masterFallback')}
-              </p>
-              {next?.course && (
-                <Link to={`/courses/${next.course.slug}`} className="mt-2 inline-flex text-sm font-semibold text-brand-700 hover:underline">
-                  {t('path.continueArrow')}
-                </Link>
-              )}
-            </GlassCard>
-          </div>
-
-          {!user && (
-            <p className="mt-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-elevated)]/90 px-4 py-3 text-sm text-[var(--text-secondary)]">
-              {t('path.guestText')}{' '}
-              <Link to="/register" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
-                {t('nav.register')}
-              </Link>
-            </p>
-          )}
-        </motion.section>
-
-        {(coursesLoading || progressLoading) && (
-          <div className="space-y-6">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="mx-auto h-36 max-w-sm" />
-            ))}
-          </div>
-        )}
-
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute bottom-10 left-1/2 top-10 hidden w-px -translate-x-1/2 bg-gradient-to-b from-brand-600 via-brand-400/40 to-ink/15 md:block dark:to-white/15"
-          />
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-x-4 md:gap-y-10">
-            <AnimatePresence>
-              {nodes.map((node, index) => (
-                <div key={node.id} className={cn('relative flex justify-center', laneClass(node.lane))}>
-                  {index > 0 && (
-                    <motion.div
-                      aria-hidden
-                      initial={{ scaleY: 0 }}
-                      whileInView={{ scaleY: 1 }}
-                      viewport={{ once: true }}
-                      className="absolute -top-8 left-1/2 h-8 w-px origin-top bg-brand-600/30 md:hidden"
-                    />
-                  )}
-                  <PathNodeCard node={node} index={index} />
-                </div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <div className="mt-14 flex flex-wrap justify-center gap-3">
+    <PageShell width="6xl">
+      <PageHeader
+        title={t('path.title')}
+        subtitle={t('path.subtitle')}
+        actions={
           <Link to="/courses" className="btn-secondary">
             {t('path.catalog')}
           </Link>
-          {next?.course && (
-            <Link to={`/courses/${next.course.slug}`} className="btn-primary">
-              {t('path.nextCourse')}
-            </Link>
-          )}
+        }
+      />
+
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
+            {t('path.nextStage')}
+          </p>
+          <p className="font-display mt-1 truncate text-xl font-semibold text-[var(--text-primary)]">
+            {next ? titleOf(next) : t('path.masterFallback')}
+          </p>
+          <p className="text-muted mt-1 text-sm">
+            {t('path.summary', { xp, done: completedCourses, total: totalCourses })} · {rank}
+          </p>
         </div>
+        <Link to={next?.slug ? `/courses/${next.slug}` : '/courses'} className="btn-primary">
+          {t('path.continueStage')}
+        </Link>
       </div>
-    </div>
+
+      {!user && (
+        <p className="mb-6 text-sm text-[var(--text-secondary)]">
+          {t('path.guestText')}{' '}
+          <Link to="/register" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+            {t('nav.register')}
+          </Link>
+        </p>
+      )}
+
+      {loading ? (
+        <div className="space-y-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="mx-auto h-16 w-64 rounded-full" />
+          ))}
+        </div>
+      ) : (
+        <JourneyRoad nodes={journey} nextId={next?.id} />
+      )}
+    </PageShell>
   )
 }
 
 export function NextStepCard() {
   const t = useT()
-  const { localizeCourse } = useLocalizedContent()
-  const { next, rank, completedCourses, totalCourses, xp, user } = useGrowthPath()
+  const titleOf = useNodeTitle()
+  const { next, completedCourses, totalCourses, xp, user } = useGrowthPath()
 
   if (!user) {
     return (
       <GlassCard className="border-brand-600/25 p-5">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-700">{t('dashboard.today')}</p>
-        <h2 className="font-display mt-1 text-xl font-semibold">{t('path.guestTitle')}</h2>
+        <h2 className="font-display mt-1 text-xl font-semibold">{t('path.title')}</h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t('path.guestText')}</p>
         <div className="mt-4 flex gap-2">
           <Link to="/path" className="btn-primary">
-            {t('path.openPath')}
+            {t('nav.path')}
           </Link>
           <Link to="/login" className="btn-secondary">
-            {t('path.login')}
+            {t('nav.login')}
           </Link>
         </div>
       </GlassCard>
     )
   }
 
-  const nextTitle = next?.course
-    ? localizeCourse(next.course.slug, next.course.title, next.course.description).title
-    : next?.careerTitle
-  const href = next?.course ? `/courses/${next.course.slug}` : '/path'
+  const href = next?.slug ? `/courses/${next.slug}` : '/path'
 
   return (
     <GlassCard className="border-brand-600/25 bg-gradient-to-br from-brand-50/80 to-white p-5 md:p-6 dark:from-brand-950/40 dark:to-slate-900">
@@ -343,11 +240,10 @@ export function NextStepCard() {
         {t('dashboard.today')}
       </p>
       <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight">
-        {nextTitle ?? t('path.masterFallback')}
+        {next ? titleOf(next) : t('path.masterFallback')}
       </h2>
       <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
         {t('path.summary', { xp, done: completedCourses, total: totalCourses })}
-        {next ? t('path.summaryNext', { next: next.careerTitle }) : ''}
       </p>
       {next && next.percent > 0 && next.percent < 100 ? (
         <div className="mt-4 max-w-md">
@@ -359,19 +255,18 @@ export function NextStepCard() {
           {t('dashboard.continueLesson')}
         </Link>
         <Link to="/path" className="btn-secondary">
-          {t('path.myPath')}
+          {t('nav.path')}
         </Link>
       </div>
-      <p className="mt-3 text-xs text-[var(--text-muted)]">{rank}</p>
     </GlassCard>
   )
 }
 
 export function PathStageStrip() {
   const t = useT()
-  const { localizeCourse } = useLocalizedContent()
-  const { nodes, coursesLoading } = useGrowthPath()
-  const stages = nodes.filter((n) => n.kind === 'course').slice(0, 4)
+  const titleOf = useNodeTitle()
+  const { journey, coursesLoading, next } = useGrowthPath()
+  const stages = journey.filter((n) => n.kind === 'course').slice(0, 4)
 
   if (coursesLoading) {
     return (
@@ -391,38 +286,31 @@ export function PathStageStrip() {
         {t('dashboard.stagesTitle')}
       </h2>
       <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {stages.map((node, i) => {
-          const title = node.course
-            ? localizeCourse(node.course.slug, node.course.title, node.course.description).title
-            : node.careerTitle
-          const current = node.status === 'progress' || node.status === 'start'
-          const href = node.unlocked && node.slug ? `/courses/${node.slug}` : '/path'
-          return (
-            <li key={node.id}>
-              <Link
-                to={href}
-                className={cn(
-                  'flex h-full flex-col rounded-[var(--radius-lg)] border px-3.5 py-3 transition',
-                  current
-                    ? 'border-brand-600/40 bg-brand-50/80 ring-1 ring-brand-600/15 dark:bg-brand-950/30'
-                    : node.status === 'done'
-                      ? 'border-brand-600/20 bg-[var(--bg-elevated)]'
-                      : 'border-[var(--border-default)] bg-[var(--bg-elevated)] opacity-75',
-                )}
-              >
-                <span className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold tabular-nums text-[var(--text-muted)]">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <StatusPill status={node.status} />
+        {stages.map((node, i) => (
+          <li key={node.id}>
+            <Link
+              to={node.slug ? `/courses/${node.slug}` : '/path'}
+              className={cn(
+                'flex h-full flex-col rounded-[var(--radius-lg)] border px-3.5 py-3 transition',
+                next?.id === node.id
+                  ? 'border-brand-600/40 bg-brand-50/80 ring-1 ring-brand-600/15 dark:bg-brand-950/30'
+                  : node.status === 'done'
+                    ? 'border-brand-600/20 bg-[var(--bg-elevated)]'
+                    : 'border-[var(--border-default)] bg-[var(--bg-elevated)] opacity-75',
+              )}
+            >
+              <span className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-bold tabular-nums text-[var(--text-muted)]">
+                  {String(i + 1).padStart(2, '0')}
                 </span>
-                <span className="mt-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
-                  {title}
-                </span>
-              </Link>
-            </li>
-          )
-        })}
+                <StatusPill status={node.status} />
+              </span>
+              <span className="mt-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
+                {titleOf(node)}
+              </span>
+            </Link>
+          </li>
+        ))}
       </ol>
     </section>
   )
