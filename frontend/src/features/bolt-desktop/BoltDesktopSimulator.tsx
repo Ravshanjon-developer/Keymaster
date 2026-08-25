@@ -543,19 +543,34 @@ export function BoltDesktopSimulator() {
         { label: t('desktopSimulator.menuRename'), action: () => startDesktopRenameFor(node.id) },
         { label: t('desktopSimulator.menuCopy'), action: () => setClipboard({ nodeId: node.id, mode: 'copy' }) },
         { label: t('desktopSimulator.menuCut'), action: () => setClipboard({ nodeId: node.id, mode: 'cut' }) },
-        {
-          label: t('desktopSimulator.menuDelete'),
-          action: () => {
-            if (vfs.delete(node.id)) {
-              setDesktopSelected(null);
-            }
-          },
-          danger: true,
-        },
       );
+      if (node.type === 'file' && node.name.endsWith('.zip')) {
+        items.push({
+          label: t('desktopSimulator.menuExtractHere'),
+          action: () => archive.extract(node.id),
+        });
+      }
+      if (node.parentId) {
+        items.push({
+          label: t('desktopSimulator.menuCompressZip'),
+          action: () => {
+            const zipId = archive.compress(node.id, node.parentId!);
+            if (zipId) setDesktopSelected(zipId);
+          },
+        });
+      }
+      items.push({
+        label: t('desktopSimulator.menuDelete'),
+        action: () => {
+          if (vfs.delete(node.id)) {
+            setDesktopSelected(null);
+          }
+        },
+        danger: true,
+      });
       return items;
     },
-    [t, openFiles, openFile, openInVsCode, startDesktopRenameFor, vfs],
+    [t, openFiles, openFile, openInVsCode, startDesktopRenameFor, vfs, archive],
   );
 
   const handleDesktopIconContextMenu = useCallback(
