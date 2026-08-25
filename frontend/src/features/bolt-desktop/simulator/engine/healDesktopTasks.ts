@@ -17,7 +17,7 @@ export function healDesktopForCompletedTasks(
   completed: Set<number>,
 ): boolean {
   const next = nextTaskId(completed)
-  if (next == null || next > 5) return false
+  if (next == null || next > 6) return false
 
   const desktopId = vfs.getDesktopId()
   let changed = false
@@ -42,6 +42,18 @@ export function healDesktopForCompletedTasks(
 
   if (next === 5 && completed.has(4) && !desktopHas('Projects', 'folder')) {
     if (vfs.createFolder(desktopId, 'Projects')) changed = true
+  }
+
+  // Task 6: need at least one real file to copy (Welcome.txt may have been deleted).
+  if (next === 6) {
+    const hasAnyFile = vfs.getChildren(desktopId).some((n) => n.type === 'file')
+    const projectsId = vfs.findProjectsId()
+    const projectsHasFile = projectsId
+      ? vfs.getChildren(projectsId).some((n) => n.type === 'file')
+      : false
+    if (!hasAnyFile && !projectsHasFile) {
+      if (vfs.createFile(desktopId, 'Welcome.txt', 'Copy me!\n')) changed = true
+    }
   }
 
   return changed

@@ -100,6 +100,7 @@ export type Messages = {
     learned: string
     notLearned: string
     progressLabel: string
+    progressLessons: string
   }
   dashboard: {
     hello: string
@@ -160,8 +161,12 @@ export type Messages = {
     badCredentials: string
     accountCreated: string
     registerFail: string
+    authFailed: string
+    weakPassword: string
+    invalidEmail: string
     emailAlreadyRegistered: string
     alreadyHadAccountLogin: string
+    goToLogin: string
     serverDown: string
     checkEmail: string
     checkEmailExistingResent: string

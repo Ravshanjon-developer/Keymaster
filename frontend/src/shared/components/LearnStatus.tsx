@@ -39,11 +39,14 @@ export function LearnProgressBar({
   total,
   className,
   compact = false,
+  unitLabel,
 }: {
   done: number
   total: number
   className?: string
   compact?: boolean
+  /** Override default «сочетаний» (e.g. course catalog uses lessons). */
+  unitLabel?: string
 }) {
   const t = useT()
   const percent = total ? Math.round((done / total) * 100) : 0
@@ -56,7 +59,7 @@ export function LearnProgressBar({
         )}
       >
         <span className="text-ink-soft dark:text-slate-400">
-          {done}/{total} {t('learn.progressLabel')}
+          {done}/{total} {unitLabel ?? t('learn.progressLabel')}
         </span>
         <span className="tabular-nums text-brand-800 dark:text-brand-300">{percent}%</span>
       </div>

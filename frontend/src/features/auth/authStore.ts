@@ -105,7 +105,7 @@ export const useAuthStore = create<AuthState>()(
           const { data, error } = await supabase.auth.signInWithPassword({ email, password })
           if (error) throw mapSupabaseAuthError(error)
           const token = data.session?.access_token
-          if (!token) throw new ApiError('No session', 401)
+          if (!token) throw new ApiError('INVALID_CREDENTIALS', 401)
           localStorage.setItem('km_token', token)
           const user = await api.me()
           set({ token, user })
@@ -202,7 +202,7 @@ export const useAuthStore = create<AuthState>()(
       confirmSignupOtp: async (email, code) => {
         if (!supabase) throw new ApiError('Supabase not configured', 400)
         const tokenDigits = code.replace(/\D/g, '')
-        if (tokenDigits.length < 6) throw new ApiError('Invalid OTP', 400)
+        if (tokenDigits.length < 6) throw new ApiError('OTP_INVALID', 400)
         otpConfirmInFlight = true
         try {
           const { data, error } = await supabase.auth.verifyOtp({
@@ -212,7 +212,7 @@ export const useAuthStore = create<AuthState>()(
           })
           if (error) throw mapSupabaseAuthError(error)
           const accessToken = data.session?.access_token
-          if (!accessToken) throw new ApiError('No session', 401)
+          if (!accessToken) throw new ApiError('INVALID_CREDENTIALS', 401)
           localStorage.setItem('km_token', accessToken)
           const user = await fetchMeWithRetry()
           set({ token: accessToken, user, authReady: true })

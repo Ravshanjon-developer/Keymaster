@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-import { api, ApiError } from '@/shared/lib/api'
+import { api } from '@/shared/lib/api'
+import { authUserMessage } from '@/features/auth/supabaseAuthErrors'
 import { useT } from '@/shared/i18n'
 import { GlassCard } from '@/shared/components/ui'
 
@@ -25,13 +26,22 @@ export function VerifyEmailPage() {
         const res = await api.verifyEmail(token)
         if (!cancelled) {
           setState('ok')
-          setMessage(res.message)
+          const okText =
+            res.message && !/invalid|token|expired/i.test(res.message)
+              ? res.message
+              : t('auth.verifySuccess')
+          setMessage(okText)
           toast.success(t('auth.verifySuccess'))
         }
       } catch (err) {
         if (!cancelled) {
           setState('error')
-          setMessage(err instanceof ApiError ? err.message : t('auth.verifyFail'))
+          const friendly = authUserMessage(t, err, 'auth.authFailed')
+          setMessage(
+            friendly === t('auth.authFailed') || friendly === t('auth.badCredentials')
+              ? t('auth.verifyFail')
+              : friendly,
+          )
         }
       }
     })()
@@ -58,8 +68,8 @@ export function VerifyEmailPage() {
             <p className="mt-4 text-signal" role="alert">
               {message}
             </p>
-            <Link to="/register" className="btn-secondary mt-6 inline-flex min-h-11 px-6">
-              {t('auth.registerLink')}
+            <Link to="/login" className="btn-secondary mt-6 inline-flex min-h-11 px-6">
+              {t('auth.loginLink')}
             </Link>
           </>
         )}

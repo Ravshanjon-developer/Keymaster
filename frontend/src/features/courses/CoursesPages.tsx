@@ -6,6 +6,7 @@ import { Link, Navigate } from 'react-router-dom'
 
 import { CourseBrandIcon } from '@/features/courses/CourseBrandIcon'
 import { playableLessonId } from '@/features/lessons/lessonView'
+import { syncLocalProgressToServer } from '@/features/lessons/syncLocalProgress'
 import { useAuthStore } from '@/features/auth/authStore'
 import { api } from '@/shared/lib/api'
 import { getCourseStatus } from '@/shared/lib/courseStatus'
@@ -59,7 +60,10 @@ export function CoursesPage() {
   const { data, isLoading, isError } = useQuery({ queryKey: ['courses'], queryFn: api.courses })
   const courseProgress = useQuery({
     queryKey: ['course-progress'],
-    queryFn: api.courseProgress,
+    queryFn: async () => {
+      await syncLocalProgressToServer()
+      return api.courseProgress()
+    },
     enabled: !!user,
   })
 
@@ -212,6 +216,7 @@ export function CoursesPage() {
                         done={prog.completed}
                         total={prog.total}
                         compact
+                        unitLabel={t('learn.progressLessons')}
                         className="mb-3"
                       />
                     ) : (

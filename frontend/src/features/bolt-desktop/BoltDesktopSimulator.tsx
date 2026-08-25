@@ -198,20 +198,43 @@ export function BoltDesktopSimulator() {
     }
   }, [clipboard, vfs]);
 
+  const filesExplorerActive = useCallback(() => {
+    return wm.windows.some(
+      (w) => w.appId === 'files' && !w.minimized && w.data !== 'trash' && w.data !== vfs.getTrashId(),
+    );
+  }, [wm.windows, vfs]);
+
   const runNewFile = useCallback(() => {
-    if (fmActionsRef.current) fmActionsRef.current.newFile();
+    if (filesExplorerActive() && fmActionsRef.current) fmActionsRef.current.newFile();
     else createOnDesktop('file');
-  }, [createOnDesktop]);
+  }, [createOnDesktop, filesExplorerActive]);
 
   const runNewFolder = useCallback(() => {
-    if (fmActionsRef.current) fmActionsRef.current.newFolder();
+    if (filesExplorerActive() && fmActionsRef.current) fmActionsRef.current.newFolder();
     else createOnDesktop('folder');
-  }, [createOnDesktop]);
+  }, [createOnDesktop, filesExplorerActive]);
 
   const runPaste = useCallback(() => {
-    if (fmActionsRef.current) fmActionsRef.current.paste();
+    // Prefer Explorer only while its window is open and not minimized.
+    // Stale fmActions after close used to swallow Ctrl+V (clipboard stayed null in closure).
+    if (filesExplorerActive() && fmActionsRef.current) fmActionsRef.current.paste();
     else pasteOnDesktop();
-  }, [pasteOnDesktop]);
+  }, [pasteOnDesktop, filesExplorerActive]);
+
+  const copySelectionToClipboard = useCallback(
+    (mode: 'copy' | 'cut') => {
+      const fmSel = filesExplorerActive() ? fmActionsRef.current?.getSelectedId() : null;
+      const nodeId =
+        fmSel && !fmSel.startsWith('sys:')
+          ? fmSel
+          : desktopSelected && !desktopSelected.startsWith('sys:')
+            ? desktopSelected
+            : null;
+      if (!nodeId) return;
+      setClipboard({ nodeId, mode });
+    },
+    [desktopSelected, filesExplorerActive],
+  );
 
   const showDesktopMenu = useCallback((x: number, y: number, items: MenuItem[]) => {
     setDesktopMenu({ x, y, items });
@@ -645,14 +668,10 @@ export function BoltDesktopSimulator() {
         vfs.undo();
       } else if (ctrl && (e.key === 'c' || e.key === 'C')) {
         e.preventDefault();
-        if (desktopSelected && !desktopSelected.startsWith('sys:')) {
-          setClipboard({ nodeId: desktopSelected, mode: 'copy' });
-        }
+        copySelectionToClipboard('copy');
       } else if (ctrl && (e.key === 'x' || e.key === 'X')) {
         e.preventDefault();
-        if (desktopSelected && !desktopSelected.startsWith('sys:')) {
-          setClipboard({ nodeId: desktopSelected, mode: 'cut' });
-        }
+        copySelectionToClipboard('cut');
       } else if (e.key === 'Delete') {
         e.preventDefault();
         if (desktopSelected && !desktopSelected.startsWith('sys:')) {
@@ -670,15 +689,25 @@ export function BoltDesktopSimulator() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [vfs, runNewFile, runNewFolder, runPaste, startDesktopRename, openDesktopSelection, desktopSelected]);
+  }, [
+    vfs,
+    runNewFile,
+    runNewFolder,
+    runPaste,
+    startDesktopRename,
+    openDesktopSelection,
+    desktopSelected,
+    copySelectionToClipboard,
+  ]);
 
-  const registerActions = useCallback((actions: FileManagerActions) => {
+  const registerActions = useCallback((actions: FileManagerActions | null) => {
     fmActionsRef.current = actions;
   }, []);
 
   const renderWindowContent = (win: WindowState) => {
     if (win.appId === 'files') {
       const folderId = (win.data as string) ?? vfs.getDesktopId();
+      const isTrash = folderId === 'trash' || folderId === vfs.getTrashId();
       return (
         <FileManager
           vfs={vfs}
@@ -690,7 +719,7 @@ export function BoltDesktopSimulator() {
           onOpenInVsCode={openInVsCode}
           clipboard={clipboard}
           setClipboard={setClipboard}
-          registerActions={registerActions}
+          registerActions={isTrash ? undefined : registerActions}
         />
       );
     }

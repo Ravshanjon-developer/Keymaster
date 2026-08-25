@@ -24,7 +24,7 @@ interface Props {
   onOpenInVsCode?: (folderId: string) => void;
   clipboard: ClipboardEntry | null;
   setClipboard: (entry: ClipboardEntry | null) => void;
-  registerActions: (actions: FileManagerActions) => void;
+  registerActions?: (actions: FileManagerActions | null) => void;
 }
 
 export interface FileManagerActions {
@@ -32,6 +32,8 @@ export interface FileManagerActions {
   newFolder: () => void;
   paste: () => void;
   refresh: () => void;
+  /** Live selection for global Ctrl+C / Ctrl+X while Explorer is open. */
+  getSelectedId: () => string | null;
 }
 
 export function FileManager({
@@ -58,16 +60,16 @@ export function FileManager({
   const [propertiesNode, setPropertiesNode] = useState<VNode | null>(null);
   const refresh = () => setTick((t) => t + 1);
   const editRef = useRef<HTMLInputElement>(null);
+  const clipboardRef = useRef(clipboard);
+  clipboardRef.current = clipboard;
+  const folderIdRef = useRef(currentFolderId);
+  folderIdRef.current = currentFolderId;
+  const selectedIdRef = useRef(selectedId);
+  selectedIdRef.current = selectedId;
 
   useEffect(() => {
     return vfs.subscribe(refresh);
   }, [vfs]);
-
-  useEffect(() => {
-    registerActions({ newFile, newFolder, paste, refresh });
-    // Re-bind when folder or clipboard changes so global shortcuts target the right directory.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registerActions, currentFolderId, clipboard]);
 
   const resolvedFolderId = folderIdProp ?? initialFolderId;
   useEffect(() => {
@@ -123,7 +125,7 @@ export function FileManager({
   const newFile = () => {
     const id = createItemForInlineRename(
       vfs,
-      currentFolderId,
+      folderIdRef.current,
       'file',
       t('desktopSimulator.defaultNewFile'),
     );
@@ -138,7 +140,7 @@ export function FileManager({
   const newFolder = () => {
     const id = createItemForInlineRename(
       vfs,
-      currentFolderId,
+      folderIdRef.current,
       'folder',
       t('desktopSimulator.defaultNewFolder'),
     );
@@ -154,16 +156,32 @@ export function FileManager({
   const doCut = (node: VNode) => setClipboard({ nodeId: node.id, mode: 'cut' });
 
   const paste = () => {
-    if (!clipboard) return;
-    const src = vfs.getNode(clipboard.nodeId);
+    const clip = clipboardRef.current;
+    if (!clip) return;
+    const src = vfs.getNode(clip.nodeId);
     if (!src) return;
-    if (clipboard.mode === 'copy') {
-      vfs.copy(clipboard.nodeId, currentFolderId);
+    const parentId = folderIdRef.current;
+    if (clip.mode === 'copy') {
+      vfs.copy(clip.nodeId, parentId);
     } else {
-      vfs.move(clipboard.nodeId, currentFolderId);
+      vfs.move(clip.nodeId, parentId);
       setClipboard(null);
     }
   };
+
+  useEffect(() => {
+    if (!registerActions) return;
+    registerActions({
+      newFile,
+      newFolder,
+      paste,
+      refresh,
+      getSelectedId: () => selectedIdRef.current,
+    });
+    return () => registerActions(null);
+    // Stable actions read clipboard/folder/selection via refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerActions]);
 
   const doDelete = (node: VNode) => {
     if (node.id === vfs.getTrashId()) return;

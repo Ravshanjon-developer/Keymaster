@@ -10,21 +10,8 @@ import { OtpDigitInput, otpDigitCount } from '@/shared/components/OtpDigitInput'
 import { FloatingLabelInput } from '@/shared/components/FloatingLabelInput'
 import { AuthScreen } from '@/features/auth/AuthScreen'
 import { GoogleSignInBlock } from '@/features/auth/GoogleSignInButton'
+import { authUserMessage, classifyAuthMessage } from '@/features/auth/supabaseAuthErrors'
 import { cn } from '@/shared/lib/utils'
-
-function authFlowErrorMessage(t: ReturnType<typeof useT>, err: unknown, fallback: string) {
-  if (!(err instanceof ApiError)) return fallback
-  switch (err.message) {
-    case 'USER_ALREADY_REGISTERED':
-      return t('auth.emailAlreadyRegistered')
-    case 'RESEND_RATE_LIMIT':
-      return t('auth.resendRateLimit')
-    case 'RESEND_FAILED':
-      return t('auth.resendFail')
-    default:
-      return err.message || fallback
-  }
-}
 
 function useResendCooldown(seconds = 60) {
   const [until, setUntil] = useState(0)
@@ -39,6 +26,28 @@ function useResendCooldown(seconds = 60) {
     cooldownLeft: left,
     startCooldown: () => setUntil(Date.now() + seconds * 1000),
   }
+}
+
+function AuthAlert({
+  children,
+  tone = 'error',
+}: {
+  children: React.ReactNode
+  tone?: 'error' | 'info'
+}) {
+  return (
+    <div
+      role="alert"
+      className={cn(
+        'rounded-xl border px-3 py-2.5 text-sm leading-snug',
+        tone === 'error'
+          ? 'border-signal/30 bg-signal/10 font-medium text-signal'
+          : 'border-brand-500/25 bg-brand-50/80 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100',
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 function VerifySignupOtpForm({
@@ -71,13 +80,8 @@ function VerifySignupOtpForm({
       if (onSuccess) onSuccess()
       else navigate('/dashboard', { replace: true })
     } catch (err) {
-      const msg =
-        err instanceof ApiError && err.message === 'EMAIL_NOT_VERIFIED'
-          ? t('auth.emailNotVerified')
-          : err instanceof ApiError
-            ? err.message
-            : t('auth.otpInvalid')
-      setError(msg.includes('Invalid') || msg.includes('expired') || msg.includes('otp') ? t('auth.otpInvalid') : msg)
+      const msg = authUserMessage(t, err, 'auth.authFailed')
+      setError(msg)
       toast.error(t('auth.otpInvalid'))
     } finally {
       setLoading(false)
@@ -99,11 +103,7 @@ function VerifySignupOtpForm({
           disabled={loading}
         />
       </fieldset>
-      {error && (
-        <p role="alert" className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm text-signal">
-          {error}
-        </p>
-      )}
+      {error && <AuthAlert>{error}</AuthAlert>}
       <button type="submit" disabled={loading || otp.replace(/\D/g, '').length < otpDigitCount} className="btn-primary min-h-11 w-full">
         {loading ? t('auth.confirmingCode') : t('auth.confirmCode')}
       </button>
@@ -131,8 +131,9 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const from = (location.state as { from?: string } | null)?.from ?? '/dashboard'
-  const [email, setEmail] = useState('')
+  const from = (location.state as { from?: string; email?: string } | null)?.from ?? '/dashboard'
+  const prefEmail = (location.state as { email?: string } | null)?.email ?? ''
+  const [email, setEmail] = useState(prefEmail)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -151,20 +152,13 @@ export function LoginPage() {
       toast.success(t('auth.welcome'))
       navigate(from)
     } catch (err) {
-      const status = err instanceof ApiError ? err.status : 0
-      const rawMsg = err instanceof ApiError ? err.message : ''
-      if (status === 403 && rawMsg === 'EMAIL_NOT_VERIFIED') {
+      const raw = err instanceof ApiError ? err.message : ''
+      const code = classifyAuthMessage(raw, err instanceof ApiError ? err.status : 400)
+      if (code === 'EMAIL_NOT_VERIFIED') {
         setNeedsVerify(true)
         setError(t('auth.emailNotVerified'))
       } else {
-        const msg =
-          status === 401
-            ? t('auth.badCredentials')
-            : status === 0
-              ? t('auth.serverDown')
-              : err instanceof ApiError
-                ? err.message
-                : t('auth.badCredentials')
+        const msg = authUserMessage(t, err, 'auth.badCredentials')
         setError(msg)
         toast.error(msg)
       }
@@ -191,7 +185,7 @@ export function LoginPage() {
       }
     } catch (err) {
       if (err instanceof ApiError && err.message === 'RESEND_RATE_LIMIT') startResendCooldown()
-      toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
+      toast.error(authUserMessage(t, err, 'auth.authFailed'))
     } finally {
       setResendLoading(false)
     }
@@ -244,14 +238,7 @@ export function LoginPage() {
               setError('')
             }}
           />
-          {error && (
-            <p
-              role="alert"
-              className="rounded-xl border border-signal/30 bg-signal/10 px-3 py-2 text-sm font-medium text-signal"
-            >
-              {error}
-            </p>
-          )}
+          {error && <AuthAlert>{error}</AuthAlert>}
           {needsVerify && isSupabaseAuth && (
             <VerifySignupOtpForm
               email={email}
@@ -290,6 +277,8 @@ export function RegisterPage() {
   const returnTo = (location.state as { from?: string } | null)?.from ?? '/dashboard'
   const [form, setForm] = useState({ email: '', username: '', password: '', display_name: '' })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
   const [pendingWasExisting, setPendingWasExisting] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
@@ -298,6 +287,8 @@ export function RegisterPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setError('')
+    setAlreadyRegistered(false)
     try {
       const res = await register(form)
       if (res.loggedIn) {
@@ -312,12 +303,12 @@ export function RegisterPage() {
         res.existingAccountResent ? t('auth.checkEmailExistingResent') : t('auth.checkEmail'),
       )
     } catch (err) {
-      const status = err instanceof ApiError ? err.status : 0
-      toast.error(
-        status === 0 && !(err instanceof ApiError)
-          ? t('auth.serverDown')
-          : authFlowErrorMessage(t, err, t('auth.registerFail')),
-      )
+      const raw = err instanceof ApiError ? err.message : ''
+      const code = classifyAuthMessage(raw, err instanceof ApiError ? err.status : 400)
+      const msg = authUserMessage(t, err, 'auth.registerFail')
+      setError(msg)
+      setAlreadyRegistered(code === 'USER_ALREADY_REGISTERED')
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -338,7 +329,7 @@ export function RegisterPage() {
       }
     } catch (err) {
       if (err instanceof ApiError && err.message === 'RESEND_RATE_LIMIT') startResendCooldown()
-      toast.error(authFlowErrorMessage(t, err, t('auth.resendFail')))
+      toast.error(authUserMessage(t, err, 'auth.authFailed'))
     } finally {
       setResendLoading(false)
     }
@@ -357,7 +348,7 @@ export function RegisterPage() {
             : t('auth.checkEmailBody', { email: pendingEmail })
         }
         footer={
-          <Link to="/login" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
+          <Link to="/login" state={{ email: pendingEmail }} className="font-semibold text-brand-700 hover:underline dark:text-brand-300">
             {t('auth.loginLink')}
           </Link>
         }
@@ -393,7 +384,7 @@ export function RegisterPage() {
     <AuthScreen
       compact
       title={t('auth.registerTitle')}
-      subtitle={t('auth.loginSub')}
+      subtitle={t('auth.registerSub')}
       footer={
         <>
           {t('auth.haveAccount')}{' '}
@@ -411,7 +402,11 @@ export function RegisterPage() {
             required
             value={form.display_name}
             autoComplete="name"
-            onChange={(v) => setForm({ ...form, display_name: v })}
+            onChange={(v) => {
+              setForm({ ...form, display_name: v })
+              setError('')
+              setAlreadyRegistered(false)
+            }}
           />
           <FloatingLabelInput
             id="reg-username"
@@ -419,7 +414,11 @@ export function RegisterPage() {
             required
             value={form.username}
             autoComplete="username"
-            onChange={(v) => setForm({ ...form, username: v })}
+            onChange={(v) => {
+              setForm({ ...form, username: v })
+              setError('')
+              setAlreadyRegistered(false)
+            }}
           />
           <FloatingLabelInput
             id="reg-email"
@@ -428,7 +427,11 @@ export function RegisterPage() {
             required
             value={form.email}
             autoComplete="email"
-            onChange={(v) => setForm({ ...form, email: v })}
+            onChange={(v) => {
+              setForm({ ...form, email: v })
+              setError('')
+              setAlreadyRegistered(false)
+            }}
           />
           <FloatingLabelInput
             id="reg-password"
@@ -439,8 +442,26 @@ export function RegisterPage() {
             value={form.password}
             autoComplete="new-password"
             showPasswordStrength
-            onChange={(v) => setForm({ ...form, password: v })}
+            onChange={(v) => {
+              setForm({ ...form, password: v })
+              setError('')
+              setAlreadyRegistered(false)
+            }}
           />
+          {error && (
+            <AuthAlert>
+              <p>{error}</p>
+              {alreadyRegistered && (
+                <Link
+                  to="/login"
+                  state={{ email: form.email, from: returnTo }}
+                  className="mt-2 inline-flex font-semibold underline underline-offset-2"
+                >
+                  {t('auth.goToLogin')}
+                </Link>
+              )}
+            </AuthAlert>
+          )}
           <button type="submit" disabled={loading} className={cn('btn-primary !mt-3 w-full min-h-11 py-2.5', loading && 'is-loading')}>
           {t('auth.createAccount')}
         </button>

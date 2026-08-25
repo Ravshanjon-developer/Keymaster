@@ -48,6 +48,11 @@ export function loadLocalLessonDone(courseSlug: string): string[] {
   return readStore()[courseSlug] ?? []
 }
 
+/** All courseSlug → lessonId[] entries still stored locally (for server sync). */
+export function listAllLocalLessonDone(): Record<string, string[]> {
+  return readStore()
+}
+
 export function addLocalLessonDone(courseSlug: string, lessonIds: string[]): string[] {
   if (!courseSlug || !lessonIds.length) return loadLocalLessonDone(courseSlug)
   const store = readStore()

@@ -16,6 +16,7 @@ import {
   systemShortcutLabel,
 } from '@/features/lessons/systemStudy'
 import { addLocalLessonDone, loadLocalLessonDone } from '@/features/lessons/localLessonDone'
+import { syncLessonIdsToServer, syncLocalProgressToServer } from '@/features/lessons/syncLocalProgress'
 import { desktopSimulatorHref, parseDesktopTaskId, DESKTOP_PROGRESS_EVENT, isDesktopTaskDoneLocally } from '@/shared/lib/simulatorProgress'
 import { useT, useLocaleStore } from '@/shared/i18n'
 import { useLocalizedContent } from '@/shared/i18n/contentLocalize'
@@ -76,6 +77,22 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
   }, [data?.course_slug])
 
   useEffect(() => {
+    if (!token || !data?.course_slug) return
+    let cancelled = false
+    void (async () => {
+      const n = await syncLocalProgressToServer()
+      if (cancelled || n <= 0) return
+      await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+      await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+      await refreshUser()
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [token, data?.course_slug, lessonId, queryClient, refreshUser])
+
+  useEffect(() => {
     if (!token || !desktopTaskId) return
 
     const refresh = () => {
@@ -83,6 +100,12 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
       void queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
       void queryClient.invalidateQueries({ queryKey: ['course-progress'] })
       if (isDesktopTaskDoneLocally(desktopTaskId)) setSucceeded(true)
+      void syncLocalProgressToServer().then((n) => {
+        if (n <= 0) return
+        void queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+        void queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+        void refreshUser()
+      })
     }
 
     const onProgress = (event: Event) => {
@@ -333,6 +356,17 @@ export function LessonPage({ lessonId }: { lessonId: string }) {
             const after = [...ids].sort().join('|')
             return before === after ? prev : ids
           })
+          if (!token) return
+          const newly = ids.filter((id) => !tickedSystem.includes(id))
+          if (!newly.length) return
+          void (async () => {
+            const n = await syncLessonIdsToServer(newly)
+            if (n <= 0) return
+            await queryClient.invalidateQueries({ queryKey: ['course-progress'] })
+            await queryClient.invalidateQueries({ queryKey: ['lesson-progress'] })
+            await queryClient.invalidateQueries({ queryKey: ['lesson-progress-item', lessonId] })
+            await refreshUser()
+          })()
         }}
         onHotkeyResult={async (correct, ms) => {
           if (!correct) return

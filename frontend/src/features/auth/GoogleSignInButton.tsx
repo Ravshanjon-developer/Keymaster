@@ -3,9 +3,9 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useAuthStore } from '@/features/auth/authStore'
+import { authUserMessage } from '@/features/auth/supabaseAuthErrors'
 import { isSupabaseAuth } from '@/shared/lib/supabase'
 import { useT } from '@/shared/i18n'
-import { ApiError } from '@/shared/lib/api'
 import { cn } from '@/shared/lib/utils'
 
 function GoogleIcon() {
@@ -43,8 +43,7 @@ export function GoogleSignInBlock({ className, dense }: { className?: string; de
     try {
       await loginWithGoogle()
     } catch (err) {
-      const msg = err instanceof ApiError ? err.message : t('auth.googleSignInFail')
-      toast.error(msg)
+      toast.error(authUserMessage(t, err, 'auth.authFailed'))
       setLoading(false)
     }
   }

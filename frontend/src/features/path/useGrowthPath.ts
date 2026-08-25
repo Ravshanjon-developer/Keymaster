@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { useAuthStore } from '@/features/auth/authStore'
+import { syncLocalProgressToServer } from '@/features/lessons/syncLocalProgress'
 import { careerRankKey, journeyNodes, pickNextNode, resolvePathNodes } from '@/features/path/growthPath'
 import { useT } from '@/shared/i18n'
 import { api } from '@/shared/lib/api'
@@ -16,7 +17,10 @@ export function useGrowthPath() {
   const courses = useQuery({ queryKey: ['courses'], queryFn: api.courses })
   const progress = useQuery({
     queryKey: ['course-progress'],
-    queryFn: api.courseProgress,
+    queryFn: async () => {
+      await syncLocalProgressToServer()
+      return api.courseProgress()
+    },
     enabled: !!user,
   })
 

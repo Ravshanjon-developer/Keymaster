@@ -73,9 +73,9 @@ export const tasks: Task[] = [
     id: 6,
     title: 'Copy a file',
     description: 'Copy any file and paste the duplicate somewhere.',
-    hint: 'Right-click a file → Copy, then right-click empty space → Paste.',
+    hint: 'Right-click a file → Copy, then right-click empty space → Paste (a second file like «notes 2.txt» should appear).',
     xp: 10,
-    check: (vfs) => vfs.getCopyCount() > 0,
+    check: (vfs) => vfs.hasFileCopyEvidence(),
   },
   {
     id: 7,

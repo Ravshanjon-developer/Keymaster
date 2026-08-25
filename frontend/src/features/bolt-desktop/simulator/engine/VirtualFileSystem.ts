@@ -200,10 +200,15 @@ export class VirtualFileSystem {
 
   copy(nodeId: string, targetParentId: string): string | null {
     const node = this.nodes.get(nodeId);
-    if (!node || !this.nodes.has(targetParentId)) return null;
-    if (node.type === 'folder' && this.isDescendant(targetParentId, nodeId)) return null;
-    const newName = this.uniqueName(targetParentId, node.name);
-    const id = this.cloneTree(nodeId, targetParentId, newName);
+    if (!node) return null;
+    // If Explorer folder was deleted / stale, still allow paste onto Desktop.
+    let parentId = targetParentId;
+    if (!this.nodes.has(parentId) || this.nodes.get(parentId)?.type !== 'folder') {
+      parentId = DESKTOP_ID;
+    }
+    if (node.type === 'folder' && this.isDescendant(parentId, nodeId)) return null;
+    const newName = this.uniqueName(parentId, node.name);
+    const id = this.cloneTree(nodeId, parentId, newName);
     this.copyCount += 1;
     this.notify();
     return id;
@@ -302,8 +307,32 @@ export class VirtualFileSystem {
     return this.copyCount;
   }
 
+  /**
+   * True if the user pasted a duplicate file (counter or "name 2.ext" next to "name.ext").
+   * Survives refresh when counters were not yet persisted.
+   */
+  hasFileCopyEvidence(): boolean {
+    if (this.copyCount > 0) return true;
+    for (const folder of this.nodes.values()) {
+      if (folder.type !== 'folder' || folder.id === TRASH_ID) continue;
+      const files = this.getChildren(folder.id).filter((n) => n.type === 'file');
+      if (files.length < 2) continue;
+      const names = new Set(files.map((f) => f.name.toLowerCase()));
+      for (const file of files) {
+        const ext = getExtension(file.name);
+        const bare = ext ? file.name.slice(0, file.name.length - ext.length - 1) : file.name;
+        const numbered = bare.match(/^(.*) (\d+)$/);
+        if (!numbered) continue;
+        const original = ext ? `${numbered[1]}.${ext}` : numbered[1];
+        if (names.has(original.toLowerCase())) return true;
+      }
+    }
+    return false;
+  }
+
   recordExtract(): void {
     this.extractCount += 1;
+    this.notify();
   }
 
   getExtractCount(): number {
@@ -319,15 +348,35 @@ export class VirtualFileSystem {
   }
 
   /** Snapshot for localStorage so desktop files survive refresh. */
-  exportSnapshot(): { version: 1; nodes: VNode[] } {
-    return { version: 1, nodes: [...this.nodes.values()].map((n) => ({ ...n })) };
+  exportSnapshot(): {
+    version: 2;
+    nodes: VNode[];
+    copyCount: number;
+    restoreCount: number;
+    extractCount: number;
+  } {
+    return {
+      version: 2,
+      nodes: [...this.nodes.values()].map((n) => ({ ...n })),
+      copyCount: this.copyCount,
+      restoreCount: this.restoreCount,
+      extractCount: this.extractCount,
+    };
   }
 
   /** Replace tree from a saved snapshot. Returns false if invalid. */
   importSnapshot(data: unknown): boolean {
     if (!data || typeof data !== 'object') return false;
-    const snap = data as { version?: number; nodes?: VNode[] };
-    if (snap.version !== 1 || !Array.isArray(snap.nodes) || snap.nodes.length < 2) return false;
+    const snap = data as {
+      version?: number;
+      nodes?: VNode[];
+      copyCount?: number;
+      restoreCount?: number;
+      extractCount?: number;
+    };
+    if ((snap.version !== 1 && snap.version !== 2) || !Array.isArray(snap.nodes) || snap.nodes.length < 2) {
+      return false;
+    }
     const next = new Map<string, VNode>();
     for (const raw of snap.nodes) {
       if (!raw || typeof raw.id !== 'string' || typeof raw.name !== 'string') continue;
@@ -345,6 +394,11 @@ export class VirtualFileSystem {
     if (!next.has(DESKTOP_ID) || !next.has(TRASH_ID)) return false;
     this.nodes = next;
     this.undoStack = [];
+    if (snap.version === 2) {
+      this.copyCount = typeof snap.copyCount === 'number' && snap.copyCount > 0 ? snap.copyCount : 0;
+      this.restoreCount = typeof snap.restoreCount === 'number' && snap.restoreCount > 0 ? snap.restoreCount : 0;
+      this.extractCount = typeof snap.extractCount === 'number' && snap.extractCount > 0 ? snap.extractCount : 0;
+    }
     this.notify();
     return true;
   }
